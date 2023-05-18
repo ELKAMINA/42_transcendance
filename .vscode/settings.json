@@ -1,0 +1,8 @@
+{
+    "json.schemas": [
+    
+    ],
+    "[prisma]": {
+        "editor.defaultFormatter": "Prisma.prisma"
+      },
+}

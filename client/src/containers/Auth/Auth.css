@@ -1,0 +1,50 @@
+/* justify-content when with colum align items horizentally */
+
+/* align-items when with row align items vertically */
+
+
+.auth{
+    display: flex; 
+    flex-direction: column;
+    /* justify-content: space-around; */
+    /* justify-content: center; */
+    height: 75vh;
+    width: 25vw;
+    /* text-align: center; */
+    box-shadow: 0 30px 62px 0 rgba(39, 37, 45, 0.86);
+    backdrop-filter: blur(70px);
+    border-radius: 33px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+    opacity: 0.65;
+}
+
+.auth-welcome{ 
+    text-align: center;
+    color: aqua;
+}
+
+.auth-menu{
+    /* display: flex;
+    flex-direction: column; */
+    
+    height: 100%;
+    justify-content: space-between;
+}
+
+.auth-options{
+    display: flex;
+    justify-content: center;
+    background-color: bisque;
+    /* flex-direction: row; */
+}
+
+.auth-inputs{
+    display: flex;
+    /* justify-content: space-around; */
+    /* width: 100%;
+    height: 100%; */
+    /* flex-direction: column; */
+    /* justify-content: center; */
+}

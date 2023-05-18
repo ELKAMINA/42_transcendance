@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100;0,200;0,300;0,400;1,100;1,300&display=swap');
+
+* { 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{ 
+  min-height: 100vh;
+  background-image: url(./img/giphy.gif);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+
+html{
+  height: 100%;
+}
+
+#root{
+  min-height: 100vh;
+}

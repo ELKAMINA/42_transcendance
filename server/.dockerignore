@@ -1,0 +1,10 @@
+node_modules
+dist
+npm debug.log
+.git
+.eslint*
+.prettier*
+.gitignore
+.husky
+.dockerignore
+README.md

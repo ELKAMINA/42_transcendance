@@ -1,0 +1,116 @@
+.sign{
+    /* background-color: blueviolet; */
+    /* display: flex; */
+    /* justify-content: flex-end; 
+    align-items: center; */
+    /* justify-content: space-around; */
+}
+
+.sign-intro{
+    color: aqua;
+    text-align: center;
+}
+
+.sign-inputs{
+    /* justify-content: space-around; */
+    /* display: flex;
+    flex-direction: column; */
+    /* justify-content: space-around; */
+}
+
+input{
+    background: rgb(29, 29, 46);
+    box-shadow: 0 8px 32px 0 rgba(90,90,150,0.56);
+    border-radius: 2rem;
+    height: 2.95rem; 
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    outline: none;
+    color:#ece8ef;
+    opacity: 0.75;
+    font-size: 1rem;
+    font-weight:bolder;
+}
+
+input :focus {
+    display: inline-block;
+    box-shadow: 0 0 0 0.2rem #090120;
+}
+
+.error-message {
+    color: red;
+    font-size: 9px;
+
+}
+
+/* .section{
+    display: flex;
+    justify-content: space-around;
+} */
+/* .sign-valid{
+    display: flex;
+    flex-direction: column;
+} */
+/* .sign > hr{
+    border: none;
+    border-top: 3px double #3f3257ca;
+    color: #333;
+    overflow: visible;
+    text-align: center;
+    height: 3%;
+    width: 100%;
+}
+
+.sign > hr:after {
+    background: rgba(8, 1, 23, 0.86);
+    backdrop-filter: blur(90px);
+    content: 'OR';
+    color: rgb(114, 106, 122);
+    letter-spacing: 0rem;
+    padding: 0 4px;
+    position: relative;
+    top: -13px;
+}
+
+.mui-btn{
+    background: linear-gradient(to right, #2a3085b0 0%, #6d4e9196 79%);
+    box-shadow: 0 8px 32px 0 rgba(59, 59, 102, 0.56);
+    border-radius: 2rem;
+    height: 15%; 
+    width: 76%;
+    padding: 1.rem;
+    border:#ffffff;
+    outline: none;
+    color:#c2b3c5;
+    font-size: 1rem;
+    font-weight:bolder;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    opacity: 0.9;
+}
+
+.mui-btn-ft{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(to right, #2a3085b0 0%, #6d4e9196 79%);
+    box-shadow: 0 8px 32px 0 rgba(59, 59, 102, 0.56);
+    border-radius: 2rem;
+    height: 15%; 
+    width: 76%;
+    padding: 1.rem;
+    border:#ffffff;
+    outline: none;
+    color:#c2b3c5;
+    font-size: 1rem;
+    font-weight:bolder;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    opacity: 0.9;
+} */
+
+
+

@@ -1,0 +1,18 @@
+.hp-container > h1 {
+    color: yellow;   
+}
+
+p {
+    color: yellowgreen;
+}
+
+.qrcode{
+    background-color: aqua;
+    font-size: large;
+    height: 50px;
+    justify-content: center;
+}
+
+.omg{
+    size: 512;
+}
