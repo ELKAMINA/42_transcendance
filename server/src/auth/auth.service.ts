@@ -1,22 +1,23 @@
-import { Payload2FA } from './types/payload2FA.dto';
-import { UserDetails } from '../user/types/user-types.user';
-import { AuthDto } from './dto/auth.dto';
-import { Injectable, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import * as argon from 'argon2';
+import { Response } from 'express';
+import { toDataURL } from 'qrcode';
+import { Res } from '@nestjs/common';
+import { authenticator } from 'otplib';
+import { JwtService } from '@nestjs/jwt';
+import { Prisma, User } from '@prisma/client';
+import { UnauthorizedException } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import { PrismaClientUnknownRequestError } from '@prisma/client/runtime';
-import { Prisma, User } from '@prisma/client';
-import { JwtPayload, OauthPayload, Tokens } from './types';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Response } from 'express';
-import { Res } from '@nestjs/common';
-import { UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { authenticator } from 'otplib';
-import { toDataURL } from 'qrcode';
-import { UserService } from 'src/user/user.service';
+import { Injectable, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
+
 import { toFileStream } from 'qrcode';
+import { AuthDto } from './dto/auth.dto';
+import { UserService } from '../user/user.service';
+import { Payload2FA } from './types/payload2FA.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { JwtPayload, OauthPayload, Tokens } from './types';
+import { UserDetails } from '../user/types/user-types.user';
 
 @Injectable()
 export class AuthService {

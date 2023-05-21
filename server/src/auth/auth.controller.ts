@@ -1,4 +1,4 @@
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { GetCurrentUserOAuth } from './../decorators/get-user-Oauth.decorator';
 import { OauthPayload } from './types/OauthPayload.type';
 import { User } from '@prisma/client';
@@ -11,11 +11,11 @@ import { fortyTwoOauthGuard } from '../guards/42-oauth.guard';
 import { Tokens } from './types/tokens-types';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HomeService } from 'src/profile/home.service';
-import { RtGuard } from 'src/guards/rt-guard';
-import { AtGuard } from 'src/guards/at-auth.guard';
-import { GetCurrentUserId} from 'src/decorators/get-current-userId.decorator';
-import { GetCurrentUser } from 'src/decorators/get-current-user.decorator';
-import { Public } from 'src/decorators';
+import { RtGuard } from '../guards/rt-guard';
+import { AtGuard } from '../guards/at-auth.guard';
+import { GetCurrentUserId} from '../decorators/get-current-userId.decorator';
+import { GetCurrentUser } from '../decorators/get-current-user.decorator';
+import { Public } from '../decorators';
 import { JwtPayload} from './types';
 import { UnauthorizedException } from '@nestjs/common';
 
