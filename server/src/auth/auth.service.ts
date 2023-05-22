@@ -160,11 +160,9 @@ export class AuthService {
         }
         
       })
-  } catch(e: any){
-    // console.log("errreur ", e);
-
-  }
-  return {msg: 'OK'};
+    } catch(e: any){
+      // console.log("errreur ", e);
+    }
   }
 
   async refresh(userInfo: JwtPayload, refreshToken: string){
