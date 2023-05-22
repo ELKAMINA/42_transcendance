@@ -1,10 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from "./auth.controller";
-import { AuthService } from "./auth.service";
-import { UserService } from '../user/user.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaService } from '../prisma/prisma.service';
+
+import { AuthDto } from './dto';
+import { prismaMock } from '../../singleton';
+import { AuthService } from "./auth.service";
+import { AuthController } from "./auth.controller";
+import { UserService } from '../user/user.service';
+import { AuthDTOStub, JwtPayloadStub}from './tests/index';
 
 const userID = "123";
 const testUser1 = 'Test user 1';
@@ -16,7 +20,7 @@ describe('Authentication Controller ', () => {
     let authcontroller: AuthController;
     let authservice: AuthService;
 
-
+	//  Each of our tests needs to be independent, and we need to ensure that. without beforeEach, If we add more tests, all of them will use the same instance of the  independencies. It breaks the rule of all tests being independent.
     beforeEach(async () => {
  
     /*Test provides an application execution context which mock the full nest run time. The createTestingModule return a TestingModule instance  */
@@ -26,26 +30,34 @@ describe('Authentication Controller ', () => {
                 {
                     provide: AuthService,
                     useValue: {
-                        signup: jest.fn().mockResolvedValue({
+                        signup: jest
+							.fn()
+							.mockResolvedValue({
                             access_token,
                             refresh_token,
                         }),
-                        signin: jest.fn().mockResolvedValue({
+                        signin: jest
+							.fn()
+							.mockResolvedValue({
                             access_token,
                             refresh_token,
                         }),
-                        logout: jest.fn().mockResolvedValue({
-                            access_token,
-                            refresh_token,
-                        }),
-                        refresh: jest.fn().mockResolvedValue({
-                            access_token,
-                            refresh_token,
-                        }),
-                        findUser: jest.fn().mockResolvedValue({
-                            access_token,
-                            refresh_token,
-                        }),
+                        logout: jest
+							.fn()
+							.mockImplementation((dto: AuthDto) => Promise.resolve({rt: null, ...dto}),
+						),
+                        refresh: jest
+							.fn()
+							.mockImplementation(({nickname: testUser1, password: testPwd1}, refresh_token) => Promise.resolve({
+
+							}),
+						),
+                        // findUser: jest
+						// 	.fn()
+						// 	.mockResolvedValue({
+                        //     access_token,
+                        //     refresh_token,
+                        // }),
                     }
                 },
                 {
@@ -76,7 +88,6 @@ describe('Authentication Controller ', () => {
     it('should be defined', () => {
         expect(authcontroller).toBeDefined();
     })
-
     describe('SignUp: it should sign up a user', () => {
         it ('should return an object of tokens', async() => {
             const dto = {nickname: testUser1, password: testPwd1, avatar: ""}
@@ -97,35 +108,18 @@ describe('Authentication Controller ', () => {
     })
     describe('Logout: it should logout a user', () => {
         it ('should delete user`s refresh tokens', async() => {
-            const dto = {nickname: testUser1, password: testPwd1, avatar: ""}
-            await expect(authcontroller.signin(dto)).resolves.toEqual({
-                access_token,
-                refresh_token,
+			const payload = {nickname: testUser1, sub: userID}
+            await expect(authcontroller.logout(payload)).resolves.toEqual({
+				rt:null, ...payload,
             })
         })
     })
+	describe('Refresh_Tokens: it should refresh a user', () => {
+        it ('should refresh existing tokens', async() => {
+			const payload = {nickname: testUser1, sub: userID}
+            await expect(authcontroller.refresh(payload, refresh_token)).toBeCalled();
+        })
+    })
 
-    // it('SignUp2FAs: it should sign up a user that chose 2FA', () => {
-    //     const dto = {userId:"id2", nickname: "nick2"};
-    //     expect(mockAuthService.signTokens(dto.userId, dto.nickname));
-    // })
-
-    // it('UpdateRtHash: it should update the user`s refresh token', () => {
-    //     const dto = {userId:"id3", rt: "refresh"};
-    //     expect(mockAuthService.updateRt(dto.userId, dto.rt));
-    // })
-
-    // it('SignUp: it should sign up the user', () => {
-    //     const dto = {nickname:"nick2", password: "pwd1", avatar:"av1"};
-    //     expect(mockAuthService.signup(dto));
-    // })
-    // it('SignIn: it should sign in the user', () => {
-    //     const dto = {nickname:"nick3", password: "pwd1", avatar:"av1"};
-    //     expect(mockAuthService.signin(dto));
-    // })
-    // it('logout: it should logout the user', () => {
-    //     const dto = {nickname:"nick4", sub: "sub1"};
-    //     expect(mockAuthService.logout(dto));
-    // })
 })
 

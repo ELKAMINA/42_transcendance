@@ -45,7 +45,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('Logout')
   @ApiOkResponse({ type: Tokens })
-  logout(@GetCurrentUserId() userInfo: JwtPayload, @Req() req: Request) {
+  logout(@GetCurrentUserId() userInfo: JwtPayload) {
     return this.authService.logout(userInfo);
   }
 
