@@ -1,18 +1,32 @@
-FROM node:18-alpine
+# => Build the container
+FROM node:18-alpine as build
 
-RUN mkdir /app
+# RUN mkdir /app/client
 
-WORKDIR /app
+WORKDIR /app/client
 
 COPY package*.json ./
 
 RUN npm install --legacy-peer-deps
 
-
 COPY . .
 
-# RUN npm run build
+RUN npm run build
 
-EXPOSE 3000
+# EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+# CMD ["npm", "run", "start"]
+
+# => Run container
+FROM nginx:alpine
+
+COPY --from=build /app/client/build /usr/share/nginx/html
+
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY  nginx/nginx.conf /etc/nginx/conf.d
+
+EXPOSE 80
+
+# Start Nginx server
+CMD ["/bin/bash", "-c", "nginx -g \"daemon off;\""]
