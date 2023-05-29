@@ -7,7 +7,7 @@ import HomePage  from "./pages/home";
 import Tfa from './pages/tfa';
 import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
-import { setSignCredentials } from './features/auth/authSlice';
+import { setSignCredentials, setTokens } from './features/auth/authSlice';
 
 const App = () => {
   const dispatch = useDispatch()
@@ -18,8 +18,7 @@ const App = () => {
       refresh_token : Cookies.get('refresh_token'),
       nickname : Cookies.get('User'),
     }
-    console.log("ici 3? ");
-    dispatch(setSignCredentials({...credentials }))
+    dispatch(setTokens({...credentials }))
   }
   return (
     <div className="app">

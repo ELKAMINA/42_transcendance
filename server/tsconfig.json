@@ -18,5 +18,10 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-  }
+  },
+  "watchOptions": { 
+    "watchFile": "fixedpollinginterval",
+    "watchDirectory": "dynamicprioritypolling",
+    "fallbackPolling": "dynamicpriority" 
+  },
 }

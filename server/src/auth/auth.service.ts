@@ -160,11 +160,9 @@ export class AuthService {
         }
         
       })
-  } catch(e: any){
-    // console.log("errreur ", e);
-
-  }
-  return {msg: 'OK'};
+    } catch(e: any){
+      // console.log("errreur ", e);
+    }
   }
 
   async refresh(userInfo: JwtPayload, refreshToken: string){
@@ -209,7 +207,7 @@ export class AuthService {
   }
 
   async findUser(userInfo: OauthPayload) {
-    const user = await this.userServ.searchUser(userInfo.id);
+    const user = await this.userServ.searchUser(userInfo.login);
     const tokens =  await this.signTokens(user.user_id, user.login);
     this.updateRtHash(user.user_id, tokens.refresh_token);
     return {user: user.login, access_token: tokens.access_token, refresh_token: tokens.refresh_token};
@@ -230,7 +228,9 @@ export class AuthService {
   }
 
   async isTwoFactorAuthenticationCodeValid(TfaCode: string, user: JwtPayload) { // verify the authentication code with the user's secret
-    const us = await this.userServ.searchUser(user.sub);
+    console.log('JWTPAYLOAD', user);
+    const us = await this.userServ.searchUser(user.nickname);
+    console.log('us', us);
     return authenticator.verify({
       token: TfaCode,
       secret: us.fA,
@@ -251,7 +251,7 @@ export class AuthService {
   async setTwoFactorAuthenticationSecret(secret: string, userInfo: OauthPayload) { // Update the user with the authnetication 2FA secret
     const user = await this.prisma.user.update({
       where: {
-        user_id: userInfo.id,
+        login: userInfo.login,
       },
       data: {
         fA: secret,
@@ -269,7 +269,7 @@ export class AuthService {
 
    // ****** Authentication 2FA ******************
    async loginWith2fa(user: JwtPayload) {
-    const usr = await this.userServ.searchUser(user.sub);
+    const usr = await this.userServ.searchUser(user.nickname);
     const payload = {
       login: usr.login,
       faEnabled: usr.faEnabled,

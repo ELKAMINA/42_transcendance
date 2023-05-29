@@ -14,6 +14,8 @@ services:
       - ./server:/server
       - /server/node_modules
       - /server/prisma
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - dev-db
     networks:
@@ -53,16 +55,16 @@ services:
       - server
     networks:
       - transcendance
-  # test-db:
-  #   image: postgres:14
-  #   ports:
-  #     - 5435:5432
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: 123
-  #     POSTGRES_DB: trans
-  #   networks:
-  #     - transcendance
+  test-db:
+    image: postgres:14
+    ports:
+      - 5435:5435
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: trans
+    networks:
+      - transcendance
   # prisma:
   #   links:
   #     - dev-db

@@ -1,23 +1,24 @@
-import { UserService } from '../user/user.service';
-import { GetCurrentUserOAuth } from './../decorators/get-user-Oauth.decorator';
-import { OauthPayload } from './types/OauthPayload.type';
 import { User } from '@prisma/client';
-import { Get, UseGuards, Controller, Body, Post, HttpStatus, HttpCode, Redirect} from '@nestjs/common';
-import { Request, Response } from 'express';
 import { Req, Res } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthDto } from './dto';
-import { fortyTwoOauthGuard } from '../guards/42-oauth.guard';
-import { Tokens } from './types/tokens-types';
+import { Request, Response } from 'express';
+import { UnauthorizedException } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { HomeService } from 'src/profile/home.service';
+import { Get, UseGuards, Controller, Body, Post, HttpStatus, HttpCode, Redirect} from '@nestjs/common';
+
+import { AuthDto } from './dto';
+import { JwtPayload} from './types';
+import { Public } from '../decorators';
+import { AuthService } from './auth.service';
 import { RtGuard } from '../guards/rt-guard';
+import { Tokens } from './types/tokens-types';
 import { AtGuard } from '../guards/at-auth.guard';
+import { UserService } from '../user/user.service';
+import { HomeService } from 'src/profile/home.service';
+import { OauthPayload } from './types/OauthPayload.type';
+import { fortyTwoOauthGuard } from '../guards/42-oauth.guard';
+import { GetCurrentUserOAuth } from './../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId} from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
-import { Public } from '../decorators';
-import { JwtPayload} from './types';
-import { UnauthorizedException } from '@nestjs/common';
 
 
 @Controller('auth')
@@ -31,6 +32,7 @@ export class AuthController {
   @Post('Signup')
   // @Redirect('/home')
   signup(@Body() dto: AuthDto): Promise<object>{
+    console.log("dtoooo a voiiir, ca ne marche pas tjrs pas", dto);
     return this.authService.signup(dto);
   }
 
@@ -45,7 +47,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('Logout')
   @ApiOkResponse({ type: Tokens })
-  logout(@GetCurrentUserId() userInfo: JwtPayload, @Req() req: Request) {
+  logout(@GetCurrentUserId() userInfo: JwtPayload) {
     return this.authService.logout(userInfo);
   }
 
@@ -75,9 +77,8 @@ export class AuthController {
   @Get('42/redirect')
   @UseGuards(fortyTwoOauthGuard)
   @Redirect("http://localhost:3000/welcome")
-  async oAuthRedirect(@GetCurrentUserOAuth() userInfo: OauthPayload, @Res({passthrough: true}) res: Response, @Req() req) {
+  async oAuthRedirect(@GetCurrentUserOAuth() userInfo: OauthPayload, @Res({passthrough: true}) res: Response) {
     const infos = await this.authService.findUser(userInfo);
-    // console.log("infos de lolo ", infos);
     const {user, access_token, refresh_token} = infos;
     res.cookie(
       'User',
@@ -135,7 +136,6 @@ export class AuthController {
       body.TfaCode,
       request.user,
       );
-    console.log("userr  ", isCodeValid);
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong authentication code');
     }

@@ -7,9 +7,11 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AtGuard } from './guards/at-auth.guard';
 import * as cookieParser from 'cookie-parser';
 
-
+// main.ts file = entrypoint for the app's process. The bootstrap method creates the Nest application and initializes it.
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule); // Nest container
+ 
+  /* Communications layer: Début  */ 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -22,6 +24,8 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: ['Content-Type', 'authorization'],
   });
+  /* Communications layer : FIN */ 
+
 
   // For Swagger
   const config = new DocumentBuilder() 
@@ -34,6 +38,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   await app.listen(4001, '0.0.0.0', () => {
     console.log('Listening on port 4001');
+    /* app.listen(XXXX) binds the communications layer with the nest container.*/
   });
 }
 bootstrap();
