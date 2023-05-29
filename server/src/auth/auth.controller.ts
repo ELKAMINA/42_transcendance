@@ -32,6 +32,7 @@ export class AuthController {
   @Post('Signup')
   // @Redirect('/home')
   signup(@Body() dto: AuthDto): Promise<object>{
+    console.log("dtoooo", dto);
     return this.authService.signup(dto);
   }
 
@@ -78,7 +79,6 @@ export class AuthController {
   @Redirect("http://localhost:3000/welcome")
   async oAuthRedirect(@GetCurrentUserOAuth() userInfo: OauthPayload, @Res({passthrough: true}) res: Response) {
     const infos = await this.authService.findUser(userInfo);
-    // console.log("infos de lolo ", infos);
     const {user, access_token, refresh_token} = infos;
     res.cookie(
       'User',

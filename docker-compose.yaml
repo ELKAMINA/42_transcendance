@@ -14,6 +14,8 @@ services:
       - ./server:/server
       - /server/node_modules
       - /server/prisma
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - dev-db
     networks:

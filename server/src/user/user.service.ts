@@ -7,11 +7,11 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
 
-  async searchUser(userId: string){
+  async searchUser(nick: string){
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: {
-          user_id: userId,
+          login: nick,
         },
       });
       return user;
