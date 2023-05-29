@@ -32,7 +32,7 @@ export class AuthController {
   @Post('Signup')
   // @Redirect('/home')
   signup(@Body() dto: AuthDto): Promise<object>{
-    console.log("dtoooo", dto);
+    console.log("dtoooo a voiiir, ca ne marche pas tjrs pas", dto);
     return this.authService.signup(dto);
   }
 
