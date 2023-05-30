@@ -8,7 +8,7 @@ build-frontend:
   script:
     - echo "Start building the app Front End"
     - cd client
-    - npm install
+    - npm install --legacy-peer-deps
     - npm build
     - echo "Build successfully!"
   artifacts:
@@ -22,7 +22,7 @@ build-backend:
   script:
     - echo "Start building the app Back end"
     - cd server
-    - npm install
+    - npm install --legacy-peer-deps
     - npm build
     - echo "Build successfully!"
   artifacts:
@@ -36,6 +36,6 @@ unit-test-website:
   script:
     - echo "Running tests"
     - cd server
-    - npm install
+    - npm install --legacy-peer-deps
     - npm run test
     - echo "Tests finished"
