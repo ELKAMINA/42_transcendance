@@ -1,6 +1,14 @@
 stages:
+  - .pre
   - build
   - test
+
+linter:
+  stage: .pre
+  image: node:16-alpine
+  script:
+    - npm install
+    - npm lint
 
 build-frontend:
   stage: build
@@ -30,7 +38,7 @@ build-backend:
       - node_modules/
 
 unit-test-website:
-  stage: test
+  stage: .pre
   image: node:16-alpine
   script:
     - echo "Running tests"
