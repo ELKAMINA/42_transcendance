@@ -2,27 +2,40 @@ stages:
   - build
   - test
 
-build-website:
+build-frontend:
   stage: build
   image: node:16-alpine
   script:
-    - echo "Start building the app"
+    - echo "Start building the app Front End"
+    - cd client
     - npm install
-    - npm run build
+    - npm build
     - echo "Build successfully!"
   artifacts:
     paths:
       - build
-test-website:
-  image: alpine
-  stage: test
+      - node_modules/
+
+build-backend:
+  stage: build
+  image: node:16-alpine
   script:
-    - test -f build/node_modules
+    - echo "Start building the app Back end"
+    - cd server
+    - npm install
+    - npm build
+    - echo "Build successfully!"
+  artifacts:
+    paths:
+      - build
+      - node_modules/
+
 unit-test-website:
+  stage: test
   image: node:16-alpine
   script:
     - echo "Running tests"
+    - cd server
     - npm install
     - npm run test
     - echo "Tests finished"
-  stage: test
