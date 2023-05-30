@@ -9,7 +9,7 @@ build-frontend:
     - echo "Start building the app Front End"
     - cd client
     - npm install --legacy-peer-deps
-    - npm build
+    - npm run build
     - echo "Build successfully!"
   artifacts:
     paths:
@@ -23,7 +23,7 @@ build-backend:
     - echo "Start building the app Back end"
     - cd server
     - npm install --legacy-peer-deps
-    - npm build
+    - npm run build
     - echo "Build successfully!"
   artifacts:
     paths:
