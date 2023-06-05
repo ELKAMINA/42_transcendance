@@ -4,7 +4,7 @@ stages:
   - test
 
 variables:
-  APP-VERSION: $CI_PIPELINE_IID
+  APP_VERSION: $CI_PIPELINE_IID
 
 linter-backend:
   stage: .pre
