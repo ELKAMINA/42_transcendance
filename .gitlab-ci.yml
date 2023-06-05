@@ -31,6 +31,7 @@ build-frontend:
     - echo "Start building the app - Front End"
     - cd client
     - npm install --legacy-peer-deps
+    - npm run build
     - echo "Front end built successfully!"
   artifacts:
     paths:
