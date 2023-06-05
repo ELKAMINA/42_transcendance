@@ -1,5 +1,5 @@
 export type Payload2FA = {
-    login: string;
-    faEnabled: boolean;
-    authTFA: boolean;
-  };
+  login: string;
+  faEnabled: boolean;
+  authTFA: boolean;
+};

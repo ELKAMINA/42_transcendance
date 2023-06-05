@@ -1,6 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger'; // What is that
-
 
 export class AuthDto {
   @IsString()
@@ -17,5 +16,4 @@ export class AuthDto {
   @IsString()
   @ApiProperty()
   avatar: string;
-
 }

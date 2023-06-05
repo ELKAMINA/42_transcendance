@@ -1,21 +1,17 @@
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { PassportModule } from '@nestjs/passport';
-import { AuthController } from './auth.controller';
-import { fortyTwoStrategy } from './strategies/42.strategy';
-// import { JwtModule } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-// import { SessionSerializer } from './sessions/serializer';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+
+import { AuthService } from './auth.service';
+import AuthController from './auth.controller';
+import { UserService } from '../user/user.service';
 import { AtStrategy, RtStrategy } from './strategies';
-// import { SessionSerializer } from './Serializer';
+import { FtStrategy } from './strategies/42.strategy';
 
 @Module({
   // What's inside the module is called Metadata
   imports: [PassportModule, JwtModule.register({})],
-  providers: [AuthService, fortyTwoStrategy, UserService, AtStrategy, RtStrategy],
+  providers: [AuthService, FtStrategy, UserService, AtStrategy, RtStrategy],
   controllers: [AuthController],
 })
-export class AuthModule {}
- 
+export default class AuthModule {}
