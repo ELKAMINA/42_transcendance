@@ -50,7 +50,6 @@ build-backend:
     - cd server
     - npm install --legacy-peer-deps
     - npm run build
-    - echo $APP_VERSION > build/version.html
     - echo "Back end built successfully!"
   artifacts:
     paths:

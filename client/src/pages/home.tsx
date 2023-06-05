@@ -3,7 +3,7 @@ import * as React from 'react';
 import Popup from 'reactjs-popup';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import { useLogOutMutation } from '../app/api/authApiSlice';
 
 /* *** Internal imports *** */ 
