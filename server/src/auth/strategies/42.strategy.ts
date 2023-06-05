@@ -1,15 +1,13 @@
-import { User } from '@prisma/client';
-import { AuthService } from '../auth.service';
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
-import { PassportStrategy } from '@nestjs/passport';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from '../../user/user.service';
+import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
+import { UserService } from '../../user/user.service';
+import { AuthService } from '../auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-export class fortyTwoStrategy extends PassportStrategy(Strategy, '42') {
+export class FtStrategy extends PassportStrategy(Strategy, '42') {
   constructor(
     private readonly config: ConfigService,
     private readonly userService: UserService,
@@ -24,6 +22,7 @@ export class fortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       scopes: ['profile'], // the information we want to obtain from the user.
     });
   }
+
   async validate(
     accessToken: string, // useful to interact with 42 services
     refreshToken: string,
@@ -38,25 +37,24 @@ export class fortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       email: profile.emails[0].value,
       picture: profile._json.image.link,
       login: profile._json.login,
-    }
+    };
     // console.log("je rentre ici 5,5 ??")
-    const lolo =  await this.prisma.user.findUnique({
+    const lolo = await this.prisma.user.findUnique({
       where: {
         login: userDet.login,
       },
     });
     if (lolo) {
       // console.log("Looool is already registered ???", lolo);
-      return cb(null,lolo);
-    } else {
-      const newUser =  await this.prisma.user.create({
-        data: {
-          login: userDet.login,
-          email: userDet.email,
-          avatar: userDet.picture,
-        },
-      })
-      return cb(null, newUser);
+      return cb(null, lolo);
     }
+    const newUser = await this.prisma.user.create({
+      data: {
+        login: userDet.login,
+        email: userDet.email,
+        avatar: userDet.picture,
+      },
+    });
+    return cb(null, newUser);
   }
 }

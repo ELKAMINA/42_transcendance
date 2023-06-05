@@ -45,22 +45,6 @@ function HomePage() {
     .post("http://0.0.0.0:4001/auth/2fa/turn-on", {TfaCode})
     .then((res) => {navigate('/tfa');})
     .catch((e) => {console.log("error ", e)});
-    // axios({
-    //   withCredentials: true,
-		// 	url: ``,
-		// 	method: "POST",
-		// 	headers:{
-		// 		Authorization: `Bearer ${access_token}`
-		// 	},
-    //   data: {TfaCode}
-    // })
-    // .then((response: any) => {
-    //   navigate('/tfa');
-    // })
-    // .catch((e: any) => {
-
-    //   }
-    // )
   }
 
   const content = (

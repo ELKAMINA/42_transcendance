@@ -2,10 +2,9 @@
     "bracketSpacing": true,
     "semi": true,
     "singleQuote": true,
-    "trailingComma": "all",
+    "trailingComma": "es5",
     "printWidth": 80,
     "tabWidth": 2,
-    "prettier.useTabs": 4,
     "editor.formatOnSave": true,
     "[prisma]": {
       "editor.defaultFormatter": "Prisma.prisma"

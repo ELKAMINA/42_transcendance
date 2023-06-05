@@ -1,24 +1,12 @@
-import { Get, UseGuards, Controller, Body, Post, HttpStatus, HttpCode, Response, Redirect } from '@nestjs/common';
-import { Request } from 'express';
-import { Req, Res } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { HomeService } from './home.service';
-
+import { ApiTags } from '@nestjs/swagger';
+import { Get, Controller } from '@nestjs/common';
 
 @Controller('home')
 @ApiTags('home')
 export class HomeController {
-  constructor(private HomeService: HomeService) {}
-
- /* Simple Login Strategy */  
+  /* Simple Login Strategy */
   @Get('/')
-  hommie(){
+  hommie() {
     return 'Welcome';
   }
-
-
 }
-
-//Notes:
-//Pipes are function that transform our data
-// }
