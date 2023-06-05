@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { MatchModule } from './match/match.module';
-import { ChannelModule } from './channel/channel.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { PassportModule } from '@nestjs/passport';
-import { HomeModule } from './profile/home.module';
 import { APP_GUARD } from '@nestjs/core';
-import { AtGuard } from './guards/at-auth.guard';
+import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 
+import UserModule from './user/user.module';
+import AuthModule from './auth/auth.module';
+import { AtGuard } from './guards/at-auth.guard';
+import HomeModule from './profile/home.module';
+import PrismaModule from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -18,8 +16,6 @@ import { AtGuard } from './guards/at-auth.guard';
     }),
     AuthModule,
     UserModule,
-    MatchModule,
-    ChannelModule,
     PrismaModule,
     HomeModule,
     PassportModule.register({}), // j'ai enlevé session:true
@@ -29,7 +25,7 @@ import { AtGuard } from './guards/at-auth.guard';
     {
       provide: APP_GUARD,
       useClass: AtGuard,
-    }, // THis is done to inject the reflector as we're using the At Guard as a global decorator
+    }, // This is done to inject the reflector as we're using the At Guard as a global decorator
   ],
 })
-export class AppModule {}
+export default class AppModule {}

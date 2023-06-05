@@ -1,4 +1,4 @@
 export type OauthPayload = {
-    login: string;
-    id: string;
-  };
+  login: string;
+  id: string;
+};

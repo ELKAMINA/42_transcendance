@@ -3,7 +3,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as argon from 'argon2';
 
-
 // initialize Prisma Client
 const prisma = new PrismaClient();
 
@@ -17,33 +16,32 @@ async function main() {
       hash: await argon.hash('tutututututu'),
       status:
         "We are excited to share that today's Prisma ORM release adds stable support for MongoDB!",
-      fA: "cava",
+      fA: 'cava',
       faEnabled: true,
     },
   });
 
   const post2 = await prisma.user.upsert({
-    where: { login: "Fuma" },
+    where: { login: 'Fuma' },
     update: {},
     create: {
-      login: "Fuma",
+      login: 'Fuma',
       hash: await argon.hash('lululululu'),
       status:
         'Learn about everything in the Prisma ecosystem and community from January to March 2022.',
-      fA: "",
+      fA: '',
       faEnabled: false,
     },
   });
 
   const post3 = await prisma.user.upsert({
-    where: { login: "Naykee" },
+    where: { login: 'Naykee' },
     update: {},
     create: {
-      login: "Naykee",
+      login: 'Naykee',
       hash: await argon.hash('rhoooooooooooooooooo'),
-      status:
-        'kikou',
-      fA: "salutcava",
+      status: 'kikou',
+      fA: 'salutcava',
       faEnabled: true,
     },
   });
