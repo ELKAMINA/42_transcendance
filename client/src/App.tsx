@@ -7,7 +7,7 @@ import HomePage  from "./pages/home";
 import Tfa from './pages/tfa';
 import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
-import { setSignCredentials, setTokens } from './features/auth/authSlice';
+import { setTokens } from './features/auth/authSlice';
 
 const App = () => {
   const dispatch = useDispatch()

@@ -2,7 +2,7 @@ import  axios from 'axios';
 
 import { store } from '../app/store';
 // import {setTokens } from '../features/auth/authSlice';
-import { selectCurrentAccessToken, selectCurrentRefreshToken, setTokens } from '../features/auth/authSlice';
+import { setTokens } from '../features/auth/authSlice';
 
 const api = axios.create({
 //   baseURL: 'http://localhost:4001',

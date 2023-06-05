@@ -1,9 +1,6 @@
 import { BaseQueryApi, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { setSignCredentials, logOut, setTokens } from '../../features/auth/authSlice';
+import { logOut, setTokens } from '../../features/auth/authSlice';
 import { RootState } from '../store';
-import userEvent from '@testing-library/user-event';
-
-
 
 const baseQuery = fetchBaseQuery({
     baseUrl: 'http://0.0.0.0:4001',

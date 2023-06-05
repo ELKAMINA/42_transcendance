@@ -1,8 +1,6 @@
 /* *** External imports *** */ 
-import axios from 'axios';
 import * as React from 'react';
 import Popup from 'reactjs-popup';
-import { Link } from "react-router-dom"
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux"
@@ -11,7 +9,7 @@ import { useLogOutMutation } from '../app/api/authApiSlice';
 /* *** Internal imports *** */ 
 import './home.css';
 import api from "../utils/Axios";
-import { selectCurrentUser, selectCurrentAccessToken, selectCurrentRefreshToken, setTokens } from '../features/auth/authSlice';
+import { selectCurrentUser, selectCurrentAccessToken, selectCurrentRefreshToken } from '../features/auth/authSlice';
 
 
 function HomePage() {
@@ -20,7 +18,6 @@ function HomePage() {
   let [TfaCode, setTfaCode] = React.useState('')
   const access_token = useSelector(selectCurrentAccessToken)
   const refresh_token = useSelector(selectCurrentRefreshToken)
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const welcome = user ? `Welcome ${user}` : 'Welcome buddy'
   const a_tokenAbbr = `${access_token.slice(0, 9)}...`

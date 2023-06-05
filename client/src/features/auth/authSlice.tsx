@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {store, RootState, AppDispatch} from '../../app/store';
+import { RootState } from '../../app/store';
 
 interface authState {
     nickname: string,

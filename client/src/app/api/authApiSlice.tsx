@@ -1,4 +1,3 @@
-import { transform } from "typescript";
 import { apiSlice } from "../../app/api/apiSlice";
 
 export const authApiSlice = apiSlice.injectEndpoints({
@@ -24,14 +23,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 body: { ...credentials }
             }),
         })
-        
-        // tfaAuth: builder.mutation({
-        //     query: credentials => ({
-        //         url: '/auth/2fa/generate',
-        //         method: 'POST',
-        //         // body: { ...credentials }
-        //     }),
-        // }),
     })
 })
 

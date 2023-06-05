@@ -3,6 +3,9 @@ stages:
   - build
   - test
 
+variables:
+  APP-VERSION: $CI_PIPELINE_IID
+
 linter-backend:
   stage: .pre
   image: node:16-alpine
@@ -32,6 +35,7 @@ build-frontend:
     - cd client
     - npm install --legacy-peer-deps
     - npm run build
+    - echo $APP_VERSION > build/version.html
     - echo "Front end built successfully!"
   artifacts:
     paths:
@@ -46,6 +50,7 @@ build-backend:
     - cd server
     - npm install --legacy-peer-deps
     - npm run build
+    - echo $APP_VERSION > build/version.html
     - echo "Back end built successfully!"
   artifacts:
     paths:
