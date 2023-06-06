@@ -24,19 +24,19 @@ build:
 linter-test:
   stage: test
   script:
-    - docker pull $CONTAINER_TEST_IMAGE ./server/
+    - docker pull $CONTAINER_TEST_IMAGE
     - docker run $CONTAINER_TEST_IMAGE npm run lint
 
 unit-test:
   stage: test
   script:
-    - docker pull $CONTAINER_TEST_IMAGE ./server/
+    - docker pull $CONTAINER_TEST_IMAGE
     - docker run $CONTAINER_TEST_IMAGE npm run test:unit
 
 release-image:
   stage: release
   script:
-    - docker pull $CONTAINER_TEST_IMAGE ./server/
+    - docker pull $CONTAINER_TEST_IMAGE
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
     - docker push $CONTAINER_RELEASE_IMAGE
 
