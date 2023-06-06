@@ -15,7 +15,6 @@ COPY prisma ./prisma/
 
 RUN npm install --legacy-peer-deps
 
-
 COPY tsconfig*.json ./
 
 COPY . .
@@ -39,4 +38,5 @@ COPY --from=builder /app/server/ ./
 EXPOSE 4001
 
 CMD ["npm", "run", "start:migrate:dev"]
+# CMD ["npm", "run", "start"]
 # CMD is not executed during the build steps of your Docker image, rather than during executing the Docker container (docker run ... or docker-compose up).
