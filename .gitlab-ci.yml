@@ -1,7 +1,3 @@
-image: docker:24.0
-services:
-  - docker:24-dind
-
 stages:
   - .pre
   - build
@@ -67,7 +63,11 @@ build-backend:
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
+
 build-backend:
+  image: docker:24.0
+  services:
+    - docker:24-dind
   stage: package
   script:
     - echo $CONTAINER_TEST_IMAGE
@@ -77,6 +77,9 @@ build-backend:
 
 
 release-image-backend:
+  image: docker:24.0
+  services:
+    - docker:24-dind
   stage: release
   script:
     - docker pull $CONTAINER_TEST_IMAGE
@@ -84,6 +87,9 @@ release-image-backend:
     - docker push $CONTAINER_RELEASE_IMAGE
 
 deploy-backend:
+  image: docker:24.0
+  services:
+    - docker:24-dind
   stage: deploy
   tags:
     - local_docker
