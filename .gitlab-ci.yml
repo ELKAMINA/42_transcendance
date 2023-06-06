@@ -18,25 +18,25 @@ before_script:
 build:
   stage: build
   script:
-    - docker build -t $CONTAINER_TEST_IMAGE .
+    - docker build -t $CONTAINER_TEST_IMAGE ./server/
     - docker push $CONTAINER_TEST_IMAGE
 
 linter-test:
   stage: test
   script:
-    - docker pull $CONTAINER_TEST_IMAGE .
+    - docker pull $CONTAINER_TEST_IMAGE ./server/
     - docker run $CONTAINER_TEST_IMAGE npm run lint
 
 unit-test:
   stage: test
   script:
-    - docker pull $CONTAINER_TEST_IMAGE .
+    - docker pull $CONTAINER_TEST_IMAGE ./server/
     - docker run $CONTAINER_TEST_IMAGE npm run test:unit
 
 release-image:
   stage: release
   script:
-    - docker pull $CONTAINER_TEST_IMAGE .
+    - docker pull $CONTAINER_TEST_IMAGE ./server/
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
     - docker push $CONTAINER_RELEASE_IMAGE
 
@@ -45,5 +45,5 @@ deploy:
   tags:
     - local_docker
   script:
-    - docker pull $CONTAINER_TEST_IMAGE .
+    - docker pull $CONTAINER_TEST_IMAGE ./server/
     - docker run -d -p 4001:4001 $CONTAINER_RELEASE_IMAGE
