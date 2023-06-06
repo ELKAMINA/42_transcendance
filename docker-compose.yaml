@@ -65,17 +65,6 @@ services:
       POSTGRES_DB: trans
     networks:
       - transcendance
-  # prisma:
-  #   links:
-  #     - dev-db
-  #   depends_on:
-  #     - dev-db
-  #   container_name: prisma
-  #   ports:
-  #     - '5555:5555'
-  #   build:
-  #     context: server/prisma
-  #     dockerfile: Dockerfile
 
 volumes:
   data:
