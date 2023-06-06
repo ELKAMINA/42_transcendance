@@ -15,32 +15,33 @@ variables:
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-build:
+build-backend:
   stage: build
   script:
     - docker build -t $CONTAINER_TEST_IMAGE ./server/
     - docker push $CONTAINER_TEST_IMAGE
 
-linter-test:
+linter-test-backend:
   stage: test
   script:
     - docker pull $CONTAINER_TEST_IMAGE
+    - docker run $CONTAINER_TEST_IMAGE npm ci
     - docker run $CONTAINER_TEST_IMAGE npm run lint
 
-unit-test:
+unit-test-backend:
   stage: test
   script:
     - docker pull $CONTAINER_TEST_IMAGE
     - docker run $CONTAINER_TEST_IMAGE npm run test:unit
 
-release-image:
+release-image-backend:
   stage: release
   script:
     - docker pull $CONTAINER_TEST_IMAGE
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
     - docker push $CONTAINER_RELEASE_IMAGE
 
-deploy:
+deploy-backend:
   stage: deploy
   tags:
     - local_docker
