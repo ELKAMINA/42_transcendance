@@ -25,7 +25,7 @@ linter-test-backend:
   stage: test
   script:
     - docker pull $CONTAINER_TEST_IMAGE
-    - docker run $CONTAINER_TEST_IMAGE npm ci
+    - docker run $CONTAINER_TEST_IMAGE npm install --legacy-peer-deps
     - docker run $CONTAINER_TEST_IMAGE npm run lint
 
 unit-test-backend:
