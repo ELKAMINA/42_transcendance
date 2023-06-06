@@ -60,21 +60,17 @@ build-backend:
       - build
       - node_modules/
 
-before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
-
-build-backend:
+package-backend:
   image: docker:24.0
   services:
     - docker:24-dind
   stage: package
   script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - echo $CONTAINER_TEST_IMAGE
     - echo $CI_REGISTRY_IMAGE
     - docker build -t $CONTAINER_TEST_IMAGE ./server/
     - docker push $CONTAINER_TEST_IMAGE
-
 
 release-image-backend:
   image: docker:24.0
@@ -82,6 +78,7 @@ release-image-backend:
     - docker:24-dind
   stage: release
   script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $CONTAINER_TEST_IMAGE
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
     - docker push $CONTAINER_RELEASE_IMAGE
@@ -94,5 +91,6 @@ deploy-backend:
   tags:
     - local_docker
   script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $CONTAINER_TEST_IMAGE ./server/
     - docker run -d -p 4001:4001 $CONTAINER_RELEASE_IMAGE
