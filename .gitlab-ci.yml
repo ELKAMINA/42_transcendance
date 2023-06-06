@@ -18,6 +18,8 @@ before_script:
 build-backend:
   stage: build
   script:
+    - echo $CONTAINER_TEST_IMAGE
+    - echo $CI_REGISTRY_IMAGE
     - docker build -t $CONTAINER_TEST_IMAGE ./server/
     - docker push $CONTAINER_TEST_IMAGE
 
@@ -25,7 +27,6 @@ linter-test-backend:
   stage: test
   script:
     - docker pull $CONTAINER_TEST_IMAGE
-    - docker run $CONTAINER_TEST_IMAGE npm install --legacy-peer-deps
     - docker run $CONTAINER_TEST_IMAGE npm run lint
 
 unit-test-backend:
