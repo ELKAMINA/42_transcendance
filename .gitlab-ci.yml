@@ -31,7 +31,7 @@ build-app:
   stage: build
   image: docker
   services:
-    - docker: dind
+    - docker:dind
   before_script:
     - apk add --no-cache python python-dev py-pip libffi-dev openssl-dev gcc libc-dev make
     - pip install docker-compose
