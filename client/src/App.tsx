@@ -29,7 +29,6 @@ const App = () => {
           <Route path="/sign" element={<AuthContainer />}/>
           <Route element={<RequireAuth />}>
             <Route path="/welcome" element={<HomePage />}/>
-            <Route path="/chat" element={<Message />}/>
           </Route>
           <Route path="tfa" element={<Tfa />}/>
         </Route>

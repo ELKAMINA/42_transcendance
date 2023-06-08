@@ -2,13 +2,14 @@
 import * as React from 'react';
 import Popup from 'reactjs-popup';
 import Button from '@mui/material/Button';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux"
+import { useNavigate } from 'react-router-dom';
 import { useLogOutMutation } from '../app/api/authApiSlice';
 
 /* *** Internal imports *** */ 
 import './home.css';
 import api from "../utils/Axios";
+import Navbar from '../components/NavBar_0';
 import { selectCurrentUser, selectCurrentAccessToken, selectCurrentRefreshToken } from '../features/auth/authSlice';
 
 
@@ -51,6 +52,7 @@ function HomePage() {
   const content = (
     <div className='hp-container'>
       <h1>{ welcome }</h1>
+	    <Navbar />
       <p>You are logged in and your token is : {a_tokenAbbr} && {r_tokenAbbr} </p>
       <Button className="mui-btn" type="submit" variant="contained" onClick={logOut}> Logout </Button>
       <Button className="mui-btn" type="submit" variant="contained" onClick={chat}> Go To Chat </Button>
