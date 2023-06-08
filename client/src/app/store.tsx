@@ -1,6 +1,8 @@
-import { configureStore } from "@reduxjs/toolkit"
-import { apiSlice } from "./api/apiSlice"
+import { configureStore } from '@reduxjs/toolkit'
+import { apiSlice } from './api/apiSlice'
 import authReducer from '../features/auth/authSlice'
+import chatReducer from '../features/chat/chatSlice'
+
 
 // A slice represents a single unit of Redux state. It’s a collection of reducer logic and actions for a single feature in your app, typically defined together in a single file.
 
@@ -11,6 +13,7 @@ export const store = configureStore({
 
         // A standard redux reducer that enables core functionality
         auth: authReducer,
+        chat: chatReducer,
     },
     middleware: getDefaultMiddleware => // allow us to customize the dispatch function
         getDefaultMiddleware().concat(apiSlice.middleware),

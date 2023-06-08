@@ -30,6 +30,10 @@ function HomePage() {
     navigate("/sign");
   }
 
+  const chat = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    navigate("/chat");
+  }
   const tfa = async () => {
     await api
     .post("http://0.0.0.0:4001/auth/2fa/generate")
@@ -49,6 +53,7 @@ function HomePage() {
       <h1>{ welcome }</h1>
       <p>You are logged in and your token is : {a_tokenAbbr} && {r_tokenAbbr} </p>
       <Button className="mui-btn" type="submit" variant="contained" onClick={logOut}> Logout </Button>
+      <Button className="mui-btn" type="submit" variant="contained" onClick={chat}> Go To Chat </Button>
       <Button className="mui-btn" type="submit" variant="contained" onClick={tfa} > Tfa </Button>
       <Popup 
         trigger={<div>TFA</div>}

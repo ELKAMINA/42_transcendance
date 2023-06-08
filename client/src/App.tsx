@@ -1,12 +1,14 @@
-import AuthContainer from "./containers/Auth/Auth";
-import { Route, Routes } from "react-router-dom";
-import RequireAuth from './components/RequireAuth';
-import Layout from './components/Layout';
-import "./App.css";
-import HomePage  from "./pages/home";
-import Tfa from './pages/tfa';
 import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
+
+import "./App.css";
+import Tfa from './pages/tfa';
+import HomePage  from "./pages/home";
+import Layout from './components/Layout';
+import Message from './components/Message-old';
+import { Route, Routes } from "react-router-dom";
+import AuthContainer from "./containers/Auth/Auth";
+import RequireAuth from './components/RequireAuth';
 import { setTokens } from './features/auth/authSlice';
 
 const App = () => {
@@ -26,7 +28,8 @@ const App = () => {
         <Route path="/" element= {<Layout/>}>
           <Route path="/sign" element={<AuthContainer />}/>
           <Route element={<RequireAuth />}>
-            <Route path="welcome" element={<HomePage />}/>
+            <Route path="/welcome" element={<HomePage />}/>
+            <Route path="/chat" element={<Message />}/>
           </Route>
           <Route path="tfa" element={<Tfa />}/>
         </Route>
