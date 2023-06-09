@@ -8,7 +8,8 @@
 
 body{ 
   min-height: 100vh;
-  background-image: url(./img/giphy.gif);
+  /* background-image: url(./img/giphy.gif); */
+  background-color: white;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   /* display: flex;
