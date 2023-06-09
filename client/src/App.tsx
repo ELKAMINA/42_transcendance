@@ -4,8 +4,8 @@ import { useDispatch } from 'react-redux';
 import "./App.css";
 import Tfa from './pages/tfa';
 import HomePage  from "./pages/home";
+import Chat from "./pages/chat";
 import Layout from './components/Layout';
-import Message from './components/Message-old';
 import { Route, Routes } from "react-router-dom";
 import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
@@ -29,6 +29,7 @@ const App = () => {
           <Route path="/sign" element={<AuthContainer />}/>
           <Route element={<RequireAuth />}>
             <Route path="/welcome" element={<HomePage />}/>
+            <Route path="/chat" element={<Chat />}/>
           </Route>
           <Route path="tfa" element={<Tfa />}/>
         </Route>

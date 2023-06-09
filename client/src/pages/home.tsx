@@ -9,7 +9,7 @@ import { useLogOutMutation } from '../app/api/authApiSlice';
 /* *** Internal imports *** */ 
 import './home.css';
 import api from "../utils/Axios";
-import Navbar from '../components/NavBar_0';
+import Navbar from '../components/NavBar_0.tsx';
 import { selectCurrentUser, selectCurrentAccessToken, selectCurrentRefreshToken } from '../features/auth/authSlice';
 
 
@@ -48,39 +48,50 @@ function HomePage() {
     .then((res) => {navigate('/tfa');})
     .catch((e) => {console.log("error ", e)});
   }
+  const currentRoute = window.location.pathname;
 
   const content = (
-    <div className='hp-container'>
-      <h1>{ welcome }</h1>
-	    <Navbar />
-      <p>You are logged in and your token is : {a_tokenAbbr} && {r_tokenAbbr} </p>
-      <Button className="mui-btn" type="submit" variant="contained" onClick={logOut}> Logout </Button>
-      <Button className="mui-btn" type="submit" variant="contained" onClick={chat}> Go To Chat </Button>
-      <Button className="mui-btn" type="submit" variant="contained" onClick={tfa} > Tfa </Button>
-      <Popup 
-        trigger={<div>TFA</div>}
-        position="right center" 
-        on="click"
-        closeOnDocumentClick
-        modal
-        nested    
-      >
-      </Popup>
-      <img
-        src={qrcode}
-        alt=""
-        className='omg'
-      />
-      <form id='form'>
-      <input
-        type="text"
-        onChange={(e)=> setTfaCode(e.target.value)}
-        placeholder="Tfa-Code"
-        value={TfaCode}
-        required
+    <div className='home'>
+
+      <div className='home__header'>
+        <Navbar currentRoute={ currentRoute }/>
+      </div>
+
+      <div className='home__middle'>
+        <h1>{ welcome }</h1>
+      </div>
+
+      <div className='home__bottom'>
+        <p>You are logged in and your token is : {a_tokenAbbr} && {r_tokenAbbr} </p>
+        <Button className="mui-btn" type="submit" variant="contained" onClick={logOut}> Logout </Button>
+        <Button className="mui-btn" type="submit" variant="contained" onClick={chat}> Go To Chat </Button>
+        <Button className="mui-btn" type="submit" variant="contained" onClick={tfa} > Tfa </Button>
+        <Popup 
+          trigger={<div>TFA</div>}
+          position="right center" 
+          on="click"
+          closeOnDocumentClick
+          modal
+          nested    
+        >
+        </Popup>
+        <img
+          src={qrcode}
+          alt=""
+          className='omg'
         />
-      </form>
-      <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Send code</Button>
+        <form id='form'>
+        <input
+          type="text"
+          onChange={(e)=> setTfaCode(e.target.value)}
+          placeholder="Tfa-Code"
+          value={TfaCode}
+          required
+          />
+        </form>
+        <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Send code</Button>
+      </div>
+
     </div>
   )
   return content

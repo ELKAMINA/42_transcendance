@@ -1,5 +1,18 @@
-.hp-container > h1 {
-    color: yellow;   
+.home {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.home__header  {
+    width: 100vw;
+}
+
+.home__middle {
+    color: yellow;
+
 }
 
 p {
@@ -7,12 +20,7 @@ p {
 }
 
 .qrcode{
-    background-color: aqua;
     font-size: large;
     height: 50px;
     justify-content: center;
-}
-
-.omg{
-    size: 512;
 }
