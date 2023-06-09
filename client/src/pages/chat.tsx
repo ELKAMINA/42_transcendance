@@ -1,13 +1,16 @@
 import Navbar from '../components/NavBar_0';
+import SideBar from './sideBar';
 
 function Chat () {
-  const currentRoute = window.location.pathname;
+	const currentRoute = window.location.pathname;
 
-    return (
-      <>
-        <Navbar currentRoute={ currentRoute }/>
-      </>
-    )
+	return (
+		<div>
+			<Navbar currentRoute={ currentRoute }/>
+			<SideBar />
+
+		</div>
+	)
 }
 
 export default Chat;
