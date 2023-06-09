@@ -8,7 +8,6 @@ function Chat () {
 		<div>
 			<Navbar currentRoute={ currentRoute }/>
 			<SideBar />
-
 		</div>
 	)
 }
