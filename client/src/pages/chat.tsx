@@ -1,4 +1,5 @@
-import Navbar from '../components/NavBar_0';
+import Navbar from '../components/NavBar';
+import Message from '../components/Message'
 
 function Chat () {
   const currentRoute = window.location.pathname;
@@ -6,6 +7,7 @@ function Chat () {
     return (
       <>
         <Navbar currentRoute={ currentRoute }/>
+        <Message/>
       </>
     )
 }

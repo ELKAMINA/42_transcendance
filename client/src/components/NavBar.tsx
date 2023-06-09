@@ -8,7 +8,7 @@ import TelegramIcon from '@mui/icons-material/Telegram';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 
-import "./Navbar_0.css";
+import "./Navbar.css";
 // import ForumIcon from '@material-ui/icons/Forum';
 // import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -20,6 +20,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
+
         navigate('/chat')
     }
     let componentToRender;

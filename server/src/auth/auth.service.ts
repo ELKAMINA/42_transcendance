@@ -38,7 +38,7 @@ export class AuthService {
         },
         {
           secret: this.config.get('ACCESS_TOKEN'),
-          expiresIn: 60 * 0.5,
+          expiresIn: 60 * 0.05,
         },
       ), // access token
       this.jwt.signAsync(
@@ -101,7 +101,7 @@ export class AuthService {
     });
   }
 
-  async signup(dto: AuthDto): Promise<object> {
+  async signup(dto: AuthDto, res: Response): Promise<object> {
     const pwd = await argon.hash(dto.password);
     try {
       const user = await this.prisma.user.create({
@@ -113,8 +113,27 @@ export class AuthService {
       });
       // console.log("user ", user);
       const tokens = await this.signTokens(user.user_id, user.login);
+      console.log("Sign UP TOKEN ", tokens);
       await this.updateRtHash(user.user_id, tokens.refresh_token);
       // console.log(tokens);
+      res.cookie('User', user.login, {
+        maxAge: 18000000,
+        httpOnly: false,
+        sameSite: 'none',
+        secure: true,
+      });
+      res.cookie('accessToken', tokens.access_token, {
+        maxAge: 18000000,
+        httpOnly: false,
+        sameSite: 'none',
+        secure: true,
+      });
+      res.cookie('refreshToken', tokens.refresh_token, {
+        maxAge: 18000000,
+        httpOnly: false,
+        sameSite: 'none',
+        secure: true,
+      });
       return { faEnabled: user.faEnabled, tokens };
     } catch (error: any) {
       if (

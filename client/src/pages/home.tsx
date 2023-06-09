@@ -2,6 +2,7 @@
 import * as React from 'react';
 import Popup from 'reactjs-popup';
 import Button from '@mui/material/Button';
+import { useDispatch } from 'react-redux';
 import { useSelector } from "react-redux"
 import { useNavigate } from 'react-router-dom';
 import { useLogOutMutation } from '../app/api/authApiSlice';
@@ -9,7 +10,7 @@ import { useLogOutMutation } from '../app/api/authApiSlice';
 /* *** Internal imports *** */ 
 import './home.css';
 import api from "../utils/Axios";
-import Navbar from '../components/NavBar_0.tsx';
+import Navbar from '../components/NavBar.tsx';
 import { selectCurrentUser, selectCurrentAccessToken, selectCurrentRefreshToken } from '../features/auth/authSlice';
 
 
@@ -21,8 +22,8 @@ function HomePage() {
   const refresh_token = useSelector(selectCurrentRefreshToken)
   const navigate = useNavigate();
   const welcome = user ? `Welcome ${user}` : 'Welcome buddy'
-  const a_tokenAbbr = `${access_token.slice(0, 9)}...`
-  const r_tokenAbbr = `${refresh_token.slice(0, 9)}...`
+  const a_tokenAbbr = `${access_token.slice(0, 10)}...`
+  const r_tokenAbbr = `${refresh_token.slice(0,10)}...`
   const [logout] = useLogOutMutation();
 
   const logOut = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -62,7 +63,7 @@ function HomePage() {
       </div>
 
       <div className='home__bottom'>
-        <p>You are logged in and your token is : {a_tokenAbbr} && {r_tokenAbbr} </p>
+        <p>You are logged in and your token is : {a_tokenAbbr} <br/> && {r_tokenAbbr} <br/></p>
         <Button className="mui-btn" type="submit" variant="contained" onClick={logOut}> Logout </Button>
         <Button className="mui-btn" type="submit" variant="contained" onClick={chat}> Go To Chat </Button>
         <Button className="mui-btn" type="submit" variant="contained" onClick={tfa} > Tfa </Button>

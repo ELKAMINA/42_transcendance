@@ -10,7 +10,8 @@ socket.connect();
 
 const Chat = () => {
     const [msg, setMsg] = React.useState("");
-    const dispatch = useDispatch();
+    // const [recv, setrecp] = React.useState("");
+    // const dispatch = useDispatch();
     // const chat = useSelector((state) => state?.chat);
     // const username = useSelector((state) => state?.user?.name);
     const sendMessage = () => {
@@ -18,12 +19,12 @@ const Chat = () => {
         setMsg("");
     };
 
-    useEffect(() => {
-        socket.on("MsgToClient", (data) => {
-            console.log('la data qui revient ', data)
-        // dispatch(sendMessage(data));
-        });
-    }, []);
+    // useEffect(() => {
+    //     socket.on("MsgToClient", (data) => {
+    //         console.log('la data qui revient ', data)
+    //         dispatch(sendMessage(data));
+    //     });
+    // }, []);
 
     return (
         <>

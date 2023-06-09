@@ -9,6 +9,7 @@ import {
   HttpStatus,
   HttpCode,
   Redirect,
+  Header,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -35,8 +36,10 @@ export default class AuthController {
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post('Signup')
-  signup(@Body() dto: AuthDto): Promise<object> {
-    return this.authService.signup(dto);
+  signup(
+    @Body() dto: AuthDto,
+    @Res({ passthrough: true }) res: Response): Promise<object> {
+    return this.authService.signup(dto, res);
   }
 
   @Public()
@@ -50,6 +53,10 @@ export default class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('Logout')
   @ApiOkResponse({ type: Tokens })
+  @Header(
+    'Set-Cookie',
+    'User=deleted; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=None',
+  )
   logout(@GetCurrentUserId() userInfo: JwtPayload) {
     return this.authService.logout(userInfo);
   }
@@ -86,6 +93,8 @@ export default class AuthController {
     /* The passthrough: true make possible to use tha library-specific &&& the built-in concepts to manipulate the responses we define : Ref = https://docs.nestjs.com/controllers */
   ) {
     const infos = await this.authService.findUser(userInfo);
+    console.log('accesc_token ', infos.accessToken);
+    console.log('refresh_token ', infos.refreshToken);
     res.cookie('User', infos.user, {
       maxAge: 18000000,
       httpOnly: false,

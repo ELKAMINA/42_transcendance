@@ -1,3 +1,4 @@
+import { Allusers } from 'src/user/test/stubs';
 import { newUser, userRegistered } from '../../auth/test/stubs/stubs.stub';
 
 export const PrismaService = jest.fn().mockReturnValue({
@@ -31,5 +32,6 @@ export const PrismaService = jest.fn().mockReturnValue({
       .mockRejectedValueOnce(new Error('Access Denied'))
       .mockResolvedValueOnce(userRegistered())
       .mockRejectedValueOnce(new Error('Record not found')),
+    findMany: jest.fn().mockResolvedValueOnce(Allusers),
   },
 });

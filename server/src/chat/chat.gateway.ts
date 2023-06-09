@@ -16,7 +16,8 @@ export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   //OnGatewayConnection : means that we want it to run when anyone connects to the server
-  // @WebSocketServer() wss: Server; 3rd manner to implement handleMessage
+  @WebSocketServer()
+  server;
 
   private logger: Logger = new Logger('AppGateway');
 
@@ -48,6 +49,7 @@ export class ChatGateway
   /* 2nd */
   handleMessage(client: Socket, text: string): WsResponse<string> {
     console.log('le texxxte ', text);
+    this.server.emit('message', 'test');
     return { event: 'MsgToClient', data: text };
   }
   /* 3rd */

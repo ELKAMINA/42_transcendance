@@ -35,9 +35,11 @@ model User {
   totalloss    Int?
   level        Int?
   rank         Int?
+  friends      User[]   @relation("Friendship")
+  friendOf     User[]   @relation("Friendship")
+  totalFriends Int?
   // Friends and blocked friends
   // lovers         User?    @relation("Friendship", fields: [loversId], references: [user_id])
-  // friends        User[]   @relation("Friendship")
   // loversId       String? // Foreign Key to connect users with friends
   // blockedFriends User[]   @relation("haters") // a changer avec l'objet entier ?
   // haters         User?    @relation("haters", fields: [hatersId], references: [user_id])

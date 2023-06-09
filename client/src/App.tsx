@@ -13,11 +13,12 @@ import { setTokens } from './features/auth/authSlice';
 
 const App = () => {
   const dispatch = useDispatch()
-  if (Cookies.get('access_token') != null)
+  if (Cookies.get('accessToken') != null)
   {
+    console.log("je rentre ici ?????");
     const credentials = {
-      access_token : Cookies.get('access_token'),
-      refresh_token : Cookies.get('refresh_token'),
+      access_token : Cookies.get('accessToken'),
+      refresh_token : Cookies.get('refreshToken'),
       nickname : Cookies.get('User'),
     }
     dispatch(setTokens({...credentials }))

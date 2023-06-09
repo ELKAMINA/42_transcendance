@@ -17,6 +17,7 @@ const authSlice = createSlice({
     reducers: {
         setSignCredentials: (state, action) => {
             const { nickname, avatar } = action.payload
+            console.log ("NICKNAME", nickname);
             const {access_token, refresh_token} = action.payload.tokens
             state.access_token = access_token
             state.refresh_token = refresh_token

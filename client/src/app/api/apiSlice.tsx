@@ -29,7 +29,7 @@ const baseQueryWithReauth = async (args: any, api: BaseQueryApi, extraOptions: o
             // retry the original query with new access token 
             queryResponse = await baseQuery(args, api, extraOptions)
         } else {
-            console.log("ici 100? ");
+            // console.log("ici 100? ");
             api.dispatch(logOut(user))
         }
     }
