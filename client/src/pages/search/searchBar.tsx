@@ -30,7 +30,8 @@ function SearchBar({ setResults }: { setResults: React.Dispatch<React.SetStateAc
 		<div className="input-wrapper">
 			<SearchIcon id="search-icon" />
 			<input
-				placeholder="Type to search..."
+				className="input"
+				placeholder="Look for user, channel..."
 				value={input}
 				onChange={handleSearch}
 			/>
