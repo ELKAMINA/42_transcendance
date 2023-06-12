@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import { Box, Stack } from '@mui/material';
 
+import "./sideBar.css"
+
 // import { Search, SearchIconWrapper, StyledInputBase } from './search';
 
 import { User } from '../data/userList.ts'
@@ -45,40 +47,29 @@ function SideBar() {
 	const [results, setResults] = useState<User[]>([])
 
 	return (
-	<div>
-		<Box sx={{
-			position: "absolute",
-			height: "100%", 
-			width: 320, 
-			backgroundColor: "#F8FAFF", 
-			boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25'
-			}}>
+	<div className='sideBar'>
+		<div className='search-bar-container'>
+			<SearchBar setResults={setResults}/>
+			<SearchResultsList results={results}/>
+		</div>
 
-			<Stack sx={{width: "100%", marginTop: "50px"}}>
-				<SearchBar setResults={setResults}/>
-				<SearchResultsList results={results}/>
-			</Stack>
+		<div>
+			<button onClick={handleCreateChannel}>CREATE CHANNEL</button>
+			<select 
+				value={selectedChannel?.id || ''} 
+				onChange={(e) => handleSelectChannel(channels.find(channel => 
+					channel.id === parseInt(e.target.value)) 
+					|| null)}
+			>
+			</select>
+		</div>
 
-			<Stack>
-				<button onClick={handleCreateChannel}>CREATE CHANNEL</button>
-				<select 
-					value={selectedChannel?.id || ''} 
-					onChange={(e) => handleSelectChannel(channels.find(channel => 
-						channel.id === parseInt(e.target.value)) 
-						|| null)}
-				>
-				</select>
-			</Stack>
-
-			{/* <Stack>
-					{channels.map(channel => (
-						<option key={channel.id} value={channel.id}>{channel.name}</option>
-					))}
-				
-			</Stack> */}
-
-		</Box>
-
+		{/* <div>
+				{channels.map(channel => (
+					<option key={channel.id} value={channel.id}>{channel.name}</option>
+				))}
+			
+		</div> */}
 	</div>
 	);
 }
