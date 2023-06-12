@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 
-import { Box, Stack } from '@mui/material';
+import { User } from '../data/userList.ts'
+
+import CreateChannel from './createChannel/createChannel.tsx';
+import SearchBar from './search/searchBar.tsx';
+import SearchResultsList from './search/searchResultsList.tsx';
+
+import { Button } from '@mui/material';
 
 import "./sideBar.css"
-
-// import { Search, SearchIconWrapper, StyledInputBase } from './search';
-
-import { User } from '../data/userList.ts'
-import SearchBar from './search/searchBar.tsx';
-import { SearchResultsList } from './search/searchResultsList.tsx';
 
 interface Channel {
   id: number;
@@ -19,6 +19,8 @@ function SideBar() {
 
 	// set up an array of channels
 	const [channels, setChannels] = useState<Channel[]>([]);
+	
+	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 
 	// set up a variable for the selected channel
 	const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -53,23 +55,18 @@ function SideBar() {
 			<SearchResultsList results={results}/>
 		</div>
 
-		<div>
-			<button onClick={handleCreateChannel}>CREATE CHANNEL</button>
-			<select 
-				value={selectedChannel?.id || ''} 
-				onChange={(e) => handleSelectChannel(channels.find(channel => 
-					channel.id === parseInt(e.target.value)) 
-					|| null)}
-			>
-			</select>
+		<div className='createChannelButtonWrapper'>
+			<button
+				className='createChannelButton'
+				onClick={() => setButtonPopup(true)}>CREATE CHANNEL</button>
+			<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
 		</div>
 
-		{/* <div>
-				{channels.map(channel => (
-					<option key={channel.id} value={channel.id}>{channel.name}</option>
-				))}
-			
-		</div> */}
+		<div>
+			{channels.map(channel => (
+				<option key={channel.id} value={channel.id}>{channel.name}</option>
+			))}
+		</div>
 	</div>
 	);
 }
