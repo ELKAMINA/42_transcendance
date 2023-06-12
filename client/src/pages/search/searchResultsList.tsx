@@ -9,7 +9,7 @@ interface SearchResultsListProps {
 
 // this will display the list of all the users whose names matches the input
 // results should be an array of Users
-export const SearchResultsList: React.FC<SearchResultsListProps> = ({ results }) => {
+const SearchResultsList: React.FC<SearchResultsListProps> = ({ results }) => {
   return (
     <div className="results-list">
       {results.map((result, id) => {
@@ -18,3 +18,5 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({ results })
     </div>
   );
 };
+
+export default SearchResultsList
