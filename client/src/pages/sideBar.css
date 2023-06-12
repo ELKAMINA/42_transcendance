@@ -2,7 +2,7 @@
 	background: linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 100%);
 	/* vw = viewport width = the visible portion of the web page */
 	/* the width of the .sideBar element will be 25% of the viewport width, */
-	width: 25vw;
+	width: 15vw;
 	/* vh = viewport height = the visible portion of the web page */
 	/* the height of the .sideBar element will be 100% of the viewport height, */
 	height: 100vh;
@@ -11,6 +11,7 @@
   
   .search-bar-container {
 	padding-top: 1vh;
+	padding-left: 1vh;
 	/* 20 pourcent of the width of the parent container */
 	width: 90%;
 		/* top, right, bottom, left */
