@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: any[] = []
-// Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
 export const chatSlice = createSlice({
     name: 'chat',
     initialState,
