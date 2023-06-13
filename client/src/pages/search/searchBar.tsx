@@ -2,13 +2,13 @@ import { useState } from "react";
 import SearchIcon from '@mui/icons-material/Search';
 
 import "./searchBar.css";
-// import Search from "./search";
-// import SearchIconWrapper from "./searchIconWrapper";
-// import StyledInputBase from "./styledInputBase";
 import { userList, User } from "../../data/userList";
 
-function SearchBar({ setResults }: { setResults: React.Dispatch<React.SetStateAction<User[]>> }) {  
-	
+function SearchBar({
+	content,
+	setResults 
+}: { content: string; setResults: React.Dispatch<React.SetStateAction<User[]>> }) {	  
+
 	const [input, setInput] = useState<string>('');
 
 	// this should be done in the backend
@@ -31,7 +31,7 @@ function SearchBar({ setResults }: { setResults: React.Dispatch<React.SetStateAc
 			<SearchIcon id="search-icon" />
 			<input
 				className="input"
-				placeholder="Look for user, channel..."
+				placeholder={content}
 				value={input}
 				onChange={handleSearch}
 			/>
