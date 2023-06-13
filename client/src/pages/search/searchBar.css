@@ -13,6 +13,7 @@
   .input {
 	background-color: transparent;
 	border: none;
+	border-radius: 5px;
 	height: 100%;
 	font-size: 0.99rem;
 	font-family: "Helvetica", sans-serif;
@@ -23,7 +24,7 @@
   }
   
   .input::placeholder {
-	color: white; /* Set the desired color for the placeholder text */
+	color: white;
 	background-color: #032B50;
 	margin-right: 0px;
   }
@@ -34,5 +35,4 @@
   
   #search-icon {
 	color: white;
-	/* padding-left: 15px; */
   }
