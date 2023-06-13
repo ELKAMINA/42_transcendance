@@ -51,14 +51,15 @@ function SideBar() {
 	return (
 	<div className='sideBar'>
 		<div className='search-bar-container'>
-			<SearchBar setResults={setResults}/>
+			<SearchBar content="Look for user, channel..." setResults={setResults} />
 			<SearchResultsList results={results}/>
 		</div>
 
 		<div className='createChannelButtonWrapper'>
 			<button
 				className='createChannelButton'
-				onClick={() => setButtonPopup(true)}>CREATE CHANNEL</button>
+				onClick={() => setButtonPopup(true)}>CREATE CHANNEL
+			</button>
 			<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
 		</div>
 
