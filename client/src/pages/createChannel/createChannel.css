@@ -108,6 +108,19 @@
 	margin-right: 0px;
 }
 
+.inputPwd {
+	background-color: transparent;
+	border: none;
+	border-radius: 10px;
+	height: 100%;
+	font-size: 0.5rem;
+	font-family: "Helvetica", sans-serif;
+	color: #07457E;
+	width: 100%;
+	margin-left: 5px;
+	margin-right: 0px;
+}
+
 .input:focus {
 	outline: none;
   }
