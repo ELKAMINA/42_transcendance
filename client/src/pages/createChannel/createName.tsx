@@ -9,7 +9,7 @@ function CreateName() {
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		// FOR DEBUG
-		console.log("new name is = ", e.target.value);
+		// console.log("new name is = ", e.target.value);
 		
 		const input = e.target.value;
 		if (channels.find(channel => channel.name === input))
