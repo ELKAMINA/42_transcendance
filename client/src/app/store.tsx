@@ -6,7 +6,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { apiSlice } from './api/apiSlice'
 import authReducer from '../features/auth/authSlice'
 import chatReducer from '../features/chat/chatSlice'
-import channelReducer from '../features/chat/channelSlice'
+import channelsReducer from '../features/chat/channelsSlice'
 import channelUserReducer from '../features/chat/channelUserSlice'
 import channelTypeReducer from '../features/chat/channelTypeSlice'
 import channelNameReducer from '../features/chat/channelNameSlice'
@@ -27,7 +27,7 @@ export const store = configureStore({
         persistedReducer,
         auth: authReducer,
         chat: chatReducer,
-		channel: channelReducer,
+		channels: channelsReducer,
 		channelName: channelNameReducer,
 		channelUser: channelUserReducer,
 		channelType: channelTypeReducer,
