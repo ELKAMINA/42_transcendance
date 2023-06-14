@@ -17,7 +17,7 @@ import { AuthDto } from './dto/auth.dto';
 import { UserService } from '../user/user.service';
 import { Payload2FA } from './types/payload2FA.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { JwtPayload, OauthPayload } from './types';
+import { JwtPayload, OauthPayload, CookieType } from './types';
 import { UserDetails } from '../user/types/user-types.user';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class AuthService {
         },
         {
           secret: this.config.get('ACCESS_TOKEN'),
-          expiresIn: 60 * 0.05,
+          expiresIn: 60 * 15,
         },
       ), // access token
       this.jwt.signAsync(
@@ -101,6 +101,25 @@ export class AuthService {
     });
   }
 
+  verifyJwt(jwt: string): Promise<any> {
+    return this.jwt.verifyAsync(jwt, {
+      secret: this.config.get('ACCESS_TOKEN'),
+      maxAge: 60 * 15,
+    });
+  }
+
+  async setCookie(data: CookieType, res: Response) {
+    const serializeData = JSON.stringify(data);
+    res.cookie('Authcookie', serializeData, {
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 1800000000,
+      domain: 'localhost',
+      path: '/',
+    });
+  }
+
   async signup(dto: AuthDto, res: Response): Promise<object> {
     const pwd = await argon.hash(dto.password);
     try {
@@ -113,27 +132,15 @@ export class AuthService {
       });
       // console.log("user ", user);
       const tokens = await this.signTokens(user.user_id, user.login);
-      console.log("Sign UP TOKEN ", tokens);
       await this.updateRtHash(user.user_id, tokens.refresh_token);
-      // console.log(tokens);
-      res.cookie('User', user.login, {
-        maxAge: 18000000,
-        httpOnly: false,
-        sameSite: 'none',
-        secure: true,
-      });
-      res.cookie('accessToken', tokens.access_token, {
-        maxAge: 18000000,
-        httpOnly: false,
-        sameSite: 'none',
-        secure: true,
-      });
-      res.cookie('refreshToken', tokens.refresh_token, {
-        maxAge: 18000000,
-        httpOnly: false,
-        sameSite: 'none',
-        secure: true,
-      });
+      this.setCookie(
+        {
+          nickname: dto.nickname,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        },
+        res,
+      );
       return { faEnabled: user.faEnabled, tokens };
     } catch (error: any) {
       if (
@@ -147,7 +154,7 @@ export class AuthService {
     } // PrismaClientKnownRequestError to catch the unique prisma duplicate error (for instance for the email that is duplicated )
   }
 
-  async signin(dto: AuthDto): Promise<object> {
+  async signin(dto: AuthDto, res: Response): Promise<object> {
     try {
       const us = await this.prisma.user.findUniqueOrThrow({
         where: {
@@ -159,6 +166,14 @@ export class AuthService {
       }
       const tokens = await this.signTokens(us.user_id, us.login);
       await this.updateRtHash(us.user_id, tokens.refresh_token);
+      this.setCookie(
+        {
+          nickname: us.login,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        },
+        res,
+      );
       return { faEnabled: us.faEnabled, tokens };
     } catch (e: any) {
       if (e.code === 'P2025') {
@@ -180,6 +195,7 @@ export class AuthService {
         rtHash: null,
       },
     });
+    // res.clearCookie('Authcookie', { path: '/' });
   }
 
   async refresh(userInfo: JwtPayload, refreshToken: string) {

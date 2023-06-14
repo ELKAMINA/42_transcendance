@@ -1,11 +1,11 @@
-import api from '../utils/Axios'
-import Button from '@mui/material/Button';
-import { useDispatch } from "react-redux"
 import * as React from 'react';
+import { useDispatch } from "react-redux"
+import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
 
 import './home.css';
-import { useNavigate } from 'react-router-dom';
-import { setTokens } from '../features/auth/authSlice';
+import api from '../utils/Axios-config/Axios'
+import { setTokens } from '../redux-features/auth/authSlice';
 
 function Tfa () {
     const dispatch = useDispatch();

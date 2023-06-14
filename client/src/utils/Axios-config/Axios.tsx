@@ -1,8 +1,8 @@
 import  axios from 'axios';
 
-import { store } from '../app/store';
+import { store } from '../../app/store';
 // import {setTokens } from '../features/auth/authSlice';
-import { setTokens } from '../features/auth/authSlice';
+import { setTokens } from '../../redux-features/auth/authSlice';
 
 const api = axios.create({
 //   baseURL: 'http://localhost:4001',

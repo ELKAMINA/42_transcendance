@@ -19,9 +19,13 @@ interface NavbarProps {
 const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     const navigate = useNavigate();
 
-    const handleClick = () => {
+    const chat = () => {
 
         navigate('/chat')
+    }
+    const friendship = () => {
+
+        navigate('/friendship')
     }
     let componentToRender;
     if (currentRoute === '/welcome') {
@@ -32,11 +36,11 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
                 <HomeIcon fontSize="large"/>
             </div>
             <div className="navbar__header__options">
-                <PersonAddIcon fontSize="large"/>
+                <PersonAddIcon fontSize="large" onClick={friendship}/>
             </div>
             <img src="" alt=""/>
             <div className = 'navbar__header__input'>
-                <TelegramIcon onClick={handleClick}/>
+                <TelegramIcon onClick={chat}/>
             </div>
         </div>
 

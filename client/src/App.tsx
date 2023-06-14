@@ -3,24 +3,27 @@ import { useDispatch } from 'react-redux';
 
 import "./App.css";
 import Tfa from './pages/tfa';
-import HomePage  from "./pages/home";
 import Chat from "./pages/chat";
+import HomePage  from "./pages/home";
 import Layout from './components/Layout';
+import Friendship from './pages/friendship';
 import { Route, Routes } from "react-router-dom";
 import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
-import { setTokens } from './features/auth/authSlice';
+import { setTokens } from './redux-features/auth/authSlice';
 
 const App = () => {
   const dispatch = useDispatch()
-  if (Cookies.get('accessToken') != null)
+  let myCookie: string | undefined = Cookies.get('Authcookie');
+  if (myCookie !== undefined)
   {
-    console.log("je rentre ici ?????");
+    let cookieParsed = JSON.parse(myCookie);
     const credentials = {
-      access_token : Cookies.get('accessToken'),
-      refresh_token : Cookies.get('refreshToken'),
-      nickname : Cookies.get('User'),
+      access_token : cookieParsed.accessToken,
+      refresh_token : cookieParsed.refreshToken,
+      nickname : cookieParsed.nickname,
     }
+    // console.log(credentials);
     dispatch(setTokens({...credentials }))
   }
   return (
@@ -31,6 +34,7 @@ const App = () => {
           <Route element={<RequireAuth />}>
             <Route path="/welcome" element={<HomePage />}/>
             <Route path="/chat" element={<Chat />}/>
+            <Route path="/friendship" element={<Friendship />}/>
           </Route>
           <Route path="tfa" element={<Tfa />}/>
         </Route>

@@ -2,16 +2,17 @@
 import * as React from 'react';
 import Popup from 'reactjs-popup';
 import Button from '@mui/material/Button';
-import { useDispatch } from 'react-redux';
+import Cookies from 'js-cookie';
+// import { useDispatch } from 'react-redux';
 import { useSelector } from "react-redux"
 import { useNavigate } from 'react-router-dom';
 import { useLogOutMutation } from '../app/api/authApiSlice';
 
 /* *** Internal imports *** */ 
 import './home.css';
-import api from "../utils/Axios";
+import api from "../utils/Axios-config/Axios.tsx";
 import Navbar from '../components/NavBar.tsx';
-import { selectCurrentUser, selectCurrentAccessToken, selectCurrentRefreshToken } from '../features/auth/authSlice';
+import { selectCurrentUser, selectCurrentAccessToken, selectCurrentRefreshToken } from '../redux-features/auth/authSlice.tsx';
 
 
 function HomePage() {
@@ -29,6 +30,8 @@ function HomePage() {
   const logOut = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     await logout({user, access_token, refresh_token});
+    if (Cookies.get('Authcookie') !== undefined)
+      Cookies.remove('Authcookie');
     navigate("/sign");
   }
 

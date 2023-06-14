@@ -6,9 +6,12 @@ import { PassportModule } from '@nestjs/passport';
 import UserModule from './user/user.module';
 import AuthModule from './auth/auth.module';
 import { AtGuard } from './guards/at-auth.guard';
-import { ChatGateway } from './chat/chat.gateway';
 import HomeModule from './profile/home.module';
 import PrismaModule from './prisma/prisma.module';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from './auth/auth.service';
+import { UserService } from './user/user.service';
+import { FriendshipGateway } from './friendship/friendship.gateway';
 
 @Module({
   imports: [
@@ -19,7 +22,8 @@ import PrismaModule from './prisma/prisma.module';
     UserModule,
     PrismaModule,
     HomeModule,
-    PassportModule.register({}), // j'ai enlevé session:true
+    PassportModule.register({}),
+     // j'ai enlevé session:true
   ],
   controllers: [],
   providers: [
@@ -27,7 +31,10 @@ import PrismaModule from './prisma/prisma.module';
       provide: APP_GUARD,
       useClass: AtGuard, // This is done to inject the reflector as we're using the At Guard as a global decorator
     },
-    ChatGateway,
+    FriendshipGateway,
+    AuthService,
+    UserService,
+    JwtService,
   ],
 })
 export default class AppModule {}

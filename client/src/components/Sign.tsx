@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 
 import './Sign.css';
 import logoft from "../img/42 white.png";
-import { setSignCredentials, setTokens } from '../features/auth/authSlice';
+import { setSignCredentials, setTokens } from '../redux-features/auth/authSlice';
 import { useSignupMutation, useSigninMutation} from '../app/api/authApiSlice';
 
 
@@ -59,6 +59,7 @@ export default function Sign(props: Signing){
             setNickname('')
             setPwd('')
             setAvatar('')
+
             if (userData.faEnabled === true)
             {
                 navigate('/tfa')

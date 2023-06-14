@@ -38,7 +38,8 @@ export default class AuthController {
   @Post('Signup')
   signup(
     @Body() dto: AuthDto,
-    @Res({ passthrough: true }) res: Response): Promise<object> {
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<object> {
     return this.authService.signup(dto, res);
   }
 
@@ -46,17 +47,16 @@ export default class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('Signin')
   @ApiOkResponse({ type: Tokens })
-  signin(@Body() dto: AuthDto) {
-    return this.authService.signin(dto);
+  signin(
+    @Body() dto: AuthDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<object> {
+    return this.authService.signin(dto, res);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('Logout')
   @ApiOkResponse({ type: Tokens })
-  @Header(
-    'Set-Cookie',
-    'User=deleted; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=None',
-  )
   logout(@GetCurrentUserId() userInfo: JwtPayload) {
     return this.authService.logout(userInfo);
   }
@@ -93,26 +93,14 @@ export default class AuthController {
     /* The passthrough: true make possible to use tha library-specific &&& the built-in concepts to manipulate the responses we define : Ref = https://docs.nestjs.com/controllers */
   ) {
     const infos = await this.authService.findUser(userInfo);
-    console.log('accesc_token ', infos.accessToken);
-    console.log('refresh_token ', infos.refreshToken);
-    res.cookie('User', infos.user, {
-      maxAge: 18000000,
-      httpOnly: false,
-      sameSite: 'none',
-      secure: true,
-    });
-    res.cookie('accessToken', infos.accessToken, {
-      maxAge: 18000000,
-      httpOnly: false,
-      sameSite: 'none',
-      secure: true,
-    });
-    res.cookie('refreshToken', infos.refreshToken, {
-      maxAge: 18000000,
-      httpOnly: false,
-      sameSite: 'none',
-      secure: true,
-    });
+    this.authService.setCookie(
+      {
+        nickname: infos.user,
+        accessToken: infos.accessToken,
+        refreshToken: infos.refreshToken,
+      },
+      res,
+    );
     return infos;
   }
   /* ******************** */

@@ -10,8 +10,7 @@ import { UserService } from 'src/user/user.service';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get()
-//   @Public()  // just for testing purposes in Swagger
+  @Get('/all')
   findAll() {
     return this.userService.findAll();
   }

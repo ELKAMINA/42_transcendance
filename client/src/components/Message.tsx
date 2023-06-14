@@ -1,30 +1,47 @@
 import * as React from 'react';
-import io from "socket.io-client";
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+import { io } from 'socket.io-client';
+// import socket from '../utils/Socketio-config/socketConfig';
+import { selectCurrentAccessToken } from '../redux-features/auth/authSlice';
 // import { sendMessage } from '../features/chat/chatSlice';
 // import { useNavigate } from 'react-router-dom';
 
-const socket = io('http://localhost:4001');
-socket.connect();
+// socket.connect();
 
 const Chat = () => {
     const [msg, setMsg] = React.useState("");
+    const socket = io('http://localhost:4001/chat');
+    // const access_token = useSelector(selectCurrentAccessToken)
     // const [recv, setrecp] = React.useState("");
     // const dispatch = useDispatch();
     // const chat = useSelector((state) => state?.chat);
     // const username = useSelector((state) => state?.user?.name);
     const sendMessage = () => {
-        socket.emit("MsgToServer", { message: msg});
-        setMsg("");
-    };
+        console.log('lol');
+        socket.emit('MsgToServer', {msg:"Hello, i'm the client REACT"})
+        // const socket = io('http://localhost:4001/chat');   
+        // socket.on("MsgToClient", (data) => {
+        //     console.log('la data qui revient ');
+        //     // dispatch(sendMessage(data));
+        // });
+        };
 
-    // useEffect(() => {
-    //     socket.on("MsgToClient", (data) => {
-    //         console.log('la data qui revient ', data)
-    //         dispatch(sendMessage(data));
-    //     });
-    // }, []);
+        socket.on('onMessage', (data)=> {
+            console.log("la data reçue du serveur ", data);
+        });
+        
+        useEffect(() => {
+            socket.on('connect', () => {
+                console.log('From Client side --  Connected ')
+            })
+            return () => {
+                console.log('Unregistering events...');
+                socket.off('onMessage');
+            }
+        } //when the component mounts, the connection between server and client is on
+        , []);
 
     return (
         <>
