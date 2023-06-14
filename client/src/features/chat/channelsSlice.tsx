@@ -3,8 +3,9 @@ import { channelList, Channel } from "../../data/channelList";
 
 const initialState: Channel[] = channelList;
 
-export const channelSlice = createSlice({
-	name: "channel",
+// this is an array of channels
+export const channelsSlice = createSlice({
+	name: "channels",
 	initialState,
 	reducers: {
 		addChannel: (state, action) => {
@@ -20,6 +21,6 @@ export const channelSlice = createSlice({
 	}
 })
 
-export const { addChannel, deleteChannel } = channelSlice.actions
+export const { addChannel, deleteChannel } = channelsSlice.actions
 
-export default channelSlice.reducer
+export default channelsSlice.reducer
