@@ -10,10 +10,10 @@ export const channelUserSlice = createSlice({
 	reducers: {
 		addChannelUser: (state, action) => {
 			// {type : channelUser/addChannelUser, payload: User object}
-			console.log("action.payload = ", action.payload);
 			const newUser = action.payload;
-			console.log("YOUHOUUUU");
 			state.push(newUser);
+			// for (let i = 0; i < state.length; i++)
+				// console.log(state[i].name);
 		},
 		deleteChannelUser: (state, action) => {
 			// {type : channelUser/deleteChannelUser, payload: user name : string}
