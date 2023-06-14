@@ -3,7 +3,8 @@ import "./createChannel.css"
 import { RootState } from "../../app/store";
 
 function CreateName() {
-	const newName = useSelector((state: RootState) => state.channelName);
+	const channels = useSelector((state: RootState) => state.channels);
+
 	const dispatch = useDispatch();
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -11,10 +12,14 @@ function CreateName() {
 		console.log("new name is = ", e.target.value);
 		
 		const input = e.target.value;
-		dispatch({
-			type: 'channelName/changeChannelName',
-			payload: input, 
-		});
+		if (channels.find(channel => channel.name === input))
+			alert("name is taken, please choose a different one");
+		else {
+			dispatch({
+				type: 'channelName/changeChannelName',
+				payload: input, 
+			});
+		}
 	}
 
 	return (
