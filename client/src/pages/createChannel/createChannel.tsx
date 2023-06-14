@@ -7,6 +7,9 @@ import CreateName from "./createName";
 import CreateUsersList from "./createUsersList";
 import CreateType from "./createChannelType";
 import { ChannelTypeState } from '../../features/chat/channelTypeSlice';
+import { Button } from "@mui/material";
+import { IconButton } from "@mui/material";
+import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -22,14 +25,9 @@ function CreateChannel(props : CreateChannelProps) {
 
 	const dispatch = useDispatch();
 
-	// dispatch({
-		// type: "channeType/addChannelType",
-		// payload: {type: e.target.name}
-	// })
-
 	function handleCreateChannel() {
 		dispatch({
-			type: "channel/addChannel",
+			type: "channels/addChannel",
 			payload: {
 				name: newName,
 				id: Date.now(),
@@ -39,15 +37,29 @@ function CreateChannel(props : CreateChannelProps) {
 				userList: channelUsersList
 			}
 		})
+		console.log("channel created!")
 		props.setTrigger(false);
 	}
+
+	function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
+		event.preventDefault(); // Prevents the default form submission behavior
+	  
+		// Perform any form validation or processing here
+	  
+		// Submit the form data
+		handleCreateChannel();
+	  }
 
 	return (props.trigger) ? (
 		<div className='create-channel-popup'>
 		<div className='create-channel-popup-inner'>
-			<button className='close-btn' onClick={() => props.setTrigger(false)}>close</button>
+		<div className="close-button-container">
+			<IconButton aria-label='close' size='large' onClick={() => props.setTrigger(false)}>
+			<DisabledByDefaultIcon fontSize='large' sx={{ color: '#99E100' }} />
+			</IconButton>
+		</div>
 			<div>
-				<form className='create-channel-form'>
+				<form className='create-channel-form' onSubmit={handleFormSubmit}>
 					<div className='form-banner'>
 						<h1>CREATE CHANNEL</h1>
 						<br></br>
@@ -55,12 +67,16 @@ function CreateChannel(props : CreateChannelProps) {
 					<CreateName />
 					<br></br>
 					<CreateUsersList />
+					<br></br>
 					<CreateType />
 					<div className='entry1'>
-						<button
-							className='createChannelButton'
-							onClick={handleCreateChannel}>CREATE CHANNEL
-						</button>
+						<Button
+							type='submit' // will trigger the form submission
+							variant='contained'
+							size='large'
+							sx={{ color: 'white', backgroundColor: '#99E100', fontWeight: '800', fontSize: '2em' }}
+						>CREATE CHANNEL
+						</Button>
 					</div>
 				</form>
 			</div>
