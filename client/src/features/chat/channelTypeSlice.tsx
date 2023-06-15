@@ -7,9 +7,9 @@ export interface ChannelTypeState {
   }
   
 const initialState: ChannelTypeState = {
-type: '',
-protected_by_password: false,
-password: '',
+	type: '',
+	protected_by_password: false,
+	password: '',
 };
 
 // this an object with 2 attributes : 
