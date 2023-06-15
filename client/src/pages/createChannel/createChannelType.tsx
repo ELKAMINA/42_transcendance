@@ -10,7 +10,7 @@ function  CreateType() {
 	const dispatch = useDispatch();
 	
 	// watch the state of the checkboxes
-	const [checkedPublic, setCheckedPublic] = React.useState(false);
+	const [checkedPublic, setCheckedPublic] = React.useState(true);
 	const [checkedPrivate, setCheckedPrivate] = React.useState(false);
 	const [checkedProtected, setCheckedProtected] = React.useState(false);
 
