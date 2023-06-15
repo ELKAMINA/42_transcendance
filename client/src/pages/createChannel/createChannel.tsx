@@ -37,15 +37,14 @@ function CreateChannel(props : CreateChannelProps) {
 				userList: channelUsersList
 			}
 		})
+
 		console.log("channel created!")
 		props.setTrigger(false);
 	}
 
 	function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault(); // Prevents the default form submission behavior
-	  
-		// Perform any form validation or processing here
-	  
+
 		// Submit the form data
 		handleCreateChannel();
 	  }
