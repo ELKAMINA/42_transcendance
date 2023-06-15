@@ -59,6 +59,7 @@
   "proxy": "http://127.0.0.1:4001/",
   "devDependencies": {
     "@types/js-cookie": "^3.0.3",
+    "@types/redux-persist": "^4.3.1",
     "nodemon": "^2.0.22"
   }
 }

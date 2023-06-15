@@ -46,7 +46,7 @@ export const { setSignCredentials, logOut, setTokens} = authSlice.actions
 
 export default authSlice.reducer
 
-export const selectCurrentUser = (state: RootState) => state.auth.nickname
-export const selectCurrentAccessToken = (state: RootState) => state.auth.access_token
-export const selectCurrentRefreshToken = (state: RootState) => state.auth.refresh_token
-export const selectCurrentAvatar = (state: RootState) => state.auth.avatar
+export const selectCurrentUser = (state: RootState) => state.persistedReducer.auth.nickname
+export const selectCurrentAccessToken = (state: RootState) => state.persistedReducer.auth.access_token
+export const selectCurrentRefreshToken = (state: RootState) => state.persistedReducer.auth.refresh_token
+export const selectCurrentAvatar = (state: RootState) => state.persistedReducer.auth.avatar

@@ -11,6 +11,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RequestStatus {
+  PENDING
+  REFUSED
+  ACCEPTED
+}
+
 // Keywords for prisma :  
 // - Each line of a model is a field. It is composed of 4 informations : 1) Name, 2) The type of the field, 3) Attributes (optionnal and begins with @), 4)
 // - Field types : 
@@ -19,25 +25,28 @@ datasource db {
 // Type modifier in the models are : [] to say that they are many of ... and ? to say that is optional
 
 model User {
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user_id      String   @id @default(uuid())
-  login        String?  @unique
-  email        String?  @unique
-  hash         String?
-  rtHash       String?
-  fA           String?
-  faEnabled    Boolean?
-  avatar       String?
-  status       String?
-  totalMatches Int?
-  totalWins    Int?
-  totalloss    Int?
-  level        Int?
-  rank         Int?
-  friends      User[]   @relation("Friendship")
-  friendOf     User[]   @relation("Friendship")
-  totalFriends Int?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  user_id               String          @id @default(uuid())
+  login                 String?         @unique
+  email                 String?         @unique
+  hash                  String?
+  rtHash                String?
+  fA                    String?
+  faEnabled             Boolean?
+  avatar                String?
+  status                String?
+  socketId              Int?            @unique
+  totalMatches          Int?
+  totalWins             Int?
+  totalloss             Int?
+  level                 Int?
+  rank                  Int?
+  friends               User[]          @relation("Friendship")
+  friendOf              User[]          @relation("Friendship")
+  totalFriends          Int?
+  FriendRequestSent     FriendRequest[] @relation("Sender")
+  FriendRequestReceived FriendRequest[] @relation("Receiver")
   // Friends and blocked friends
   // lovers         User?    @relation("Friendship", fields: [loversId], references: [user_id])
   // loversId       String? // Foreign Key to connect users with friends
@@ -84,6 +93,16 @@ model Match {
   p2_score       Int?
   winner_score   Int?
   ago            DateTime?
+}
+
+model FriendRequest {
+  id         String        @id @default(uuid())
+  sender     User          @relation("Sender", fields: [senderId], references: [user_id])
+  senderId   String
+  receiver   User          @relation("Receiver", fields: [receiverId], references: [user_id])
+  receiverId String
+  status     RequestStatus @unique @default(PENDING)
+  createdAt  DateTime      @default(now())
 }
 
 // enum Role { 

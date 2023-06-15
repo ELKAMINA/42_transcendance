@@ -9,7 +9,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use( (config) => {
-    config.headers['Authorization'] = `Bearer ${store.getState().auth.access_token}`;
+    config.headers['Authorization'] = `Bearer ${store.getState().persistedReducer.auth.access_token}`;
     return config;
 })
 
@@ -32,7 +32,7 @@ const updateToken = async () => {
     url: `http://localhost:4001/auth/refresh`,
     method: "POST",
     headers:{
-        Authorization: `Bearer ${store.getState().auth.refresh_token}`
+        Authorization: `Bearer ${store.getState().persistedReducer.auth.refresh_token}`
     },
    })
 }

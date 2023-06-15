@@ -6,7 +6,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
+import { Socket, Server, Namespace } from 'socket.io';
 import { ConfigService } from '@nestjs/config';
 import { MessageBody } from '@nestjs/websockets';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
@@ -15,26 +15,30 @@ import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
 
 // import { AuthService } from 'src/auth/auth.service';
+// namespace: '/friendship',
+// cors: { origin: 'http://localhost:3000', credentials: true }
 
 @WebSocketGateway({
-  namespace: '/friendship',
-  cors: { origin: 'http://localhost:3000', credentials: true }
+  namespace: 'friendship',
+  cors: {
+    origin: ['http://localhost:3000', 'http://localhost:4100'],
+    credentials: true,
+  },
 }) // every front client can connect to our gateway. Marks the class as the WebSocket gateway<; This is a socket constructor
 @Injectable()
 export class FriendshipGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   //OnGatewayConnection : means that we want it to run when anyone connects to the server
-  @WebSocketServer()
-  server;
+  @WebSocketServer() io: Namespace;
 
-  constructor(
-    private config: ConfigService,
-    private auth: AuthService,
-    private userServ: UserService,
-  ) {}
+//   constructor(
+//     private config: ConfigService,
+//     private auth: AuthService,
+//     private userServ: UserService,
+//   ) {}
 
-  private logger: Logger = new Logger('AppGateway');
+  private logger: Logger = new Logger('FriendshipGateway');
 
   afterInit(server: Server) {
     this.logger.log('Gateway Initialized');
@@ -44,7 +48,10 @@ export class FriendshipGateway
   //Whenever we want to handle message in the server, We use this decorator to handle it. MsgToServer is the name of the event he is waiting for
   async handleConnection(client: Socket, ...args: Socket[]) {
     try {
-      console.log("Le client qui se co ");
+      const sockets = this.io.sockets;
+      console.log('Client ', client.handshake.headers);
+      this.logger.log(`WS Client with id: ${client.id}  connected!`);
+      this.logger.debug(`Number of connected sockets ${sockets.size}`);
       // const test = JSON.parse(client.handshake.headers.cookie);
       // console.log(test.accessToken);
       // const userPayload = await this.auth.verifyJwt(
@@ -59,6 +66,7 @@ export class FriendshipGateway
       // console.log("Le user ", user);
 
       this.logger.log(`Client connected: ${client.id}`);
+
     } catch (e) {
       console.log('ON CONNECTION ERROR, We have to disconnect the socket', e);
       return this.disconnect(client);
@@ -67,8 +75,10 @@ export class FriendshipGateway
 
   async handleDisconnect(client: Socket) {
     try {
-      // console.log(client);
-      this.logger.log(`Client disconnected: ${client.id}`);
+      const sockets = this.io.sockets;
+
+      this.logger.log(`WS Client with id: ${client.id}  disconnected!`);
+      this.logger.debug(`Number of connected sockets ${sockets.size}`);
     } catch (e) {
       console.log('ON CONNECTION ERROR', e);
     }
@@ -81,7 +91,7 @@ export class FriendshipGateway
     socket.disconnect();
   }
 
-  @SubscribeMessage('MsgToServer')
+  @SubscribeMessage('friendReq')
   // Handle message has 3 equivalent code inside that does the same
   /* 1st */
   // handleMessage(client: Socket, text: string): object {
@@ -89,12 +99,11 @@ export class FriendshipGateway
   //   return { event: 'MsgToClient', data: text };
   // }
   /* 2nd */
-  handleMessage(@MessageBody() body: any) {
+  handleMessage(@MessageBody() body: any, client: Socket) {
     console.log('... client sending :', body);
-    this.server.emit('onMessage', {
-      msg: 'Msg to all Clients connected',
-      content: body,
-    });
+    // client.on(onMessage, (data) => {
+    //   console.log(data);
+    // });
   }
   /* 3rd */
   // handleMessage(client: any, text: string): void {

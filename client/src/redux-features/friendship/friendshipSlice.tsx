@@ -7,12 +7,15 @@ export interface friendshipState {
     suggestions: object [], // all users existing in the server except the user itself and the one's from which a response to a friend request is pending
     friends: object [], // all friends that accepted invitation
     friendRequests: object [], // people asking me to join 
+    socket: object,
 }
 
 const initialState: friendshipState = {
     suggestions: [{}],
     friends: [{}],
     friendRequests: [{}],
+    socket: {},
+
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
 export const friendshipSlice = createSlice({
@@ -22,21 +25,28 @@ export const friendshipSlice = createSlice({
         updateAllUsers: (state, action: PayloadAction<[{}]>) => {
             state.suggestions = action.payload;
         },
+        getSocket: (state, action: PayloadAction<{}>) => {
+            state.socket = action.payload;
+        } 
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
 
-export const { updateAllUsers } = friendshipSlice.actions
-export const selectSuggestions = (state: RootState) => state.friendship.suggestions
-export const selectFriends = (state: RootState) => state.friendship.friends
-export const selectFrRequests = (state: RootState) => state.friendship.friendRequests
+export const { updateAllUsers, getSocket } = friendshipSlice.actions
+export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
+export const selectSocket = (state: RootState) => state.persistedReducer.friendship.socket
+export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
+export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
 
 export function FetchAllUsers() {
     return async (dispatch:any, getState: any) => {
         await api
         .get("http://0.0.0.0:4001/user/all")
-        .then((res) => {console.log("response ", res.data); dispatch(updateAllUsers(res.data))})
+        .then((res) => {
+            let dt;
+            dt = (res.data).filter((dat: any) => dat.login !== getState().persistedReducer.auth.nickname)
+            dispatch(updateAllUsers(dt))})
         .catch((e) => {console.log("error ", e)});
   }
 }

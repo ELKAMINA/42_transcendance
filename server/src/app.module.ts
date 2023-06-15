@@ -3,14 +3,15 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 
+import { JwtService } from '@nestjs/jwt';
 import UserModule from './user/user.module';
 import AuthModule from './auth/auth.module';
-import { AtGuard } from './guards/at-auth.guard';
 import HomeModule from './profile/home.module';
+import { AtGuard } from './guards/at-auth.guard';
 import PrismaModule from './prisma/prisma.module';
-import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
+import { FriendshipModule } from './friendship/friendship.module';
 import { FriendshipGateway } from './friendship/friendship.gateway';
 
 @Module({
@@ -23,6 +24,7 @@ import { FriendshipGateway } from './friendship/friendship.gateway';
     PrismaModule,
     HomeModule,
     PassportModule.register({}),
+    FriendshipModule,
      // j'ai enlevé session:true
   ],
   controllers: [],
@@ -31,7 +33,6 @@ import { FriendshipGateway } from './friendship/friendship.gateway';
       provide: APP_GUARD,
       useClass: AtGuard, // This is done to inject the reflector as we're using the At Guard as a global decorator
     },
-    FriendshipGateway,
     AuthService,
     UserService,
     JwtService,

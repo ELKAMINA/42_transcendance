@@ -7,7 +7,7 @@ const baseQuery = fetchBaseQuery({
     credentials: 'include', // Credentials = include => to send the cookie with every query
     mode: 'cors',
     prepareHeaders: (headers, { getState, endpoint }) => {
-        const user = (getState() as RootState).auth.access_token;
+        const user = (getState() as RootState).persistedReducer.auth.access_token;
         if (user && endpoint !== 'refresh') {
             headers.set("authorization", `Bearer ${user}`)
         }
@@ -22,7 +22,7 @@ const baseQueryWithReauth = async (args: any, api: BaseQueryApi, extraOptions: o
     if (queryResponse?.error?.status === 401) {
         // send refresh token to get new access token
         const refreshResult = await baseQuery({url: "/auth/refresh", method: "POST", body: args, credentials:'include', headers: {authorization: `Bearer ${args.body.refresh_token}`}}, {...api, endpoint: 'refresh'}, extraOptions)
-        const user = (api.getState() as RootState).auth.nickname
+        const user = (api.getState() as RootState).persistedReducer.auth.nickname
         if (refreshResult?.data) {
             // store the new token 
             api.dispatch(setTokens({ ...refreshResult.data}))

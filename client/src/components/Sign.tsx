@@ -60,12 +60,12 @@ export default function Sign(props: Signing){
             setPwd('')
             setAvatar('')
 
-            if (userData.faEnabled === true)
-            {
-                navigate('/tfa')
-            }
-            else
-                navigate('/welcome')
+            // if (userData.faEnabled === true) /* Attention à gérer le tfa quand signin */
+            // {
+            //     navigate('/tfa')
+            // }
+            // else
+            navigate('/welcome')
         } catch (err: any) {
             if (!err)
                 setErrMsg('No Server Response');
