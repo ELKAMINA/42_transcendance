@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { User } from "../../data/userList";
+import { User, userList } from "../../data/userList";
 
 const initialState: User[] = [];
 
@@ -9,11 +9,12 @@ export const channelUserSlice = createSlice({
 	initialState,
 	reducers: {
 		addChannelUser: (state, action) => {
-			// {type : channelUser/addChannelUser, payload: User object}
-			const newUser = action.payload;
-			state.push(newUser);
-			// for (let i = 0; i < state.length; i++)
-				// console.log(state[i].name);
+			// {type : channelUser/addChannelUser, payload: array of usernames}
+			
+			const userNames = action.payload;
+			console.log("userNames = ", userNames);
+
+			state = userList.filter(user => userNames.includes(user.name));
 		},
 		deleteChannelUser: (state, action) => {
 			// {type : channelUser/deleteChannelUser, payload: user name : string}
