@@ -85,43 +85,29 @@ export default function MultipleSelectChip() {
 	const theme = useTheme();
 	const [personName, setPersonName] = React.useState<string[]>([]);
 
-  	const channelUsersList = useSelector((state : RootState) => state.channelUser);
 	const dispatch = useDispatch();
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
 		// value is the current value of the the select input
 		const {target: { value }} = event;
+		console.log("value = ", value)
 
-		// setPersonName(
+		setPersonName(
 			// On autofill we get a stringified value.
-			// typeof value === 'string' ? value.split(',') : value,
-		// );
-
-		const updatedPersonName = typeof value === 'string' ? value.split(',') : value;
-
-		setPersonName(updatedPersonName); // Update the state with the new value
-	  
-		const userName = updatedPersonName.join('');
+			typeof value === 'string' ? value.split(',') : value,
+		);
 		
-		let input;
-		for (let i = 0; i < userList.length; i++) {
-			if (userList[i].name === userName){
-				input = userList[i];
-				console.log("input = ", input.name);
-			}
-		}
-
 		dispatch({
 			type: "channelUser/addChannelUser",
-			payload: userList.find(user => user.name === userName),
+			payload: value,
 		})
 	};
 
 	return (
 		<div>
 		<FormControl sx={{ m: 1, width: 300 }}>
-			<InputLabel id="demo-multiple-chip-label">select user</InputLabel>
+			<InputLabel id="demo-multiple-chip-label">users</InputLabel>
 			<Select
 			labelId="demo-multiple-chip-label"
 			id="demo-multiple-chip"
