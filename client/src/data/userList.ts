@@ -10,7 +10,7 @@ import cactus from '../assets/profile_pictures/cactus.jpg'
 import rick_sanchez from "../assets/profile_pictures/rick_sanchez.jpg"
 
 
-export interface User {
+export type User = {
 	name: string;
 	roles: string[];
 	id: string;
