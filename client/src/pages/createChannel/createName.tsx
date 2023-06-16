@@ -16,7 +16,7 @@ function CreateName() {
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setChannelName(e.target.value);
 
-		if (channels.find(channel => channel.name === channelName)) {
+		if (channels.find(channel => channel.login === channelName)) {
 			console.log("channelName taken")
 			setIsTaken(true);
 		} else {
