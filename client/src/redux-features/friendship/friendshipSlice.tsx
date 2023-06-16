@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Socket } from "socket.io-client";
 
 import { RootState } from '../../app/store';
 import  api  from '../../utils/Axios-config/Axios';
@@ -7,14 +8,14 @@ export interface friendshipState {
     suggestions: object [], // all users existing in the server except the user itself and the one's from which a response to a friend request is pending
     friends: object [], // all friends that accepted invitation
     friendRequests: object [], // people asking me to join 
-    socket: object,
+    socket: Socket,
 }
 
 const initialState: friendshipState = {
     suggestions: [{}],
     friends: [{}],
     friendRequests: [{}],
-    socket: {},
+    socket: {} as Socket,
 
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -26,7 +27,7 @@ export const friendshipSlice = createSlice({
             state.suggestions = action.payload;
         },
         getSocket: (state, action: PayloadAction<{}>) => {
-            state.socket = action.payload;
+            state.socket  = action.payload as Socket;
         } 
     },
 })

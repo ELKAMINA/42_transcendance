@@ -4,12 +4,14 @@ import {
   Stack,
   Avatar,
 } from "@mui/material";
+import { Socket } from "socket.io-client";
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector } from "../utils/redux-hooks";
 
 import { selectSocket } from "../redux-features/friendship/friendshipSlice";
+import { selectCurrentUser } from "../redux-features/auth/authSlice";
 
 type FriendshipProps = {
     id: string,
@@ -19,9 +21,24 @@ type FriendshipProps = {
   };
 
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type}) => {
-    const socket = useAppSelector(selectSocket);
+    const socket: Socket= useAppSelector(selectSocket);
+    const receiverNick = useAppSelector(selectCurrentUser);
+    const dataSender = {
+        nickname: login,
+        avatar: avatar,
+    }
+    const dataReceiver = {
+        nickname: receiverNick, 
+    }
     const addFriend = () => {
-        console.log("Est ce que j'ai récupéré la socket ou pas ?? ", socket )
+        socket.emit('friendReq', {
+            dataSender,
+            receiverNick,
+        })
+        // socket.('friendReq', (dataSender, dataReceiver) => {
+        //     console.log("le sender est ", dataSender);
+        //     console.log("le receiver est :", receiverNick );
+        // })
     }
     return (
         <>

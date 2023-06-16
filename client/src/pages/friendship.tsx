@@ -27,7 +27,7 @@ function Friendship () {
       withCredentials: true,
     })
     dispatch(getSocket({socket}))
-    socket.emit('friendReq', {msg: 'hello world'} );
+    // socket.emit('friendReq', {msg: 'hello world'} );
     dispatch(FetchAllUsers());
     return () => {
       console.log('Unregistering events...');
