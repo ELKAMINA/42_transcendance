@@ -4,10 +4,10 @@ import totoro from "../assets/profile_pictures/totoro.jpeg"
 
 export type Channel = {
 
-	name: string
+	login: string
 	id: number
 	owner: string
-	profile_picture: string
+	avatar: string
 	type: string
 	protected_by_password: boolean
 	password: string
@@ -18,10 +18,10 @@ export type Channel = {
 
 export const channelList:Channel[] = [
 	{
-		name: 'Chihiro',
+		login: 'Chihiro',
 		id: 0,
 		owner: 'casper_le_fantome',
-		profile_picture: chihiro,
+		avatar: chihiro,
 		type: 'public',
 		protected_by_password: true,
 		password: 'kirikou',
@@ -29,10 +29,10 @@ export const channelList:Channel[] = [
 	},
 
 	{
-		name: 'Totoro',
+		login: 'Totoro',
 		id: 1,
 		owner: 'satsuki_3003',
-		profile_picture: totoro,
+		avatar: totoro,
 		type: 'private',
 		protected_by_password: false,
 		password: 'kirikou',
