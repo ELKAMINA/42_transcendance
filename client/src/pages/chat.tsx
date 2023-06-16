@@ -1,5 +1,5 @@
 import { Provider } from 'react-redux';
-import Navbar from '../components/NavBar_0';
+import Navbar from '../components/NavBar';
 import SideBar from './sideBar';
 import { store } from '../app/store';
 
