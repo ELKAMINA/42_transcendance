@@ -1,33 +1,31 @@
-import { useEffect, useState } from "react";
 import SearchIcon from '@mui/icons-material/Search';
-
 import "./searchBar.css";
+
 import { FetchAllUsers, selectSuggestions} from '../../redux-features/friendship/friendshipSlice';
-import { useSelector } from "react-redux";
-import { User, userList } from "../../data/userList";
-import { RootState } from "../../app/store";
-import { Autocomplete, TextField } from "@mui/material";
-
+// import { User } from "../../../../server/src/user/types/user-types.user.ts";
+import { UserDetails } from "../../../../server/src/user/types/user-types.user.ts";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
+import { useEffect, useState } from 'react';
 
-function SearchBar({content, setResults }: { content: string; setResults: React.Dispatch<React.SetStateAction<User[]>> }) {	  
+function SearchBar({content, setResults }: { content: string; setResults: React.Dispatch<React.SetStateAction<UserDetails[]>> }) {	  
 
 	const [input, setInput] = useState<string>('');
 
 	const dispatch = useAppDispatch();
 
 	// when the search component is mounted the first time, get the list of users
-	useEffect(() => {dispatch(FetchAllUsers); return () => { console.log('salut')} }, []);
+	useEffect(() => {dispatch(FetchAllUsers())}, []);
 
-	const allUsers = useAppSelector(selectSuggestions);
+	// const allUsers:UserDetails[] = useAppSelector(selectSuggestions);
+	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
 
 	console.log("usersList from backend = ", allUsers);
 	
 	// this should be done in the backend
 	function fetchData(value:string) {
 
-		const results = userList.filter((user: User) => {
-		const name = user?.name?.toLowerCase();
+		const results = allUsers.filter((user) => {
+		const name = user?.login?.toLowerCase();
 		return value && user && name && name.includes(value);
 		});
 		setResults(results);
