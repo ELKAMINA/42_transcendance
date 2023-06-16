@@ -7,20 +7,29 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { Channel } from '../data/channelList';
-import { User, userList } from '../data/userList';
 import { useSelector } from 'react-redux';
 import { RootState } from '../app/store';
 import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
+import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
+import { FetchAllUsers, selectSuggestions } from '../redux-features/friendship/friendshipSlice';
+import { UserDetails } from '../../../server/src/user/types/user-types.user';
 
-type combine = User | Channel
+type combine = UserDetails | Channel
 
 export default function AlignItemsList() {
 	
 	const channels = useSelector((state:RootState) => state.persistedReducer.channels);
+
+	const dispatch = useAppDispatch();
+
+	// when the search component is mounted the first time, get the list of users
+	React.useEffect(() => {dispatch(FetchAllUsers())}, []);
+
+	// const allUsers:UserDetails[] = useAppSelector(selectSuggestions);
+	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
 	
-	// TO DO -> replace userList with Amina's users array
-	const combinedArray: combine[] = [...channels, ...userList];
+	const combinedArray: combine[] = [...channels, ...allUsers];
 
 	return (
 	<List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent', color: 'white' }}>
@@ -36,11 +45,11 @@ export default function AlignItemsList() {
 					}
 				>
 					<ListItemAvatar>
-						<Avatar alt={element.name} src={element.profile_picture} />
+						<Avatar alt={element.login} src={element.avatar} />
 					</ListItemAvatar>
 					<ListItemText
 						sx= {{color:'white'}}
-						primary={element.name}
+						primary={element.login}
 						secondary={
 							<React.Fragment>
 								<Typography
