@@ -65,7 +65,7 @@ model User {
 }
 
 model Channel {
-  name        String   @id
+  login       String   @id
   // members     User[]   @relation("Membership")
   // createdBy   User?    @relation("Creation", fields: [createdById], references: [user_id])
   createdById String?  @unique
