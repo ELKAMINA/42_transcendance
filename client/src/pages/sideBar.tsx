@@ -1,52 +1,51 @@
 import React, { useState } from 'react';
 
-import { User } from '../data/userList.ts'
-
 import CreateChannel from './createChannel/createChannel.tsx';
 import SearchBar from './search/searchBar.tsx';
 import SearchResultsList from './search/searchResultsList.tsx';
 
+import "./sideBar.css"
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/store.tsx';
+import { User, userList } from '../data/userList.ts';
+import AlignItemsList from '../components/ChannelDisplayList.tsx';
 import { Button } from '@mui/material';
 
-import "./sideBar.css"
-
 interface Channel {
-  id: number;
-  name: string;
-}
+	name: string;
+	id: number;
+	type: string;
+	protected_by_password: boolean
+	password: string,
+	userList: User[]
+  }
 
 function SideBar() {
+	// the list of the channels
+	const channels = useSelector((state: RootState) => state.persistedReducer.channels);
 
-	// set up an array of channels
-	const [channels, setChannels] = useState<Channel[]>([]);
-	
+	// button that opens the create channel window
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
+	
+	// the userList for the search bar
+	const [results, setResults] = useState<User[]>([])
 
 	// set up a variable for the selected channel
 	const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
-
-	// create new channel -- TO DO : USE REDUX
-	const handleCreateChannel = () => 
-	{
-		// add new channel object
-		const newChannel: Channel = {
-			id: channels.length + 1,
-			name: `Channel ${channels.length + 1}`
-		};
-
-		for (const chan of channels)
-			console.log(chan);
-
-		// update the array of channels
-		setChannels([...channels, newChannel]);
-	};
 
 	// define what to do when a channel is selected
 	const handleSelectChannel = (channel: Channel | null) => {
 		setSelectedChannel(channel);
 	};
 
-	const [results, setResults] = useState<User[]>([])
+	// Extract channel names
+	const channelNames: string[] = channels.map((channel: Channel) => channel.name);
+	
+	// Extract user names
+	const userNames: string[] = userList.map((user: User) => user.name);
+	
+	// Concatenate channel names and user names into a single string
+	const names: string[] = [...channelNames, ...userNames];
 
 	return (
 	<div className='sideBar'>
@@ -56,17 +55,28 @@ function SideBar() {
 		</div>
 
 		<div className='createChannelButtonWrapper'>
-			<button
-				className='createChannelButton'
-				onClick={() => setButtonPopup(true)}>CREATE CHANNEL
-			</button>
+			<Button
+				onClick={() => setButtonPopup(true)}
+				variant='contained'
+				size='large'
+				sx={{
+					color: '#ac0404',
+					backgroundColor: '#99E100',
+					fontWeight: '900',
+					fontSize: '1em',
+					'&:hover': {
+						backgroundColor: 'white',
+						boxShadow: 'none',
+					},
+				}}
+			>
+				CREATE CHANNEL
+			</Button>
 			<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
 		</div>
 
-		<div>
-			{channels.map(channel => (
-				<option key={channel.id} value={channel.id}>{channel.name}</option>
-			))}
+		<div className='alignItemsListContainer'>
+			<AlignItemsList />
 		</div>
 	</div>
 	);
