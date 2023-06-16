@@ -10,7 +10,6 @@ import { ChannelTypeState } from '../../features/chat/channelTypeSlice';
 import { Button } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
-import { deleteChannel } from "../../features/chat/channelsSlice";
 
 interface CreateChannelProps {
 	trigger: boolean;
