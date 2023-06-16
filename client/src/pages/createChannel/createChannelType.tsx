@@ -6,7 +6,7 @@ import { addChannelType, addPassword, isProtectedByPassword } from "../../featur
 import PasswordField from "../../components/PasswordField";
 
 function  CreateType() {
-	const channelType = useSelector((state: RootState) => state.channelType);
+	const channelType = useSelector((state: RootState) => state.persistedReducer.channelType);
 	const dispatch = useDispatch();
 	
 	// watch the state of the checkboxes
