@@ -7,7 +7,7 @@ import SearchResultsList from './search/searchResultsList.tsx';
 import "./sideBar.css"
 import { useSelector } from 'react-redux';
 import { RootState } from '../app/store.tsx';
-import { User, userList } from '../data/userList.ts';
+import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 import AlignItemsList from '../components/ChannelDisplayList.tsx';
 import { Button } from '@mui/material';
 
@@ -17,7 +17,7 @@ interface Channel {
 	type: string;
 	protected_by_password: boolean
 	password: string,
-	userList: User[]
+	userList: UserDetails[]
   }
 
 function SideBar() {
@@ -28,7 +28,7 @@ function SideBar() {
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 	
 	// the userList for the search bar
-	const [results, setResults] = useState<User[]>([])
+	const [results, setResults] = useState<UserDetails[]>([])
 
 	// set up a variable for the selected channel
 	const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -37,16 +37,7 @@ function SideBar() {
 	const handleSelectChannel = (channel: Channel | null) => {
 		setSelectedChannel(channel);
 	};
-
-	// Extract channel names
-	const channelNames: string[] = channels.map((channel: Channel) => channel.name);
 	
-	// Extract user names
-	const userNames: string[] = userList.map((user: User) => user.name);
-	
-	// Concatenate channel names and user names into a single string
-	const names: string[] = [...channelNames, ...userNames];
-
 	return (
 	<div className='sideBar'>
 		<div className='search-bar-container'>
