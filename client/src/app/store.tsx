@@ -1,15 +1,7 @@
-import { apiSlice } from './api/apiSlice';
-import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import { rootPersistConfig, rootReducer } from './rootReducer';
 import { configureStore } from '@reduxjs/toolkit'
 import { apiSlice } from './api/apiSlice'
-import authReducer from '../features/auth/authSlice'
-import chatReducer from '../features/chat/chatSlice'
-import channelsReducer from '../features/chat/channelsSlice'
-import channelUserReducer from '../features/chat/channelUserSlice'
-import channelTypeReducer from '../features/chat/channelTypeSlice'
-import channelNameReducer from '../features/chat/channelNameSlice'
 
 // A slice represents a single unit of Redux state. It’s a collection of reducer logic and actions for a single feature in your app, typically defined together in a single file.
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer )
@@ -25,12 +17,6 @@ export const store = configureStore({
         // friendship: friendshipReducer,
         // socket: socketSliceReducer,
         persistedReducer,
-        auth: authReducer,
-        chat: chatReducer,
-		channels: channelsReducer,
-		channelName: channelNameReducer,
-		channelUser: channelUserReducer,
-		channelType: channelTypeReducer,
     },
     middleware: getDefaultMiddleware => // allow us to customize the dispatch function
         getDefaultMiddleware({
