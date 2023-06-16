@@ -12,6 +12,7 @@
 
   .input {
 	background-color: transparent;
+	box-shadow: none;
 	border: none;
 	border-radius: 5px;
 	height: 100%;
