@@ -11,8 +11,13 @@ export const channelsSlice = createSlice({
 		addChannel: (state, action) => {
 			// {type : channels/addChannel, payload: Channel}
 			const newChannel = action.payload
+			
+			// FOR DEBUG
 			console.log("adding channel...");
+			
 			state.push(newChannel);
+			
+			// FOR DEBUG
 			console.log("CHANNEL ADDED WITH SUCCESS!")
 			console.log("Channel name : " + newChannel.name) 
 			console.log("channel id = " + newChannel.id)
@@ -21,16 +26,16 @@ export const channelsSlice = createSlice({
 			// console.log("channel users = " + newChannel.users[0]);
 		},
 		deleteChannel: (state, action) => {
-			// {type : channels/deleteChannel, payload: <name>}
-			// const channelToDelete = action.payload;
-			// const filteredChannels = state.filter(channel => channel.login !== channelToDelete);
-		//   
-// 
-			// console.log("channel " + action.payload + " deleted !")
-			// state.map(channel => console.log(channel.login));
+			// {type : channels/deleteChannel, payload: <id of channel to be deleted> : number}
+			const channelToDelete = action.payload;
+			const filteredChannels = state.filter(channel => channel.id !== channelToDelete);
+			
+			// FOR DEBUG
+			console.log("channel " + action.payload + " deleted !")
+			state.map(channel => console.log(channel.login));
 
 			// Update the state by returning a new array
-  			// return filteredChannels;
+  			return filteredChannels;
 		}
 	}
 })
