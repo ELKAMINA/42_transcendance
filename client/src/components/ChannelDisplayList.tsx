@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Channel } from '../data/channelList';
 import { useSelector } from 'react-redux';
 import { RootState } from '../app/store';
-import { IconButton } from '@mui/material';
+import { IconButton, ListItemButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllUsers, selectSuggestions } from '../redux-features/friendship/friendshipSlice';
@@ -45,20 +45,31 @@ export default function AlignItemsList() {
 		  localStorage.setItem('combinedArray', JSON.stringify(newArray)); // Store the updated array in localStorage
 		  return newArray;
 		});
-	  }
-	  
+	}
 
+	// That stuff if to handle what happens when you click on an item of the list -----
+	const [selectedIndex, setSelectedIndex] = React.useState(1);
+	const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+		index: number, ) => {
+		setSelectedIndex(index);
+	};
+	// --------------------------------------------------------------------------------
+	  
 	return (
 	<List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent', color: 'white' }}>
 		{combinedArray.map((element, index) => (
 			<React.Fragment key={index}>
 				<Divider variant="inset" component="li" />
+				<ListItemButton
+					selected={selectedIndex === index}
+					onClick={(event) => handleListItemClick(event, 0)}
+				>
 				<ListItem
 					alignItems="flex-start"
 					secondaryAction={
 						<div onClick={() => handleClick(index)}>
 							<IconButton aria-label="delete">
-							<DeleteIcon sx={{color:'#ac0404'}} fontSize='small'/>
+							<DeleteIcon sx={{color:'red'}} fontSize='small'/>
 							</IconButton>
 						</div>
 					}
@@ -84,6 +95,7 @@ export default function AlignItemsList() {
 						}
 					/>
 				</ListItem>
+				</ListItemButton>
 			</React.Fragment>
 		))}
 	</List>
