@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { channelList, Channel } from "../../data/channelList";
+import api from "../../utils/Axios-config/Axios";
 
 const initialState: Channel[] = channelList;
 
@@ -16,6 +17,13 @@ export const channelsSlice = createSlice({
 			console.log("adding channel...");
 			
 			state.push(newChannel);
+
+			// const channel = async () => {
+			// 	await api
+			// 	.post("http://0.0.0.0:4001/channels")
+			// 	.then((res) => {setQrcode(res.data);})
+			// 	.catch((e) => {console.log("error ", e)});
+			// }
 			
 			// FOR DEBUG
 			console.log("CHANNEL ADDED WITH SUCCESS!")
