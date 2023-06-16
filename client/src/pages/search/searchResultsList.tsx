@@ -1,10 +1,11 @@
 import React from "react";
 import "./searchResultsList.css";
 import { SearchResult } from "./searchResult";
-import { User } from "../../data/userList";
+import { UserDetails } from "../../../../server/src/user/types/user-types.user.ts";
+
 
 interface SearchResultsListProps {
-  results: User[];
+  results: UserDetails[];
 }
 
 // this will display the list of all the users whose names matches the input
@@ -13,7 +14,7 @@ const SearchResultsList: React.FC<SearchResultsListProps> = ({ results }) => {
   return (
     <div className="results-list">
       {results.map((result, id) => {
-        return <SearchResult result={result.name} key={id} />;
+        return <SearchResult result={result.login} key={id} />;
       })}
     </div>
   );
