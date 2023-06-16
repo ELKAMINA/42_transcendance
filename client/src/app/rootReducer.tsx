@@ -3,6 +3,10 @@ import storage from 'redux-persist/lib/storage';
 // slices
 import authReducer from '../redux-features/auth/authSlice';
 import friendshipReducer from '../redux-features/friendship/friendshipSlice';
+import channelsReducer from '../features/chat/channelsSlice'
+import channelUserReducer from '../features/chat/channelUserSlice'
+import channelTypeReducer from '../features/chat/channelTypeSlice'
+import channelNameReducer from '../features/chat/channelNameSlice'
 
 // ----------------------------------------------------------------------
 
@@ -15,8 +19,12 @@ const rootPersistConfig = {
 };
 
 const rootReducer = combineReducers({
-  auth: authReducer,    
-  friendship: friendshipReducer,
+	auth: authReducer,    
+	friendship: friendshipReducer,
+	channels: channelsReducer,
+	channelName: channelNameReducer,
+	channelUser: channelUserReducer,
+	channelType: channelTypeReducer,
 });
 
 
