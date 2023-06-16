@@ -7,17 +7,33 @@
 	/* the height of the .sideBar element will be 100% of the viewport height, */
 	height: 100vh;
 	margin: 0px 0px 0px 0px;
+	padding-left: 0%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
   }
   
   .search-bar-container {
 	padding-top: 1vh;
-	padding-left: 1vh;
+	padding-left: 0vh;
 	/* 20 pourcent of the width of the parent container */
 	width: 90%;
 		/* top, right, bottom, left */
-	margin: 0px 0px 0px 10px;
+	margin: 0px 0px 0px 0px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	min-width: 200px;
+  }
+
+.createChannelButtonWrapper {
+	padding: 3%;
+}
+
+/* css for the list of channels and conversations */
+  .alignItemsListContainer {
+	max-height: 100%; /* Adjust the maximum height as needed */
+	overflow-y: auto;
+	overflow-x: hidden;
   }
