@@ -10,6 +10,7 @@ import { ChannelTypeState } from '../../features/chat/channelTypeSlice';
 import { Button } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
+import { deleteChannel } from "../../features/chat/channelsSlice";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -19,9 +20,9 @@ interface CreateChannelProps {
   
 function CreateChannel(props : CreateChannelProps) {
 	
-	const newName = useSelector((state: RootState) => state.channelName);
-	const channelUsersList = useSelector((state : RootState) => state.channelUser);
-	const channelType = useSelector((state : RootState) => state.channelType) as ChannelTypeState;
+	const newName = useSelector((state: RootState) => state.persistedReducer.channelName);
+	const channelUsersList = useSelector((state : RootState) => state.persistedReducer.channelUser);
+	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 
 	const dispatch = useDispatch();
 
@@ -48,7 +49,7 @@ function CreateChannel(props : CreateChannelProps) {
 		// Submit the form data
 		handleCreateChannel();
 	  }
-
+	
 	return (props.trigger) ? (
 		<div className='create-channel-popup'>
 		<div className='create-channel-popup-inner'>
