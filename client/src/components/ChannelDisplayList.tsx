@@ -19,17 +19,34 @@ type combine = UserDetails | Channel
 
 export default function AlignItemsList() {
 	
-	const channels = useSelector((state:RootState) => state.persistedReducer.channels);
-
+	const channels: Channel[] = useSelector((state:RootState) => state.persistedReducer.channels);
+	channels.map((channel) => console.log(channel));
 	const dispatch = useAppDispatch();
 
-	// when the search component is mounted the first time, get the list of users
+	// when the display channels component is mounted the first time, get the list of users // TO DO : maybe change that
 	React.useEffect(() => {dispatch(FetchAllUsers())}, []);
 
-	// const allUsers:UserDetails[] = useAppSelector(selectSuggestions);
+	// get list of users objects in a array
 	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
 	
-	const combinedArray: combine[] = [...channels, ...allUsers];
+	// create an array with channels and users object to display in local storage so that when I refresh the page, the
+	// update done to the state of combinedArray are still in memory.
+	const [combinedArray, setCombinedArray] = React.useState<combine[]>(() => {
+		const storedArray = localStorage.getItem('combinedArray');
+		return storedArray ? JSON.parse(storedArray) : [...channels, ...allUsers];
+	});
+
+	// this function allow to remove channels or users from the displayed list
+	// it is triggered when the user click on the DeleteButton component
+	function handleClick(index: number): void {
+		setCombinedArray((prevArray) => {
+		  const newArray = [...prevArray];
+		  newArray.splice(index, 1); // Remove the item at the specified index
+		  localStorage.setItem('combinedArray', JSON.stringify(newArray)); // Store the updated array in localStorage
+		  return newArray;
+		});
+	  }
+	  
 
 	return (
 	<List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent', color: 'white' }}>
@@ -39,9 +56,11 @@ export default function AlignItemsList() {
 				<ListItem
 					alignItems="flex-start"
 					secondaryAction={
-						<IconButton aria-label="delete">
-						  <DeleteIcon sx={{color:'red'}} fontSize='small'/>
-						</IconButton>
+						<div onClick={() => handleClick(index)}>
+							<IconButton aria-label="delete">
+							<DeleteIcon sx={{color:'red'}} fontSize='small'/>
+							</IconButton>
+						</div>
 					}
 				>
 					<ListItemAvatar>
