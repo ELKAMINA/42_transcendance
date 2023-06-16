@@ -4,9 +4,10 @@ import { RootState } from "../../app/store";
 import { TextField } from "@mui/material";
 import { useState } from "react";
 import { changeChannelName } from "../../features/chat/channelNameSlice";
+import { Channel } from "../../data/channelList";
 
 function CreateName() {
-	const channels = useSelector((state: RootState) => state.channels);
+	const channels: Channel[] = useSelector((state: RootState) => state.persistedReducer.channels);
 	const [channelName, setChannelName] = useState('');
 	const [isTaken, setIsTaken] = useState(false);
 
