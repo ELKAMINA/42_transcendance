@@ -23,11 +23,11 @@ export const channelsSlice = createSlice({
 		deleteChannel: (state, action) => {
 			// {type : channels/deleteChannel, payload: <name>}
 			// const channelToDelete = action.payload;
-			// const filteredChannels = state.filter(channel => channel.name !== channelToDelete);
+			// const filteredChannels = state.filter(channel => channel.login !== channelToDelete);
 		//   
 // 
 			// console.log("channel " + action.payload + " deleted !")
-			// state.map(channel => console.log(channel.name));
+			// state.map(channel => console.log(channel.login));
 
 			// Update the state by returning a new array
   			// return filteredChannels;
