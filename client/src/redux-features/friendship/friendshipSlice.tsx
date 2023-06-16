@@ -44,6 +44,7 @@ export function FetchAllUsers() {
         await api
         .get("http://0.0.0.0:4001/user/all")
         .then((res) => {
+			console.log("res = ", res);
             let dt;
             dt = (res.data).filter((dat: any) => dat.login !== getState().persistedReducer.auth.nickname)
             dispatch(updateAllUsers(dt))})
