@@ -58,7 +58,7 @@ export default function AlignItemsList() {
 					secondaryAction={
 						<div onClick={() => handleClick(index)}>
 							<IconButton aria-label="delete">
-							<DeleteIcon sx={{color:'red'}} fontSize='small'/>
+							<DeleteIcon sx={{color:'#ac0404'}} fontSize='small'/>
 							</IconButton>
 						</div>
 					}
@@ -71,7 +71,7 @@ export default function AlignItemsList() {
 						primary={element.login}
 						secondary={
 							<React.Fragment>
-								<Typography
+								<Typography /* replace Ali Connors by the username of the user who last sent a message */
 									sx={{ display: 'inline'}}
 									component="span"
 									variant="body2"
@@ -79,7 +79,7 @@ export default function AlignItemsList() {
 								>
 									Ali Connors
 								</Typography>
-								{" — I'll be in your neighborhood doing errands this…"}
+								{" — replace this text by content of the last message sent"} 
 							</React.Fragment>
 						}
 					/>
