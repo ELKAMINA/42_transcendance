@@ -48,7 +48,7 @@ export default function AlignItemsList() {
 	}
 
 	// That stuff if to handle what happens when you click on an item of the list -----
-	const [selectedIndex, setSelectedIndex] = React.useState(1);
+	const [selectedIndex, setSelectedIndex] = React.useState(0);
 	const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>,
 		index: number, ) => {
 		setSelectedIndex(index);
@@ -62,7 +62,7 @@ export default function AlignItemsList() {
 				<Divider variant="inset" component="li" />
 				<ListItemButton
 					selected={selectedIndex === index}
-					onClick={(event) => handleListItemClick(event, 0)}
+					onClick={(event) => handleListItemClick(event, index)}
 					sx={{
 						'&:hover': { backgroundColor: 'rgba(116, 131, 145, 0.4)' },
 						'&.Mui-selected': { backgroundColor: '#032B50' }
