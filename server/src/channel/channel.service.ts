@@ -9,7 +9,7 @@ export class ChannelService {
     try {
       const channel = await this.prisma.channel.findUniqueOrThrow({
         where: {
-          login: nick,
+        //   login: nick,
         },
       });
       return channel;
