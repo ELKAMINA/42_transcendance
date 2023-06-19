@@ -6,7 +6,7 @@ import { ChannelService } from 'src/channel/channel.service';
 
 @Controller('channel')
 @ApiTags('channel')
-export class UserController {
+export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
   @Get('/all')
