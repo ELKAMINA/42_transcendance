@@ -63,6 +63,11 @@ export default function AlignItemsList() {
 				<ListItemButton
 					selected={selectedIndex === index}
 					onClick={(event) => handleListItemClick(event, 0)}
+					sx={{
+						'&:hover': { backgroundColor: 'rgba(116, 131, 145, 0.4)' },
+						'&.Mui-selected': { backgroundColor: '#032B50' }
+
+					}}
 				>
 				<ListItem
 					alignItems="flex-start"
