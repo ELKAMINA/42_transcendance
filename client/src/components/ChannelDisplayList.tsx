@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Channel } from '../data/channelList';
 import { useSelector } from 'react-redux';
 import { RootState } from '../app/store';
-import { IconButton, ListItemButton } from '@mui/material';
+import { IconButton, ListItemButton, Stack } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllUsers, selectSuggestions } from '../redux-features/friendship/friendshipSlice';
@@ -58,7 +58,7 @@ export default function AlignItemsList() {
 	return (
 	<List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent', color: 'white' }}>
 		{combinedArray.map((element, index) => (
-			<React.Fragment key={index}>
+			<Stack key={index}>
 				<Divider variant="inset" component="li" />
 				<ListItemButton
 					selected={selectedIndex === index}
@@ -101,7 +101,7 @@ export default function AlignItemsList() {
 					/>
 				</ListItem>
 				</ListItemButton>
-			</React.Fragment>
+			</Stack>
 		))}
 	</List>
 	);

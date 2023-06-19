@@ -9,7 +9,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../app/store.tsx';
 import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 import AlignItemsList from '../components/ChannelDisplayList.tsx';
-import { Button } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
+// import { SimpleBarStyle } from '../components/ScrollBar.tsx';
 
 interface Channel {
 	name: string;
@@ -39,13 +40,13 @@ function SideBar() {
 	};
 	
 	return (
-	<div className='sideBar'>
-		<div className='search-bar-container'>
+	<Box className='sideBar'>
+		<Stack className='search-bar-container'>
 			<SearchBar content="Look for user, channel..." setResults={setResults} />
 			<SearchResultsList results={results}/>
-		</div>
+		</Stack>
 
-		<div className='createChannelButtonWrapper'>
+		<Stack className='createChannelButtonWrapper'>
 			<Button
 				onClick={() => setButtonPopup(true)}
 				variant='contained'
@@ -64,12 +65,14 @@ function SideBar() {
 				CREATE CHANNEL
 			</Button>
 			<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
-		</div>
+		</Stack>
 
-		<div className='alignItemsListContainer'>
-			<AlignItemsList />
-		</div>
-	</div>
+		<Stack /*className='alignItemsListContainer'*/ sx={{ flexGrow: 1, overflow: "scroll", height: "100%" }}>
+			{/* <SimpleBarStyle> */}
+				<AlignItemsList />
+			{/* </SimpleBarStyle> */}
+		</Stack>
+	</Box>
 	);
 }
 
