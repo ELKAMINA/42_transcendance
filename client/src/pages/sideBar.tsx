@@ -9,8 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../app/store.tsx';
 import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 import AlignItemsList from '../components/ChannelDisplayList.tsx';
-import { Box, Button, Stack } from '@mui/material';
-import { SimpleBarStyle } from '../components/ScrollBar.tsx';
+import { Box, Button, Grid, Stack } from '@mui/material';
 
 interface Channel {
 	name: string;
@@ -67,10 +66,28 @@ function SideBar() {
 			<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
 		</Stack>
 
-		<Stack /*className='alignItemsListContainer'*/ sx={{ flexGrow: 1, overflow: "scroll", height: "100%" }}>
-			<SimpleBarStyle>
-				<AlignItemsList />
-			</SimpleBarStyle>
+		<Stack className='alignItemsListContainer' sx= {{
+			  overflowY: "auto", //  a scrollbar will appear when the content exceeds the element's height.
+			  margin: 0,
+			  padding: 0,
+			  listStyle: "none", //  Removes the default list-style (bullet points) from the element.
+			  height: "100%",
+			  '&::-webkit-scrollbar': { // Selects the scrollbar pseudo-element for webkit-based browsers (e.g., Chrome, Safari).
+				width: '0.5em', // Sets the width of the scrollbar to 0.4em.
+				border: 'none',
+
+			  },
+			  '&::-webkit-scrollbar-track': { //  Selects the track (background) of the scrollbar
+				boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)', // Applies an inset box shadow to the scrollbar track.
+				webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)' //  Applies an inset box shadow to the scrollbar track specifically for webkit-based browsers.
+			  },
+			  '&::-webkit-scrollbar-thumb': { //  Selects the thumb (scrolling handle) of the scrollbar.
+				backgroundColor: '#e6ebea', // Sets the background color of the scrollbar thumb to a semi-transparent black color.
+				borderRadius: '20px',
+				border: 'none',
+			  }
+		}}>
+			<AlignItemsList />
 		</Stack>
 	</Box>
 	);
