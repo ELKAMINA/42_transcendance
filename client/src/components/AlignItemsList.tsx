@@ -56,7 +56,7 @@ export default function AlignItemsList() {
 	// --------------------------------------------------------------------------------
 	  
 	return (
-	<List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent', color: 'white' }}>
+	<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
 		{combinedArray.map((element, index) => (
 			<Stack key={index}>
 				<Divider variant="inset" component="li" />
@@ -85,19 +85,6 @@ export default function AlignItemsList() {
 					<ListItemText
 						sx= {{color:'white'}}
 						primary={element.login}
-						secondary={
-							<React.Fragment>
-								<Typography /* replace Ali Connors by the username of the user who last sent a message */
-									sx={{ display: 'inline'}}
-									component="span"
-									variant="body2"
-									color="white"
-								>
-									Ali Connors
-								</Typography>
-								{" — replace this text by content of the last message sent"} 
-							</React.Fragment>
-						}
 					/>
 				</ListItem>
 				</ListItemButton>
