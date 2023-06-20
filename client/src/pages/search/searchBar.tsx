@@ -19,7 +19,7 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 	// const allUsers:UserDetails[] = useAppSelector(selectSuggestions);
 	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
 
-	console.log("usersList from backend = ", allUsers);
+	// console.log("usersList from backend = ", allUsers);
 	
 	// this should be done in the backend
 	function fetchData(value:string) {
