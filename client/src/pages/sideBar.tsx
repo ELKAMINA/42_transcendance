@@ -9,7 +9,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../app/store.tsx';
 import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 import AlignItemsList from '../components/AlignItemsList.tsx';
-import { Box, Button, Stack, Divider } from '@mui/material';
+import { Box, Button, Stack, Divider, Tooltip, IconButton } from '@mui/material';
+import ConfirmationDialog from '../components/ConfirmationDialog.tsx';
+
 
 interface Channel {
 	name: string;
@@ -45,27 +47,32 @@ function SideBar() {
 			<SearchResultsList results={results}/>
 		</Stack>
 		<Divider variant='middle' flexItem  sx={{bgcolor: '#dde5ed'}}/>
-		<Stack className='createChannelButtonWrapper'>
-			<Button
-				onClick={() => setButtonPopup(true)}
-				variant='contained'
-				size='large'
-				sx={{
-					color: '#07457E',
-					backgroundColor: '#99E100',
-					fontWeight: '900',
-					fontSize: '1em',
-					'&:hover': {
-						backgroundColor: 'white',
-						boxShadow: 'none',
-					},
-				}}
-			>
-				CREATE CHANNEL
-			</Button>
-			<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
+		<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} spacing={4}>
+			<Box className='createChannelButtonWrapper'>
+				<Button
+					onClick={() => setButtonPopup(true)}
+					variant='contained'
+					// size='large'
+					sx={{
+						width: '15vw',
+						color: '#07457E',
+						backgroundColor: '#99E100',
+						fontWeight: '900',
+						fontSize: '1em',
+						'&:hover': {
+							backgroundColor: 'white',
+							boxShadow: 'none',
+						},
+					}}
+				>
+					CREATE CHANNEL
+				</Button>
+				<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
+			</Box>
+			<Box>
+				<ConfirmationDialog />
+			</Box>
 		</Stack>
-
 		<Stack className='alignItemsListContainer'>
 			<AlignItemsList />
 		</Stack>
