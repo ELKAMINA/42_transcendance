@@ -29,7 +29,7 @@ function CreateChannel(props : CreateChannelProps) {
 		dispatch({
 			type: "channels/addChannel",
 			payload: {
-				name: newName,
+				login: newName,
 				id: Date.now(),
 				type: channelType.type,
 				protected_by_password: channelType.protected_by_password,
