@@ -12,6 +12,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	z-index: 0;
   }
   
   .search-bar-container {
@@ -41,6 +42,7 @@
 	padding: 0;
 	list-style: none;
 	height: 100%;
+	z-index: 1;
   }
   
   .alignItemsListContainer::-webkit-scrollbar {
