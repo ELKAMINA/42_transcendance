@@ -10,7 +10,7 @@ import { RootState } from '../app/store.tsx';
 import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 import AlignItemsList from '../components/ChannelDisplayList.tsx';
 import { Box, Button, Stack } from '@mui/material';
-// import { SimpleBarStyle } from '../components/ScrollBar.tsx';
+import { SimpleBarStyle } from '../components/ScrollBar.tsx';
 
 interface Channel {
 	name: string;
@@ -68,9 +68,9 @@ function SideBar() {
 		</Stack>
 
 		<Stack /*className='alignItemsListContainer'*/ sx={{ flexGrow: 1, overflow: "scroll", height: "100%" }}>
-			{/* <SimpleBarStyle> */}
+			<SimpleBarStyle>
 				<AlignItemsList />
-			{/* </SimpleBarStyle> */}
+			</SimpleBarStyle>
 		</Stack>
 	</Box>
 	);
