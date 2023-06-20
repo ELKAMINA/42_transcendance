@@ -79,7 +79,7 @@ function Conversation() {
 								variant="dot"
 							>
 								<Avatar
-									alt="Remy Sharp"
+									alt="Rick Sanchez"
 									src="/broken-image.jpg"
 									sx={{ bgcolor: '#fcba03' }}
 								/>
