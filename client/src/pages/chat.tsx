@@ -25,18 +25,6 @@ function Chat () {
 					></Box>
 				</Grid>
 			</Grid>
-			{/* <Box>
-				<Navbar currentRoute={ currentRoute }/>
-				<SideBar />
-				<Box
-					sx={{
-						height:'100%'
-						width:''
-						backgroundColor: '#ffff'
-					}} 
-				>
-				</Box>
-			</Box> */}
 		</Provider>
 	)
 }
