@@ -14,16 +14,18 @@ function CreateName() {
 	const dispatch = useDispatch();
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		setChannelName(e.target.value);
-
-		if (channels.find(channel => channel.login === channelName)) {
-			console.log("channelName taken")
-			setIsTaken(true);
+		const value = e.target.value;
+		setChannelName(value);
+		console.log(value);
+		if (channels.find(channel => channel.login === value)) {
+		  console.log("channelName taken")
+		  setIsTaken(true);
 		} else {
-			console.log("channel name is available!")
-			dispatch(changeChannelName(channelName))
+		  console.log("channel name is available!")
+		  dispatch(changeChannelName(value))
 		} 
-	}
+	  }
+	  
 
 	return (
 	<div className='entry1'>
