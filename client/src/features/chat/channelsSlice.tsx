@@ -28,6 +28,7 @@ export const channelsSlice = createSlice({
 		},
 		deleteChannel: (state, action) => {
 			// {type : channels/deleteChannel, payload: <id of channel to be deleted> : number}
+
 			const channelToDelete = action.payload;
 			const filteredChannels = state.filter(channel => channel.id !== channelToDelete);
 			
@@ -37,10 +38,18 @@ export const channelsSlice = createSlice({
 
 			// Update the state by returning a new array
   			return filteredChannels;
+		},
+		deleteAllChannels: (state, action) => {
+			if (action.payload === true) {
+				console.log("I will now delete all the channels");
+				state.splice(0, state.length);
+				console.log("size of channels now : ", state.length);
+				return state;
+			}
 		}
 	}
 })
 
-export const { addChannel, deleteChannel } = channelsSlice.actions
+export const { addChannel, deleteChannel, deleteAllChannels } = channelsSlice.actions
 
 export default channelsSlice.reducer
