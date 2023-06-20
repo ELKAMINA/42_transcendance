@@ -20,7 +20,7 @@ type combine = UserDetails | Channel
 export default function AlignItemsList() {
 	
 	const channels: Channel[] = useSelector((state:RootState) => state.persistedReducer.channels);
-	channels.map((channel) => console.log(channel));
+	// channels.map((channel) => console.log(channel));
 	const dispatch = useAppDispatch();
 
 	// when the display channels component is mounted the first time, get the list of users // TO DO : maybe change that
