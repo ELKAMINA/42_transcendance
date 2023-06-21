@@ -35,6 +35,18 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
             receiver: receiver,
         })
     }
+    const accept = () => {
+        socket.emit('acceptFriend', {
+            sender: sender,
+            receiver: receiver,
+        })
+    }
+    const deny = () => {
+        socket.emit('denyFriend', {
+            sender: receiver,
+            receiver: sender,
+        })
+    }
     return (
         <>
             <Box
@@ -58,8 +70,8 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                     {type === "request" && <AddIcon sx={{ color: 'yellow' }} onClick={addFriend}/>}
                     {type === "requestReception" && (
                         <>
-                            <DoneIcon sx={{ color: 'green' }}/>
-                            <CloseIcon sx={{ color: 'red' }}/>               
+                            <DoneIcon sx={{ color: 'green' }} onClick={accept}/>
+                            <CloseIcon sx={{ color: 'red' }} onClick={deny}/>               
                         </>
                     )}
                 </Stack>

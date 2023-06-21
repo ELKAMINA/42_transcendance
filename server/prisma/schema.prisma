@@ -44,7 +44,7 @@ model User {
   rank                  Int?
   friends               User[]          @relation("Friendship")
   friendOf              User[]          @relation("Friendship")
-  totalFriends          Int?
+  totalFriends          Int?            @default(0)
   FriendRequestSent     FriendRequest[] @relation("Sender")
   FriendRequestReceived FriendRequest[] @relation("Receiver")
   // Friends and blocked friends
@@ -96,12 +96,12 @@ model Match {
 }
 
 model FriendRequest {
-  id         String        @id @default(uuid())
-  sender     User          @relation("Sender", fields: [senderId], references: [user_id])
+  id         String        @id @unique @default(uuid())
+  sender     User          @relation("Sender", fields: [senderId], references: [login])
   senderId   String
-  receiver   User          @relation("Receiver", fields: [receiverId], references: [user_id])
+  receiver   User          @relation("Receiver", fields: [receiverId], references: [login])
   receiverId String
-  status     RequestStatus @unique @default(PENDING)
+  status     RequestStatus @default(PENDING)
   createdAt  DateTime      @default(now())
 }
 

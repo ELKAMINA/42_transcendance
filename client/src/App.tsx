@@ -6,10 +6,10 @@ import Tfa from './pages/tfa';
 import Chat from "./pages/chat";
 import HomePage  from "./pages/home";
 import Layout from './components/Layout';
-import Friendship from './pages/friendship';
 import { Route, Routes } from "react-router-dom";
 import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
+import { Suggestions, Requests } from './pages/friendship';
 import { setTokens } from './redux-features/auth/authSlice';
 
 const App = () => {
@@ -34,7 +34,8 @@ const App = () => {
           <Route element={<RequireAuth />}>
             <Route path="/welcome" element={<HomePage />}/>
             <Route path="/chat" element={<Chat />}/>
-            <Route path="/friendship" element={<Friendship />}/>
+            <Route path="/suggestions" element={<Suggestions />}/>
+            <Route path="/friendRequests" element={<Requests />}/>
           </Route>
           <Route path="tfa" element={<Tfa />}/>
         </Route>

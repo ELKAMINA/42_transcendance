@@ -1,3 +1,4 @@
+import { FriendshipService } from './friendship.service';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -31,7 +32,11 @@ export class FriendshipGateway
   //OnGatewayConnection : means that we want it to run when anyone connects to the server
   @WebSocketServer() io: Namespace;
 
-  constructor(private userServ: UserService, private prisma: PrismaService) {}
+  constructor(
+    private userServ: UserService,
+    private prisma: PrismaService,
+    private friends: FriendshipService,
+  ) {}
 
   private logger: Logger = new Logger('FriendshipGateway');
 
@@ -94,29 +99,38 @@ export class FriendshipGateway
   //   return { event: 'MsgToClient', data: text };
   // }
   /* 2nd */
-  async handleMessage(
+  async handleFriendRequest(
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
     console.log('... client sending :', body);
     // console.log('Socket du serveur ', socket);
-    const sen = await this.userServ.searchUser(body.sender);
-    const rec = await this.userServ.searchUser(body.receiver.nickname);
+    // const sen = await this.userServ.searchUser(body.sender);
+    // const rec = await this.userServ.searchUser(body.receiver.nickname);
+    await this.friends.requestFriendship(body.sender, body.receiver.nickname);
     // console.log('le receiver ', rec);
-    await this.prisma.friendRequest.create({
-      data: {
-        sender: {
-          connect: { user_id: sen.user_id },
-        },
-        receiver: {
-          connect: { user_id: rec.user_id },
-        },
-        status: 'PENDING',
-      },
-    });
+
     // socket.emit('onreturn', (data:any) => {
     //   console.log(data);
     // });
+  }
+
+  @SubscribeMessage('acceptFriend')
+  async acceptFriendRequest(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: any,
+  ) {
+    console.log('... client sending :', body);
+    // console.log('Socket du serveur ', socket);
+    // const sen = await this.userServ.searchUser(body.sender);
+    // const rec = await this.userServ.searchUser(body.receiver.nickname);
+    const user = await this.friends.addFriend(
+      body.sender,
+      body.receiver.nickname,
+    );
+    // console.log('le receiver ', rec);
+
+    socket.emit('acceptedFriend', user);
   }
   /* 3rd */
   // handleMessage(client: any, text: string): void {

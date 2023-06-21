@@ -25,7 +25,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     }
     const friendship = () => {
 
-        navigate('/friendship')
+        navigate('/suggestions')
     }
     let componentToRender;
     if (currentRoute === '/welcome') {
