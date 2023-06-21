@@ -16,6 +16,8 @@ function Conversation() {
 				width={'100%'}
 				sx={{
 					flexGrow:1, // ensures that the message section expands and takes up all the available vertical space between the chat header and footer.
+					height:'100%',
+					overflowY:'scroll',	
 				}}
 			>
 				<Message />
