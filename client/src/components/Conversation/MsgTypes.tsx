@@ -1,9 +1,112 @@
-import { Stack, Divider, Typography, Box } from '@mui/material';
+import { Stack, Divider, Typography, Box, IconButton } from '@mui/material';
 import { Sep, ChatMessage } from '../../data/chatHistory';
+import Link from '@mui/material/Link';
+import DownloadIcon from '@mui/icons-material/Download';
+import ImageIcon from '@mui/icons-material/Image';
 
 type TextMsgProps = {
 	el: ChatMessage;
 }
+
+const DocMsg = ({ el }: TextMsgProps) => {
+	return (
+		<Stack
+			direction={'column'}
+			justifyContent={el.incoming? 'start' : 'end'}
+			spacing={0.3}
+		>
+			<Box px={1.5} py={1.5} sx={{
+					backgroundColor: 'transparent',
+					// borderRadius: 1.5, // 1.5 * 8 => 12px
+					width: 'max-content',
+					padding: '0px',
+				}}
+			>
+				<Stack spacing={2}>
+					<Stack
+						p={2}
+						direction="row"
+						spacing={3}
+						alignItems="center"
+						sx={{
+							backgroundColor: el.incoming? '#07457E' : '#f2f4f5',
+							borderRadius: 1,
+						}}
+					>
+						<ImageIcon fontSize='large' sx={{color: 'white'}}/>
+						<Typography variant="caption" color={ el.incoming? '#f2f4f5' : '#07457E' }>Abstract.png</Typography>
+						<IconButton>
+							<DownloadIcon sx={{color: 'white'}}/>
+						</IconButton>
+					</Stack>
+				</Stack>
+				</Box>
+				<Box px={1.5} py={1.5} sx={{
+					backgroundColor: el.incoming? '#07457E' : '#f2f4f5',
+					borderRadius: 1.5, // 1.5 * 8 => 12px
+					width: 'max-content'
+				}}
+			>
+					<Stack spacing={1}>
+						<Typography
+							variant='body2'
+							color={ el.incoming? '#f2f4f5' : '#07457E' }
+						>
+							{el.message}
+						</Typography>
+					</Stack>
+				</Box>
+					{/* {menu && <MessageOption />} */}
+	  </Stack>
+	);
+  };
+
+const LinkMsg = ({el} : TextMsgProps) => {
+	return (
+		<Stack
+			direction={'column'}
+			justifyContent={el.incoming? 'start' : 'end'}
+			spacing={0.3}
+		>
+			<Box px={1.5} py={1.5} sx={{
+					backgroundColor: 'transparent',
+					// borderRadius: 1.5, // 1.5 * 8 => 12px
+					width: 'max-content',
+					padding: '0px',
+				}}
+			>
+				<Stack spacing={2}>
+					<Stack p={2} spacing={3} alignItems={'start'} sx={{
+						backgroundColor:'#a6b586',
+						borderRadius: 1,
+					}}>
+						<img src={el.preview} alt={el.message} style={{maxHeight: 200, borderRadius: '12px'}}/>
+						<Stack>
+							<Typography variant='subtitle2' color='#ffff'>Creating chat app youpiii</Typography>
+							<Link href='https://www.youtube.com/' variant='subtitle2' color='#007a6c'>www.youtube.com</Link>
+						</Stack>
+					</Stack>
+				</Stack>
+			</Box>
+			<Box px={1.5} py={1.5} sx={{
+					backgroundColor: el.incoming? '#07457E' : '#f2f4f5',
+					borderRadius: 1.5, // 1.5 * 8 => 12px
+					width: 'max-content'
+				}}
+			>
+				<Stack spacing={1}>
+					<Typography
+						variant='body2'
+						color={ el.incoming? '#f2f4f5' : '#07457E' }
+					>
+						{el.message}
+					</Typography>
+				</Stack>
+			</Box>
+	  	</Stack>
+	)	
+}
+
 
 const ReplyMsg = ({el} : TextMsgProps) => {
 	return (
@@ -17,6 +120,25 @@ const ReplyMsg = ({el} : TextMsgProps) => {
 					width: 'max-content'
 				}}
 			>
+				<Stack spacing={2}>
+					<Stack p={2} direction={'column'} spacing={3} alignItems={'center'} sx={{
+						backgroundColor: '#739fc7',
+						borderRadius: 1,
+					}}>
+						<Typography
+							variant='body2'
+							color='#f2f4f5'
+						>
+							{el.message}
+						</Typography>
+					</Stack>
+					<Typography
+							variant='body2'
+							color={ el.incoming? '#f2f4f5' : '#07457E' }
+						>
+							{el.reply}
+					</Typography>
+				</Stack>
 			</Box>
 		</Stack>
 	)
@@ -25,9 +147,21 @@ const ReplyMsg = ({el} : TextMsgProps) => {
 const MediaMsg = ({el} : TextMsgProps) => {
 	return (
 		<Stack
-			direction={'row'}
+			direction={'column'}
+			spacing={0.3}
 			justifyContent={el.incoming? 'start' : 'end'}
 		>
+			<Box p={1.5} sx={{
+					backgroundColor: 'transparent',
+					// borderRadius: 1.5, // 1.5 * 8 => 12px
+					width: 'max-content',
+					padding: '0px',
+				}}
+			>
+				<Stack spacing={1}>
+					<img src={el.img} alt={el.message} style={{maxHeight: 300, borderRadius: '5px'}} />
+				</Stack>
+			</Box>
 			<Box p={1.5} sx={{
 					backgroundColor: el.incoming? '#07457E' : '#f2f4f5',
 					borderRadius: 1.5, // 1.5 * 8 => 12px
@@ -35,14 +169,13 @@ const MediaMsg = ({el} : TextMsgProps) => {
 				}}
 			>
 				<Stack spacing={1}>
-					<img src={el.img} alt={el.message} style={{maxHeight: 210, borderRadius: '10px'}} />
+					<Typography
+						variant='body2'
+						color={ el.incoming? '#f2f4f5' : '#07457E' }
+					>
+						{el.message}
+					</Typography>
 				</Stack>
-				<Typography
-					variant='body2'
-					color={ el.incoming? '#f2f4f5' : '#07457E' }
-				>
-					{el.message}
-				</Typography>
 			</Box>
 		</Stack>
 	)
@@ -93,4 +226,4 @@ const Timeline = ({el} : TimelineProps) => {
   
 }
 
-export { Timeline, TextMsg, MediaMsg, ReplyMsg };
+export { Timeline, TextMsg, MediaMsg, ReplyMsg, LinkMsg, DocMsg };
