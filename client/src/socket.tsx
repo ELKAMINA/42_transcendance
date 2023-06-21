@@ -1,6 +1,14 @@
 // socket.js
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:4001/friendship');
+let socket: any;
+
+const connectSocket = (namespace : any) => {
+    socket = io(`http://localhost:4001/${namespace}`, {
+        withCredentials: true,
+        transports: ['websocket'],
+        upgrade: false,
+      })
+};
 // socket.connect();
-export default socket;
+export { socket, connectSocket };

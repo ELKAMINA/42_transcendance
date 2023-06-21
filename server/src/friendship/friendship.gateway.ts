@@ -5,15 +5,14 @@ import {
   OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket, Server, Namespace } from 'socket.io';
-import { ConfigService } from '@nestjs/config';
 import { MessageBody } from '@nestjs/websockets';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-
-import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
-
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 // import { AuthService } from 'src/auth/auth.service';
 // namespace: '/friendship',
 // cors: { origin: 'http://localhost:3000', credentials: true }
@@ -21,7 +20,7 @@ import { UserService } from 'src/user/user.service';
 @WebSocketGateway({
   namespace: 'friendship',
   cors: {
-    origin: ['http://localhost:3000', 'http://localhost:4100'],
+    origin: ['http://localhost:3000', 'http://localhost:4001'],
     credentials: true,
   },
 }) // every front client can connect to our gateway. Marks the class as the WebSocket gateway<; This is a socket constructor
@@ -32,17 +31,13 @@ export class FriendshipGateway
   //OnGatewayConnection : means that we want it to run when anyone connects to the server
   @WebSocketServer() io: Namespace;
 
-//   constructor(
-//     private config: ConfigService,
-//     private auth: AuthService,
-//     private userServ: UserService,
-//   ) {}
+  constructor(private userServ: UserService, private prisma: PrismaService) {}
 
   private logger: Logger = new Logger('FriendshipGateway');
 
   afterInit(server: Server) {
     this.logger.log('Gateway Initialized');
-    // console.log(server);
+    // console.log('Serveeer', server);
   } // For logging message in the console (what is in yellow and green is the logger)
 
   //Whenever we want to handle message in the server, We use this decorator to handle it. MsgToServer is the name of the event he is waiting for
@@ -99,9 +94,27 @@ export class FriendshipGateway
   //   return { event: 'MsgToClient', data: text };
   // }
   /* 2nd */
-  handleMessage(@MessageBody() body: any, client: Socket) {
+  async handleMessage(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: any,
+  ) {
     console.log('... client sending :', body);
-    // client.on(onMessage, (data) => {
+    // console.log('Socket du serveur ', socket);
+    const sen = await this.userServ.searchUser(body.sender);
+    const rec = await this.userServ.searchUser(body.receiver.nickname);
+    // console.log('le receiver ', rec);
+    await this.prisma.friendRequest.create({
+      data: {
+        sender: {
+          connect: { user_id: sen.user_id },
+        },
+        receiver: {
+          connect: { user_id: rec.user_id },
+        },
+        status: 'PENDING',
+      },
+    });
+    // socket.emit('onreturn', (data:any) => {
     //   console.log(data);
     // });
   }

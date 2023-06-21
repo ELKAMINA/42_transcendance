@@ -1,9 +1,9 @@
 import  axios from 'axios';
-
+import Cookies from 'js-cookie';
 import { store } from '../../app/store';
 // import {setTokens } from '../features/auth/authSlice';
 import { setTokens } from '../../redux-features/auth/authSlice';
-
+import { useAppDispatch } from '../redux-hooks';
 const api = axios.create({
 //   baseURL: 'http://localhost:4001',
 });

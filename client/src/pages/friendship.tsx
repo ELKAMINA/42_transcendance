@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import Stack from '@mui/material/Stack';
 import { Button } from '@mui/material';
 import Divider from '@mui/material/Divider';
@@ -11,32 +11,39 @@ import { Login } from '@mui/icons-material';
 import { FriendSuggestion } from '../components/FriendRequests';
 import { selectCurrentAccessToken, selectCurrentAvatar, selectCurrentUser } from '../redux-features/auth/authSlice';
 import { FetchAllUsers } from '../redux-features/friendship/friendshipSlice';
-import { selectSuggestions, getSocket, selectSocket } from '../redux-features/friendship/friendshipSlice';
-// import socket from '../socket'
+import { selectSuggestions } from '../redux-features/friendship/friendshipSlice';
+import {socket,connectSocket} from '../socket'
+
+// export const FriendReqSocket = io('http://localhost:4001/friendship', {
+//   withCredentials: true,
+//   transports: ['websocket'],
+//   upgrade: false,
+// })
+
+// connectSocket('friendship');
 
 function Friendship () {
   const currentRoute = window.location.pathname;
   const dispatch = useAppDispatch();
-  const currUser = useSelector(selectCurrentUser)
-  const avatar = useSelector(selectCurrentAvatar)
-  const accessToken = useSelector(selectCurrentAccessToken)
-  let socket;
-  
+  // const currUser = useSelector(selectCurrentUser)
+  // const avatar = useSelector(selectCurrentAvatar)
+  // const accessToken = useSelector(selectCurrentAccessToken)
+
   useEffect(() => {
-    socket = io('http://localhost:4001/friendship', {
-      withCredentials: true,
-    })
-    dispatch(getSocket({socket}))
+    // dispatch(getSocket({socket}))
     // socket.emit('friendReq', {msg: 'hello world'} );
+    connectSocket('friendship');
     dispatch(FetchAllUsers());
     return () => {
       console.log('Unregistering events...');
       // socket.off('onMessage');
     }
   }, []);
-  socket = useAppSelector(selectSocket)
-  console.log("La socket ", socket)
+  // socket = useAppSelector(selectSocket)
   const suggestions = useAppSelector(selectSuggestions)
+  // FriendReqSocket.on('friendRequestFromServer', (dataServer) => {
+  //   console.log(dataServer);
+  // })
   
   const content = (
     <div>

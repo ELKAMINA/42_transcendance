@@ -10,8 +10,11 @@ import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector } from "../utils/redux-hooks";
 
-import { selectSocket } from "../redux-features/friendship/friendshipSlice";
+// import { selectSocket } from "../redux-features/friendship/friendshipSlice";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
+// import { FriendReqSocket } from "../pages/friendship";
+import { socket } from '../socket'
+
 
 type FriendshipProps = {
     id: string,
@@ -21,24 +24,16 @@ type FriendshipProps = {
   };
 
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type}) => {
-    const socket: Socket= useAppSelector(selectSocket);
-    const receiverNick = useAppSelector(selectCurrentUser);
-    const dataSender = {
+    const sender = useAppSelector(selectCurrentUser);
+    const receiver = {
         nickname: login,
         avatar: avatar,
     }
-    const dataReceiver = {
-        nickname: receiverNick, 
-    }
     const addFriend = () => {
         socket.emit('friendReq', {
-            dataSender,
-            receiverNick,
+            sender: sender,
+            receiver: receiver,
         })
-        // socket.('friendReq', (dataSender, dataReceiver) => {
-        //     console.log("le sender est ", dataSender);
-        //     console.log("le receiver est :", receiverNick );
-        // })
     }
     return (
         <>

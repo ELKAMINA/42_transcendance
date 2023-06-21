@@ -7,13 +7,14 @@ import Cookies from 'js-cookie';
 import { useSelector } from "react-redux"
 import { useNavigate } from 'react-router-dom';
 import { useLogOutMutation } from '../app/api/authApiSlice';
-
+import { io } from 'socket.io-client';
 /* *** Internal imports *** */ 
 import './home.css';
 import api from "../utils/Axios-config/Axios.tsx";
 import Navbar from '../components/NavBar.tsx';
 import { selectCurrentUser, selectCurrentAccessToken, selectCurrentRefreshToken } from '../redux-features/auth/authSlice.tsx';
 
+// export const HomeSock = io('http://localhost:4001/home');
 
 function HomePage() {
   const user = useSelector(selectCurrentUser);
