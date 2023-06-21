@@ -5,7 +5,6 @@
 	width: 100vw;
 	height: 100vh;
 	background-color: rgba(0, 0, 0, 0.6);
-
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -15,11 +14,12 @@
 
 .create-channel-popup-inner {
 	position: relative;
-	width: 60vw;
+	width: 20vw;
 	max-height: 80vh; /* Set a maximum height to limit the height of the inner container */
 	padding-bottom: 20px;
 	background-color: rgb(255, 255, 255);
 	overflow-y: auto; /* Enable vertical scrolling for the inner container */
+	align-items: center;
 }
 
 /* Add scrollbar styles */
@@ -53,14 +53,14 @@
 }
 
 .form-banner {
-	background-color: #07457E;
+	margin-top: 2%;
 	height:10%;
 	width:100%;
-	color: white;
+	color: #07457E;
 	font-family: "Helvetica", sans-serif;
 	font-style: normal;
 	font-weight: 700;
-	font-size: 18px;
+	font-size: 15px;
 	line-height: 20px;
 	letter-spacing: 0.16em;
 	padding: 20px;

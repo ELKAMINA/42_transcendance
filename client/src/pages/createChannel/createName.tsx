@@ -31,7 +31,7 @@ function CreateName() {
 	return (
 	<Box>
 		<Stack alignItems={'center'} direction={'column'} spacing={1}>
-			<label className='form-channel-name' htmlFor='channelName'>channel name</label>
+			<label className='form-channel-name' htmlFor='channelName'></label>
 			<TextField
 				type='channelName'
 				label='enter channel name'
