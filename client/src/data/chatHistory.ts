@@ -1,12 +1,33 @@
-const Chat_History = [
+import monstera from '../assets/profile_pictures/monstera.jpg'
+import basil from '../assets/profile_pictures/basil.jpg'
+
+export type ChatElement = ChatMessage | Sep;
+
+export type ChatMessage = {
+  type: "msg";
+  message: string;
+  img?: string;
+  preview?: string;
+  incoming: boolean;
+  outgoing: boolean;
+  subtype?: string;
+  reply?: string;
+};
+
+export type Sep = {
+  type: "divider";
+  text: string;
+};
+
+export const ChatHistory: ChatElement[] = [
 	{
-	  type: "msg",
+	  type: "msg", // can be a message or a divider
 	  message: "Hi 👋🏻, How are ya ?",
 	  incoming: true,
 	  outgoing: false,
 	},
 	{
-	  type: "divider",
+	  type: "divider", // divider between two different days
 	  text: "Today",
 	},
 	{
@@ -17,7 +38,7 @@ const Chat_History = [
 	},
 	{
 	  type: "msg",
-	  message: "Can you send me an abstarct image?",
+	  message: "Can you send me an abstract image?",
 	  incoming: false,
 	  outgoing: true,
 	},
@@ -27,11 +48,11 @@ const Chat_History = [
 	  incoming: true,
 	  outgoing: false,
 	},
-  
 	{
 	  type: "msg",
 	  subtype: "img",
 	  message: "Here You Go",
+	  img: monstera,
 	  incoming: true,
 	  outgoing: false,
 	},
@@ -41,7 +62,6 @@ const Chat_History = [
 	  incoming: false,
 	  outgoing: true,
 	},
-  
 	{
 	  type: "msg",
 	  subtype: "doc",
@@ -52,6 +72,7 @@ const Chat_History = [
 	{
 	  type: "msg",
 	  subtype: "link",
+	  preview: basil,
 	  message: "Yep, I can also do that",
 	  incoming: true,
 	  outgoing: false,
@@ -66,7 +87,7 @@ const Chat_History = [
 	},
   ];
   
-  const Message_options = [
+  const MessageOptions = [
 	{
 	  title: "Reply",
 	},
@@ -86,3 +107,4 @@ const Chat_History = [
 	  title: "Delete Message",
 	},
   ];
+  
