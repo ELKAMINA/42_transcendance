@@ -3,7 +3,7 @@ import Navbar from '../components/NavBar';
 import SideBar from './sideBar';
 import { store } from '../app/store';
 import { Box, Grid, Stack } from '@mui/material';
-import Conversation from '../components/Conversation';
+import Conversation from '../components/Conversation/Conversation';
 import './chat.css'
 
 function Chat () {
