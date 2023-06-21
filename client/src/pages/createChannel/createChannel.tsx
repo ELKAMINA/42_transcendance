@@ -7,7 +7,7 @@ import CreateName from "./createName";
 import CreateUsersList from "./createUsersList";
 import CreateType from "./createChannelType";
 import { ChannelTypeState } from '../../features/chat/channelTypeSlice';
-import { Button } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 
@@ -22,6 +22,7 @@ function CreateChannel(props : CreateChannelProps) {
 	const newName = useSelector((state: RootState) => state.persistedReducer.channelName);
 	const channelUsersList = useSelector((state : RootState) => state.persistedReducer.channelUser);
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
+	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 
 	const dispatch = useDispatch();
 
@@ -32,9 +33,11 @@ function CreateChannel(props : CreateChannelProps) {
 				login: newName,
 				id: Date.now(),
 				type: channelType.type,
+				owner: authState.nickname, 
 				protected_by_password: channelType.protected_by_password,
 				password: channelType.password,
-				userList: channelUsersList
+				userList: channelUsersList,
+				avatar: authState.avatar,
 			}
 		})
 
@@ -50,38 +53,38 @@ function CreateChannel(props : CreateChannelProps) {
 	  }
 	
 	return (props.trigger) ? (
-		<div className='create-channel-popup'>
-		<div className='create-channel-popup-inner'>
-		<div className="close-button-container">
-			<IconButton aria-label='close' size='large' onClick={() => props.setTrigger(false)}>
-			<DisabledByDefaultIcon fontSize='large' sx={{ color: '#99E100' }} />
-			</IconButton>
-		</div>
-			<div>
-				<form className='create-channel-form' onSubmit={handleFormSubmit}>
-					<div className='form-banner'>
-						<h1>CREATE CHANNEL</h1>
-						<br></br>
-					</div>
-					<CreateName />
-					<br></br>
-					<CreateUsersList />
-					<br></br>
-					<CreateType />
-					<div className='entry1'>
-						<Button
-							type='submit' // will trigger the form submission
-							variant='contained'
-							size='large'
-							sx={{ color: 'white', backgroundColor: '#99E100', fontWeight: '800', fontSize: '2em' }}
-						>CREATE CHANNEL
-						</Button>
-					</div>
-				</form>
-			</div>
-			{props.children}
-		</div>
-		</div>
+		<Box className='create-channel-popup'>
+			<Stack spacing={2} className='create-channel-popup-inner'>
+				<Box className="close-button-container">
+					<IconButton aria-label='close' size='large' onClick={() => props.setTrigger(false)}>
+						<DisabledByDefaultIcon fontSize='small' sx={{ color: '#99E100' }} />
+					</IconButton>
+				</Box>
+				<Box>
+					<form className='create-channel-form' onSubmit={handleFormSubmit}>
+						<Stack spacing={2} direction={"column"}>
+							<Box className='form-banner'>
+								<h1>CREATE CHANNEL</h1>
+								<br></br>
+							</Box>
+							<CreateName />
+							<CreateUsersList />
+							<CreateType />
+							<Box>
+								<Button
+									type='submit' // will trigger the form submission
+									variant='contained'
+									// size='large'
+									sx={{ color: 'white', backgroundColor: '#99E100', fontWeight: '800', fontSize: '2em' }}
+								>CREATE CHANNEL
+								</Button>
+							</Box>
+						</Stack>
+					</form>
+				</Box>
+				{props.children}
+			</Stack>
+		</Box>
 	) : null;
 }
 
