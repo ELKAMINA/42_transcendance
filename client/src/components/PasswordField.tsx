@@ -12,7 +12,8 @@ import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-export default function PasswordField() {
+export default function PasswordField({ getPwd }: { getPwd: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+	
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -21,12 +22,25 @@ export default function PasswordField() {
     event.preventDefault();
   };
 
+  function handleChange(e : React.ChangeEvent<HTMLInputElement>) {
+	const value = e.target.value
+	console.log('pwd = ' ,value)
+
+	const event: React.ChangeEvent<HTMLInputElement> = {
+		target: {
+		  value: value
+		}
+	};
+
+	getPwd(event);
+  }
+
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-      <div>
         <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
           	<InputLabel htmlFor="outlined-adornment-password">password</InputLabel>
           	<OutlinedInput
+				onChange={handleChange}
             	id="outlined-adornment-password"
             	type={showPassword ? 'text' : 'password'}
             	endAdornment={
@@ -50,7 +64,6 @@ export default function PasswordField() {
 				}}
 			/>
         </FormControl>
-      </div>
     </Box>
   );
 }

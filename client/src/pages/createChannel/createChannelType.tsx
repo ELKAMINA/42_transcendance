@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { Box, Checkbox, Divider, FormControlLabel, FormGroup, Stack } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import React from "react";
@@ -13,6 +13,7 @@ function  CreateType() {
 	const [checkedPublic, setCheckedPublic] = React.useState(true);
 	const [checkedPrivate, setCheckedPrivate] = React.useState(false);
 	const [checkedProtected, setCheckedProtected] = React.useState(false);
+	const [pwd, setPwd] = React.useState<string>('');
 
 	const handlePublic = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCheckedPublic(e.target.checked);
@@ -41,24 +42,27 @@ function  CreateType() {
 	}
 
 	const handlePwd = (e: React.ChangeEvent<HTMLInputElement>) => {
-
+		const value = e.target.value;
+		console.log("password = ", value);
 		if (checkedProtected === true)
-			dispatch(addPassword(e.target.value))		
+			dispatch(addPassword(value))
 	}
 
 	return (
-	<div className='entry1'>
-		<label className='form-channel-name' htmlFor='channelType'>choose channel type</label>
-		<br></br>
-		<FormGroup>
-			<FormControlLabel control={<Checkbox checked={checkedPublic} onChange={handlePublic} name="public" />} label="public"/>
-			<FormControlLabel control={<Checkbox checked={checkedPrivate} onChange={handlePrivate} name="private" />} label="private" />
-			<FormControlLabel control={<Checkbox checked={checkedProtected} onChange={handleProtected} name="protected_by_password" />} label="protected by password" />
-			{checkedProtected && (
-			<PasswordField />
-			)}
-		</FormGroup>
-	</div>
+	<Box className='entry1'>
+		<Stack direction={'column'} spacing={2} alignItems={'start'}>
+			<Divider />
+			<label className='form-channel-name' htmlFor='channelType'>choose channel type</label>
+			<FormGroup>
+				<FormControlLabel control={<Checkbox checked={checkedPublic} onChange={handlePublic} name="public" />} label="public"/>
+				<FormControlLabel control={<Checkbox checked={checkedPrivate} onChange={handlePrivate} name="private" />} label="private" />
+				<FormControlLabel control={<Checkbox checked={checkedProtected} onChange={handleProtected} name="protected_by_password" />} label="protected by password" />
+				{checkedProtected && (
+					<PasswordField getPwd={handlePwd}/>
+				)}
+			</FormGroup>
+		</Stack>
+	</Box>
 	);
 }
 
