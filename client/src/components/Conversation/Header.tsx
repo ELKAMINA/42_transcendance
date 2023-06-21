@@ -3,6 +3,9 @@ import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider } from '@mui
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import BlockUser from './BlockUser';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -34,54 +37,66 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   }));
 
 const Header = () => {
-  return (
-	<Box 
-	p={2}
-	sx={{
-		// height: 100,
-		width: '100%',
-		backgroundColor: '#F8FAFF',
-		boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)'
-	}}
->
-	<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} sx={{width: '100%', height: '100%',}}>
-		<Stack direction={'row'} spacing={2}>
-			<Box>
-				<StyledBadge
-					overlap="circular"
-					anchorOrigin={{
-						vertical: "bottom",
-						horizontal: "right",
-					}}
-					variant="dot"
-				>
-					<Avatar
-						alt="Rick Sanchez"
-						src="/broken-image.jpg"
-						sx={{ bgcolor: '#fcba03' }}
-					/>
-				</StyledBadge>
-			</Box>
-			<Stack spacing={0.2}>
-					<Typography variant="subtitle2">Rick Sanchez</Typography>
-					<Typography variant="caption">online</Typography>
+
+	const dispatch = useDispatch();
+
+	const [openBlock, setOpenBlock] = useState<boolean>(false);
+
+	const handleCloseBlock = () => {
+		setOpenBlock(false);
+	}
+
+	return (
+		<Box 
+		p={2}
+		sx={{
+			// height: 100,
+			width: '100%',
+			backgroundColor: '#F8FAFF',
+			boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)'
+		}}
+		>
+			<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} sx={{width: '100%', height: '100%',}}>
+				<Stack direction={'row'} spacing={2}>
+					<Box>
+						<StyledBadge
+							overlap="circular"
+							anchorOrigin={{
+								vertical: "bottom",
+								horizontal: "right",
+							}}
+							variant="dot"
+						>
+							<Avatar
+								alt="Rick Sanchez"
+								src="/broken-image.jpg"
+								sx={{ bgcolor: '#fcba03' }}
+							/>
+						</StyledBadge>
+					</Box>
+					<Stack spacing={0.2}>
+							<Typography variant="subtitle2">Rick Sanchez</Typography>
+							<Typography variant="caption">online</Typography>
+					</Stack>
+				</Stack>
+				<Stack direction={'row'} alignItems={'center'} spacing={3}>
+					<IconButton>
+						<SportsEsportsIcon />
+					</IconButton>
+					<IconButton
+						onClick={() => {setOpenBlock(true)}}
+					>
+						<RemoveCircleIcon />
+					</IconButton>
+					<Divider orientation="vertical" flexItem/>
+					<IconButton>
+						<ExpandMoreIcon />
+					</IconButton>
+				</Stack>
 			</Stack>
-		</Stack>
-		<Stack direction={'row'} alignItems={'center'} spacing={3}>
-			<IconButton>
-				<SportsEsportsIcon />
-			</IconButton>
-			<IconButton>
-				<RemoveCircleIcon />
-			</IconButton>
-			<Divider orientation="vertical" flexItem/>
-			<IconButton>
-				<ExpandMoreIcon />
-			</IconButton>
-		</Stack>
-	</Stack>
-</Box>
-  )
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock}/>}
+		</Box>
+		)
 }
 
 export default Header
