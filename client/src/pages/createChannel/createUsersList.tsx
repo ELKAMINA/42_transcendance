@@ -59,6 +59,7 @@ import Chip from '@mui/material/Chip';
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { userList } from "../../data/userList";
+import { Stack } from '@mui/material';
 
 
 const ITEM_HEIGHT = 48;
@@ -105,37 +106,40 @@ export default function MultipleSelectChip() {
 	};
 
 	return (
-		<div>
-		<FormControl sx={{ m: 1, width: 300 }}>
-			<InputLabel id="demo-multiple-chip-label">users</InputLabel>
-			<Select
-			labelId="demo-multiple-chip-label"
-			id="demo-multiple-chip"
-			multiple
-			required
-			value={personName}
-			onChange={handleChange}
-			input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-			renderValue={(selected) => (
-				<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-				{selected.map((value) => (
-					<Chip key={value} label={value} />
-				))}
-				</Box>
-			)}
-			MenuProps={MenuProps}
-			>
-			{userList.map((user) => (
-				<MenuItem
-				key={user.id}
-				value={user.name}
-				style={getStyles(user.name, personName, theme)}
-				>
-				{user.name}
-				</MenuItem>
-			))}
-			</Select>
-		</FormControl>
-		</div>
+		<Box>
+			<Stack direction={'column'} spacing={2} alignItems={'center'}>
+				<FormControl sx={{ m: 1, width: '100%' }}>
+					<InputLabel id="demo-multiple-chip-label">users</InputLabel>
+					<Select
+						labelId="demo-multiple-chip-label"
+						id="demo-multiple-chip"
+						multiple
+						required
+						value={personName}
+						onChange={handleChange}
+						sx={{width: '100%',}}
+						input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+						renderValue={(selected) => (
+							<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+							{selected.map((value) => (
+								<Chip key={value} label={value} />
+							))}
+							</Box>
+						)}
+						MenuProps={MenuProps}
+					>
+						{userList.map((user) => (
+							<MenuItem
+							key={user.id}
+							value={user.name}
+							style={getStyles(user.name, personName, theme)}
+							>
+							{user.name}
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+			</Stack>
+		</Box>
 	);
 }
