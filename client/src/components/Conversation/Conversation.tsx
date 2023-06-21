@@ -1,6 +1,7 @@
 import { Box, Stack } from "@mui/material"
 import Header from "./Header"
 import Footer from "./Footer"
+import Message from "./Message"
 
 function Conversation() {
 	return (
@@ -9,9 +10,7 @@ function Conversation() {
 			maxHeight={'100vh'}
 			width={'auto'}
 		>
-			{/* chat header */}
 			<Header />
-
 			{/* Msg */}
 			<Box
 				width={'100%'}
@@ -19,13 +18,9 @@ function Conversation() {
 					flexGrow:1, // ensures that the message section expands and takes up all the available vertical space between the chat header and footer.
 				}}
 			>
+				<Message />
 			</Box>
-
-
-			{/* Chat footer */}
 			<Footer />
-			
-
 		</Stack>
 	)
 }
