@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import "./createChannel.css"
 import { RootState } from "../../app/store";
-import { TextField } from "@mui/material";
+import { Box, Stack, TextField } from "@mui/material";
 import { useState } from "react";
 import { changeChannelName } from "../../features/chat/channelNameSlice";
 import { Channel } from "../../data/channelList";
@@ -23,32 +23,35 @@ function CreateName() {
 		} else {
 		  console.log("channel name is available!")
 		  dispatch(changeChannelName(value))
+		  setIsTaken(false);
 		} 
-	  }
+	}
 	  
 
 	return (
-	<div className='entry1'>
-		<label className='form-channel-name' htmlFor='channelName'>channel name</label>
-		<br></br>
-		<TextField
-			type='channelName'
-			label='enter channel name'
-			variant = 'outlined'
-			color = 'success'
-			value = {channelName}
-			onChange={handleChange}
-			required
-			helperText={isTaken === true ? 'this name is taken!' : 'required'}
-			error={isTaken === true}
-			sx={{
-				'& input': {
-					backgroundColor: 'transparent',
-					boxShadow: 'none'
-				}
-			}}
-		/>
-	</div>
+	<Box>
+		<Stack alignItems={'center'} direction={'column'} spacing={1}>
+			<label className='form-channel-name' htmlFor='channelName'>channel name</label>
+			<TextField
+				type='channelName'
+				label='enter channel name'
+				variant = 'outlined'
+				color = 'success'
+				value = {channelName}
+				onChange={handleChange}
+				required
+				helperText={isTaken === true ? 'this name is taken!' : 'required'}
+				error={isTaken === true}
+				sx={{
+					width: '100%',
+					'& input': {
+						backgroundColor: 'transparent',
+						boxShadow: 'none'
+					}
+				}}
+			/>
+		</Stack>
+	</Box>
 	);
 }
 
