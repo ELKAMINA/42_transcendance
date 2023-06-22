@@ -1,19 +1,19 @@
-import { User } from "./userList";
 import chihiro from "../assets/profile_pictures/chihiro.jpeg"
 import totoro from "../assets/profile_pictures/totoro.jpeg"
+import { Channel } from '../types/chat/chatTypes'
 
-export type Channel = {
+// export type Channel = {
 
-	login: string
-	id: number
-	owner: string
-	avatar: string
-	type: string
-	protected_by_password: boolean
-	password: string
-	userList: User[]
+// 	login: string
+// 	id: number
+// 	owner: string
+// 	avatar: string
+// 	type: string
+// 	protected_by_password: boolean
+// 	password: string
+// 	userList: User[]
 
-}
+// }
 
 
 export const channelList:Channel[] = [
