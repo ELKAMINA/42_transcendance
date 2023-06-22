@@ -14,7 +14,7 @@ import ClearAllIcon from '@mui/icons-material/ClearAll';
 import Fade from '@mui/material/Fade';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../app/store';
-import { deleteAllChannels, deleteChannel } from '../features/chat/channelsSlice';
+import { deleteAllChannels, deleteChannel } from '../redux-features/chat/channelsSlice';
 
 const options = [
   'Yes, I do want to delete all channels',
