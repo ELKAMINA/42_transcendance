@@ -1,9 +1,14 @@
 import { Box, Stack } from '@mui/material'
 import { DocMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
 import { ChatHistory } from '../../data/chatHistory'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../app/store'
 
 const Message = () => {
-  return (
+
+	const selectedchat = useSelector((state : RootState) => state.persistedReducer.selectedChat);
+	
+  return (	
 	// column direction is given by default
 	<Box p={3} >
 		<Stack spacing={3}>
@@ -25,7 +30,6 @@ const Message = () => {
 							default:
 								return <TextMsg el={el} />
 						}
-						break;
 					default:
 						return <></>;
 				}
