@@ -8,8 +8,9 @@ sleep 10
 
 # Change directory to 'server' and start migration
 cd server
+npx prisma db seed &
 npm run start:migrate:dev &
 
 # Change directory to 'client' and start the client
-# cd ../client
-# npm run start
+cd ../client 
+npm run start
