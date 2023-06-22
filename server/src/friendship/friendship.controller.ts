@@ -25,7 +25,7 @@ export class FriendshipController {
     return users;
   }
 
-  async addFriend(senderLogin: string, receiverLogin: string) {
-    this.friendshipService.addFriend(senderLogin, receiverLogin);
+  async acceptFriend(senderLogin: string, receiverLogin: string) {
+    this.friendshipService.acceptFriend(senderLogin, receiverLogin);
   }
 }

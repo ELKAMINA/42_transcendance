@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import { socket, connectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
+import { updateAllRequests } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends } from '../redux-features/friendship/friendshipSlice';
 import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 
@@ -68,12 +69,12 @@ function Requests () {
   useEffect(() => {
     // dispatch(getSocket({socket}))
     // socket.emit('friendReq', {msg: 'hello world'} );
-    console.log('testeeuuuug');
     // connectSocket('friendship');
     dispatch(FetchAllFriendRequests());
-    socket.on('acceptedFriend', (data: any) => {
+    socket?.on('acceptedFriend', (data: any) => {
       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
-      console.log('data reçue du serveur', data.FriendRequestReceived);
+      // console.log("les requests restantes", data.FriendRequestReceived);
+     dispatch(updateAllRequests(data.FriendRequestReceived));
     })
     return () => {
       console.log('Unregistering events...');

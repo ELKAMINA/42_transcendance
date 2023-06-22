@@ -30,10 +30,16 @@ export class UserService {
     }
   }
 
-  async addFriend(senderId: string, recId: string): Promise<User> {
+  async acceptFriend(senderId: string, recId: string): Promise<User> {
     try {
-      // console.log('senderId ', senderId);
-      // console.log('receiverId ', receiverId);
+      const reqId = await this.prisma.friendRequest.findFirst({
+        where: {
+          AND: [{ senderId: recId }, { receiverId: senderId }],
+        },
+      });
+      await this.prisma.friendRequest.delete({
+        where: { id: reqId.id },
+      });
       const user = await this.prisma.user.update({
         where: { login: senderId },
         data: {
@@ -47,8 +53,6 @@ export class UserService {
           FriendRequestReceived: true,
         },
       });
-      // console.log(user, { depth: null });
-      console.log('user', user);
       return user;
     } catch (e) {
       console.log(e);

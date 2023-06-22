@@ -41,7 +41,7 @@ export const friendshipSlice = createSlice({
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-
+// && !friends.includes(dat) && !requests.includes(dat.receiverId)
 export const { updateAllUsers, updateAllRequests, updateAllFriends } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
@@ -49,12 +49,16 @@ export const selectFrRequests = (state: RootState) => state.persistedReducer.fri
 
 export function FetchAllUsers() {
     return async (dispatch:any, getState: any) => {
+        const friends = getState().persistedReducer.friendship.friends;
+        const requests = getState().persistedReducer.friendship.friendRequests;
+        console.log("Les friends ", friends);
+        console.log("Les requests ", requests);
         await api
         .get("http://0.0.0.0:4001/user/all")
         .then((res) => {
             console.log("FETCH ALL USERS ", res.data);
-            let dt;
-            dt = (res.data).filter((dat: any) => dat.login !== getState().persistedReducer.auth.nickname)
+            let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
+            // console.log('la data filtrée ', dt);
             dispatch(updateAllUsers(dt))})
         .catch((e) => {console.log("error ", e)});
   }

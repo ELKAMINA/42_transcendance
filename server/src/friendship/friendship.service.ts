@@ -54,7 +54,8 @@ export class FriendshipService {
     }
   }
 
-  async addFriend(senderId: string, receiverId: string): Promise<User> {
-    return this.userServ.addFriend(senderId, receiverId);
+  async acceptFriend(senderId: string, receiverId: string): Promise<User> {
+    const newFriend = await this.userServ.acceptFriend(senderId, receiverId);
+    return newFriend;
   }
 }

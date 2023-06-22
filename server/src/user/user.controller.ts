@@ -14,7 +14,7 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  addFriend(senderId: string, receiverId: string) {
-    return this.userService.addFriend(senderId, receiverId);
+  acceptFriend(senderId: string, receiverId: string) {
+    return this.userService.acceptFriend(senderId, receiverId);
   }
 }

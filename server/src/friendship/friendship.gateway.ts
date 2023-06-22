@@ -124,13 +124,13 @@ export class FriendshipGateway
     // console.log('Socket du serveur ', socket);
     // const sen = await this.userServ.searchUser(body.sender);
     // const rec = await this.userServ.searchUser(body.receiver.nickname);
-    const user = await this.friends.addFriend(
+    const user = await this.friends.acceptFriend(
       body.sender,
       body.receiver.nickname,
     );
-    // console.log('le receiver ', rec);
-
-    socket.emit('acceptedFriend', user);
+    console.log('resultat ', user);
+    return { event: 'acceptedFriend', data: user };
+    // socket.emit('acceptedFriend', user);
   }
   /* 3rd */
   // handleMessage(client: any, text: string): void {
