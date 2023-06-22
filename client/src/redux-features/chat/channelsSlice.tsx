@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { channelList, Channel } from "../../data/channelList";
-import api from "../../utils/Axios-config/Axios";
+import { channelList } from "../../data/channelList";
+import { Channel } from "../../types/chat/chatTypes";
 
 const initialState: Channel[] = channelList;
 

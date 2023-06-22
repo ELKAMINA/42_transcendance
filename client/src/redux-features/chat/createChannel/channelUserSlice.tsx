@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { User, userList } from "../../data/userList";
+import { User, userList } from "../../../data/userList";
 
 const initialState: User[] = [];
 
