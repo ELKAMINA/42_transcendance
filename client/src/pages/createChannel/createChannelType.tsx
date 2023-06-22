@@ -1,7 +1,7 @@
 import { Box, Checkbox, Divider, FormControlLabel, FormGroup, Stack } from "@mui/material";
 import { useDispatch } from "react-redux";
 import React from "react";
-import { addChannelType, addPassword, isProtectedByPassword } from "../../features/chat/channelTypeSlice";
+import { addChannelType, addPassword, isProtectedByPassword } from "../../redux-features/chat/createChannel/channelTypeSlice";
 import PasswordField from "../../components/PasswordField";
 
 function  CreateType() {
