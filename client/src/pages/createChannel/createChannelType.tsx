@@ -1,19 +1,16 @@
 import { Box, Checkbox, Divider, FormControlLabel, FormGroup, Stack } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../app/store";
+import { useDispatch } from "react-redux";
 import React from "react";
 import { addChannelType, addPassword, isProtectedByPassword } from "../../features/chat/channelTypeSlice";
 import PasswordField from "../../components/PasswordField";
 
 function  CreateType() {
-	const channelType = useSelector((state: RootState) => state.persistedReducer.channelType);
 	const dispatch = useDispatch();
 	
 	// watch the state of the checkboxes
 	const [checkedPublic, setCheckedPublic] = React.useState(true);
 	const [checkedPrivate, setCheckedPrivate] = React.useState(false);
 	const [checkedProtected, setCheckedProtected] = React.useState(false);
-	const [pwd, setPwd] = React.useState<string>('');
 
 	const handlePublic = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCheckedPublic(e.target.checked);
@@ -41,11 +38,9 @@ function  CreateType() {
 		dispatch(isProtectedByPassword(e.target.checked))
 	}
 
-	const handlePwd = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		console.log("password = ", value);
+	const handlePwd = (pwd : string) => {
 		if (checkedProtected === true)
-			dispatch(addPassword(value))
+			dispatch(addPassword(pwd))
 	}
 
 	return (
@@ -58,7 +53,7 @@ function  CreateType() {
 				<FormControlLabel control={<Checkbox checked={checkedPrivate} onChange={handlePrivate} name="private" />} label="private" />
 				<FormControlLabel control={<Checkbox checked={checkedProtected} onChange={handleProtected} name="protected_by_password" />} label="protected by password" />
 				{checkedProtected && (
-					<PasswordField getPwd={handlePwd}/>
+					<PasswordField handlePwd={handlePwd}/>
 				)}
 			</FormGroup>
 		</Stack>
