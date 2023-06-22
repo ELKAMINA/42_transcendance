@@ -6,7 +6,7 @@ import React from "react";
 import CreateName from "./createName";
 import CreateUsersList from "./createUsersList";
 import CreateType from "./createChannelType";
-import { ChannelTypeState } from '../../features/chat/channelTypeSlice';
+import { ChannelTypeState } from '../../redux-features/chat/createChannel/channelTypeSlice';
 import { Box, Button, Stack } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
