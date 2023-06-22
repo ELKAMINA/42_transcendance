@@ -3,8 +3,8 @@ import "./createChannel.css"
 import { RootState } from "../../app/store";
 import { Box, Stack, TextField } from "@mui/material";
 import { useState } from "react";
-import { changeChannelName } from "../../features/chat/channelNameSlice";
-import { Channel } from "../../data/channelList";
+import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
+import { Channel } from "../../types/chat/chatTypes";
 
 function CreateName() {
 	const channels: Channel[] = useSelector((state: RootState) => state.persistedReducer.channels);
