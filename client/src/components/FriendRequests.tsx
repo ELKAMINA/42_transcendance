@@ -7,6 +7,7 @@ import {
 import { Socket } from "socket.io-client";
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
+import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector } from "../utils/redux-hooks";
 
@@ -47,6 +48,12 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
             receiver: sender,
         })
     }
+    const block = () => {
+        socket.emit('blockFriend', {
+            sender: receiver,
+            receiver: sender,
+        })
+    }
     return (
         <>
             <Box
@@ -74,8 +81,13 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                             <CloseIcon sx={{ color: 'red' }} onClick={deny}/>               
                         </>
                     )}
+                    {(type === 'myFriends') && (
+                        <>
+                            <BlockIcon sx={{ color: 'red', width: 20, height: 20 }} onClick={block}/>
+                        </>
+                    )}
                 </Stack>
             </Box>
-        </>
+        </> 
     )
 }

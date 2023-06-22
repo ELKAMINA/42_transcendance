@@ -47,13 +47,14 @@ model User {
   totalFriends          Int?            @default(0)
   FriendRequestSent     FriendRequest[] @relation("Sender")
   FriendRequestReceived FriendRequest[] @relation("Receiver")
+  blockedFriends        User[]          @relation("BlockedFriends")
+  blockedBy             User[]          @relation("BlockedFriends")
+  // blockedFriends        User[]          @relation("haters")
+  // hatersId              String[]
   // Friends and blocked friends
   // lovers         User?    @relation("Friendship", fields: [loversId], references: [user_id])
   // loversId       String? // Foreign Key to connect users with friends
-  // blockedFriends User[]   @relation("haters") // a changer avec l'objet entier ?
-  // haters         User?    @relation("haters", fields: [hatersId], references: [user_id])
-  // hatersId       String?
-  // // Match
+
   // p1             Match[]  @relation("Player1")
   // p2             Match[]  @relation("Player2")
   // // Channel Management
@@ -61,7 +62,8 @@ model User {
   // chanMembership Channel? @relation("Membership", fields: [channelName], references: [name])
   // channelName    String?
   // //*** If the user is creator ***//
-  // chanCreator    Channel? @relation("Creation")
+
+  userUser_id String?
 }
 
 model Channel {

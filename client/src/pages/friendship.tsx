@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import { socket, connectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { updateAllRequests } from '../redux-features/friendship/friendshipSlice';
+import { updateAllRequests, updateAllFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends } from '../redux-features/friendship/friendshipSlice';
 import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 
@@ -75,6 +75,8 @@ function Requests () {
       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
       // console.log("les requests restantes", data.FriendRequestReceived);
      dispatch(updateAllRequests(data.FriendRequestReceived));
+     dispatch(updateAllFriends(data.friends))
+
     })
     return () => {
       console.log('Unregistering events...');
@@ -92,10 +94,13 @@ function Requests () {
     <div>
       <Navbar currentRoute={ currentRoute }/>
       <h1> Get all user from Database </h1>
+      {(friendsRequests.length === 0) && <h2 style={{'color': 'yellow', 'fontSize': '13px'}} >No one wanna be your friend </h2> }
+      {(friendsRequests.length > 0) && 
       <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='100vw' minHeight='20vh' alignItems='center' justifyContent='center' >
         {friendsRequests.map((sugg: any) => 
           <FriendSuggestion id={sugg.user_id} login={sugg.senderId} avatar={sugg.avatar} type="requestReception"/>)}
       </Stack>
+      }
       
       
     </div>

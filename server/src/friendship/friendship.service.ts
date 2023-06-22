@@ -58,4 +58,9 @@ export class FriendshipService {
     const newFriend = await this.userServ.acceptFriend(senderId, receiverId);
     return newFriend;
   }
+
+  async blockFriend(senderId: string, receiverId: string): Promise<User> {
+    const newFriend = await this.userServ.blockFriend(senderId, receiverId);
+    return newFriend;
+  }
 }

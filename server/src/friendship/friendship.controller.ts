@@ -28,4 +28,8 @@ export class FriendshipController {
   async acceptFriend(senderLogin: string, receiverLogin: string) {
     this.friendshipService.acceptFriend(senderLogin, receiverLogin);
   }
+
+  async blockFriend(senderLogin: string, receiverLogin: string) {
+    this.friendshipService.blockFriend(senderLogin, receiverLogin);
+  }
 }

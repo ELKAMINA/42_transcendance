@@ -58,4 +58,22 @@ export class UserService {
       console.log(e);
     }
   }
+
+  async blockFriend(senderId: string, recId: string): Promise<User> {
+    try {
+      console.log('sender ', senderId);
+      console.log('rec ', recId);
+      const user = await this.prisma.user.update({
+        where: { login: recId },
+        data: { blockedFriends: { connect: { login: senderId } } },
+        include: {
+          blockedFriends: true,
+        },
+      });
+      console.log('le suer qui a bloqué ', user);
+      return user;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }
