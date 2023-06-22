@@ -3,43 +3,31 @@ import React, { useState } from 'react';
 import CreateChannel from './createChannel/createChannel.tsx';
 import SearchBar from './search/searchBar.tsx';
 import SearchResultsList from './search/searchResultsList.tsx';
+import ConfirmationDialog from '../components/ConfirmationDialog.tsx';
+import AlignItemsList from '../components/AlignItemsList.tsx';
+import { Box, Button, Stack, Divider } from '@mui/material';
+import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 
 import "./sideBar.css"
-import { useSelector } from 'react-redux';
-import { RootState } from '../app/store.tsx';
-import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
-import AlignItemsList from '../components/AlignItemsList.tsx';
-import { Box, Button, Stack, Divider, Tooltip, IconButton } from '@mui/material';
-import ConfirmationDialog from '../components/ConfirmationDialog.tsx';
 
+type handleSelectItemFunction = (pwd: string) => void;
 
-interface Channel {
-	name: string;
-	id: number;
-	type: string;
-	protected_by_password: boolean
-	password: string,
-	userList: UserDetails[]
-  }
+interface SideBarProps {
+  handleSelectItem: handleSelectItemFunction;
+}
 
-function SideBar() {
-	// the list of the channels
-	const channels = useSelector((state: RootState) => state.persistedReducer.channels);
+function SideBar({handleSelectItem} : SideBarProps) {
 
 	// button that opens the create channel window
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 	
 	// the userList for the search bar
 	const [results, setResults] = useState<UserDetails[]>([])
-
-	// set up a variable for the selected channel
-	const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
-
-	// define what to do when a channel is selected
-	const handleSelectChannel = (channel: Channel | null) => {
-		setSelectedChannel(channel);
-	};
 	
+	function getSelectedItem (selectedItem : string) {
+		handleSelectItem(selectedItem)
+	}
+
 	return (
 	<Box className='sideBar'>
 		<Stack className='search-bar-container'>
@@ -74,7 +62,7 @@ function SideBar() {
 			</Box>
 		</Stack>
 		<Stack className='alignItemsListContainer'>
-			<AlignItemsList />
+			<AlignItemsList getSelectedItem={getSelectedItem} />
 		</Stack>
 	</Box>
 	);
