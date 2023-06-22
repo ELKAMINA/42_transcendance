@@ -7,16 +7,19 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import { socket, connectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { selectSuggestions, selectFrRequests } from '../redux-features/friendship/friendshipSlice';
-import { FetchAllUsers, FetchAllFriendRequests } from '../redux-features/friendship/friendshipSlice';
+import { selectSuggestions, selectFrRequests, selectFriends } from '../redux-features/friendship/friendshipSlice';
+import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 
 
 function Suggestions () {
   const currentRoute = window.location.pathname;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const getFriends = () => {
+  const getFriendsRequests = () => {
     navigate('/friendRequests');
+  }
+  const getAllMyFriends = () => {
+    navigate('/friends');
   }
   // const currUser = useSelector(selectCurrentUser)
   // const avatar = useSelector(selectCurrentAvatar)
@@ -41,8 +44,11 @@ function Suggestions () {
         {suggestions.map((sugg: any) => 
           <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request"/>)}
       </Stack>
-      <Button onClick={getFriends}>
+      <Button onClick={getFriendsRequests}>
         See my friend requests
+      </Button>
+      <Button onClick={getAllMyFriends}>
+        See my friends
       </Button>
       
       
@@ -76,7 +82,7 @@ function Requests () {
   }, []);
   // socket = useAppSelector(selectSocket)
   const friendsRequests = useAppSelector(selectFrRequests);
-  console.log('requestssss', friendsRequests);
+  // console.log('requestssss', friendsRequests);
   // FriendReqSocket.on('friendRequestFromServer', (dataServer) => {
   //   console.log(dataServer);
   // })
@@ -96,6 +102,47 @@ function Requests () {
   return content;
 }
 
+function Friends () {
+  const currentRoute = window.location.pathname;
+  console.log("currentRoute", currentRoute);
+  const dispatch = useAppDispatch();
+  // const currUser = useSelector(selectCurrentUser)
+  // const avatar = useSelector(selectCurrentAvatar)
+  // const accessToken = useSelector(selectCurrentAccessToken)
+
+  useEffect(() => {
+    // dispatch(getSocket({socket}))
+    // socket.emit('friendReq', {msg: 'hello world'} );
+    console.log('testeeuuuug');
+    // connectSocket('friendship');
+    dispatch(FetchAllFriends());
+    return () => {
+      console.log('Unregistering events...');
+      // socket.off('onMessage');
+    }
+  }, []);
+  // socket = useAppSelector(selectSocket)
+  const friends = useAppSelector(selectFriends);
+  // console.log('requestssss', friendsRequests);
+  // FriendReqSocket.on('friendRequestFromServer', (dataServer) => {
+  //   console.log(dataServer);
+  // })
+  
+  const content = (
+    <div>
+      <Navbar currentRoute={ currentRoute }/>
+      <h1> Get all user from Database </h1>
+      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='100vw' minHeight='20vh' alignItems='center' justifyContent='center' >
+        {friends.map((sugg: any) => 
+          <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends"/>)}
+      </Stack>
+      
+      
+    </div>
+  )
+  return content;
+}
+
  
 
-export { Suggestions, Requests};
+export { Suggestions, Requests, Friends};

@@ -1,8 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Socket } from "socket.io-client";
+
 import { RootState } from '../../app/store';
 import  api  from '../../utils/Axios-config/Axios';
-
 // export const SOCKET = "SOCKET"
 
 // export interface ISocketType {
@@ -34,13 +33,16 @@ export const friendshipSlice = createSlice({
         updateAllRequests: (state, action: PayloadAction<[{}]>) => {
             state.friendRequests = action.payload;
         },
+        updateAllFriends: (state, action: PayloadAction<[{}]>) => {
+            state.friends = action.payload;
+        },
         
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
 
-export const { updateAllUsers, updateAllRequests } = friendshipSlice.actions
+export const { updateAllUsers, updateAllRequests, updateAllFriends } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
@@ -59,13 +61,23 @@ export function FetchAllUsers() {
 }
 
 export function FetchAllFriendRequests() {
-    console.log('testouille');
     return async (dispatch:any, getState: any) => {
         await api
-        .post("http://0.0.0.0:4001/friendship/all", getState().persistedReducer.auth.nickname)
+        .post("http://0.0.0.0:4001/friendship/allRequests", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
             console.log('la dataaa ', res);
             dispatch(updateAllRequests(res.data))})
+        .catch((e) => {console.log("error ", e)});
+  }
+}
+
+export function FetchAllFriends() {
+    return async (dispatch:any, getState: any) => {
+        await api
+        .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
+        .then((res) => {
+            console.log('la dataaa ', res);
+            dispatch(updateAllFriends(res.data))})
         .catch((e) => {console.log("error ", e)});
   }
 }

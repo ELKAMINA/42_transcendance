@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-
+import { User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -31,14 +31,30 @@ export class FriendshipService {
           sender: true,
         },
       });
-      return users;
       // console.log('users', users);
+      return users;
     } catch (e) {
       console.log(e);
     }
   }
 
-  async addFriend(senderId: string, receiverId: string) {
+  async getAllFriends(userLogin: string) {
+    try {
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: {
+          login: userLogin,
+        },
+        include: {
+          friends: true,
+        },
+      });
+      if (user) return user.friends;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async addFriend(senderId: string, receiverId: string): Promise<User> {
     return this.userServ.addFriend(senderId, receiverId);
   }
 }

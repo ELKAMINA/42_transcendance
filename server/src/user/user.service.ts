@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { send } from 'process';
 
@@ -29,13 +30,15 @@ export class UserService {
     }
   }
 
-  async addFriend(senderId: string, receiverId: string) {
+  async addFriend(senderId: string, recId: string): Promise<User> {
     try {
+      // console.log('senderId ', senderId);
+      // console.log('receiverId ', receiverId);
       const user = await this.prisma.user.update({
         where: { login: senderId },
         data: {
           friends: {
-            connect: { login: receiverId },
+            connect: { login: recId },
           },
           totalFriends: { increment: 1 }, // ne marche pas
         },
