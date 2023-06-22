@@ -5,56 +5,54 @@ import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import { Channel } from '../data/channelList';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../app/store';
 import { IconButton, ListItemButton, Stack } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { FetchAllUsers, selectSuggestions } from '../redux-features/friendship/friendshipSlice';
-import { UserDetails } from '../../../server/src/user/types/user-types.user';
+import { deleteChat } from '../redux-features/chat/chatsSlice';
 
-type combine = UserDetails | Channel
+type getSelectedItemFunction = (pwd: string) => void;
 
-export default function AlignItemsList() {
+interface alignItemsProps {
+  getSelectedItem: getSelectedItemFunction;
+}
+
+export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 	
-	const channels: Channel[] = useSelector((state:RootState) => state.persistedReducer.channels);
-	// channels.map((channel) => console.log(channel));
-	const dispatch = useAppDispatch();
+	const chats = useSelector(( state : RootState) => state.persistedReducer.chats)
+	chats.map(chat => console.log('getting chats : ', chat.login));
 
-	// when the display channels component is mounted the first time, get the list of users // TO DO : maybe change that
-	React.useEffect(() => {dispatch(FetchAllUsers())}, []);
-
-	// get list of users objects in a array
-	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
-	allUsers.map((user) => console.log('users = ', user));
-	
-	// create an array with channels and users object to display in local storage so that when I refresh the page, the
-	// update done to the state of combinedArray are still in memory.
-	const [combinedArray, setCombinedArray] = React.useState<combine[]>([...channels, ...allUsers]);
+	const dispatch = useDispatch();
 
 	// this function allow to remove channels or users from the displayed list
 	// it is triggered when the user click on the DeleteButton component
 	function handleClick(index: number): void {
-		setCombinedArray((prevArray) => {
-		  const newArray = [...prevArray];
-		  newArray.splice(index, 1); // Remove the item at the specified index
-		  return newArray;
-		});
+
+		dispatch(deleteChat(chats[index].login))
+
+		// setchats((prevArray) => {
+		//   const newArray = [...prevArray];
+		//   newArray.splice(index, 1); // Remove the item at the specified index
+		//   return newArray;
+		// });
 	}
 
 	// That stuff if to handle what happens when you click on an item of the list -----
 	const [selectedIndex, setSelectedIndex] = React.useState(0);
 	const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>,
 		index: number, ) => {
-		console.log('combinedArray', combinedArray);
-		setSelectedIndex(index);
+		setSelectedIndex(index); // get the selected to change its color
+		
+		const selectedChat = chats[index];
+		const chatID = selectedChat.login;
+		console.log("selected chat is ", chatID);
+		getSelectedItem(chatID)
 	};
 	// --------------------------------------------------------------------------------
 	  
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
-			{combinedArray.map((element, index) => (
+			{chats.map((element, index) => (
 				<Stack key={index}>
 					<Divider variant="inset" component="li" />
 					<ListItemButton
