@@ -18,7 +18,6 @@ function Chat () {
 	const dispatchSimple = useDispatch();
 
 	const channels: Channel[] = useSelector((state:RootState) => state.persistedReducer.channels);
-	// channels.map((channel) => console.log(channel));
 	const dispatch = useAppDispatch();
 	
 	// when the display channels component is mounted the first time, get the list of users // TO DO : maybe change that
@@ -28,15 +27,19 @@ function Chat () {
 	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
 	// allUsers.map((user) => console.log('users = ', user));
 
-	dispatchSimple(initChat([...allUsers, ...channels]));
+	React.useEffect(() => {
+		dispatchSimple(initChat([...allUsers, ...channels]));
+	}, []);
 
 	// the list of the Chats
 	const chats : DisplayedChat[] = useSelector((state: RootState) => state.persistedReducer.chats);
 
 	// define what to do when a Chat is selected
 	function handleSelectChat (chatID : string) {
-		chats.find(chat => chat.login === chatID)
-		dispatchSimple(setSelectedChat(chatID))		
+		// console.log('chatID = ', chatID);
+		const selectedChat = chats.find(chat => chat.login === chatID)
+		// console.log("selectedChat.name = ", selectedChat.name)
+		dispatchSimple(setSelectedChat(selectedChat))
 	}
   
 	return (
