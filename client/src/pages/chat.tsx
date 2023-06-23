@@ -4,7 +4,7 @@ import SideBar from './sideBar';
 import { RootState, store } from '../app/store';
 import { Box, Stack } from '@mui/material';
 import Conversation from '../components/Conversation/Conversation';
-import { Chat, Channel } from '../types/chat/chatTypes'
+import { DisplayedChat, Channel } from '../types/chat/chatTypes'
 import './chat.css'
 import { setSelectedChat } from '../redux-features/chat/selectedChatSlice';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
@@ -31,7 +31,7 @@ function Chat () {
 	dispatchSimple(initChat([...allUsers, ...channels]));
 
 	// the list of the Chats
-	const chats : Chat[] = useSelector((state: RootState) => state.persistedReducer.chats);
+	const chats : DisplayedChat[] = useSelector((state: RootState) => state.persistedReducer.chats);
 
 	// define what to do when a Chat is selected
 	function handleSelectChat (chatID : string) {

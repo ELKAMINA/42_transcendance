@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Chat } from "../../types/chat/chatTypes";
+import { DisplayedChat } from "../../types/chat/chatTypes";
 
-const initialState: Chat[] = [];
+const initialState: DisplayedChat[] = [];
 
 // this is an array of chats
 export const chatsSlice = createSlice({

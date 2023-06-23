@@ -14,4 +14,4 @@ export type Channel = {
 }
 
 // a chat is eather a one to one conversation (UserDetails) or a group conversation (Channel)
-export type Chat = UserDetails | Channel
+export type DisplayedChat = UserDetails | Channel
