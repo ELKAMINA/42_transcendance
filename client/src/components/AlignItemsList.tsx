@@ -20,21 +20,14 @@ interface alignItemsProps {
 export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 	
 	const chats = useSelector(( state : RootState) => state.persistedReducer.chats)
-	chats.map(chat => console.log('getting chats : ', chat.login));
+	// chats.map(chat => console.log('getting chats : ', chat.login));
 
 	const dispatch = useDispatch();
 
 	// this function allow to remove channels or users from the displayed list
 	// it is triggered when the user click on the DeleteButton component
 	function handleClick(index: number): void {
-
 		dispatch(deleteChat(chats[index].login))
-
-		// setchats((prevArray) => {
-		//   const newArray = [...prevArray];
-		//   newArray.splice(index, 1); // Remove the item at the specified index
-		//   return newArray;
-		// });
 	}
 
 	// That stuff if to handle what happens when you click on an item of the list -----
@@ -45,7 +38,7 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 		
 		const selectedChat = chats[index];
 		const chatID = selectedChat.login;
-		console.log("selected chat is ", chatID);
+		// console.log("selected chat is ", chatID);
 		getSelectedItem(chatID)
 	};
 	// --------------------------------------------------------------------------------
