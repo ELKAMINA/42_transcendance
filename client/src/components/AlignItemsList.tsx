@@ -7,9 +7,12 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../app/store';
-import { IconButton, ListItemButton, Stack } from '@mui/material';
+import { IconButton, ListItemButton, Stack, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { deleteChat } from '../redux-features/chat/chatsSlice';
+import { SensorDoor } from '@mui/icons-material';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
+import LockIcon from '@mui/icons-material/Lock';
 
 type getSelectedItemFunction = (pwd: string) => void;
 
@@ -42,7 +45,7 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 		getSelectedItem(chatID)
 	};
 	// --------------------------------------------------------------------------------
-	  
+	chats.map(element => console.log('element type is ', element.type));	  
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
 			{chats.map((element, index) => (
@@ -60,11 +63,29 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 					<ListItem
 						alignItems="center"
 						secondaryAction={
-							<div onClick={() => handleClick(index)}>
-								<IconButton aria-label="delete">
-								<DeleteIcon sx={{color:'red'}} fontSize='small'/>
+							<Stack onClick={() => handleClick(index)} direction={'row'} spacing={5} alignItems={'end'}>
+								
+								{element.type === 'private' && (
+									 <Tooltip title="private channel" placement="top">
+										<SensorDoor/>
+									 </Tooltip>
+								)}
+								{element.type === 'public' && (
+									 <Tooltip title="public channel" placement="top">
+										<Diversity3Icon />
+									 </Tooltip>
+								)}
+								{element.protected_by_password === true && (
+									 <Tooltip title="protected by password" placement="top">
+										<LockIcon />
+									 </Tooltip>
+								)}
+								<IconButton aria-label="delete" sx={{ p: 0 }}>
+									 <Tooltip title="delete chat" placement="top">
+										 <DeleteIcon sx={{color:'red'}} fontSize='small'/>
+									 </Tooltip>
 								</IconButton>
-							</div>
+							</Stack>
 						}
 					>
 						<ListItemAvatar>
