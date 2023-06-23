@@ -8,12 +8,16 @@ import {
   OnGatewayDisconnect,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Socket, Server, Namespace } from 'socket.io';
+import { parse } from 'cookie';
+import { JwtService } from '@nestjs/jwt';
 import { MessageBody } from '@nestjs/websockets';
+import { Socket, Server, Namespace } from 'socket.io';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+
 import { UserService } from 'src/user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { AuthService } from 'src/auth/auth.service';
+import { ConfigService } from '@nestjs/config';
 // import { AuthService } from 'src/auth/auth.service';
 // namespace: '/friendship',
 // cors: { origin: 'http://localhost:3000', credentials: true }
@@ -32,10 +36,15 @@ export class FriendshipGateway
   //OnGatewayConnection : means that we want it to run when anyone connects to the server
   @WebSocketServer() io: Namespace;
 
+  private users: Map<Socket, string> = new Map<Socket, string>();
+
   constructor(
     private userServ: UserService,
     private prisma: PrismaService,
     private friends: FriendshipService,
+    private auth: AuthService,
+    private config: ConfigService,
+    private jwt: JwtService,
   ) {}
 
   private logger: Logger = new Logger('FriendshipGateway');
@@ -48,8 +57,15 @@ export class FriendshipGateway
   //Whenever we want to handle message in the server, We use this decorator to handle it. MsgToServer is the name of the event he is waiting for
   async handleConnection(client: Socket, ...args: Socket[]) {
     try {
-      const sockets = this.io.sockets;
-      console.log('Client ', client.handshake.headers);
+      const sockets = this.io.sockets; // toutes les sockets connectées
+      // console.log('Client ', client.handshake.headers);
+      const userInfo = this.getUserInfoFromSocket(
+        client.handshake.headers.cookie,
+      );
+      const userConnected = this.isAlreadyConnected(userInfo.nickname);
+      if (userConnected) this.users.delete(userConnected);
+      this.users.set(userConnected, userInfo.nickname);
+      // const verif = this.auth.verifyJwt(userInfo.accessToken)
       this.logger.log(`WS Client with id: ${client.id}  connected!`);
       this.logger.debug(`Number of connected sockets ${sockets.size}`);
       // const test = JSON.parse(client.handshake.headers.cookie);
@@ -76,7 +92,6 @@ export class FriendshipGateway
   async handleDisconnect(client: Socket) {
     try {
       const sockets = this.io.sockets;
-
       this.logger.log(`WS Client with id: ${client.id}  disconnected!`);
       this.logger.debug(`Number of connected sockets ${sockets.size}`);
     } catch (e) {
@@ -171,4 +186,17 @@ export class FriendshipGateway
   // handleMessage(client: any, text: string): void {
   //   this.wss.emit('msgToClient', text);
   // }
+
+  isAlreadyConnected(userLogin: string): Socket {
+    for (const [socket, login] of this.users) {
+      if (login == userLogin) return socket;
+    }
+    return null;
+  }
+
+  getUserInfoFromSocket(cookie: string) {
+    const { Authcookie: userInfo } = parse(cookie);
+    const idAtRt = JSON.parse(userInfo);
+    return idAtRt;
+  }
 }

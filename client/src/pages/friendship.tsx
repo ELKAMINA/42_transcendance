@@ -8,14 +8,17 @@ import Navbar from '../components/NavBar';
 import { socket, connectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
 import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllUsers } from '../redux-features/friendship/friendshipSlice';
-import { selectSuggestions, selectFrRequests, selectFriends } from '../redux-features/friendship/friendshipSlice';
+import { selectSuggestions, selectFrRequests, selectFriends, selectFriendshipNamespace } from '../redux-features/friendship/friendshipSlice';
 import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends, FetchAllBlockedFriends } from '../redux-features/friendship/friendshipSlice';
+import { selectCurrentAccessToken } from '../redux-features/auth/authSlice';
 
 
 function Suggestions () {
   const currentRoute = window.location.pathname;
+  const namespace = useAppSelector(selectFriendshipNamespace);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const access_token = useAppSelector(selectCurrentAccessToken);
   const getFriendsRequests = () => {
     navigate('/friendRequests');
   }
@@ -27,7 +30,8 @@ function Suggestions () {
   // const accessToken = useSelector(selectCurrentAccessToken)
 
   useEffect(() => {
-    connectSocket('friendship');
+    connectSocket('friendship', access_token);
+    socket.emit('join', namespace);
     dispatch(FetchAllUsers());
     socket?.on('denyFriend', () => {
       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
@@ -36,9 +40,10 @@ function Suggestions () {
     })
     return () => {
       console.log('Unregistering events...');
+      // socket.disconnect();
       // socket.off('onMessage');
     }
-  }, []);
+  }, [namespace]);
   const suggestions = useAppSelector(selectSuggestions)
   console.log("la friendshipense ", suggestions)
   
@@ -67,6 +72,7 @@ function Requests () {
   const currentRoute = window.location.pathname;
   console.log("currentRoute", currentRoute);
   const dispatch = useAppDispatch();
+  const access_token = useAppSelector(selectCurrentAccessToken);
   // const currUser = useSelector(selectCurrentUser)
   // const avatar = useSelector(selectCurrentAvatar)
   // const accessToken = useSelector(selectCurrentAccessToken)
@@ -126,6 +132,7 @@ function Requests () {
 
 function Friends () {
   const currentRoute = window.location.pathname;
+  const access_token = useAppSelector(selectCurrentAccessToken);
   console.log("currentRoute", currentRoute);
   const dispatch = useAppDispatch();
   // const currUser = useSelector(selectCurrentUser)

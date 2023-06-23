@@ -101,11 +101,12 @@ export class AuthService {
     });
   }
 
-  verifyJwt(jwt: string): Promise<any> {
-    return this.jwt.verifyAsync(jwt, {
+  async verifyJwt(jwt: string): Promise<any> {
+    const verification = this.jwt.verifyAsync(jwt, {
       secret: this.config.get('ACCESS_TOKEN'),
       maxAge: 60 * 15,
     });
+    return verification;
   }
 
   async setCookie(data: CookieType, res: Response) {

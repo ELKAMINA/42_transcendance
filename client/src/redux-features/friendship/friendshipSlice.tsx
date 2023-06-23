@@ -10,6 +10,7 @@ import  api  from '../../utils/Axios-config/Axios';
 // }
 
 export interface friendshipState {
+    friendshipNamespace: string,
     suggestions: object [], // all users existing in the server except the user itself and the one's from which a response to a friend request is pending
     friends: object [], // all friends that accepted invitation
     friendRequests: object [], // people asking me to join 
@@ -18,6 +19,7 @@ export interface friendshipState {
 }
 
 const initialState: friendshipState = {
+    friendshipNamespace: 'friendship',
     suggestions: [{}],
     friends: [{}],
     friendRequests: [{}],
@@ -40,6 +42,9 @@ export const friendshipSlice = createSlice({
         },
         updateBlockedFriends: (state, action: PayloadAction<[{}]>) => {
             state.blockedFriends = action.payload;
+        },
+        updateFriendshipNamespace: (state, action: PayloadAction<string>) => {
+            state.friendshipNamespace = action.payload;
         }
         
     },
@@ -47,11 +52,12 @@ export const friendshipSlice = createSlice({
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
 // && !friends.includes(dat) && !requests.includes(dat.receiverId)
-export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends,  } = friendshipSlice.actions
+export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, updateFriendshipNamespace } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
 export const selectBlockedFriends = (state: RootState) => state.persistedReducer.friendship.blockedFriends
+export const selectFriendshipNamespace = (state: RootState) => state.persistedReducer.friendship.friendshipNamespace
 
 export function FetchAllUsers() {
     return async (dispatch:any, getState: any) => {

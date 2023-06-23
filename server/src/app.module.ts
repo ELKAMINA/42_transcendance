@@ -12,7 +12,7 @@ import PrismaModule from './prisma/prisma.module';
 import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
 import { FriendshipModule } from './friendship/friendship.module';
-import { FriendshipGateway } from './friendship/friendship.gateway';
+import { FriendshipService } from './friendship/friendship.service';
 
 @Module({
   imports: [
@@ -36,6 +36,7 @@ import { FriendshipGateway } from './friendship/friendship.gateway';
     AuthService,
     UserService,
     JwtService,
+    FriendshipService,
   ],
 })
 export default class AppModule {}
