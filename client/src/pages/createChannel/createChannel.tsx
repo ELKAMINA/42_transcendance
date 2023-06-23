@@ -10,6 +10,7 @@ import { ChannelTypeState } from '../../redux-features/chat/createChannel/channe
 import { Box, Button, Stack } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
+import { ChatHistory_1 } from "../../data/chatHistory";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -38,6 +39,7 @@ function CreateChannel(props : CreateChannelProps) {
 				password: channelType.password,
 				userList: channelUsersList,
 				avatar: authState.avatar,
+				chatHistory: ChatHistory_1,
 			}
 		})
 
