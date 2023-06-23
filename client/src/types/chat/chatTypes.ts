@@ -1,4 +1,5 @@
 import { UserDetails } from "../users/userType"
+import { ChatElement } from "../../data/chatHistory"
 
 export type Channel = {
 
@@ -9,9 +10,20 @@ export type Channel = {
 	type: string
 	protected_by_password: boolean
 	password: string
-	userList: UserDetails[]
+	userList: UserDetails[],
+	chatHistory: ChatElement[],
+
+}
+
+export type OneToOne = {
+
+	login: string
+	id: number
+	owner: string
+	avatar: string
+	chatHistory: ChatElement[],
 
 }
 
 // a chat is eather a one to one conversation (UserDetails) or a group conversation (Channel)
-export type DisplayedChat = UserDetails | Channel
+export type DisplayedChat = Channel /* | OneToOne */
