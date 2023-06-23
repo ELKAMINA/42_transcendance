@@ -58,23 +58,35 @@ model User {
   // p2             Match[]  @relation("Player2")
   // // Channel Management
   // //*** Where the user is member ***//
-  // chanMembership Channel? @relation("Membership", fields: [channelName], references: [name])
-  // channelName    String?
+  chanMembership Channel? @relation("Membership", fields: [channelName], references: [name])
+  channelName    String?
   // //*** If the user is creator ***//
-  // chanCreator    Channel? @relation("Creation")
+  chanCreator    Channel? @relation("Creation")
 }
 
 model Channel {
-  name       String   @id
-  // members     User[]   @relation("Membership")
-  // createdBy   User?    @relation("Creation", fields: [createdById], references: [user_id])
-  createdById String?  @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  status      String
-  key         String
-  userUser_id String
+  name      	String   @id
+  members     	User[]   @relation("Membership")
+  createdBy   	User?    @relation("Creation", fields: [createdById], references: [user_id])
+  createdById 	String?  @unique
+  createdAt   	DateTime @default(now())
+  updatedAt   	DateTime @updatedAt
+  status      	String
+  type			String
+  key         	String
+//   userUser_id 	String
 }
+
+// model Message {
+	// type: "msg";
+  	// message: string;
+  	// img?: string;
+  	// preview?: string;
+  	// incoming: boolean;
+  	// outgoing: boolean;
+  	// subtype?: string;
+  	// reply?: string;
+// }
 
 model Match {
   match_id       String    @id @default(uuid())

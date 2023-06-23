@@ -3,7 +3,7 @@ import { DocMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTyp
 import { useSelector } from 'react-redux'
 import { RootState } from '../../app/store'
 import { DisplayedChat } from '../../types/chat/chatTypes'
-import { ChatHistory_1 } from '../../data/chatHistory'
+// import { ChatHistory_1 } from '../../data/chatHistory'
 
 const Message = () => {
 
@@ -25,7 +25,7 @@ const Message = () => {
 	<Box p={3} >
 		<Stack spacing={3}>
 		{
-			ChatHistory_1.map((el) => { // el is eather a message or a divider
+			selectedchat.chatHistory.map((el) => { // el is eather a message or a divider
 				switch (el.type) {
 					case 'divider': 
 						return <Timeline el={el} />

@@ -13,6 +13,8 @@ import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
 import { FriendshipModule } from './friendship/friendship.module';
 import { FriendshipGateway } from './friendship/friendship.gateway';
+import channelModule from './channel/channel.module';
+import { ChannelService } from './channel/channel.service';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { FriendshipGateway } from './friendship/friendship.gateway';
     }),
     AuthModule,
     UserModule,
+	channelModule,
     PrismaModule,
     HomeModule,
     PassportModule.register({}),
@@ -35,6 +38,7 @@ import { FriendshipGateway } from './friendship/friendship.gateway';
     },
     AuthService,
     UserService,
+	ChannelService,
     JwtService,
   ],
 })

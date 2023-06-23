@@ -10,7 +10,8 @@ import { ChannelTypeState } from '../../redux-features/chat/createChannel/channe
 import { Box, Button, Stack } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
-import { ChatHistory_1 } from "../../data/chatHistory";
+// import { ChatHistory_1 } from "../../data/chatHistory";
+import api from '../../utils/Axios-config/Axios' 
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -27,6 +28,27 @@ function CreateChannel(props : CreateChannelProps) {
 
 	const dispatch = useDispatch();
 
+	// axios perso pour envoyer des requetes http au server, qui s'occupe de renvoyer 
+	const channelCreation = async () => {await api
+		.post ('http://localhost:4001/channel/creation', {
+			login: newName,
+			id: Date.now(),
+			type: channelType.type,
+			owner: authState.nickname, 
+			protected_by_password: channelType.protected_by_password,
+			password: channelType.password,
+			userList: channelUsersList,
+			avatar: authState.avatar,
+			// chatHistory: ChatHistory_1,
+		})
+		.then ((response) => {
+			console.log('response = ', response);
+		})
+		.catch ((error) => {
+			console.log('error = ', error);
+		})
+	}
+
 	function handleCreateChannel() {
 		dispatch({
 			type: "channels/addChannel",
@@ -39,7 +61,7 @@ function CreateChannel(props : CreateChannelProps) {
 				password: channelType.password,
 				userList: channelUsersList,
 				avatar: authState.avatar,
-				chatHistory: ChatHistory_1,
+				chatHistory: [],
 			}
 		})
 
@@ -52,6 +74,7 @@ function CreateChannel(props : CreateChannelProps) {
 
 		// Submit the form data
 		handleCreateChannel();
+		channelCreation();
 	  }
 	
 	return (props.trigger) ? (
