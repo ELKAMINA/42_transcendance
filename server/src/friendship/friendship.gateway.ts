@@ -133,23 +133,23 @@ export class FriendshipGateway
     // socket.emit('acceptedFriend', user);
   }
 
-  // @SubscribeMessage('denyFriend')
-  // async denyFriendRequest(
-  //   @ConnectedSocket() socket: Socket,
-  //   @MessageBody() body: any,
-  // ) {
-  //   console.log('... client sending :', body);
-  //   // console.log('Socket du serveur ', socket);
-  //   // const sen = await this.userServ.searchUser(body.sender);
-  //   // const rec = await this.userServ.searchUser(body.receiver.nickname);
-  //   const user = await this.friends.acceptFriend(
-  //     body.sender,
-  //     body.receiver.nickname,
-  //   );
-  //   // console.log('resultat ', user);
-  //   return { event: 'acceptedFriend', data: user };
-  //   // socket.emit('acceptedFriend', user);
-  // }
+  @SubscribeMessage('denyFriend')
+  async denyFriendRequest(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: any,
+  ) {
+    console.log('... client sending :', body);
+    // console.log('Socket du serveur ', socket);
+    // const sen = await this.userServ.searchUser(body.sender);
+    // const rec = await this.userServ.searchUser(body.receiver.nickname);
+    const user = await this.friends.denyFriend(
+      body.sender.nickname,
+      body.receiver,
+    );
+    // console.log('resultat ', user);
+    return { event: 'denyFriend', data: user };
+    // socket.emit('acceptedFriend', user);
+  }
 
   @SubscribeMessage('blockFriend')
   async blockFriend(
@@ -164,6 +164,7 @@ export class FriendshipGateway
       body.sender.nickname,
       body.receiver,
     );
+    return { event: 'blockFriend', data: user };
     // A gerer les blocked friends differemment
   }
   /* 3rd */

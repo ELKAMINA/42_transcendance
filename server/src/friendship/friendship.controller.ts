@@ -25,11 +25,35 @@ export class FriendshipController {
     return users;
   }
 
+  @Post('/blockedFriends')
+  async getAllBlockedFriends(@Body() body: FriendshipDto) {
+    const users = await this.friendshipService.getAllBlockedFriends(
+      body.nickname,
+    );
+    return users;
+  }
+
   async acceptFriend(senderLogin: string, receiverLogin: string) {
-    this.friendshipService.acceptFriend(senderLogin, receiverLogin);
+    const user = await this.friendshipService.acceptFriend(
+      senderLogin,
+      receiverLogin,
+    );
+    return user;
+  }
+
+  async denyFriend(senderLogin: string, receiverLogin: string) {
+    const user = await this.friendshipService.denyFriend(
+      senderLogin,
+      receiverLogin,
+    );
+    return user;
   }
 
   async blockFriend(senderLogin: string, receiverLogin: string) {
-    this.friendshipService.blockFriend(senderLogin, receiverLogin);
+    const user = await this.friendshipService.blockFriend(
+      senderLogin,
+      receiverLogin,
+    );
+    return user;
   }
 }

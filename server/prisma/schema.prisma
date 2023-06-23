@@ -49,6 +49,7 @@ model User {
   FriendRequestReceived FriendRequest[] @relation("Receiver")
   blockedFriends        User[]          @relation("BlockedFriends")
   blockedBy             User[]          @relation("BlockedFriends")
+  totalBlockedFriends   Int?
   // blockedFriends        User[]          @relation("haters")
   // hatersId              String[]
   // Friends and blocked friends

@@ -13,6 +13,7 @@ export interface friendshipState {
     suggestions: object [], // all users existing in the server except the user itself and the one's from which a response to a friend request is pending
     friends: object [], // all friends that accepted invitation
     friendRequests: object [], // people asking me to join 
+    blockedFriends: object [],
     // socket: Socket,
 }
 
@@ -20,6 +21,7 @@ const initialState: friendshipState = {
     suggestions: [{}],
     friends: [{}],
     friendRequests: [{}],
+    blockedFriends: [{}]
     // socket: {} as unknown as Socket ,
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -36,16 +38,20 @@ export const friendshipSlice = createSlice({
         updateAllFriends: (state, action: PayloadAction<[{}]>) => {
             state.friends = action.payload;
         },
+        updateBlockedFriends: (state, action: PayloadAction<[{}]>) => {
+            state.blockedFriends = action.payload;
+        }
         
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
 // && !friends.includes(dat) && !requests.includes(dat.receiverId)
-export const { updateAllUsers, updateAllRequests, updateAllFriends } = friendshipSlice.actions
+export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends,  } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
+export const selectBlockedFriends = (state: RootState) => state.persistedReducer.friendship.blockedFriends
 
 export function FetchAllUsers() {
     return async (dispatch:any, getState: any) => {
@@ -56,9 +62,7 @@ export function FetchAllUsers() {
         await api
         .get("http://0.0.0.0:4001/user/all")
         .then((res) => {
-            console.log("FETCH ALL USERS ", res.data);
             let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
-            // console.log('la data filtrée ', dt);
             dispatch(updateAllUsers(dt))})
         .catch((e) => {console.log("error ", e)});
   }
@@ -76,6 +80,17 @@ export function FetchAllFriendRequests() {
 }
 
 export function FetchAllFriends() {
+    return async (dispatch:any, getState: any) => {
+        await api
+        .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
+        .then((res) => {
+            console.log('la dataaa ', res);
+            dispatch(updateAllFriends(res.data))})
+        .catch((e) => {console.log("error ", e)});
+  }
+}
+
+export function FetchAllBlockedFriends() {
     return async (dispatch:any, getState: any) => {
         await api
         .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})

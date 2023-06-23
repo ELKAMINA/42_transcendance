@@ -7,9 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import { socket, connectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { updateAllRequests, updateAllFriends } from '../redux-features/friendship/friendshipSlice';
+import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllUsers } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends } from '../redux-features/friendship/friendshipSlice';
-import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
+import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends, FetchAllBlockedFriends } from '../redux-features/friendship/friendshipSlice';
 
 
 function Suggestions () {
@@ -29,6 +29,11 @@ function Suggestions () {
   useEffect(() => {
     connectSocket('friendship');
     dispatch(FetchAllUsers());
+    socket?.on('denyFriend', () => {
+      // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
+      // console.log("les requests restantes", data.FriendRequestReceived);
+      dispatch(FetchAllUsers());
+    })
     return () => {
       console.log('Unregistering events...');
       // socket.off('onMessage');
@@ -71,12 +76,23 @@ function Requests () {
     // socket.emit('friendReq', {msg: 'hello world'} );
     // connectSocket('friendship');
     dispatch(FetchAllFriendRequests());
+    dispatch(FetchAllBlockedFriends());
     socket?.on('acceptedFriend', (data: any) => {
       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
       // console.log("les requests restantes", data.FriendRequestReceived);
      dispatch(updateAllRequests(data.FriendRequestReceived));
      dispatch(updateAllFriends(data.friends))
 
+    })
+    socket?.on('blockFriend', (data: any) => {
+      // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
+      // console.log("les requests restantes", data.FriendRequestReceived);
+     dispatch(updateBlockedFriends(data.blockedFriends))
+    })
+    socket?.on('denyFriend', () => {
+      // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
+      // console.log("les requests restantes", data.FriendRequestReceived);
+      dispatch(FetchAllFriendRequests());
     })
     return () => {
       console.log('Unregistering events...');
