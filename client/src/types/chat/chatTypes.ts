@@ -21,6 +21,7 @@ export type OneToOne = {
 	id: number
 	owner: string
 	avatar: string
+	type: string
 	chatHistory: ChatElement[],
 
 }
