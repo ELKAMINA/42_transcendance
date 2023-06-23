@@ -2,20 +2,6 @@ import chihiro from "../assets/profile_pictures/chihiro.jpeg"
 import totoro from "../assets/profile_pictures/totoro.jpeg"
 import { Channel } from '../types/chat/chatTypes'
 
-// export type Channel = {
-
-// 	login: string
-// 	id: number
-// 	owner: string
-// 	avatar: string
-// 	type: string
-// 	protected_by_password: boolean
-// 	password: string
-// 	userList: User[]
-
-// }
-
-
 export const channelList:Channel[] = [
 	{
 		login: 'Chihiro',
@@ -25,7 +11,8 @@ export const channelList:Channel[] = [
 		type: 'public',
 		protected_by_password: true,
 		password: 'kirikou',
-		userList: []
+		userList: [],
+		chatHistory: [],
 	},
 
 	{
@@ -36,7 +23,8 @@ export const channelList:Channel[] = [
 		type: 'private',
 		protected_by_password: false,
 		password: 'kirikou',
-		userList: []
+		userList: [],
+		chatHistory: [],
 	},
 
 ]
