@@ -45,7 +45,6 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 		getSelectedItem(chatID)
 	};
 	// --------------------------------------------------------------------------------
-	chats.map(element => console.log('element type is ', element.type));	  
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
 			{chats.map((element, index) => (
