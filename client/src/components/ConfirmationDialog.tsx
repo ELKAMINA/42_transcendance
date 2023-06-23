@@ -13,11 +13,10 @@ import { IconButton } from '@mui/material';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import Fade from '@mui/material/Fade';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../app/store';
-import { deleteAllChannels, deleteChannel } from '../redux-features/chat/channelsSlice';
+import { deleteAllChats } from '../redux-features/chat/chatsSlice';
 
 const options = [
-  'Yes, I do want to delete all channels',
+  'Yes, I do want to delete all my chats',
 ];
 
 export interface ConfirmationDialogRawProps {
@@ -65,7 +64,7 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
       open={open}
       {...other}
     >
-      <DialogTitle>Phone Ringtone</DialogTitle>
+      <DialogTitle>Delete all?</DialogTitle>
       <DialogContent dividers>
         <RadioGroup
           ref={radioGroupRef}
@@ -98,8 +97,6 @@ export default function ConfirmationDialog() {
   	const [open, setOpen] = React.useState(false);
   	const [value, setValue] = React.useState('Dione');
 
-  	const channels = useSelector((state: RootState) => state.persistedReducer.channels);
-
 	const dispatch = useDispatch();
 
   	const handleClickListItem = () => {
@@ -112,7 +109,7 @@ export default function ConfirmationDialog() {
   	  if (newValue) {
 		console.log(newValue);
   	    setValue(newValue);
-		dispatch(deleteAllChannels(true));
+		dispatch(deleteAllChats(true));
   	  }
   	};
 
@@ -127,7 +124,7 @@ export default function ConfirmationDialog() {
       </IconButton>
       </Tooltip>
       <ConfirmationDialogRaw
-        id="delete-channels"
+        id="delete-chats"
         keepMounted
         open={open}
         onClose={handleClose}
