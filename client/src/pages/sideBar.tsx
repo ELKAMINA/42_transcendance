@@ -25,6 +25,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 	const [results, setResults] = useState<UserDetails[]>([])
 	
 	function getSelectedItem (selectedItem : string) {
+		// console.log("selectedItem = ", selectedItem);
 		handleSelectItem(selectedItem)
 	}
 
