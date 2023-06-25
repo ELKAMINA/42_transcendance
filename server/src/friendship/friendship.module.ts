@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
+
+import { UserService } from '../user/user.service';
+import { AuthService } from 'src/auth/auth.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { FriendshipGateway } from './friendship.gateway';
 import { FriendshipService } from './friendship.service';
 import { FriendshipController } from './friendship.controller';
-import { UserService } from '../user/user.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { AuthService } from 'src/auth/auth.service';
-import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  imports: [],
+  imports: [JwtModule.register({})],
   controllers: [FriendshipController],
   providers: [
     FriendshipService,

@@ -24,6 +24,7 @@ export class UserService {
     try {
       const users = await this.prisma.user.findMany();
       // console.log('all the users ', users);
+
       return users;
     } catch (e) {
       // console.log(e);

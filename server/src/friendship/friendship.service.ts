@@ -53,6 +53,8 @@ export class FriendshipService {
     }
   }
 
+  // async getSuggestions()
+
   async getAllBlockedFriends(userLogin: string) {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({

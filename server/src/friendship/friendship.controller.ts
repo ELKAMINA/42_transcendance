@@ -1,5 +1,5 @@
 import { Body } from '@nestjs/common';
-import { Post } from '@nestjs/common';
+import { Post, Get } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 
 import { FriendshipService } from './friendship.service';
@@ -32,6 +32,11 @@ export class FriendshipController {
     );
     return users;
   }
+
+  // @Get('/suggestions')
+  // findAll() {
+  //   return this.friendshipService.getSuggestions();
+  // }
 
   async acceptFriend(senderLogin: string, receiverLogin: string) {
     const user = await this.friendshipService.acceptFriend(

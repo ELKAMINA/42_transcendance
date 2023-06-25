@@ -14,7 +14,8 @@ import { useAppSelector } from "../utils/redux-hooks";
 // import { selectSocket } from "../redux-features/friendship/friendshipSlice";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
 // import { FriendReqSocket } from "../pages/friendship";
-import { socket } from '../socket'
+// import { socket } from '../socket'
+import { socket } from '../pages/friendship';
 
 
 type FriendshipProps = {

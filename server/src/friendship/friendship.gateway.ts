@@ -18,6 +18,8 @@ import { UserService } from 'src/user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthService } from 'src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
+// import { MyMiddleware } from 'src/socket/socket.middleware';
+import { ExtendedError } from 'socket.io/dist/namespace';
 // import { AuthService } from 'src/auth/auth.service';
 // namespace: '/friendship',
 // cors: { origin: 'http://localhost:3000', credentials: true }
@@ -25,7 +27,7 @@ import { ConfigService } from '@nestjs/config';
 @WebSocketGateway({
   namespace: 'friendship',
   cors: {
-    origin: ['http://localhost:3000', 'http://localhost:4001'],
+    origin: ['http://localhost:3000'],
     credentials: true,
   },
 }) // every front client can connect to our gateway. Marks the class as the WebSocket gateway<; This is a socket constructor
@@ -36,7 +38,7 @@ export class FriendshipGateway
   //OnGatewayConnection : means that we want it to run when anyone connects to the server
   @WebSocketServer() io: Namespace;
 
-  private users: Map<Socket, string> = new Map<Socket, string>();
+  private users: Map<object, Array<Socket>> = new Map<object, Array<Socket>>();
 
   constructor(
     private userServ: UserService,
@@ -51,37 +53,41 @@ export class FriendshipGateway
 
   afterInit(server: Server) {
     this.logger.log('Gateway Initialized');
+    // server.use((socket: Socket, next: (err?: ExtendedError) => void) =>
+    //   MyMiddleware.prototype.use(socket, next),
+    // );
     // console.log('Serveeer', server);
   } // For logging message in the console (what is in yellow and green is the logger)
 
   //Whenever we want to handle message in the server, We use this decorator to handle it. MsgToServer is the name of the event he is waiting for
-  async handleConnection(client: Socket, ...args: Socket[]) {
+  async handleConnection(@ConnectedSocket() client: Socket, ...args: Socket[]) {
     try {
       const sockets = this.io.sockets; // toutes les sockets connectées
-      // console.log('Client ', client.handshake.headers);
       const userInfo = this.getUserInfoFromSocket(
         client.handshake.headers.cookie,
       );
-      const userConnected = this.isAlreadyConnected(userInfo.nickname);
-      if (userConnected) this.users.delete(userConnected);
-      this.users.set(userConnected, userInfo.nickname);
-      // const verif = this.auth.verifyJwt(userInfo.accessToken)
+      console.log('le type de userInfo ', typeof userInfo);
+      const at = await this.jwt.verifyAsync(userInfo.accessToken, {
+        secret: this.config.get('ACCESS_TOKEN'),
+      }).catch((error) => {
+          if (error) {
+            console.log(error);
+            const newTokens = this.auth.refresh(at, userInfo.refreshToken);
+            console.log(newTokens);
+          }
+        }
+      )
+      console.log('AT ', at);
+      const userConnected = this.isAlreadyConnected(userInfo);
+      if (userConnected) userConnected.push(client);
+      else this.users.set(userInfo, [client]);
+      // console.log('all users ', allUsers);
+      this.io.emit('newUserConnected', {});
       this.logger.log(`WS Client with id: ${client.id}  connected!`);
       this.logger.debug(`Number of connected sockets ${sockets.size}`);
-      // const test = JSON.parse(client.handshake.headers.cookie);
-      // console.log(test.accessToken);
-      // const userPayload = await this.auth.verifyJwt(
-      //   client.handshake,
-      // );
-      // console.log('client ', userPayload); // Give sub/nickname, iat ...
-      // const user = await this.userServ.searchUser(userPayload.nickname);
-      // if (!user) {
-      //   console.log('We have to disconnect the socket');
-      //   return this.disconnect(client);
-      // }
-      // console.log("Le user ", user);
 
       this.logger.log(`Client connected: ${client.id}`);
+      // console.log('users connected ', this.users);
 
     } catch (e) {
       console.log('ON CONNECTION ERROR, We have to disconnect the socket', e);
@@ -89,16 +95,17 @@ export class FriendshipGateway
     }
   }
 
-  async handleDisconnect(client: Socket) {
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
     try {
+      console.log('je rentre ici quand ca rafraichit ');
       const sockets = this.io.sockets;
+      // this.users.delete(client);
+      
       this.logger.log(`WS Client with id: ${client.id}  disconnected!`);
       this.logger.debug(`Number of connected sockets ${sockets.size}`);
     } catch (e) {
       console.log('ON CONNECTION ERROR', e);
     }
-    // console.log(client);
-    // throw new Error('Method not implemented');
   }
 
   private disconnect(socket: Socket) {
@@ -107,27 +114,13 @@ export class FriendshipGateway
   }
 
   @SubscribeMessage('friendReq')
-  // Handle message has 3 equivalent code inside that does the same
-  /* 1st */
-  // handleMessage(client: Socket, text: string): object {
-  //   console.log(client);
-  //   return { event: 'MsgToClient', data: text };
-  // }
-  /* 2nd */
   async handleFriendRequest(
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
     console.log('... client sending :', body);
-    // console.log('Socket du serveur ', socket);
-    // const sen = await this.userServ.searchUser(body.sender);
-    // const rec = await this.userServ.searchUser(body.receiver.nickname);
     await this.friends.requestFriendship(body.sender, body.receiver.nickname);
-    // console.log('le receiver ', rec);
-
-    // socket.emit('onreturn', (data:any) => {
-    //   console.log(data);
-    // });
+    return { event: 'friendAdded', data: '' };
   }
 
   @SubscribeMessage('acceptFriend')
@@ -136,16 +129,11 @@ export class FriendshipGateway
     @MessageBody() body: any,
   ) {
     console.log('... client sending :', body);
-    // console.log('Socket du serveur ', socket);
-    // const sen = await this.userServ.searchUser(body.sender);
-    // const rec = await this.userServ.searchUser(body.receiver.nickname);
     const user = await this.friends.acceptFriend(
       body.sender,
       body.receiver.nickname,
     );
-    // console.log('resultat ', user);
     return { event: 'acceptedFriend', data: user };
-    // socket.emit('acceptedFriend', user);
   }
 
   @SubscribeMessage('denyFriend')
@@ -154,16 +142,11 @@ export class FriendshipGateway
     @MessageBody() body: any,
   ) {
     console.log('... client sending :', body);
-    // console.log('Socket du serveur ', socket);
-    // const sen = await this.userServ.searchUser(body.sender);
-    // const rec = await this.userServ.searchUser(body.receiver.nickname);
     const user = await this.friends.denyFriend(
       body.sender.nickname,
       body.receiver,
     );
-    // console.log('resultat ', user);
     return { event: 'denyFriend', data: user };
-    // socket.emit('acceptedFriend', user);
   }
 
   @SubscribeMessage('blockFriend')
@@ -172,24 +155,17 @@ export class FriendshipGateway
     @MessageBody() body: any,
   ) {
     console.log('... client sending :', body);
-    // console.log('Socket du serveur ', socket);
-    // const sen = await this.userServ.searchUser(body.sender);
-    // const rec = await this.userServ.searchUser(body.receiver.nickname);
     const user = await this.friends.blockFriend(
       body.sender.nickname,
       body.receiver,
     );
     return { event: 'blockFriend', data: user };
-    // A gerer les blocked friends differemment
   }
-  /* 3rd */
-  // handleMessage(client: any, text: string): void {
-  //   this.wss.emit('msgToClient', text);
-  // }
 
-  isAlreadyConnected(userLogin: string): Socket {
-    for (const [socket, login] of this.users) {
-      if (login == userLogin) return socket;
+  isAlreadyConnected(user: object): Array<Socket> {
+    const existingUser = this.users.get(user);
+    if (existingUser) {
+      return existingUser;
     }
     return null;
   }
@@ -198,5 +174,24 @@ export class FriendshipGateway
     const { Authcookie: userInfo } = parse(cookie);
     const idAtRt = JSON.parse(userInfo);
     return idAtRt;
+  }
+
+  findKeyByValue(map, searchValue) {
+    for (const [key, value] of map.entries()) {
+      if (value.includes(searchValue)) {
+        return key;
+      }
+    }
+    return null; // Value not found in the Map
+  }
+
+  @SubscribeMessage('realTimeUsers')
+  async allUsers(@ConnectedSocket() client: Socket) {
+    const user = this.findKeyByValue(this.users, client);
+    console.log('Le user ', user);
+    const allUsers = (await this.userServ.findAll()).filter(
+      (us) => us.login != user,
+    );
+    return { event: 'realTimeUsers', data: allUsers };
   }
 }

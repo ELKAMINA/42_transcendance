@@ -15,15 +15,16 @@ export interface friendshipState {
     friends: object [], // all friends that accepted invitation
     friendRequests: object [], // people asking me to join 
     blockedFriends: object [],
-    // socket: Socket,
+    socketId: string,
 }
 
 const initialState: friendshipState = {
     friendshipNamespace: 'friendship',
-    suggestions: [{}],
-    friends: [{}],
-    friendRequests: [{}],
-    blockedFriends: [{}]
+    suggestions: [],
+    friends: [],
+    friendRequests: [],
+    blockedFriends: [],
+    socketId: '',
     // socket: {} as unknown as Socket ,
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -45,33 +46,37 @@ export const friendshipSlice = createSlice({
         },
         updateFriendshipNamespace: (state, action: PayloadAction<string>) => {
             state.friendshipNamespace = action.payload;
-        }
-        
+        },
+        updateSocketId: (state = initialState, action: PayloadAction<string>) => {
+            state.socketId = action.payload;
+        }    
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
 // && !friends.includes(dat) && !requests.includes(dat.receiverId)
-export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, updateFriendshipNamespace } = friendshipSlice.actions
+export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, updateSocketId } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
 export const selectBlockedFriends = (state: RootState) => state.persistedReducer.friendship.blockedFriends
 export const selectFriendshipNamespace = (state: RootState) => state.persistedReducer.friendship.friendshipNamespace
+export const selectSocketId = (state: RootState) => state.persistedReducer.friendship.socketId
 
 export function FetchAllUsers() {
     return async (dispatch:any, getState: any) => {
         const friends = getState().persistedReducer.friendship.friends;
         const requests = getState().persistedReducer.friendship.friendRequests;
-        console.log("Les friends ", friends);
-        console.log("Les requests ", requests);
+        console.log("Les friends ", requests);
+        // console.log("Les requests ", requests);
         await api
         .get("http://0.0.0.0:4001/user/all")
         .then((res) => {
             let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
-            dispatch(updateAllUsers(dt))})
+            dispatch(updateAllUsers(dt))
+        })
         .catch((e) => {console.log("error ", e)});
-  }
+  } 
 }
 
 export function FetchAllFriendRequests() {
@@ -79,7 +84,6 @@ export function FetchAllFriendRequests() {
         await api
         .post("http://0.0.0.0:4001/friendship/allRequests", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-            console.log('la dataaa ', res);
             dispatch(updateAllRequests(res.data))})
         .catch((e) => {console.log("error ", e)});
   }
@@ -90,7 +94,6 @@ export function FetchAllFriends() {
         await api
         .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-            console.log('la dataaa ', res);
             dispatch(updateAllFriends(res.data))})
         .catch((e) => {console.log("error ", e)});
   }
@@ -101,7 +104,6 @@ export function FetchAllBlockedFriends() {
         await api
         .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-            console.log('la dataaa ', res);
             dispatch(updateAllFriends(res.data))})
         .catch((e) => {console.log("error ", e)});
   }
