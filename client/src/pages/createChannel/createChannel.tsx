@@ -28,8 +28,8 @@ function CreateChannel(props : CreateChannelProps) {
 
 	const dispatch = useDispatch();
 
-	// axios perso pour envoyer des requetes http au server, qui s'occupe de renvoyer 
-	const channelCreation = async () => {await api
+	const channelCreation = async () => {
+		await api
 		.post ('http://localhost:4001/channel/creation', {
 			login: newName,
 			id: Date.now(),
