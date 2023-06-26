@@ -12,7 +12,7 @@ export const channelUserSlice = createSlice({
 			// {type : channelUser/addChannelUser, payload: array of usernames}
 			
 			const userNames = action.payload;
-			console.log("userNames = ", userNames);
+			// console.log("userNames = ", userNames);
 
 			state = userList.filter(user => userNames.includes(user.name));
 		},
