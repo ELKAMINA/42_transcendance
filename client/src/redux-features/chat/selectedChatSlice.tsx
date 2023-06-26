@@ -13,7 +13,7 @@ export const selectedChatSlice = createSlice({
 	reducers: {
 		setSelectedChat : (state, action) => {
 			const selectedChat = action.payload;
-			console.log("selectedChat = ", selectedChat);
+			// console.log("selectedChat = ", selectedChat);
 			return selectedChat;
 		}
 	}
