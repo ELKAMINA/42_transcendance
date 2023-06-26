@@ -16,7 +16,7 @@ const Message = () => {
 	if (!selectedchat.chatHistory) {
 		return (
 		<Box p={3} >
-			<Typography variant='h2' gutterBottom sx={{color: '#07457E'}}>No messages yet! Say hello, don't be shy...</Typography>
+			<Typography variant='h2' gutterBottom sx={{color: '#07457E'}}>No messages yet!</Typography>
 		</Box>
 		)
 	}
