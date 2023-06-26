@@ -10,7 +10,7 @@
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "src", // when you import or reference a module without specifying a relative path, TypeScript will look for the module starting from the "src" directory.
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
