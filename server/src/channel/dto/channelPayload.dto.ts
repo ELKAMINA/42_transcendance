@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString } from "class-validator";
 import { UserDetails } from "src/user/types";
-// import { ChatElement } from '../../../../client/src/data/chatHistory'
 
 export class ChannelDto {
 	@IsString()
@@ -9,7 +8,6 @@ export class ChannelDto {
 	@ApiProperty()
 	login: string;
   
-	@IsString()
 	@IsNotEmpty()
 	@ApiProperty()
 	id: number;
@@ -23,8 +21,6 @@ export class ChannelDto {
 	@ApiProperty()
 	owner: string;
 
-	@IsString()
-	@IsNotEmpty()
 	@ApiProperty()
 	protected_by_password: string;
 
@@ -38,7 +34,6 @@ export class ChannelDto {
 	userList: UserDetails[];
 
 	@IsString()
-	@IsNotEmpty()
 	@ApiProperty()
 	avatar: string;
 
