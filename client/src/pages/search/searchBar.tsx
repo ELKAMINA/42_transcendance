@@ -3,7 +3,7 @@ import "./searchBar.css";
 
 import { FetchAllUsers, selectSuggestions} from '../../redux-features/friendship/friendshipSlice';
 // import { User } from "../../../../server/src/user/types/user-types.user.ts";
-import { UserDetails } from "../../../../server/src/user/types/user-types.user.ts";
+import { UserDetails } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { useEffect, useState } from 'react';
 
