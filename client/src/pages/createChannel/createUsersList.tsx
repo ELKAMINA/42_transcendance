@@ -1,51 +1,3 @@
-// import { useDispatch, useSelector } from "react-redux";
-// import { RootState } from "../../app/store";
-// import { userList } from "../../data/userList";
-// import React from "react";
-
-// function CreateUsersList() {
-// 	const channelUsersList = useSelector((state : RootState) => state.channelUser);
-
-// 	const dispatch = useDispatch();
-
-// 	function handleChannelUsersList(e: React.ChangeEvent<HTMLSelectElement>) {
-// 		dispatch({
-// 			type: "channelUser/addChannelUser",
-// 			payload: userList.find(user => user.name === e.target.value),
-// 		})
-// 	};
-
-// 	return (
-// 	<div className='entry1'>
-// 		<label className='form-channel-name' htmlFor='addUsers'>add users</label>
-// 		<br></br>
-// 		<select
-// 		name = "channelUsersList"
-// 		id = "channelUsers-select"
-// 		onChange={handleChannelUsersList}
-// 		>
-// 			<option value="default">add users to channel</option>
-// 			{
-// 				userList.map((user, index) => <option key={`${user.name}-${index}`}>{user.name}</option>)
-// 			}
-// 		</select>
-// 		<div>
-// 			{
-// 				channelUsersList.map((user, index) => (
-// 					<React.Fragment key={`${user.name}-${index}`}>
-// 						{index > 0 && <span>&nbsp;&nbsp;&nbsp;-&nbsp;</span>} {/* Display the separator with spaces for all users except the first one */}
-// 						{user.name}
-// 					</React.Fragment>
-// 				)
-// 				)
-// 			}
-// 		</div>
-// 	</div>
-// 	)
-// }
-
-// export default CreateUsersList
-
 import * as React from 'react';
 import { Theme, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -56,10 +8,11 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../app/store";
-import { userList } from "../../data/userList";
+import { useDispatch } from "react-redux";
 import { Stack } from '@mui/material';
+import { UserDetails } from '../../types/users/userType';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { FetchAllUsers, selectSuggestions } from '../../redux-features/friendship/friendshipSlice';
 
 
 const ITEM_HEIGHT = 48;
@@ -83,10 +36,18 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 }
 
 export default function MultipleSelectChip() {
+
 	const theme = useTheme();
 	const [personName, setPersonName] = React.useState<string[]>([]);
 
 	const dispatch = useDispatch();
+	const dispatchSync = useAppDispatch();
+
+	// when the search component is mounted the first time, get the list of users
+	React.useEffect(() => {dispatchSync(FetchAllUsers())}, []);
+
+	// const allUsers:UserDetails[] = useAppSelector(selectSuggestions);
+	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
@@ -128,13 +89,13 @@ export default function MultipleSelectChip() {
 						)}
 						MenuProps={MenuProps}
 					>
-						{userList.map((user) => (
+						{allUsers.map((user) => (
 							<MenuItem
-							key={user.id}
-							value={user.name}
-							style={getStyles(user.name, personName, theme)}
+							key={user.login}
+							value={user.login}
+							style={getStyles(user.login, personName, theme)}
 							>
-							{user.name}
+							{user.login}
 							</MenuItem>
 						))}
 					</Select>
