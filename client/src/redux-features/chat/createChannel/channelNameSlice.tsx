@@ -9,7 +9,7 @@ export const channelSlice = createSlice({
 		changeChannelName: (state, action) => {
 			// {type : channelName/changeChannelName, payload: <name>}
 			const newChannelName = action.payload;
-			console.log("name ok!");
+			// console.log("name ok!");
 			return newChannelName;
 		},
 	}
