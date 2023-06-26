@@ -1,13 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import "./createChannel.css"
-import { RootState } from "../../app/store";
 import { Box, Stack, TextField } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { Channel } from "../../types/chat/chatTypes";
+import { fetchAllChannels, selectAllChannels } from "../../redux-features/chat/channelsSlice";
+import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 
 function CreateName() {
-	const channels: Channel[] = useSelector((state: RootState) => state.persistedReducer.channels);
+	// const channels: Channel[] = useSelector((staconst dispatch = useAppDispatch();
+	const dispatchSync = useAppDispatch();
+	
+	React.useEffect(() => {dispatchSync(fetchAllChannels())}, [dispatchSync]);
+
+	const channels = useAppSelector(selectAllChannels) as Channel[];
+	
 	const [channelName, setChannelName] = useState('');
 	const [isTaken, setIsTaken] = useState(false);
 
@@ -16,7 +23,7 @@ function CreateName() {
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value;
 		setChannelName(value);
-		console.log(value);
+		// console.log(value);
 		if (channels.find(channel => channel.login === value)) {
 		  console.log("channelName taken")
 		  setIsTaken(true);

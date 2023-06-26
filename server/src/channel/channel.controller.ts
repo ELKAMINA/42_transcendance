@@ -13,9 +13,16 @@ export class channelController {
   constructor(private ChannelService: ChannelService, private prismaService: PrismaService) {}
 
   	@Post('/creation')
-	@Public()
+	@Public() // TODO - remove public
 	createChannel(
 		@Body() dto: ChannelDto,): Promise<object> {
 			return this.ChannelService.createChannel(dto);
   }
+
+  @Post('/all')
+  @Public() // TODO - remove public
+  getUserChannels(
+	  @Body() nickname): Promise<object> {
+		  return this.ChannelService.getUserChannels(nickname);
+}
 }

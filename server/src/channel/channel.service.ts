@@ -10,7 +10,6 @@ export class ChannelService {
 		private prisma: PrismaService) {}
 
 	async createChannel(dto: ChannelDto): Promise<object> {
-		console.log("coucouuuuu");
 		const pwd = await argon.hash(dto.password);
 		try {
 
@@ -21,7 +20,6 @@ export class ChannelService {
 			const creator = await this.prisma.user.findUnique({
 				where: { login: dto.owner },
 			});
-			console.log('creator = ', creator);
 			if (!creator) {
 				throw new NotFoundException(`User with login '${dto.owner}' not found.`);
 			}
@@ -35,7 +33,7 @@ export class ChannelService {
 						connect: {login: dto.owner}
 					},
 					type: dto.type,
-					key: dto.password,
+					key: pwd,
 				} as Prisma.ChannelCreateInput,
 			});
 		return channel;
@@ -47,6 +45,22 @@ export class ChannelService {
 			  }
 			  throw error;
 		}
+	}
+
+	async getUserChannels(nickname : string): Promise<object> {
+		const user = await this.prisma.user.findUnique({
+			where: { login: nickname },
+			include: {
+				channels : true, createdChannels: true
+			} // the answer will contain the channels field of user
+		});
+
+		if (!user) {
+			// Handle the case when the user is not found
+			throw new NotFoundException('User not found');
+		  }
+
+		return user;
 	}
 }
 
