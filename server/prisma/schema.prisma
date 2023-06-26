@@ -65,15 +65,14 @@ model User {
 }
 
 model Channel {
-  name      	String   @id
+  name      	String	 @unique
   members     	User[]   @relation("Membership")
   createdBy   	User?    @relation("Creation", fields: [createdById], references: [user_id])
   createdById 	String?  @unique
   createdAt   	DateTime @default(now())
   updatedAt   	DateTime @updatedAt
-  status      	String
   type			String
-  key         	String
+  key         	String?
 //   userUser_id 	String
 }
 
