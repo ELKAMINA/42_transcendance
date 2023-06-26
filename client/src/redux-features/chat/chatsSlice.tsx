@@ -17,16 +17,16 @@ export const chatsSlice = createSlice({
 			const newchat = action.payload
 			
 			// FOR DEBUG
-			console.log("adding chat...");
+			// console.log("adding chat...");
 			
 			state.push(newchat);
 
 			// FOR DEBUG
 			console.log("chat ADDED WITH SUCCESS!")
-			console.log("chat name : " + newchat.login) 
-			console.log("chat id = " + newchat.id)
-			console.log("chat type = " + newchat.type)
-			console.log("chat pwd = " + newchat.password)
+			// console.log("chat name : " + newchat.login) 
+			// console.log("chat id = " + newchat.id)
+			// console.log("chat type = " + newchat.type)
+			// console.log("chat pwd = " + newchat.password)
 			// console.log("chat users = " + newchat.users[0]);
 		},
 		deleteChat: (state, action) => {
@@ -36,7 +36,7 @@ export const chatsSlice = createSlice({
 			const filteredchats = state.filter(chat => chat.login !== chatToDelete);
 			
 			// FOR DEBUG
-			console.log("chat " + action.payload + " deleted !")
+			// console.log("chat " + action.payload + " deleted !")
 			state.map(chat => console.log(chat.login));
 
 			// Update the state by returning a new array
@@ -44,9 +44,9 @@ export const chatsSlice = createSlice({
 		},
 		deleteAllChats: (state, action) => {
 			if (action.payload === true) {
-				console.log("I will now delete all the chats");
+				// console.log("I will now delete all the chats");
 				state.splice(0, state.length);
-				console.log("size of chats now : ", state.length);
+				// console.log("size of chats now : ", state.length);
 				return state;
 			}
 		}
