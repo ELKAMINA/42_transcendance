@@ -14,7 +14,8 @@ export class channelController {
 
   	@Post('/creation')
 	@Public()
-	async createChannel (@Body()payload: ChannelDto) {
-		console.log('payload = ', payload);
+	createChannel(
+		@Body() dto: ChannelDto,): Promise<object> {
+			return this.ChannelService.createChannel(dto);
   }
 }
