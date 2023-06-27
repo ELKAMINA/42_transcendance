@@ -22,15 +22,18 @@ export const channelsSlice = createSlice({
 	initialState,
 	reducers: {
 
-		getAllChannels: (state, action: PayloadAction<Channel[]>) => {
-			state.allChannels = action.payload;
+		updateAllChannels: (state, action: PayloadAction<Channel[]>) => {
+			return {
+				...state,
+				allChannels: [...action.payload]
+			}
 		},
 		  
-		getCreatedChannels: (state, action : PayloadAction<Channel[]>) => {
+		updateCreatedChannels: (state, action : PayloadAction<Channel[]>) => {
 			state.createdChannels = action.payload
 		},
 
-		getMemberedChannels: (state, action : PayloadAction<Channel[]>) => {
+		updateMemberedChannels: (state, action : PayloadAction<Channel[]>) => {
 			state.memberedChannels = action.payload
 		},
 		
@@ -86,16 +89,16 @@ export function fetchAllChannels() {
 		  "http://localhost:4001/channel/all",
 		  requestBody
 		);
-		console.log('response = ', response.data);
-		// dispatch(getAllChannels(response.data));
+		console.log('getting channels from database = ', response.data);
+		dispatch(updateAllChannels(response.data));
 
 	  } catch (error) {
-		console.log('error', error);
+		console.log('error while getting channels from database', error);
 	  }
 	};
 }
 
-export const {getAllChannels} = channelsSlice.actions;
+export const {updateAllChannels} = channelsSlice.actions;
 
 export default channelsSlice.reducer
 
