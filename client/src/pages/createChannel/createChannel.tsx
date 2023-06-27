@@ -6,12 +6,14 @@ import React from "react";
 import CreateName from "./createName";
 import CreateUsersList from "./createUsersList";
 import CreateType from "./createChannelType";
-import { ChannelTypeState } from '../../redux-features/chat/createChannel/channelTypeSlice';
+import { ChannelTypeState, resetChannelType } from '../../redux-features/chat/createChannel/channelTypeSlice';
 import { Box, Button, Stack } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 // import { ChatHistory_1 } from "../../data/chatHistory";
 import api from '../../utils/Axios-config/Axios' 
+import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
+import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -26,9 +28,10 @@ function CreateChannel(props : CreateChannelProps) {
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 
-	const dispatch = useDispatch();
+	// const dispatch = useDispatch();
 
 	const channelCreation = async () => {
+		console.log('sending data to backend', newName)
 		await api
 		.post ('http://localhost:4001/channel/creation', {
 			login: newName,
@@ -42,46 +45,46 @@ function CreateChannel(props : CreateChannelProps) {
 			// chatHistory: ChatHistory_1,
 		})
 		.then ((response) => {
-			console.log('response = ', response);
+			console.log('this channel has been uploaded = ', response);
+			dispatch(resetChannelName());
+			dispatch(resetChannelType());
+			dispatch(resetChannelUser());
 		})
 		.catch ((error) => {
 			console.log('error = ', error);
 		})
 	}
 
-	function handleCreateChannel() {
-		dispatch({
-			type: "channels/addChannel",
-			payload: {
-				login: newName,
-				id: Date.now(),
-				type: channelType.type,
-				owner: authState.nickname, 
-				protected_by_password: channelType.protected_by_password,
-				password: channelType.password,
-				userList: channelUsersList,
-				avatar: authState.avatar,
-				chatHistory: [],
-			}
-		})
-
-		console.log("channel created!")
-		props.setTrigger(false);
-	}
-
 	function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault(); // Prevents the default form submission behavior
 
 		// Submit the form data
-		handleCreateChannel();
+		// console.log('login = ', newName)
+		// console.log('type = ', channelType.type)
+		// console.log('owner = ', authState.nickname)
+		// console.log('protected_by_pwd = ', channelType.protected_by_password)
+		// console.log('password = ', channelType.password)
+		console.log('userList = ', channelUsersList)
+		// console.log('avatar = ', authState.avatar)
+
 		channelCreation();
-	  }
+		props.setTrigger(false);
+	}
+
+	const dispatch = useDispatch();
+
+	function handleCancelFormSubmit() {
+		dispatch(resetChannelType());
+		dispatch(resetChannelName());
+		dispatch(resetChannelUser());
+		props.setTrigger(false);
+	}
 	
 	return (props.trigger) ? (
 		<Box className='create-channel-popup'>
 			<Stack spacing={2} className='create-channel-popup-inner'>
 				<Box className="close-button-container">
-					<IconButton aria-label='close' size='large' onClick={() => props.setTrigger(false)}>
+					<IconButton aria-label='close' size='large' onClick={handleCancelFormSubmit}>
 						<DisabledByDefaultIcon fontSize='small' sx={{ color: '#99E100' }} />
 					</IconButton>
 				</Box>
