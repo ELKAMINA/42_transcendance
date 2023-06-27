@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsInt } from "class-validator";
+import { IsNotEmpty, IsString, IsInt, IsOptional, ValidateIf } from "class-validator";
 import { UserDetails } from "src/user/types";
 
 export class ChannelDto {
@@ -23,19 +23,23 @@ export class ChannelDto {
 	owner: string;
 
 	@ApiProperty()
-	protected_by_password: string;
+	protected_by_password: boolean;
 
 	@IsString()
 	@IsNotEmpty()
 	@ApiProperty()
+	// @IsOptional()
+	@ValidateIf((obj) => obj.protected_by_password === true) // if true, the password property will be validated as mandatory using the @IsNotEmpty() decorator. 
 	password: string;
 
-	@IsNotEmpty()
+	// @IsNotEmpty()
 	@ApiProperty()
+	@IsOptional()
 	userList: UserDetails[];
 
 	@IsString()
 	@ApiProperty()
+	@IsOptional()
 	avatar: string;
 
 	// @IsNotEmpty()
