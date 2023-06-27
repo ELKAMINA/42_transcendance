@@ -2,13 +2,12 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import { channelList } from "../../data/channelList";
 import { Channel } from "../../types/chat/chatTypes";
 import { RootState } from "../../app/store";
-import { Response } from "express";
 import api from "../../utils/Axios-config/Axios";
 
 export interface ChannelSlice {
-	allChannels : object[],
-	createdChannels : object[],
-	memberedChannels : object[],
+	allChannels : Channel[],
+	createdChannels : Channel[],
+	memberedChannels : Channel[],
 }
 
 const initialState : ChannelSlice = {
@@ -23,15 +22,15 @@ export const channelsSlice = createSlice({
 	initialState,
 	reducers: {
 
-		getAllChannels: (state, action : PayloadAction<[{}]>) => {
-			state.allChannels = action.payload
+		getAllChannels: (state, action: PayloadAction<Channel[]>) => {
+			state.allChannels = action.payload;
 		},
-
-		getCreatedChannels: (state, action : PayloadAction<[{}]>) => {
+		  
+		getCreatedChannels: (state, action : PayloadAction<Channel[]>) => {
 			state.createdChannels = action.payload
 		},
 
-		getMemberedChannels: (state, action : PayloadAction<[{}]>) => {
+		getMemberedChannels: (state, action : PayloadAction<Channel[]>) => {
 			state.memberedChannels = action.payload
 		},
 		
@@ -76,19 +75,27 @@ export const channelsSlice = createSlice({
 	}
 })
 
-export const {getAllChannels} = channelsSlice.actions;
 
 export function fetchAllChannels() {
 	return async (dispatch: any, getState: any) => {
-		await api
-		.post("http://localhost:4001/channel/all", getState().persistedReducer.auth.nickname)
-		.then((response) => {
-			console.log('resssssponse = ', response);
-			// dispatch(getAllChannels(response.data));
-		})
-		.catch((error) => console.log('errooooooor', error))
-	}
+	  const requestBody = {
+		login: getState().persistedReducer.auth.nickname,
+	  };
+	  try {
+		const response = await api.post(
+		  "http://localhost:4001/channel/all",
+		  requestBody
+		);
+		console.log('response = ', response.data);
+		// dispatch(getAllChannels(response.data));
+
+	  } catch (error) {
+		console.log('error', error);
+	  }
+	};
 }
+
+export const {getAllChannels} = channelsSlice.actions;
 
 export default channelsSlice.reducer
 
