@@ -48,7 +48,7 @@ export function FetchAllUsers() {
             let dt;
             dt = (res.data).filter((dat: any) => dat.login !== getState().persistedReducer.auth.nickname)
             dispatch(updateAllUsers(dt))})
-        .catch((e) => {console.log("error ", e)});
+        .catch((e) => {});
   }
 }
 export default friendshipSlice.reducer
