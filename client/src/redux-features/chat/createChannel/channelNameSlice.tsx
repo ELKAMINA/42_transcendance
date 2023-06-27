@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: string = "";
 
-export const channelSlice = createSlice({
+export const channelNameSlice = createSlice({
 	name: "channelName",
 	initialState,
 	reducers: {
@@ -12,9 +12,10 @@ export const channelSlice = createSlice({
 			// console.log("name ok!");
 			return newChannelName;
 		},
+		resetChannelName: () => initialState,
 	}
 })
 
-export const { changeChannelName } = channelSlice.actions
+export const { changeChannelName, resetChannelName } = channelNameSlice.actions
 
-export default channelSlice.reducer
+export default channelNameSlice.reducer
