@@ -31,7 +31,6 @@ function CreateChannel(props : CreateChannelProps) {
 	// const dispatch = useDispatch();
 
 	const channelCreation = async () => {
-		console.log('sending data to backend', newName)
 		await api
 		.post ('http://localhost:4001/channel/creation', {
 			login: newName,
@@ -45,7 +44,7 @@ function CreateChannel(props : CreateChannelProps) {
 			// chatHistory: ChatHistory_1,
 		})
 		.then ((response) => {
-			console.log('this channel has been uploaded = ', response);
+			console.log('this channel has been added to the database = ', response);
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
 			dispatch(resetChannelUser());
@@ -58,15 +57,15 @@ function CreateChannel(props : CreateChannelProps) {
 	function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault(); // Prevents the default form submission behavior
 
-		// Submit the form data
 		// console.log('login = ', newName)
 		// console.log('type = ', channelType.type)
 		// console.log('owner = ', authState.nickname)
 		// console.log('protected_by_pwd = ', channelType.protected_by_password)
 		// console.log('password = ', channelType.password)
-		console.log('userList = ', channelUsersList)
+		// console.log('userList = ', channelUsersList)
 		// console.log('avatar = ', authState.avatar)
 
+		// Submit the form data
 		channelCreation();
 		props.setTrigger(false);
 	}
