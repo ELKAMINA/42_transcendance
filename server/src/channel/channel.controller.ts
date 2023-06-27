@@ -17,12 +17,12 @@ export class channelController {
 	createChannel(
 		@Body() dto: ChannelDto,): Promise<object> {
 			return this.ChannelService.createChannel(dto);
-  }
+	}
 
-  @Post('/all')
-  @Public() // TODO - remove public
-  getUserChannels(
+  	@Post('/all')
+  	@Public() // TODO - remove public
+  	getUserChannels(
 	  @Body() nickname): Promise<object> {
 		  return this.ChannelService.getUserChannels(nickname);
-}
+	}
 }
