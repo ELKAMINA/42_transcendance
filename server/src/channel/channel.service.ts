@@ -10,6 +10,7 @@ export class ChannelService {
 		private prisma: PrismaService) {}
 
 	async createChannel(dto: ChannelDto): Promise<object> {
+		console.log('dto = ', dto)
 		const pwd = await argon.hash(dto.password);
 		try {
 
@@ -36,6 +37,7 @@ export class ChannelService {
 					key: pwd,
 				} as Prisma.ChannelCreateInput,
 			});
+		console.log('this channel has been added to the database : ', channel)
 		return channel;
 		} catch (error: any) {
 			if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -47,12 +49,17 @@ export class ChannelService {
 		}
 	}
 
-	async getUserChannels(nickname : string): Promise<object> {
+	async getUserChannels(requestBody: {}): Promise<object> {
 		const user = await this.prisma.user.findUnique({
-			where: { login: nickname },
+			where: requestBody,
+			// the include option means that when fetching the user information, 
+			// the response will include the 'channels' and 
+			// 'createdChannels' fields of the user in 
+			// addition to the main user entity.
 			include: {
-				channels : true, createdChannels: true
-			} // the answer will contain the channels field of user
+				channels : true, 
+				createdChannels: true,
+			}
 		});
 
 		if (!user) {
@@ -60,7 +67,8 @@ export class ChannelService {
 			throw new NotFoundException('User not found');
 		  }
 
-		return user;
+		const output = [...user.channels, ...user.createdChannels];
+		return output;
 	}
 }
 
