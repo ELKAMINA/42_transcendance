@@ -17,22 +17,21 @@ import { fetchAllChannels, selectAllChannels } from '../redux-features/chat/chan
 function Chat () {
 	const currentRoute = window.location.pathname;
 	const dispatchSimple = useDispatch();
-
 	const dispatch = useAppDispatch();
+
 	React.useEffect(() => {dispatch(fetchAllChannels())}, [dispatch]);
 
-	const channels: object[] = useAppSelector((state) => selectAllChannels(state));
-	console.log("aaaal our channels : ", channels);
+	const channels = useAppSelector((state) => selectAllChannels(state)) as Channel[];
+	console.log("aaaall our channels : ", channels);
 
-	// when the display channels component is mounted the first time, get the list of users // TO DO : maybe change that
+	// when the display channels component is mounted the first time, get the list of users
 	React.useEffect(() => {dispatch(FetchAllUsers())}, []);
-	
 	// get list of users objects in a array
 	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
 	// allUsers.map((user) => console.log('users = ', user));
 
 	React.useEffect(() => {
-		dispatchSimple(initChat([...allUsers, ...channels]));
+		dispatchSimple(initChat([...allUsers]));
 	}, []);
 
 	// the list of the Chats
