@@ -53,13 +53,13 @@ export default function MultipleSelectChip() {
 		// extracting value using destructuring assignment
 		// value is the current value of the the select input
 		const {target: { value }} = event;
-		console.log("value = ", value)
 
 		setPersonName(
 			// On autofill we get a stringified value.
 			typeof value === 'string' ? value.split(',') : value,
 		);
 		
+		const newUsers: UserDetails[] = allUsers.filter((user) => value.includes(user.login));
 		dispatch({
 			type: "channelUser/addChannelUser",
 			payload: value,
