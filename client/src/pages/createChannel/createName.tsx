@@ -13,7 +13,7 @@ function CreateName() {
 	
 	React.useEffect(() => {dispatchSync(fetchAllChannels())}, [dispatchSync]);
 
-	const channels = useAppSelector(selectAllChannels) as Channel[];
+	// const channels = useAppSelector(selectAllChannels) as Channel[];
 	
 	const [channelName, setChannelName] = useState('');
 	const [isTaken, setIsTaken] = useState(false);
@@ -22,16 +22,21 @@ function CreateName() {
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value;
-		setChannelName(value);
 		// console.log(value);
-		if (channels.find(channel => channel.login === value)) {
-		  console.log("channelName taken")
-		  setIsTaken(true);
-		} else {
-		  console.log("channel name is available!")
-		  dispatch(changeChannelName(value))
-		  setIsTaken(false);
-		} 
+		setChannelName(value);
+
+		setIsTaken(false);
+		dispatch(changeChannelName(value))
+
+
+		// if (channels.find(channel => channel.login === value)) {
+		//   console.log("channelName taken")
+		//   setIsTaken(true);
+		// } else {
+		//   console.log("channel name is available!")
+		//   dispatch(changeChannelName(value))
+		//   setIsTaken(false);
+		// } 
 	}
 	  
 
