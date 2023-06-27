@@ -10,7 +10,7 @@ export const chatsSlice = createSlice({
 	reducers: {
 		initChat : (state, action) => {
 			state = action.payload;
-			console.log("all my chats : ", state);
+			// console.log("all my chats : ", state);
 			return state;
 		},
 		addChat: (state, action) => {
