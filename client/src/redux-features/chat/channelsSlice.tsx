@@ -30,11 +30,17 @@ export const channelsSlice = createSlice({
 		},
 		  
 		updateCreatedChannels: (state, action : PayloadAction<Channel[]>) => {
-			state.createdChannels = action.payload
+			return {
+				...state,
+				createdChannels: [...action.payload]
+			}
 		},
 
 		updateMemberedChannels: (state, action : PayloadAction<Channel[]>) => {
-			state.memberedChannels = action.payload
+			return {
+				...state,
+				memberedChannels: [...action.payload]
+			}
 		},
 		
 		// addChannel: (state, action) => {
