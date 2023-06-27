@@ -62,7 +62,7 @@ export default function MultipleSelectChip() {
 		const newUsers: UserDetails[] = allUsers.filter((user) => value.includes(user.login));
 		dispatch({
 			type: "channelUser/addChannelUser",
-			payload: value,
+			payload: newUsers,
 		})
 	};
 

@@ -9,8 +9,8 @@ export const channelUserSlice = createSlice({
 	initialState,
 	reducers: {
 		addChannelUser: (state, action) => {
-			const userNames = action.payload;
-			
+			// action.payload is an array of UserDetails
+			state.push(...action.payload);
 		},
 		deleteChannelUser: (state, action) => {
 			state = state.filter(user => user.login !== action.payload);
