@@ -17,12 +17,32 @@ export class channelController {
 	createChannel(
 		@Body() dto: ChannelDto,): Promise<object> {
 			return this.ChannelService.createChannel(dto);
-	}
+		}
 
-  	@Post('/all')
+  	@Post('/userchannels')
   	@Public() // TODO - remove public
   	getUserChannels(
-	  @Body() nickname): Promise<object> {
-		  return this.ChannelService.getUserChannels(nickname);
-	}
+		@Body() requestBody: {}): Promise<object> {
+			return this.ChannelService.getUserChannels(requestBody);
+		}
+
+	@Post('/createdby')
+	@Public() // TODO - remove public
+	getCreatedByUserChannels(
+		@Body() requestBody : {}): Promise<object> {
+			return this.ChannelService.getCreatedByUserChannels(requestBody);
+		}
+	
+	@Post('/ismember')
+	@Public() // TODO - remove public
+	getUserIsAMemberChannels(
+		@Body() requestBody : {}): Promise<object> {
+	 		return this.ChannelService.getUserIsAMemberChannels(requestBody);
+		}
+
+	@Post('/all')
+	@Public() // TODO - remove public
+	getAllChannelsInDatabase(): Promise<object> {
+			return this.ChannelService.getAllChannelsInDatabase();
+		}
 }
