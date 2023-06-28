@@ -19,7 +19,7 @@ function Chat () {
 
 	React.useEffect(() => {dispatch(fetchUserChannels())}, []);
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
-	console.log("user's channels : ", channels);
+	// console.log("user's channels : ", channels);
 
 	React.useEffect(() => {
 		dispatchSimple(initChat([...channels]));
