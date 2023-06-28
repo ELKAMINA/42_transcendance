@@ -10,8 +10,7 @@ export class ChannelService {
 		private prisma: PrismaService) {}
 
 	async createChannel(dto: ChannelDto): Promise<object> {
-		console.log('dto = ', dto)
-		const pwd = await argon.hash(dto.password);
+		const pwd = await argon.hash(dto.key);
 		try {
 
 			// before creating the Channel record, 
@@ -19,19 +18,19 @@ export class ChannelService {
 			// If the creator record is not found, 
 			// we throw a NotFoundException with an appropriate error message.
 			const creator = await this.prisma.user.findUnique({
-				where: { login: dto.owner },
+				where: { login: dto.createdBy },
 			});
 			if (!creator) {
-				throw new NotFoundException(`User with login '${dto.owner}' not found.`);
+				throw new NotFoundException(`User with login '${dto.createdBy}' not found.`);
 			}
 
 			// we create channel record
 			const channel = await this.prisma.channel.create({
 				data: {
-					name: dto.login,
-					members: {connect: dto.userList.map((user) => ({ login: user.login })),},
+					name: dto.name,
+					members: {connect: dto.members.map((user) => ({ login: user.login })),},
 					createdBy: {
-						connect: {login: dto.owner}
+						connect: {login: dto.createdBy}
 					},
 					type: dto.type,
 					key: pwd,
@@ -50,6 +49,7 @@ export class ChannelService {
 	}
 
 	async getUserChannels(requestBody: {}): Promise<object> {
+		console.log('requestBody = ', requestBody);
 		const user = await this.prisma.user.findUnique({
 			where: requestBody,
 			// the include option means that when fetching the user information, 
@@ -63,12 +63,49 @@ export class ChannelService {
 		});
 
 		if (!user) {
-			// Handle the case when the user is not found
 			throw new NotFoundException('User not found');
 		  }
 
 		const output = [...user.channels, ...user.createdChannels];
 		return output;
 	}
-}
 
+	async getCreatedByUserChannels(requestBody: {}): Promise<object> {
+		const user = await this.prisma.user.findUnique({
+			where: requestBody,
+			include: {
+				channels : false, 
+				createdChannels: true,
+			}
+		});
+
+		if (!user) {
+			throw new NotFoundException('User not found');
+		}
+
+		const output = [...user.createdChannels];
+		return output;
+	}
+
+	async getUserIsAMemberChannels(requestBody: {}): Promise<object> {
+		const user = await this.prisma.user.findUnique({
+			where: requestBody,
+			include: {
+				channels : true, 
+				createdChannels: false,
+			}
+		});
+
+		if (!user) {
+			throw new NotFoundException('User not found');
+		}
+
+		const output = [...user.channels];
+		return output;
+	}
+
+	async getAllChannelsInDatabase(): Promise<object> {
+		const channels = await this.prisma.channel.findMany();
+		return channels;
+	}
+}
