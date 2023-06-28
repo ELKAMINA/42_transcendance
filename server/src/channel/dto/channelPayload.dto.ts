@@ -6,12 +6,12 @@ export class ChannelDto {
 	@IsString()
 	@IsNotEmpty()
 	@ApiProperty()
-	login: string;
+	name: string;
   
 	@IsNotEmpty()
 	@ApiProperty()
 	@IsInt()
-	id: number;
+	channelId: number;
   
 	@IsString()
 	@ApiProperty()
@@ -20,7 +20,7 @@ export class ChannelDto {
 	@IsString()
 	@IsNotEmpty()
 	@ApiProperty()
-	owner: string;
+	createdBy: string;
 
 	@ApiProperty()
 	protected_by_password: boolean;
@@ -30,12 +30,12 @@ export class ChannelDto {
 	@ApiProperty()
 	// @IsOptional()
 	@ValidateIf((obj) => obj.protected_by_password === true) // if true, the password property will be validated as mandatory using the @IsNotEmpty() decorator. 
-	password: string;
+	key: string;
 
 	// @IsNotEmpty()
 	@ApiProperty()
 	@IsOptional()
-	userList: UserDetails[];
+	members: UserDetails[];
 
 	@IsString()
 	@ApiProperty()
