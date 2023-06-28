@@ -5,15 +5,17 @@ import { RootState } from "../../app/store";
 import api from "../../utils/Axios-config/Axios";
 
 export interface ChannelSlice {
-	allChannels : Channel[],
+	userChannels : Channel[],
 	createdChannels : Channel[],
 	memberedChannels : Channel[],
+	allChannels : Channel[],
 }
 
 const initialState : ChannelSlice = {
-	allChannels: [],
+	userChannels: [],
 	createdChannels : [],
 	memberedChannels : [],
+	allChannels: [],
 };
 
 // this is an array of channels
@@ -22,10 +24,10 @@ export const channelsSlice = createSlice({
 	initialState,
 	reducers: {
 
-		updateAllChannels: (state, action: PayloadAction<Channel[]>) => {
+		updateUserChannels: (state, action: PayloadAction<Channel[]>) => {
 			return {
 				...state,
-				allChannels: [...action.payload]
+				userChannels: [...action.payload]
 			}
 		},
 		  
@@ -42,7 +44,98 @@ export const channelsSlice = createSlice({
 				memberedChannels: [...action.payload]
 			}
 		},
-		
+
+		updateAllChannels: (state, action: PayloadAction<Channel[]>) => {
+			return {
+				...state,
+				allChannels: [...action.payload]
+			}
+		},
+	}
+})
+
+export function fetchUserChannels() {
+	return async (dispatch: any, getState: any) => {
+		const requestBody = {
+			login: getState().persistedReducer.auth.nickname,
+	  	};
+	  try {
+		const response = await api.post(
+			"http://localhost:4001/channel/userchannels",
+		  	requestBody
+		);
+			// console.log('getting channels from database = ', response.data);
+			dispatch(updateUserChannels(response.data));
+
+	  } catch (error) {
+			console.log('error while getting channels from database', error);
+	  }
+	};
+}
+
+export function fetchCreatedByUserChannels() {
+	return async (dispatch: any, getState: any) => {
+
+		const requestBody = {
+			login: getState().persistedReducer.auth.nickname,
+		};
+
+		try {
+		const response = await api.post(
+			"http://localhost:4001/channel/createdby",
+			requestBody
+		);
+		// console.log('getting created by user channels from database = ', response.data);
+			dispatch(updateCreatedChannels(response.data));
+
+		} catch (error) {
+			console.log('error while getting ccreated by user channels from database', error);
+		}
+	};
+}
+
+export function fetchUserIsAMemberChannels() {
+	return async (dispatch: any, getState: any) => {
+
+		const requestBody = {
+			login: getState().persistedReducer.auth.nickname,
+		};
+
+		try {
+			const response = await api.post(
+				"http://localhost:4001/channel/ismember",
+				requestBody
+			);
+			console.log('getting is member channels from database = ', response.data);
+			dispatch(updateMemberedChannels(response.data));
+		} catch (error) {
+			console.log('error while getting is member channels from database', error);
+		}
+	};
+}
+
+export function fetchAllChannelsInDatabase() {
+	return async (dispatch: any, getState: any) => {
+		try {
+			const response = await api.post("http://localhost:4001/channel/all",);
+			dispatch(updateAllChannels(response.data));
+
+		} catch (error) {
+			console.log('error while getting all channels from database', error);
+		}
+	};
+}
+
+export const {updateUserChannels, updateCreatedChannels, updateMemberedChannels, updateAllChannels} = channelsSlice.actions;
+
+export default channelsSlice.reducer
+
+export const selectUserChannels = (state: RootState) => state.persistedReducer.channels.userChannels
+export const selectCreatedChannels = (state: RootState) => state.persistedReducer.channels.createdChannels
+export const selectMemberedChannels = (state: RootState) => state.persistedReducer.channels.memberedChannels
+export const selectAllChannels = (state: RootState) => state.persistedReducer.channels.allChannels
+
+
 		// addChannel: (state, action) => {
 		// 	// {type : channels/addChannel, payload: Channel}
 		// 	const newChannel = action.payload
@@ -81,33 +174,3 @@ export const channelsSlice = createSlice({
 		// 		return state;
 		// 	}
 		// }
-	}
-})
-
-
-export function fetchAllChannels() {
-	return async (dispatch: any, getState: any) => {
-	  const requestBody = {
-		login: getState().persistedReducer.auth.nickname,
-	  };
-	  try {
-		const response = await api.post(
-		  "http://localhost:4001/channel/all",
-		  requestBody
-		);
-		console.log('getting channels from database = ', response.data);
-		dispatch(updateAllChannels(response.data));
-
-	  } catch (error) {
-		console.log('error while getting channels from database', error);
-	  }
-	};
-}
-
-export const {updateAllChannels} = channelsSlice.actions;
-
-export default channelsSlice.reducer
-
-export const selectAllChannels = (state: RootState) => state.persistedReducer.channels.allChannels
-export const selectCreatedChannels = (state: RootState) => state.persistedReducer.channels.createdChannels
-export const selectMemberedChannels = (state: RootState) => state.persistedReducer.channels.memberedChannels
