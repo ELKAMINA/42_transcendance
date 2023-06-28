@@ -8,30 +8,21 @@ import { DisplayedChat, Channel } from '../types/chat/chatTypes'
 import './chat.css'
 import { setSelectedChat } from '../redux-features/chat/selectedChatSlice';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
-import { UserDetails } from "../types/users/userType";
 import React from "react";
-import { FetchAllUsers, selectSuggestions } from '../redux-features/friendship/friendshipSlice';
 import { initChat } from '../redux-features/chat/chatsSlice';
-import { fetchAllChannels, selectAllChannels } from '../redux-features/chat/channelsSlice';
+import { fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
 
 function Chat () {
 	const currentRoute = window.location.pathname;
 	const dispatchSimple = useDispatch();
 	const dispatch = useAppDispatch();
 
-	React.useEffect(() => {dispatch(fetchAllChannels())}, [dispatch]);
-
-	const channels = useAppSelector((state) => selectAllChannels(state)) as Channel[];
-	console.log("aaaall our channels : ", channels);
-
-	// when the display channels component is mounted the first time, get the list of users
-	React.useEffect(() => {dispatch(FetchAllUsers())}, []);
-	// get list of users objects in a array
-	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
-	// allUsers.map((user) => console.log('users = ', user));
+	React.useEffect(() => {dispatch(fetchUserChannels())}, []);
+	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
+	console.log("user's channels : ", channels);
 
 	React.useEffect(() => {
-		dispatchSimple(initChat([...allUsers]));
+		dispatchSimple(initChat([...channels]));
 	}, []);
 
 	// the list of the Chats
@@ -40,7 +31,7 @@ function Chat () {
 	// define what to do when a Chat is selected
 	function handleSelectChat (chatID : string) {
 		// console.log('chatID = ', chatID);
-		const selectedChat = chats.find(chat => chat.login === chatID)
+		const selectedChat = chats.find(chat => chat.name === chatID)
 		// console.log("selectedChat.name = ", selectedChat.name)
 		dispatchSimple(setSelectedChat(selectedChat))
 	}
