@@ -33,13 +33,13 @@ function CreateChannel(props : CreateChannelProps) {
 	const channelCreation = async () => {
 		await api
 		.post ('http://localhost:4001/channel/creation', {
-			login: newName,
-			id: Date.now(),
+			name: newName,
+			channelId: Date.now(),
 			type: channelType.type,
-			owner: authState.nickname, 
+			createdBy: authState.nickname, 
 			protected_by_password: channelType.protected_by_password,
-			password: channelType.password,
-			userList: channelUsersList,
+			key: channelType.key,
+			members: channelUsersList,
 			avatar: authState.avatar,
 			// chatHistory: ChatHistory_1,
 		})
