@@ -20,7 +20,8 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
 	
 	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []);
-	const channels = useAppSelector((state) => selectAllChannels (state)) as Channel[];
+	let channels = useAppSelector((state) => selectAllChannels (state)) as Channel[];
+	channels = channels.filter(channel => channel.type !== 'private')
 	
 	const usersAndChannels = [...allUsers, ...channels];
 
