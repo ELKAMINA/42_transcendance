@@ -42,7 +42,7 @@ export class ChannelDto {
 	@IsOptional()
 	avatar: string;
 
-	// @IsNotEmpty()
 	// @ApiProperty()
+	// @IsOptional()
 	// chatHistory: ChatElement[];
   }
