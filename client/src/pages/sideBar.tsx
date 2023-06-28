@@ -9,6 +9,7 @@ import { Box, Button, Stack, Divider } from '@mui/material';
 import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 
 import "./sideBar.css"
+import { Channel } from '../types/chat/chatTypes.ts';
 
 type handleSelectItemFunction = (pwd: string) => void;
 
@@ -22,7 +23,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 	
 	// the userList for the search bar
-	const [results, setResults] = useState<UserDetails[]>([])
+	const [results, setResults] = useState<(UserDetails| Channel)[]>([])
 	
 	function getSelectedItem (selectedItem : string) {
 		handleSelectItem(selectedItem)
