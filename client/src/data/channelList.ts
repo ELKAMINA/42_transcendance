@@ -4,26 +4,26 @@ import { Channel } from '../types/chat/chatTypes'
 
 export const channelList:Channel[] = [
 	{
-		login: 'Chihiro',
-		id: 0,
-		owner: 'casper_le_fantome',
+		name: 'Chihiro',
+		channelId: 0,
+		createdBy: 'casper_le_fantome',
 		avatar: chihiro,
 		type: 'public',
 		protected_by_password: true,
-		password: 'kirikou',
-		userList: [],
+		key: 'kirikou',
+		members: [],
 		chatHistory: [],
 	},
 
 	{
-		login: 'Totoro',
-		id: 1,
-		owner: 'satsuki_3003',
+		name: 'Totoro',
+		channelId: 1,
+		createdBy: 'satsuki_3003',
 		avatar: totoro,
 		type: 'private',
 		protected_by_password: false,
-		password: 'kirikou',
-		userList: [],
+		key: 'kirikou',
+		members: [],
 		chatHistory: [],
 	},
 
