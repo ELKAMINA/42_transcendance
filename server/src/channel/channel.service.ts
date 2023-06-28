@@ -49,7 +49,6 @@ export class ChannelService {
 	}
 
 	async getUserChannels(requestBody: {}): Promise<object> {
-		console.log('requestBody = ', requestBody);
 		const user = await this.prisma.user.findUnique({
 			where: requestBody,
 			// the include option means that when fetching the user information, 
