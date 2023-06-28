@@ -15,16 +15,5 @@ export type Channel = {
 
 }
 
-export type OneToOne = {
-
-	login: string
-	id: number
-	owner: string
-	avatar: string
-	type: string
-	chatHistory: ChatElement[],
-
-}
-
 // a chat is eather a one to one conversation (UserDetails) or a group conversation (Channel)
-export type DisplayedChat = Channel /* | OneToOne */
+export type DisplayedChat = Channel
