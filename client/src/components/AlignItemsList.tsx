@@ -23,14 +23,14 @@ interface alignItemsProps {
 export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 	
 	const chats = useSelector(( state : RootState) => state.persistedReducer.chats)
-	// chats.map(chat => console.log('getting chats : ', chat.login));
+	// chats.map(chat => console.log('getting chats : ', chat.name));
 
 	const dispatch = useDispatch();
 
 	// this function allow to remove channels or users from the displayed list
 	// it is triggered when the user click on the DeleteButton component
 	function handleClick(index: number): void {
-		dispatch(deleteChat(chats[index].login))
+		dispatch(deleteChat(chats[index].name))
 	}
 
 	// That stuff if to handle what happens when you click on an item of the list -----
@@ -40,7 +40,7 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 		setSelectedIndex(index); // get the selected to change its color
 		
 		const selectedChat = chats[index];
-		const chatID = selectedChat.login;
+		const chatID = selectedChat.name;
 		// console.log("selected chat is ", chatID);
 		getSelectedItem(chatID)
 	};
@@ -88,11 +88,11 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 						}
 					>
 						<ListItemAvatar>
-							<Avatar alt={element.login} src={element.avatar} />
+							<Avatar alt={element.name} src={element.avatar} />
 						</ListItemAvatar>
 						<ListItemText
 							sx= {{color:'white'}}
-							primary={element.login}
+							primary={element.name}
 						/>
 					</ListItem>
 					</ListItemButton>
