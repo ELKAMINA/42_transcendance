@@ -1,19 +1,16 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import "./createChannel.css"
 import { Box, Stack, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { Channel } from "../../types/chat/chatTypes";
-import { fetchAllChannels, selectAllChannels } from "../../redux-features/chat/channelsSlice";
+import { fetchAllChannelsInDatabase, selectAllChannels } from "../../redux-features/chat/channelsSlice";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 
 function CreateName() {
-	// const channels: Channel[] = useSelector((staconst dispatch = useAppDispatch();
 	const dispatchSync = useAppDispatch();
-	
-	React.useEffect(() => {dispatchSync(fetchAllChannels())}, [dispatchSync]);
-
-	// const channels = useAppSelector(selectAllChannels) as Channel[];
+	React.useEffect(() => {dispatchSync(fetchAllChannelsInDatabase())}, []);
+	const channels : Channel[] = useAppSelector(selectAllChannels);
 	
 	const [channelName, setChannelName] = useState('');
 	const [isTaken, setIsTaken] = useState(false);
@@ -22,21 +19,14 @@ function CreateName() {
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value;
-		// console.log(value);
 		setChannelName(value);
 
-		setIsTaken(false);
-		dispatch(changeChannelName(value))
-
-
-		// if (channels.find(channel => channel.login === value)) {
-		//   console.log("channelName taken")
-		//   setIsTaken(true);
-		// } else {
-		//   console.log("channel name is available!")
-		//   dispatch(changeChannelName(value))
-		//   setIsTaken(false);
-		// } 
+		if (channels.find(channel => channel.name === value)) {
+		  setIsTaken(true);
+		} else {
+		  dispatch(changeChannelName(value))
+		  setIsTaken(false);
+		}
 	}
 	  
 
