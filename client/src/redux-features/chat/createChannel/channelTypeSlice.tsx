@@ -4,13 +4,13 @@ import { RootState } from "../../../app/store";
 export interface ChannelTypeState {
 	type: string;
 	protected_by_password: boolean;
-	password: string
+	key: string
   }
   
 const initialState: ChannelTypeState = {
 	type: 'public',
 	protected_by_password: false,
-	password: '',
+	key: '',
 };
 
 // this an object with 2 attributes : 
@@ -42,13 +42,13 @@ export const channelType = createSlice({
 		},
 		addPassword: (state, action) => {
 			const pwd = action.payload;
-			state.password = pwd;
-			// console.log("password is " + state.password);
+			state.key = pwd;
+			// console.log("password is " + state.key);
 		},
 		resetChannelType: (state) => {
 			state.type = initialState.type;
 			state.protected_by_password = initialState.protected_by_password;
-			state.password = initialState.password;
+			state.key = initialState.key;
 		},
 		  
 	}
