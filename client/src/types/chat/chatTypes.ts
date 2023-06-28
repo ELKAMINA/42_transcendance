@@ -3,15 +3,15 @@ import { ChatElement } from "../../data/chatHistory"
 
 export type Channel = {
 
-	login: string
-	id: number
-	owner: string
-	avatar: string
-	type: string
+	name: string
+	channelId: number
+	members: UserDetails[],
+	createdBy: string
 	protected_by_password: boolean
-	password: string
-	userList: UserDetails[],
+	type: string
+	key: string
 	chatHistory: ChatElement[],
+	avatar: string
 
 }
 
