@@ -58,9 +58,10 @@ model User {
   // p2             Match[]  @relation("Player2")
   // // Channel Management
   // //*** Where the user is member ***//
-  channels Channel[]	@relation("Membership")
+  channels 				Channel[]	@relation("Membership")
   // //*** If the user is creator ***//
-  createdChannels Channel[] @relation("ChannelCreator")
+  createdChannels 		Channel[]	@relation("ChannelCreator")
+  messages				Message[]	@relation("MessageSender")
 }
 
 model Channel {
@@ -76,16 +77,20 @@ model Channel {
 //   userUser_id 	String
 }
 
-// model Message {
-	// type: "msg";
-  	// message: string;
-  	// img?: string;
-  	// preview?: string;
-  	// incoming: boolean;
-  	// outgoing: boolean;
-  	// subtype?: string;
-  	// reply?: string;
-// }
+model Message {
+	id			Int 		@id @default(autoincrement())
+	type 		String		
+	sentBy		User?		@relation("MessageSender", fields: [sentById], references: [login])
+	sentById	String?		@unique
+	message 	String
+	sentAt		DateTime	@default(now())
+	img 		String?
+	preview		String?
+	incoming	Boolean
+	outgoing	Boolean
+	subtype		String?
+	reply		String?
+}
 
 model Match {
   match_id       String    @id @default(uuid())
