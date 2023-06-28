@@ -33,11 +33,11 @@ export const chatsSlice = createSlice({
 			// {type : chats/deletechat, payload: <id of chat to be deleted> : number}
 
 			const chatToDelete = action.payload;
-			const filteredchats = state.filter(chat => chat.login !== chatToDelete);
+			const filteredchats = state.filter(chat => chat.name !== chatToDelete);
 			
 			// FOR DEBUG
 			// console.log("chat " + action.payload + " deleted !")
-			state.map(chat => console.log(chat.login));
+			state.map(chat => console.log(chat.name));
 
 			// Update the state by returning a new array
   			return filteredchats;
