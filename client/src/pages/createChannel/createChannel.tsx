@@ -61,7 +61,7 @@ function CreateChannel(props : CreateChannelProps) {
 		// console.log('type = ', channelType.type)
 		// console.log('owner = ', authState.nickname)
 		// console.log('protected_by_pwd = ', channelType.protected_by_password)
-		// console.log('password = ', channelType.password)
+		// console.log('password = ', channelType.key)
 		// console.log('userList = ', channelUsersList)
 		// console.log('avatar = ', authState.avatar)
 
