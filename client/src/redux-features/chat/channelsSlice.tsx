@@ -141,9 +141,10 @@ export function fetchDisplayedChannel(name : string) {
 		const requestBody = {
 			name: name,
 		}
+		console.log('requestBody', requestBody);
 		try {
 			const response = await api.post("http://localhost:4001/channel/displayed", requestBody);
-			dispatch(updateAllChannels(response.data));
+			dispatch(updateDisplayedChannel(response.data));
 
 		} catch (error) {
 			console.log('error while getting displayed channel from database', error);
@@ -151,7 +152,7 @@ export function fetchDisplayedChannel(name : string) {
 	};
 }
 
-export const {updateUserChannels, updateCreatedChannels, updateMemberedChannels, updateAllChannels} = channelsSlice.actions;
+export const {updateUserChannels, updateCreatedChannels, updateMemberedChannels, updateAllChannels, updateDisplayedChannel} = channelsSlice.actions;
 
 export default channelsSlice.reducer
 
