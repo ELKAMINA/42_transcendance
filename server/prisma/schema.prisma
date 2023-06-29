@@ -66,25 +66,24 @@ model User {
 }
 
 model Channel {
-  name      	String	 @unique
-  channelId		Int		 @id @default(autoincrement())
-  members     	User[]   @relation("Membership")
-  createdBy   	User?    @relation("ChannelCreator", fields: [createdById], references: [login])
-  createdById 	String?  @unique
-  createdAt   	DateTime @default(now())
-  updatedAt   	DateTime @updatedAt
-  type			String
-  key         	String?		
-//   userUser_id 	String
+  name      		String	 	@unique
+  channelId			Int		 	@id @default(autoincrement())
+  members     		User[]   	@relation("Membership")
+  createdBy   		User    	@relation("ChannelCreator", fields: [createdById], references: [login])
+  createdById 		String  	@unique
+  createdAt   		DateTime	@default(now())
+  updatedAt   		DateTime	@updatedAt
+  type				String
+  key         		String?
+  chatHistory		Message[]	@relation("channel/message")
 }
 
 model Message {
 	id			Int 		@id @default(autoincrement())
-	type 		String		
-	sentBy		User?		@relation("MessageSender", fields: [sentById], references: [login])
-	sentById	String?		@unique
-	sentTo		User?		@relation("MessageReceiver", fields: [sentToId], references: [login])
-	sentToId	String?		@unique
+	sentBy		User		@relation("MessageSender", fields: [sentById], references: [login])
+	sentById	String		@unique
+	sentTo		User		@relation("MessageReceiver", fields: [sentToId], references: [login])
+	sentToId	String		@unique
 	message 	String
 	sentAt		DateTime	@default(now())
 	img 		String?
@@ -93,6 +92,8 @@ model Message {
 	outgoing	Boolean
 	subtype		String?
 	reply		String?
+	channel		Channel		@relation("channel/message", fields: [channelById], references: [name])
+	channelById	String		@unique
 }
 
 model Match {
