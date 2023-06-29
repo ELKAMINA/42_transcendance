@@ -1,18 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { User } from "@prisma/client";
+import { Channel, User } from "@prisma/client";
 import { IsNotEmpty, IsString, IsInt, IsOptional, ValidateIf, IsDate, IsBoolean } from "class-validator";
 // import { UserDetails } from "src/user/types";
 
 export class MessageDto {
+
+	@IsNotEmpty()
+	@ApiProperty()
 	@IsString()
+	sentBy: string;
+
 	@IsNotEmpty()
 	@ApiProperty()
-	tyoe: string;
-  
-	@IsNotEmpty()
-	@ApiProperty()
-	@IsInt()
-	sentBy: User;
+	sentTo: Channel;
   
 	@IsString()
 	@ApiProperty()
@@ -55,4 +55,7 @@ export class MessageDto {
 	@IsOptional()
 	reply: string;
 
+	@IsNotEmpty()
+	@ApiProperty()
+	channel: Channel;
   }
