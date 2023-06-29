@@ -5,14 +5,15 @@ import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../app/store';
+import { useDispatch } from 'react-redux';
 import { IconButton, ListItemButton, Stack, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { deleteChat } from '../redux-features/chat/chatsSlice';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LockIcon from '@mui/icons-material/Lock';
+import { fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
+import { Channel } from '../types/chat/channelTypes';
 
 type getSelectedItemFunction = (pwd: string) => void;
 
@@ -22,15 +23,18 @@ interface alignItemsProps {
 
 export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 	
-	const chats = useSelector(( state : RootState) => state.persistedReducer.chats)
-	// chats.map(chat => console.log('getting chats : ', chat.name));
+	const AppDispatch = useAppDispatch();
 
-	const dispatch = useDispatch();
+	React.useEffect(() => {AppDispatch(fetchUserChannels())}, []);
+	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
+
+	// const dispatch = useDispatch();
 
 	// this function allow to remove channels or users from the displayed list
 	// it is triggered when the user click on the DeleteButton component
 	function handleClick(index: number): void {
-		dispatch(deleteChat(chats[index].name))
+		// dispatch(deleteChat(channels[index].name))
+		console.log('I am supposed to delete this channel');
 	}
 
 	// That stuff if to handle what happens when you click on an item of the list -----
@@ -39,15 +43,15 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 		index: number, ) => {
 		setSelectedIndex(index); // get the selected to change its color
 		
-		const selectedChat = chats[index];
-		const chatID = selectedChat.name;
+		const selectedChannel = channels[index];
+		const chatID = selectedChannel.name;
 		// console.log("selected chat is ", chatID);
 		getSelectedItem(chatID)
 	};
 	// --------------------------------------------------------------------------------
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
-			{chats.map((element, index) => (
+			{channels.map((element, index) => (
 				<Stack key={index}>
 					<Divider variant="inset" component="li" />
 					<ListItemButton
