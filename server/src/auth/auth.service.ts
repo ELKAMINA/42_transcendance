@@ -109,8 +109,9 @@ export class AuthService {
     return verification;
   }
 
-  async setCookie(data: CookieType, res: Response) {
+  async setCookie(data: object, res: Response) {
     const serializeData = JSON.stringify(data);
+    console.log("seriiialized data ", serializeData)
     // console.log("la data ",data);
     res.cookie('Authcookie', '', { expires: new Date(0) });
     res.cookie('Authcookie', serializeData, {
@@ -207,10 +208,10 @@ export class AuthService {
         login: userNick,
       },
     });
-    console.log('le user qui se co ', us);
-    if (!us || !us.rtHash) throw new ForbiddenException('Access Denied');
+    // console.log('le user qui se co ', us);
+    if (!us || !us.rtHash) throw new ForbiddenException('1 - Access Denied');
     const rtMatches = await argon.verify(us.rtHash, refreshToken);
-    if (rtMatches == false) throw new ForbiddenException('Access Denied');
+    if (rtMatches == false) throw new ForbiddenException('2 - Access Denied');
     const tokens = await this.signTokens(us.user_id, us.login);
     await this.updateRtHash(us.user_id, tokens.refresh_token);
     console.log('les tookens from refresh function ', tokens);

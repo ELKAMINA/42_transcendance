@@ -5,12 +5,14 @@ import { io } from 'socket.io-client';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
+import Cookies from 'js-cookie';
 // import { ConnectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
 import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateSocketId, updateAllUsers } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends, selectSocketId } from '../redux-features/friendship/friendshipSlice';
 import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends, FetchAllBlockedFriends } from '../redux-features/friendship/friendshipSlice';
-import { selectCurrentAccessToken } from '../redux-features/auth/authSlice';
+import { selectCurrentAccessToken, setOnlyTokens } from '../redux-features/auth/authSlice';
+
 
 
 export const socket = io('http://localhost:4001/friendship', {
@@ -55,9 +57,15 @@ function Suggestions () {
           socket.on('newUserConnected', () => {
             socket.emit('realTimeUsers');
             socket.on('realTimeUsers', (allUsers) => {
-              console.log("Users in Real Time ", allUsers);
+              // console.log("Users in Real Time ", allUsers);
               dispatch(updateAllUsers(allUsers));
             })
+          })
+          socket.on('newCookie', (data) => {
+            console.log('je rentre ici pr changer le cookie ')
+            dispatch(setOnlyTokens);
+            const serializeData = JSON.stringify(data);
+            Cookies.set('Authcookie', serializeData, { path: '/' });
           })
               return () => {  // cleanUp function when component unmount
                 console.log('Suggestions - Unregistering events...');

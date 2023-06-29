@@ -137,8 +137,8 @@ export default class AuthController {
   @Public()
   @Post('update-cookie')
   updateCookie(@Body() newCookie, @Res() res: Response) {
-    console.log('new cookie ', newCookie);
-    this.authService.setCookie(newCookie.data, res);
+    // console.log('new cookie ', newCookie);
+    this.authService.setCookie(newCookie, res);
   }
 }
 /* ******************** */

@@ -196,19 +196,23 @@ export class FriendshipGateway
       if (error.name === 'TokenExpiredError') {
         try {
           // console.log('ancien refresh tokens ', userInfo.refreshToken);
-          console.log("user NICKNAME ", userInfo.nickname);
+          // console.log("user NICKNAME ", userInfo.nickname);
           newTokens = await this.auth.refresh(
             userInfo.nickname,
             userInfo.refreshToken,
           );
-          const data = {
+          const data: object = {
             nickname: userInfo.nickname,
             access_token: newTokens.access_token,
             refresh_token: newTokens.refresh_token,
           };
+          // console.log("data avant serializarion ", data);
           axios
-            .post('http://127.0.0.1:4001/auth/update-cookie', { data })
-            .then((res) => console.log('la response ', res))
+            .post('http://127.0.0.1:4001/auth/update-cookie', data)
+            .then((res) => {
+              console.log('la response ', res);
+              this.io.emit('newCookie', { data });
+            })
             .catch((e) => console.log('erooor ', e));
           return newTokens;
         } catch(e) {

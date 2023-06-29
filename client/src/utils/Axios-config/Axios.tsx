@@ -2,8 +2,7 @@ import  axios from 'axios';
 import Cookies from 'js-cookie';
 import { store } from '../../app/store';
 // import {setTokens } from '../features/auth/authSlice';
-import { setTokens } from '../../redux-features/auth/authSlice';
-import { useAppDispatch } from '../redux-hooks';
+import { setOnlyTokens } from '../../redux-features/auth/authSlice';
 const api = axios.create({
 //   baseURL: 'http://localhost:4001',
 });
@@ -26,12 +25,13 @@ api.interceptors.response.use((response) => {
             // console.log('old RT ', store.getState().persistedReducer.auth.refresh_token)
             // console.log('new AT ', res.data.access_token)
             // console.log('new RT ', res.data.refresh_token)
-            store.dispatch(setTokens(res.data));
+            store.dispatch(setOnlyTokens(res.data));
             const data = {
                 nickname: store.getState().persistedReducer.auth.nickname,
                 accessToken: res.data.access_token,
                 refreshToken: res.data.refresh_token,
             }
+
             console.log("Nickname ", store.getState().persistedReducer.auth.nickname);
             const serializeData = JSON.stringify(data);
             Cookies.set('Authcookie', serializeData, { path: '/' });

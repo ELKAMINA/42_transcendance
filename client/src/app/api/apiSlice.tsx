@@ -18,7 +18,7 @@ const baseQuery = fetchBaseQuery({
 // Wrapper Query around the baseQuery to get a refresh token if access token has expired
 const baseQueryWithReauth = async (args: any, api: BaseQueryApi, extraOptions: object) => {
     let queryResponse = await baseQuery(args, api, extraOptions)
-    console.log("queryResponse ", queryResponse);
+    // console.log("queryResponse ", queryResponse);
     if (queryResponse?.error?.status === 401) {
         // send refresh token to get new access token
         const refreshResult = await baseQuery({url: "/auth/refresh", method: "POST", body: args, credentials:'include', headers: {authorization: `Bearer ${args.body.refresh_token}`}}, {...api, endpoint: 'refresh'}, extraOptions)
