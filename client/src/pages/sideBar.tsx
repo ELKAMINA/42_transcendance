@@ -9,7 +9,7 @@ import { Box, Button, Stack, Divider } from '@mui/material';
 import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 
 import "./sideBar.css"
-import { Channel } from '../types/chat/chatTypes.ts';
+import { Channel } from '../types/chat/channelTypes.ts';
 
 type handleSelectItemFunction = (pwd: string) => void;
 
