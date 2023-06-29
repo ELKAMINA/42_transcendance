@@ -1,6 +1,6 @@
 import chihiro from "../assets/profile_pictures/chihiro.jpeg"
 import totoro from "../assets/profile_pictures/totoro.jpeg"
-import { Channel } from '../types/chat/chatTypes'
+import { Channel } from '../types/chat/channelTypes'
 
 export const channelList:Channel[] = [
 	{
