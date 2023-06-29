@@ -117,7 +117,7 @@ export class ChannelService {
 		if (!channel) {
 			throw new NotFoundException('User not found');
 		}
-		console.log('displayed channel found = ', channel);
+		// console.log('displayed channel found = ', channel);
 		return channel;
 	}
 }
