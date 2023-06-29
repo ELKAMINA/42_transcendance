@@ -2,7 +2,7 @@ import React from "react";
 import "./searchResultsList.css";
 import { SearchResult } from "./searchResult";
 import { UserDetails } from "../../../../server/src/user/types/user-types.user.ts";
-import { Channel } from "../../types/chat/chatTypes.ts";
+import { Channel } from "../../types/chat/channelTypes.ts";
 
 
 interface SearchResultsListProps {
