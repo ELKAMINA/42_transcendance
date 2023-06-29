@@ -70,7 +70,7 @@ export function FetchAllUsers() {
         console.log("Les friends ", requests);
         // console.log("Les requests ", requests);
         await api
-        .get("http://0.0.0.0:4001/user/all")
+        .get("http://localhost:4001/user/all")
         .then((res) => {
             let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
             dispatch(updateAllUsers(dt))

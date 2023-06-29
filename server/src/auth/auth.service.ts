@@ -111,6 +111,8 @@ export class AuthService {
 
   async setCookie(data: CookieType, res: Response) {
     const serializeData = JSON.stringify(data);
+    // console.log("la data ",data);
+    res.cookie('Authcookie', '', { expires: new Date(0) });
     res.cookie('Authcookie', serializeData, {
       httpOnly: false,
       sameSite: 'lax',
@@ -199,17 +201,19 @@ export class AuthService {
     // res.clearCookie('Authcookie', { path: '/' });
   }
 
-  async refresh(userInfo: JwtPayload, refreshToken: string) {
+  async refresh(userNick: string, refreshToken: string) {
     const us = await this.prisma.user.findUnique({
       where: {
-        user_id: userInfo.sub,
+        login: userNick,
       },
     });
+    console.log('le user qui se co ', us);
     if (!us || !us.rtHash) throw new ForbiddenException('Access Denied');
     const rtMatches = await argon.verify(us.rtHash, refreshToken);
     if (rtMatches == false) throw new ForbiddenException('Access Denied');
     const tokens = await this.signTokens(us.user_id, us.login);
     await this.updateRtHash(us.user_id, tokens.refresh_token);
+    console.log('les tookens from refresh function ', tokens);
     return tokens;
   }
 
@@ -332,4 +336,5 @@ export class AuthService {
       refresh_token: tokens.refresh_token,
     };
   }
+
 }

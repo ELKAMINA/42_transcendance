@@ -67,10 +67,10 @@ export default class AuthController {
   @Post('refresh')
   @ApiOkResponse({ type: Tokens }) //= > this is for Swagger
   async refresh(
-    @GetCurrentUserId() userInfo: JwtPayload,
+    @GetCurrentUserId() userNick: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
   ) {
-    return this.authService.refresh(userInfo, refreshToken);
+    return this.authService.refresh(userNick, refreshToken);
   }
   /* ******************** */
 
@@ -132,6 +132,13 @@ export default class AuthController {
       request.user,
     );
     return this.authService.loginWith2fa(request.user);
+  }
+
+  @Public()
+  @Post('update-cookie')
+  updateCookie(@Body() newCookie, @Res() res: Response) {
+    console.log('new cookie ', newCookie);
+    this.authService.setCookie(newCookie.data, res);
   }
 }
 /* ******************** */

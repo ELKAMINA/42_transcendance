@@ -1,4 +1,3 @@
-import { FriendshipService } from './friendship.service';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -9,17 +8,19 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { parse } from 'cookie';
+import axios from 'axios';
+import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { MessageBody } from '@nestjs/websockets';
 import { Socket, Server, Namespace } from 'socket.io';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, Res, ForbiddenException } from '@nestjs/common';
 
-import { UserService } from 'src/user/user.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthService } from 'src/auth/auth.service';
-import { ConfigService } from '@nestjs/config';
+import { UserService } from 'src/user/user.service';
+import { FriendshipService } from './friendship.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 // import { MyMiddleware } from 'src/socket/socket.middleware';
-import { ExtendedError } from 'socket.io/dist/namespace';
 // import { AuthService } from 'src/auth/auth.service';
 // namespace: '/friendship',
 // cors: { origin: 'http://localhost:3000', credentials: true }
@@ -60,39 +61,23 @@ export class FriendshipGateway
   } // For logging message in the console (what is in yellow and green is the logger)
 
   //Whenever we want to handle message in the server, We use this decorator to handle it. MsgToServer is the name of the event he is waiting for
-  async handleConnection(@ConnectedSocket() client: Socket, ...args: Socket[]) {
+  async handleConnection(
+    @ConnectedSocket() client: Socket,
+    @Res() response: Response,
+    ...args: Socket[]
+  ) {
     try {
       const sockets = this.io.sockets; // toutes les sockets connectées
-      const userInfo = this.getUserInfoFromSocket(
-        client.handshake.headers.cookie,
-      );
-      console.log('le type de userInfo ', typeof userInfo);
-      const at = await this.jwt.verifyAsync(userInfo.accessToken, {
-        secret: this.config.get('ACCESS_TOKEN'),
-      }).catch((error) => {
-          if (error) {
-            console.log(error);
-            const newTokens = this.auth.refresh(at, userInfo.refreshToken);
-            console.log(newTokens);
-          }
-        }
-      )
-      console.log('AT ', at);
-      const userConnected = this.isAlreadyConnected(userInfo);
-      if (userConnected) userConnected.push(client);
-      else this.users.set(userInfo, [client]);
-      // console.log('all users ', allUsers);
+      // console.log('client ', client);
+      // console.log('al reponse ', response);
+      this.verifyJwtSocketConnections(client, response);
       this.io.emit('newUserConnected', {});
       this.logger.log(`WS Client with id: ${client.id}  connected!`);
       this.logger.debug(`Number of connected sockets ${sockets.size}`);
-
       this.logger.log(`Client connected: ${client.id}`);
-      // console.log('users connected ', this.users);
-
-    } catch (e) {
-      console.log('ON CONNECTION ERROR, We have to disconnect the socket', e);
-      return this.disconnect(client);
-    }
+    } catch(e) {
+      console.log('A la connexion ça a merdé ', e);
+    } // console.log('users connected ', this.users);
   }
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
@@ -100,7 +85,7 @@ export class FriendshipGateway
       console.log('je rentre ici quand ca rafraichit ');
       const sockets = this.io.sockets;
       // this.users.delete(client);
-      
+
       this.logger.log(`WS Client with id: ${client.id}  disconnected!`);
       this.logger.debug(`Number of connected sockets ${sockets.size}`);
     } catch (e) {
@@ -188,10 +173,56 @@ export class FriendshipGateway
   @SubscribeMessage('realTimeUsers')
   async allUsers(@ConnectedSocket() client: Socket) {
     const user = this.findKeyByValue(this.users, client);
-    console.log('Le user ', user);
+    // console.log('Le user ', user);
     const allUsers = (await this.userServ.findAll()).filter(
       (us) => us.login != user,
     );
     return { event: 'realTimeUsers', data: allUsers };
+  }
+
+  async verifyJwtSocketConnections(client: Socket, response: Response) {
+    let newTokens;
+    console.log('Coookie ', client.handshake.headers.cookie);
+    const userInfo = this.getUserInfoFromSocket(
+      client.handshake.headers.cookie,
+    );
+    try {
+      await this.jwt.verifyAsync(userInfo.accessToken, {
+        secret: this.config.get('ACCESS_TOKEN'),
+      });
+      this.createUser(userInfo, client);
+    } catch(error: any) {
+      // console.log("ERRROOOOOOR ", error);
+      if (error.name === 'TokenExpiredError') {
+        try {
+          // console.log('ancien refresh tokens ', userInfo.refreshToken);
+          console.log("user NICKNAME ", userInfo.nickname);
+          newTokens = await this.auth.refresh(
+            userInfo.nickname,
+            userInfo.refreshToken,
+          );
+          const data = {
+            nickname: userInfo.nickname,
+            access_token: newTokens.access_token,
+            refresh_token: newTokens.refresh_token,
+          };
+          axios
+            .post('http://127.0.0.1:4001/auth/update-cookie', { data })
+            .then((res) => console.log('la response ', res))
+            .catch((e) => console.log('erooor ', e));
+          return newTokens;
+        } catch(e) {
+          console.log('lerreuuuuuur ', e);
+          throw new ForbiddenException('Invalid access and refresh tokens');
+        }
+      }
+      // return newTokens;
+    }
+  }
+
+  async createUser(userInfo: object, client: Socket) {
+    const userConnected = this.isAlreadyConnected(userInfo);
+    if (userConnected) userConnected.push(client);
+    else this.users.set(userInfo, [client]);
   }
 }
