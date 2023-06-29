@@ -2,7 +2,13 @@ import styled from '@emotion/styled';
 import { Box, Stack, IconButton, TextField, InputAdornment } from '@mui/material'
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import SendIcon from '@mui/icons-material/Send';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
+import { fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { Channel } from '../../types/chat/channelTypes';
+import { ChatMessage } from '../../types/chat/messageType';
 
 const StyledInput = styled(TextField)(({ theme }) => ({
 	backgroundColor: 'transparent',
@@ -20,7 +26,7 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 
 
 
-const Footer = ({ send }: { send: (val: string) => void} ) => {
+const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 
 	const [value, setValue] = useState("");
 	
@@ -30,9 +36,22 @@ const Footer = ({ send }: { send: (val: string) => void} ) => {
 		setValue(input);
 	}
 	
+	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
+	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	console.log('selected channel = ', displayedChannel);
+
 	function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
 		console.log("sending message !")
-		send(value);
+		const messageToBeSent = {
+			sentBy: authState.nickname,
+			sentTo: displayedChannel,
+			message: value,
+			sentAt: new Date(),
+			incoming: true,
+			outgoing: false,
+			channel: displayedChannel,
+		}
+		send(messageToBeSent);
 	}
 
 	return (
