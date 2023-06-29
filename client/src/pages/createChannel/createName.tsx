@@ -3,7 +3,7 @@ import "./createChannel.css"
 import { Box, Stack, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
-import { Channel } from "../../types/chat/chatTypes";
+import { Channel } from "../../types/chat/channelTypes";
 import { fetchAllChannelsInDatabase, selectAllChannels } from "../../redux-features/chat/channelsSlice";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 
