@@ -18,10 +18,23 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 	}
 }))
 
+
+
 const Footer = ({ send }: { send: (val: string) => void} ) => {
 
-	const [value, setValue] = useState("")
+	const [value, setValue] = useState("");
 	
+	function handleChange(e : React.ChangeEvent<HTMLInputElement>) {
+		const input = e.target.value;
+		console.log('input = ', input)
+		setValue(input);
+	}
+	
+	function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+		console.log("sending message !")
+		send(value);
+	}
+
 	return (
 		<Box
 			p={2}
@@ -34,7 +47,7 @@ const Footer = ({ send }: { send: (val: string) => void} ) => {
 		>
 			<Stack direction={'row'} alignItems={'center'} spacing={3}>
 				<StyledInput 
-					onChange = {(e) => setValue(e.target.value)}
+					onChange = {handleChange}
 					value = {value}
 					variant='filled' fullWidth placeholder="Write a message..." InputProps={{
 						disableUnderline: true,
@@ -49,7 +62,7 @@ const Footer = ({ send }: { send: (val: string) => void} ) => {
 					height: 48, width: 48, backgroundColor: '#07457E', borderRadius: 1.5
 				}}>
 					<Stack sx={{height:'100%', width:'100%',}} alignItems={'center'} justifyContent={'center'}>
-						<IconButton onClick={() => send(value)}>
+						<IconButton onClick={handleClick}>
 							<SendIcon fontSize="medium" sx={{color: 'white'}}/>
 						</IconButton>
 					</Stack>

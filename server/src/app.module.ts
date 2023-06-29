@@ -15,6 +15,7 @@ import { FriendshipModule } from './friendship/friendship.module';
 import { FriendshipGateway } from './friendship/friendship.gateway';
 import channelModule from './channel/channel.module';
 import { ChannelService } from './channel/channel.service';
+import { ChatGateway } from './chat/gateway/chat.gateway';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ChannelService } from './channel/channel.service';
     UserService,
 	ChannelService,
     JwtService,
+	ChatGateway,
   ],
 })
 export default class AppModule {}

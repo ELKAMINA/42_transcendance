@@ -14,25 +14,32 @@ function Conversation() {
 
 	// whenever we hit the "send" button...
 	const send = (value: string) => {
+		console.log('socket will emit an event called message !')
 		socket?.emit('message', value); // it emits an event called 'message'
+		console.log('socket has emitted an event called message!')
 	}
 
-	// useEffect runs a function after the component has been rendered
+	// after the component has been rendered for the first time, we want to create a new socket
 	useEffect( () => {
-		// after the component has been rendered for the first time, we want to create a new socket
-		const newSocket = io("http://localhost:3000/chat")
+		console.log('creating new socket');
+		const newSocket = io("http://localhost:4002")
 		setSocket(newSocket)
 	}, [setSocket]);
 
-	// this function will be listening for events coming from our backend.
-	// So, whenever we emit an event called 'message' from our Gateway, this function
-	// will be run.
+	// get the message received from the backend and put them all in the 'message' state.
 	const messageListener = (message: string) => {
 		setMessages([...messages, message]);
 	}
 
 	useEffect(() => {
+		// setting an event listener of the 'socket' object
+		// it listens for the event called 'message'
+		// when a event called 'message' is emitted from
+		// the backend, the 'messageListener' function
+		// is called.
+		console.log('is socket on?')
 		socket?.on("message", messageListener)
+		console.log('socket might be on')
 		return () => {
 			socket?.off("message", messageListener)
 		}
