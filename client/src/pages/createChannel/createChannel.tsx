@@ -36,12 +36,12 @@ function CreateChannel(props : CreateChannelProps) {
 			name: newName,
 			channelId: Date.now(),
 			type: channelType.type,
-			createdBy: authState.nickname, 
+			createdBy: authState.nickname,
 			protected_by_password: channelType.protected_by_password,
 			key: channelType.key,
 			members: channelUsersList,
 			avatar: authState.avatar,
-			// chatHistory: ChatHistory_1,
+			chatHistory: [],
 		})
 		.then ((response) => {
 			console.log('this channel has been added to the database = ', response);
