@@ -7,7 +7,7 @@ import { UserDetails } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { useEffect, useState } from 'react';
 import { fetchAllChannelsInDatabase, selectAllChannels } from '../../redux-features/chat/channelsSlice';
-import { Channel } from '../../types/chat/chatTypes';
+import { Channel } from '../../types/chat/channelTypes';
 
 function SearchBar({content, setResults }: { content: string; setResults: React.Dispatch<React.SetStateAction<(UserDetails | Channel)[] >> }) {	  
 
