@@ -45,7 +45,6 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 		
 		const selectedChannel = channels[index];
 		const chatID = selectedChannel.name;
-		// console.log("selected chat is ", chatID);
 		getSelectedItem(chatID)
 	};
 	// --------------------------------------------------------------------------------
