@@ -107,4 +107,17 @@ export class ChannelService {
 		const channels = await this.prisma.channel.findMany();
 		return channels;
 	}
+
+	// requestBody = {name : <name of the channel>}
+	async getDisplayedChannel(requestBody: {}): Promise<object> {
+		const channel = await this.prisma.channel.findUnique({
+			where: requestBody,
+		});
+
+		if (!channel) {
+			throw new NotFoundException('User not found');
+		}
+		console.log('displayed channel found = ', channel);
+		return channel;
+	}
 }

@@ -45,4 +45,10 @@ export class channelController {
 	getAllChannelsInDatabase(): Promise<object> {
 			return this.ChannelService.getAllChannelsInDatabase();
 		}
+
+	@Post('/displayed')
+	@Public() // TODO - remove public
+	getDisplayedChannel(@Body() requestBody : {}): Promise<object> {
+			return this.ChannelService.getDisplayedChannel(requestBody);
+		}
 }
