@@ -1,8 +1,8 @@
 import { Stack, Divider, Typography, Box, IconButton } from '@mui/material';
-import { Sep, ChatMessage } from '../../data/chatHistory';
 import Link from '@mui/material/Link';
 import DownloadIcon from '@mui/icons-material/Download';
 import ImageIcon from '@mui/icons-material/Image';
+import { ChatMessage } from '../../types/chat/messageType';
 
 type TextMsgProps = {
 	el: ChatMessage;
@@ -205,24 +205,24 @@ const TextMsg = ({el} : TextMsgProps) => {
 }
 
 type TimelineProps = {
-	el: Sep;
+	el: Date
 };
 
 const Timeline = ({el} : TimelineProps) => {
+	const formattedDate = el.toLocaleString();
+	return (
+		<Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+		{/* <Divider sx={{width: '100%',}}>{el.text}</Divider> */}
 	
-  return (
-	<Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-	  {/* <Divider sx={{width: '100%',}}>{el.text}</Divider> */}
-
-	  <Divider sx={{width: '46%',}} />
-	  	<Typography
-			variant='caption'
-			sx={{color: '#475d70'}}
-		>{el.text}</Typography>
-	  <Divider sx={{width: '46%',}} />
-
-	</Stack >
-  )
+		<Divider sx={{width: '46%',}} />
+			<Typography
+				variant='caption'
+				sx={{color: '#475d70'}}
+			>{formattedDate}</Typography>
+		<Divider sx={{width: '46%',}} />
+	
+		</Stack >
+	)
   
 }
 
