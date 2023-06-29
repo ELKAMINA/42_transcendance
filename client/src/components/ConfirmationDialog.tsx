@@ -13,7 +13,6 @@ import { IconButton } from '@mui/material';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import Fade from '@mui/material/Fade';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteAllChats } from '../redux-features/chat/chatsSlice';
 
 const options = [
   'Yes, I do want to delete all my chats',
@@ -109,7 +108,7 @@ export default function ConfirmationDialog() {
   	  if (newValue) {
 		console.log(newValue);
   	    setValue(newValue);
-		dispatch(deleteAllChats(true));
+		// dispatch(deleteAllChats(true)); // TODO delete all channels
   	  }
   	};
 
