@@ -16,7 +16,9 @@ function Chat () {
 	const [selectedChannel, setselectedChannel] = useState<string>('')
 	
 	const AppDispatch = useAppDispatch();
-	useEffect(() => {AppDispatch(fetchDisplayedChannel(selectedChannel))}, []);
+	useEffect(() => {
+		if (selectedChannel !== '')
+			AppDispatch(fetchDisplayedChannel(selectedChannel))}, [selectedChannel]);
 
 	function handleSelectChannel (channelName : string) {
 		setselectedChannel(channelName)
