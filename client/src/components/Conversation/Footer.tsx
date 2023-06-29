@@ -38,7 +38,7 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 	
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	console.log('selected channel = ', displayedChannel);
+	// console.log('selected channel = ', displayedChannel);
 
 	function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
 		console.log("sending message !")
