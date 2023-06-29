@@ -1,14 +1,16 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import { channelList } from "../../data/channelList";
-import { Channel } from "../../types/chat/chatTypes";
+import { Channel } from "../../types/chat/channelTypes";
 import { RootState } from "../../app/store";
 import api from "../../utils/Axios-config/Axios";
+import { emptyChannel } from "../../data/emptyChannel";
 
 export interface ChannelSlice {
 	userChannels : Channel[],
 	createdChannels : Channel[],
 	memberedChannels : Channel[],
 	allChannels : Channel[],
+	displayedChannel : Channel,
 }
 
 const initialState : ChannelSlice = {
@@ -16,6 +18,7 @@ const initialState : ChannelSlice = {
 	createdChannels : [],
 	memberedChannels : [],
 	allChannels: [],
+	displayedChannel : emptyChannel,
 };
 
 // this is an array of channels
@@ -51,6 +54,13 @@ export const channelsSlice = createSlice({
 				allChannels: [...action.payload]
 			}
 		},
+
+		updateDisplayedChannel: (state, action: PayloadAction<Channel>) => {
+			return {
+				...state,
+				displayedChannel : action.payload
+			}
+		}
 	}
 })
 
@@ -126,6 +136,21 @@ export function fetchAllChannelsInDatabase() {
 	};
 }
 
+export function fetchDisplayedChannel(name : string) {
+	return async (dispatch: any, getState: any) => {
+		const requestBody = {
+			name: name,
+		}
+		try {
+			const response = await api.post("http://localhost:4001/channel/displayed", requestBody);
+			dispatch(updateAllChannels(response.data));
+
+		} catch (error) {
+			console.log('error while getting displayed channel from database', error);
+		}
+	};
+}
+
 export const {updateUserChannels, updateCreatedChannels, updateMemberedChannels, updateAllChannels} = channelsSlice.actions;
 
 export default channelsSlice.reducer
@@ -134,6 +159,7 @@ export const selectUserChannels = (state: RootState) => state.persistedReducer.c
 export const selectCreatedChannels = (state: RootState) => state.persistedReducer.channels.createdChannels
 export const selectMemberedChannels = (state: RootState) => state.persistedReducer.channels.memberedChannels
 export const selectAllChannels = (state: RootState) => state.persistedReducer.channels.allChannels
+export const selectDisplayedChannel = (state: RootState) => state.persistedReducer.channels.displayedChannel
 
 
 		// addChannel: (state, action) => {
