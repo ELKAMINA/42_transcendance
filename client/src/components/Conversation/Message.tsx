@@ -23,13 +23,13 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 		)
 	}
 
-	// const concatenatedChatHistory = [...selectedChannel.chatHistory, ...messages];
+	// const chat = [...selectedChannel.chatHistory, ...messages];
 
 	return (	
 	<Box p={3} >
 		<Stack spacing={3}>
 		{
-			selectedChannel.chatHistory.map((el, index) => {
+			messages.map((el, index) => {
 				// if (index === 0 || is24HoursApart(el.sentAt, messages[index - 1].sentAt)) {
 				//   return <Timeline key={index} el={el.sentAt} />;
 				// }
