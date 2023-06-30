@@ -11,7 +11,6 @@ function Conversation() {
 
 	const [socket, setSocket] = useState<Socket>()
 
-	// const [messages, setMessages] = useState<string[]>([])
 	const [messages, setMessages] = useState<ChatMessage[]>([])
 
 
