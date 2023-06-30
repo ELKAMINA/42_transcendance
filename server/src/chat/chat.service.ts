@@ -9,9 +9,6 @@ export class ChatService {
 		private prisma: PrismaService) {}
 
 		async createMessage(dto: MessageDto): Promise<void> {
-
-			// console.log('dto received, it is : ', dto.sentTo);
-
 			try {
 				const creator = await this.prisma.user.findUnique({
 					where: { login: dto.sentBy },
@@ -20,7 +17,6 @@ export class ChatService {
 					throw new NotFoundException(`User with login '${dto.sentBy}' not found.`);
 				}
 
-				// we create message record
 				const message = await this.prisma.message.create({
 					data: {
 						sentBy: { connect: {login: dto.sentBy} },
