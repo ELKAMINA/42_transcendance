@@ -1,20 +1,39 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { MessageDto } from '../dto/messagePayload.dto';
 import { ChatService } from '../chat.service';
+import { Server, Socket } from 'socket.io';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway(4002, {cors:'*'}) // we want every front and client to be able to connect with our gateway
 export class ChatGateway {
-	@WebSocketServer()
-	server;
+	@WebSocketServer() server : Server;
 
 	constructor(private ChatService: ChatService) {};
 
+	private logger: Logger = new Logger('ChatGateway');
+
+	afterInit(server: any) {
+	  this.logger.log('Initialized!');
+	}
+
 	// whenever we emit an event from our front end that is called message
-	@SubscribeMessage('message')
-	handleMessage(@MessageBody() dto: MessageDto): void { // we extract the string from the variable 'message' found in the body of the request
+	@SubscribeMessage('chatToServer')
+	handleMessage(@MessageBody() dto: MessageDto): void {
 		// console.log('message received, it is : ', dto);
 		this.ChatService.createMessage(dto);
-		this.server.emit('message', dto); // whenever a client sends a message, we want to take this message and send it back to our client. So our clients that are connected to our gateway will receive the message.
+		this.server.to(dto.channel).emit('chatToClient', dto);
+	}
+
+	@SubscribeMessage('joinRoom')
+	handleRoomJoin(client: Socket, room: string ) {
+	  client.join(room);
+	  client.emit('joinedRoom', room);
+	}
+  
+	@SubscribeMessage('leaveRoom')
+	handleRoomLeave(client: Socket, room: string ) {
+	  client.leave(room);
+	  client.emit('leftRoom', room);
 	}
 }
 
