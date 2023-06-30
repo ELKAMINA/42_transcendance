@@ -29,27 +29,26 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 
 	const [value, setValue] = useState("");
-	
+
+	// record message
 	function handleChange(e : React.ChangeEvent<HTMLInputElement>) {
 		const input = e.target.value;
-		console.log('input = ', input)
 		setValue(input);
 	}
 	
+	// send message to backend
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	// console.log('selected channel = ', displayedChannel);
-
+	console.log('displayedChannel : ', displayedChannel);
 	function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-		console.log("sending message !")
 		const messageToBeSent = {
 			sentBy: authState.nickname,
-			sentTo: displayedChannel,
+			// sentTo: displayedChannel.members || [],
 			message: value,
 			sentAt: new Date(),
 			incoming: true,
 			outgoing: false,
-			channel: displayedChannel,
+			channel: displayedChannel.name,
 		}
 		send(messageToBeSent);
 	}
@@ -65,7 +64,7 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 			}}
 		>
 			<Stack direction={'row'} alignItems={'center'} spacing={3}>
-				<StyledInput 
+				<StyledInput
 					onChange = {handleChange}
 					value = {value}
 					variant='filled' fullWidth placeholder="Write a message..." InputProps={{
