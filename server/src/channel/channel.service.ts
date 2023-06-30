@@ -56,7 +56,7 @@ export class ChannelService {
 			// 'createdChannels' fields of the user in 
 			// addition to the main user entity.
 			include: {
-				channels : true, 
+				channels : true,
 				createdChannels: true,
 			}
 		});
@@ -112,6 +112,11 @@ export class ChannelService {
 	async getDisplayedChannel(requestBody: {}): Promise<object> {
 		const channel = await this.prisma.channel.findUnique({
 			where: requestBody,
+			include: {
+				members: true,
+				createdBy: true,
+				chatHistory: true,
+			}
 		});
 
 		if (!channel) {
