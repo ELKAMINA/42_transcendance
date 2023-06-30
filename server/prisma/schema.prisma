@@ -62,7 +62,6 @@ model User {
   // //*** If the user is creator ***//
   createdChannels 		Channel[]	@relation("ChannelCreator")
   messagesSent			Message[]	@relation("MessageSender")
-  messagesReceived		Message[]		@relation("MessageReceiver")
 }
 
 model Channel {
@@ -81,9 +80,7 @@ model Channel {
 model Message {
 	id			Int 		@id @default(autoincrement())
 	sentBy		User		@relation("MessageSender", fields: [sentById], references: [login])
-	sentById	String		@unique
-	sentTo		User		@relation("MessageReceiver", fields: [sentToId], references: [login])
-	sentToId	String		@unique
+	sentById	String		
 	message 	String
 	sentAt		DateTime	@default(now())
 	img 		String?
@@ -93,7 +90,7 @@ model Message {
 	subtype		String?
 	reply		String?
 	channel		Channel		@relation("channel/message", fields: [channelById], references: [name])
-	channelById	String		@unique
+	channelById	String		
 }
 
 model Match {
