@@ -141,7 +141,6 @@ export function fetchDisplayedChannel(name : string) {
 		const requestBody = {
 			name: name,
 		}
-		console.log('requestBody', requestBody);
 		try {
 			const response = await api.post("http://localhost:4001/channel/displayed", requestBody);
 			dispatch(updateDisplayedChannel(response.data));
