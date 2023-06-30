@@ -15,21 +15,21 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 		return null; // If selectedChannel is null, don't render anything
 	}
 
-	// if (!selectedChannel.chatHistory) {
-		// return (
-		// <Box p={3} >
-			{/* <Typography variant='h2' gutterBottom sx={{color: '#07457E'}}>No messages yet!</Typography> */}
-		{/* </Box> */}
-		// )
-	// }
-// 
+	if (!selectedChannel.chatHistory) {
+		return (
+		<Box p={3} >
+			<Typography variant='h2' gutterBottom sx={{color: '#07457E'}}>No messages yet!</Typography>
+		</Box>
+		)
+	}
+
 	// const concatenatedChatHistory = [...selectedChannel.chatHistory, ...messages];
 
 	return (	
 	<Box p={3} >
 		<Stack spacing={3}>
 		{
-			messages.map((el, index) => {
+			selectedChannel.chatHistory.map((el, index) => {
 				// if (index === 0 || is24HoursApart(el.sentAt, messages[index - 1].sentAt)) {
 				//   return <Timeline key={index} el={el.sentAt} />;
 				// }
