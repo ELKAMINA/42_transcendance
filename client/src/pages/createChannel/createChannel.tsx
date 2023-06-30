@@ -14,6 +14,7 @@ import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import api from '../../utils/Axios-config/Axios' 
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
+import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -29,6 +30,16 @@ function CreateChannel(props : CreateChannelProps) {
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 
 	// const dispatch = useDispatch();
+	const dummyMessage = {
+		sentBy: 'casper',
+		sentTo: 'bugs bunny',
+		message: 'quoi dneuf docteur',
+		sentAt: new Date(),
+		img: bugsBunny,
+		incoming: false,
+		outgoing: true,
+		channel: newName,
+	}
 
 	const channelCreation = async () => {
 		await api
@@ -41,7 +52,7 @@ function CreateChannel(props : CreateChannelProps) {
 			key: channelType.key,
 			members: channelUsersList,
 			avatar: authState.avatar,
-			chatHistory: [],
+			chatHistory: [dummyMessage],
 		})
 		.then ((response) => {
 			console.log('this channel has been added to the database = ', response);
