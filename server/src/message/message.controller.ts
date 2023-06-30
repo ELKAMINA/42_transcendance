@@ -3,7 +3,7 @@ import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { MessageDto } from './dto/messagePayload.dto';
+import { MessageDto } from '../chat/dto/messagePayload.dto';
 
 import { MessageService } from 'src/message/message.service';
 
