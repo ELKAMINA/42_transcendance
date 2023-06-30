@@ -39,7 +39,7 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 	// send message to backend
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	console.log('displayedChannel : ', displayedChannel);
+	// console.log('displayedChannel : ', displayedChannel);
 	function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
 		const messageToBeSent = {
 			sentBy: authState.nickname,
