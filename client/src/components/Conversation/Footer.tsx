@@ -41,7 +41,6 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 	function sendMessage() {
 		const messageToBeSent = {
 			sentBy: authState.nickname,
-			// sentTo: displayedChannel.members || [],
 			message: value,
 			sentAt: new Date(),
 			incoming: true,
