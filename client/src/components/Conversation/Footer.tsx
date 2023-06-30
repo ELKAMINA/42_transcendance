@@ -35,12 +35,10 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 		const input = e.target.value;
 		setValue(input);
 	}
-	
-	// send message to backend
+
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	// console.log('displayedChannel : ', displayedChannel);
-	function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+	function sendMessage() {
 		const messageToBeSent = {
 			sentBy: authState.nickname,
 			// sentTo: displayedChannel.members || [],
@@ -51,6 +49,18 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 			channel: displayedChannel.name,
 		}
 		send(messageToBeSent);
+	}
+
+	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+		if (e.key === 'Enter') {
+		  sendMessage();
+		}
+	}
+
+	// console.log('displayedChannel : ', displayedChannel);
+	function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+		sendMessage();
+		setValue('');
 	}
 
 	return (
@@ -66,6 +76,7 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 			<Stack direction={'row'} alignItems={'center'} spacing={3}>
 				<StyledInput
 					onChange = {handleChange}
+					onKeyDown= {handleKeyDown}
 					value = {value}
 					variant='filled' fullWidth placeholder="Write a message..." InputProps={{
 						disableUnderline: true,
