@@ -29,9 +29,9 @@ function Suggestions () {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   let suggestions = useAppSelector(selectSuggestions);
-  // const getFriendsRequests = () => {
-    //   navigate('/friendRequests');
-    // }
+  const getFriendsRequests = () => {
+      navigate('/friendRequests');
+    }
     // const getAllMyFriends = () => {
       //   navigate('/friends');
       // }
@@ -52,8 +52,6 @@ function Suggestions () {
         }
       }, [])
       useEffect(() => {
-        // if (socketId === undefined || socketId === '')
-        // {
           socket.on('newUserConnected', () => {
             socket.emit('realTimeUsers');
             socket.on('realTimeUsers', (allUsers) => {
@@ -79,10 +77,10 @@ function Suggestions () {
         {suggestions.map((sugg: any) => 
           <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request"/>)}
       </Stack>
-      {/* <Button onClick={getFriendsRequests}>
+      <Button onClick={getFriendsRequests}>
         See my friend requests
       </Button>
-      <Button onClick={getAllMyFriends}>
+      {/* <Button onClick={getAllMyFriends}>
         See my friends
       </Button> */}
     </div>
@@ -92,74 +90,79 @@ function Suggestions () {
 
 // Suggestions -------------------
 
-// function Requests () {
-//   const currentRoute = window.location.pathname;
-//   const dispatch = useAppDispatch();
-//   // console.log("currentRoute", currentRoute);
-//   // const access_token = useAppSelector(selectCurrentAccessToken);
-//   const socketId = useAppSelector(selectSocketId);
-//   // const currUser = useSelector(selectCurrentUser)
-//   // const avatar = useSelector(selectCurrentAvatar)
-//   // const accessToken = useSelector(selectCurrentAccessToken)
+function Requests () {
+  const currentRoute = window.location.pathname;
+  const dispatch = useAppDispatch();
+  // console.log("currentRoute", currentRoute);
+  // const access_token = useAppSelector(selectCurrentAccessToken);
+  // const socketId = useAppSelector(selectSocketId);
+  // const currUser = useSelector(selectCurrentUser)
+  // const avatar = useSelector(selectCurrentAvatar)
+  // const accessToken = useSelector(selectCurrentAccessToken)
+  useEffect(() => {
+    socket.connect()
+    socket.on('connect', () => {
+      // console.log("la socket id ", socket.id);
+      // dispatch(updateSocketId(socket.id));
+      dispatch(FetchAllFriendRequests());
+    })
+  }, [])
+  useEffect(() => {
+    socket?.on('friendAdded', () => {
+      // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
+      // console.log("les requests restantes", data.FriendRequestReceived);
+     dispatch(FetchAllFriendRequests());
+    //  dispatch(updateAllFriends(data.friends))
 
-//   useEffect(() => {
-//     if (socketId === undefined || socketId === '')
-//     {
-//       socket.connect()
-//       socket.on('connect', () => {
-//         dispatch(updateSocketId(socket.id));
-//       })
-//     }
-//     dispatch(FetchAllFriendRequests());
-//     dispatch(FetchAllBlockedFriends());
-//     socket?.on('acceptedFriend', (data: any) => {
-//       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
-//       // console.log("les requests restantes", data.FriendRequestReceived);
-//      dispatch(updateAllRequests(data.FriendRequestReceived));
-//      dispatch(updateAllFriends(data.friends))
+    })
+    socket?.on('acceptedFriend', (data: any) => {
+      // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
+      // console.log("les requests restantes", data.FriendRequestReceived);
+     dispatch(FetchAllFriendRequests);
+     dispatch(updateAllFriends(data.friends))
 
-//     })
-//     socket?.on('blockFriend', (data: any) => {
-//       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
-//       // console.log("les requests restantes", data.FriendRequestReceived);
-//      dispatch(updateBlockedFriends(data.blockedFriends))
-//     })
-//     socket?.on('denyFriend', () => {
-//       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
-//       // console.log("les requests restantes", data.FriendRequestReceived);
-//       dispatch(FetchAllFriendRequests());
-//     })
-//     return () => {
-//       // console.log('Unregistering events...');
-//       dispatch(updateSocketId(''));
-//       // socket.disconnect();
-//       // socket.off('onMessage');
-//     }
-//   }, [socketId]);
-//   // socket = useAppSelector(selectSocket)
-//   const friendsRequests = useAppSelector(selectFrRequests);
-//   // console.log('requestssss', friendsRequests);
-//   // FriendReqSocket.on('friendRequestFromServer', (dataServer) => {
-//   //   console.log(dataServer);
-//   // })
+    })
+    // socket?.on('blockFriend', (data: any) => {
+    //   // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
+    //   // console.log("les requests restantes", data.FriendRequestReceived);
+    //  dispatch(updateBlockedFriends(data.blockedFriends))
+    // })
+    socket?.on('denyFriend', () => {
+      // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
+      // console.log("les requests restantes", data.FriendRequestReceived);
+      dispatch(FetchAllFriendRequests());
+    })
+    return () => {
+      // console.log('Unregistering events...');
+      dispatch(updateSocketId(''));
+      // socket.disconnect();
+      // socket.off('onMessage');
+    }
+  }, [dispatch]);
+  // socket = useAppSelector(selectSocket)
+  const friendsRequests = useAppSelector(selectFrRequests);
+  // console.log('requestssss', friendsRequests);
+  // FriendReqSocket.on('friendRequestFromServer', (dataServer) => {
+  //   console.log(dataServer);
+  // })
   
-//   const content = (
-//     <div>
-//       <Navbar currentRoute={ currentRoute }/>
-//       <h1> Get all user from Database </h1>
-//       {(friendsRequests.length === 0) && <h2 style={{'color': 'yellow', 'fontSize': '13px'}} >No one wanna be your friend </h2> }
-//       {(friendsRequests.length > 0) && 
-//       <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='100vw' minHeight='20vh' alignItems='center' justifyContent='center' >
-//         {friendsRequests.map((sugg: any) => 
-//           <FriendSuggestion id={sugg.user_id} login={sugg.senderId} avatar={sugg.avatar} type="requestReception"/>)}
-//       </Stack>
-//       }
+  const content = (
+    <div>
+      <Navbar currentRoute={ currentRoute }/>
+      <h1> Get all user from Database </h1>
+      {(friendsRequests.length === 0) && <h2 style={{'color': 'yellow', 'fontSize': '13px'}} >No one wanna be your friend </h2> }
+      {(friendsRequests.length > 0) && 
+      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='100vw' minHeight='20vh' alignItems='center' justifyContent='center' >
+        {friendsRequests.map((sugg: any) => 
+          <FriendSuggestion id={sugg.user_id} login={sugg.senderId} avatar={sugg.avatar} type="requestReception"/>)}
+      </Stack>
+      }
       
       
-//     </div>
-//   )
-//   return content;
-// }
+    </div>
+  )
+  return content;
+}
 
 // function Friends () {
 //   const currentRoute = window.location.pathname;
@@ -215,4 +218,4 @@ function Suggestions () {
  
 
 // export { Suggestions, Requests, Friends};
-export { Suggestions };
+export { Suggestions, Requests };

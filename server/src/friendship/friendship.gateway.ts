@@ -82,7 +82,6 @@ export class FriendshipGateway
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     try {
-      console.log('je rentre ici quand ca rafraichit ');
       const sockets = this.io.sockets;
       // this.users.delete(client);
 

@@ -16,6 +16,7 @@ export class FriendshipController {
   @Post('/allRequests')
   async getAllFriendsReq(@Body() body: FriendshipDto) {
     const users = await this.friendshipService.getAllFriendReq(body.nickname);
+    // console.log('résultat pr friend requests ', users);
     return users;
   }
 
