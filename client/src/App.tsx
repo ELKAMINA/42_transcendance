@@ -20,12 +20,12 @@ const App = () => {
   if (myCookie !== undefined)
   {
     let cookieParsed = JSON.parse(myCookie);
+    console.log("credentials ", cookieParsed);
     const credentials = {
       access_token : cookieParsed.accessToken,
       refresh_token : cookieParsed.refreshToken,
       nickname : cookieParsed.nickname,
     }
-    // console.log(credentials);
     dispatch(setTokens({...credentials }))
   }
   return (

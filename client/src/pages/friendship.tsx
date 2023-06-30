@@ -38,7 +38,7 @@ function Suggestions () {
       useEffect(() => {
         socket.connect()
         socket.on('connect', () => {
-          console.log("la socket id ", socket.id);
+          // console.log("la socket id ", socket.id);
           // dispatch(updateSocketId(socket.id));
           dispatch(FetchAllUsers());
         })
@@ -57,23 +57,16 @@ function Suggestions () {
           socket.on('newUserConnected', () => {
             socket.emit('realTimeUsers');
             socket.on('realTimeUsers', (allUsers) => {
-              // console.log("Users in Real Time ", allUsers);
               dispatch(FetchAllUsers());
             })
           })
           socket.on('newCookie', (data) => {
-            console.log('je rentre ici pr changer le cookie ', data)
             dispatch(setOnlyTokens({...data}));
             const serializeData = JSON.stringify(data);
             Cookies.set('Authcookie', serializeData, { path: '/' });
           })
           return () => {  // cleanUp function when component unmount
             console.log('Suggestions - Unregistering events...');
-            // // socket.disconnect();
-            // dispatch(updateSocketId(''));
-            // socket.off('denyFriend');
-            // socket.off('friendAdded')
-            // socket.off('connect');
           }
         }, [dispatch]);
         suggestions = useAppSelector(selectSuggestions)

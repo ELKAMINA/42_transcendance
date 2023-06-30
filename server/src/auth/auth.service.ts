@@ -111,7 +111,7 @@ export class AuthService {
 
   async setCookie(data: object, res: Response) {
     const serializeData = JSON.stringify(data);
-    console.log("seriiialized data ", serializeData)
+    // console.log("seriiialized data ", serializeData)
     // console.log("la data ",data);
     res.cookie('Authcookie', '', { expires: new Date(0) });
     res.cookie('Authcookie', serializeData, {
@@ -214,7 +214,7 @@ export class AuthService {
     if (rtMatches == false) throw new ForbiddenException('2 - Access Denied');
     const tokens = await this.signTokens(us.user_id, us.login);
     await this.updateRtHash(us.user_id, tokens.refresh_token);
-    console.log('les tookens from refresh function ', tokens);
+    // console.log('les tookens from refresh function ', tokens);
     return tokens;
   }
 

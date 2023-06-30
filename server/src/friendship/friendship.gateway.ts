@@ -203,8 +203,8 @@ export class FriendshipGateway
           );
           const data: object = {
             nickname: userInfo.nickname,
-            access_token: newTokens.access_token,
-            refresh_token: newTokens.refresh_token,
+            accessToken: newTokens.access_token,
+            refreshToken: newTokens.refresh_token,
           };
           // console.log("data avant serializarion ", data);
           axios
