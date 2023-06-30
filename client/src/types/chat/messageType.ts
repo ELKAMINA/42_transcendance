@@ -4,7 +4,7 @@ import { Channel } from "./channelTypes"
 export type ChatMessage = {
 	id?: number,
 	sentBy: string
-	sentTo: Channel
+	// sentTo: UserDetails[]
 	message: string
 	sentAt: Date
 	img?: string;
@@ -13,5 +13,5 @@ export type ChatMessage = {
 	outgoing: boolean
 	subtype?: string
 	reply?: string
-	channel: Channel
+	channel: string
 }
