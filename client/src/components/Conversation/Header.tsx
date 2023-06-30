@@ -4,8 +4,10 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import BlockUser from './BlockUser';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
+import { Channel } from '../../types/chat/channelTypes';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -38,7 +40,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Header = () => {
 
-	const dispatch = useDispatch();
+	const channel :  Channel = useAppSelector((state) => selectDisplayedChannel(state));
 
 	const [openBlock, setOpenBlock] = useState<boolean>(false);
 
@@ -68,14 +70,14 @@ const Header = () => {
 							variant="dot"
 						>
 							<Avatar
-								alt="Rick Sanchez"
-								src="/broken-image.jpg"
+								alt={channel.name}
+								src={channel.avatar}
 								sx={{ bgcolor: '#fcba03' }}
 							/>
 						</StyledBadge>
 					</Box>
 					<Stack spacing={0.2}>
-							<Typography variant="subtitle2">Rick Sanchez</Typography>
+							<Typography variant="subtitle2">{channel.name}</Typography>
 							<Typography variant="caption">online</Typography>
 					</Stack>
 				</Stack>
