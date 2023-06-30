@@ -58,27 +58,27 @@ function Suggestions () {
             socket.emit('realTimeUsers');
             socket.on('realTimeUsers', (allUsers) => {
               // console.log("Users in Real Time ", allUsers);
-              dispatch(updateAllUsers(allUsers));
+              dispatch(FetchAllUsers());
             })
           })
           socket.on('newCookie', (data) => {
-            console.log('je rentre ici pr changer le cookie ')
-            dispatch(setOnlyTokens);
+            console.log('je rentre ici pr changer le cookie ', data)
+            dispatch(setOnlyTokens({...data}));
             const serializeData = JSON.stringify(data);
             Cookies.set('Authcookie', serializeData, { path: '/' });
           })
-              return () => {  // cleanUp function when component unmount
-                console.log('Suggestions - Unregistering events...');
-                // // socket.disconnect();
-                // dispatch(updateSocketId(''));
-                // socket.off('denyFriend');
-                // socket.off('friendAdded')
-                // socket.off('connect');
-              }
-            }, [dispatch]);
-            suggestions = useAppSelector(selectSuggestions)
-            
-            const content = (
+          return () => {  // cleanUp function when component unmount
+            console.log('Suggestions - Unregistering events...');
+            // // socket.disconnect();
+            // dispatch(updateSocketId(''));
+            // socket.off('denyFriend');
+            // socket.off('friendAdded')
+            // socket.off('connect');
+          }
+        }, [dispatch]);
+        suggestions = useAppSelector(selectSuggestions)
+        
+        const content = (
     <div>
       <Navbar currentRoute={ currentRoute }/>
       <h1> Get all user from Database </h1>

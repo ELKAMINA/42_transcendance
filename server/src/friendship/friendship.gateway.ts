@@ -211,9 +211,9 @@ export class FriendshipGateway
             .post('http://127.0.0.1:4001/auth/update-cookie', data)
             .then((res) => {
               console.log('la response ', res);
-              this.io.emit('newCookie', { data });
             })
             .catch((e) => console.log('erooor ', e));
+          this.io.emit('newCookie', data);
           return newTokens;
         } catch(e) {
           console.log('lerreuuuuuur ', e);
