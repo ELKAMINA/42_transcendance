@@ -1,14 +1,20 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { MessageDto } from '../dto/messagePayload.dto';
+import { ChatService } from '../chat.service';
 
 @WebSocketGateway(4002, {cors:'*'}) // we want every front and client to be able to connect with our gateway
 export class ChatGateway {
 	@WebSocketServer()
 	server;
 
+	constructor(private ChatService: ChatService) {};
+
 	// whenever we emit an event from our front end that is called message
 	@SubscribeMessage('message')
-	handleMessage(@MessageBody() message: string): void { // we extract the string from the variable 'message' found in the body of the request
-		this.server.emit('message', message); // whenever a client sends a message, we want to take this message and send it back to our client. So our clients that are connected to our gateway will receive the message.
+	handleMessage(@MessageBody() dto: MessageDto): void { // we extract the string from the variable 'message' found in the body of the request
+		// console.log('message received, it is : ', dto);
+		this.ChatService.createMessage(dto);
+		this.server.emit('message', dto); // whenever a client sends a message, we want to take this message and send it back to our client. So our clients that are connected to our gateway will receive the message.
 	}
 }
 
