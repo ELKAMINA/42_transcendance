@@ -16,7 +16,7 @@ function Conversation() {
 
 	// whenever we hit the "send" button...
 	const send = (value: ChatMessage) => {
-		console.log('message to be sent = ', value);
+		// console.log('message to be sent = ', value);
 		socket?.emit('message', value); // it emits an event called 'message'
 	}
 
