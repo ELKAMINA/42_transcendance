@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Message } from "@prisma/client";
 import { IsNotEmpty, IsString, IsInt, IsOptional, ValidateIf } from "class-validator";
 import { UserDetails } from "src/user/types";
 
@@ -42,7 +43,7 @@ export class ChannelDto {
 	@IsOptional()
 	avatar: string;
 
-	// @ApiProperty()
+	@ApiProperty()
 	// @IsOptional()
-	// chatHistory: ChatElement[];
+	chatHistory: Message[];
   }
