@@ -10,6 +10,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector } from "../utils/redux-hooks";
+import { useState } from "react";
 
 // import { selectSocket } from "../redux-features/friendship/friendshipSlice";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
@@ -26,6 +27,8 @@ type FriendshipProps = {
   };
 
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type}) => {
+    const [buttonColor, setButtonColor] = useState('red'); // State to track the button color
+    const [blockBgColor, setBlockBgColor] = useState('yellowgreen');
     const sender = useAppSelector(selectCurrentUser);
     const receiver = {
         nickname: login,
@@ -51,9 +54,11 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
     }
     const block = () => {
         socket.emit('blockFriend', {
-            sender: receiver,
-            receiver: sender,
+            sender: sender,
+            receiver: receiver,
         })
+        setButtonColor('grey')
+        setBlockBgColor('grey')
     }
     return (
         <>
@@ -65,7 +70,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                 width: 150,
                 height: 40,
                 borderRadius: 2,
-                backgroundColor: 'yellowgreen',
+                backgroundColor: blockBgColor,
                 '&:hover': {
                     backgroundColor: 'grey',
                 },
@@ -84,7 +89,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                     )}
                     {(type === 'myFriends') && (
                         <>
-                            <BlockIcon sx={{ color: 'red', width: 20, height: 20 }} onClick={block}/>
+                            <BlockIcon sx={{ color: buttonColor, width: 20, height: 20 }} onClick={block}/>
                         </>
                     )}
                 </Stack>

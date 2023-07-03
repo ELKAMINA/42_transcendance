@@ -140,8 +140,8 @@ export class FriendshipGateway
   ) {
     console.log('... client sending :', body);
     const user = await this.friends.blockFriend(
-      body.sender.nickname,
-      body.receiver,
+      body.sender,
+      body.receiver.nickname,
     );
     return { event: 'blockFriend', data: user };
   }

@@ -81,21 +81,21 @@ export class FriendshipService {
 
   // async getSuggestions()
 
-  async getAllBlockedFriends(userLogin: string) {
-    try {
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: {
-          login: userLogin,
-        },
-        include: {
-          blockedFriends: true,
-        },
-      });
-      if (user) return user.blockedFriends;
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  // async getAllBlockedFriends(userLogin: string) {
+  //   try {
+  //     const user = await this.prisma.user.findUniqueOrThrow({
+  //       where: {
+  //         login: userLogin,
+  //       },
+  //       include: {
+  //         blockedFriends: true,
+  //       },
+  //     });
+  //     if (user) return user.blockedFriends;
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }
 
   async acceptFriend(senderId: string, recId: string): Promise<User> {
     try {
@@ -127,8 +127,6 @@ export class FriendshipService {
   }
 
   async denyFriend(senderId: string, recId: string): Promise<User> {
-    console.log('when denying friend, the sender is : ', senderId);
-    console.log('when denying friend, the receiver is : ', recId);
     try {
       const reqId = await this.prisma.friendRequest.findFirst({
         where: {
@@ -143,6 +141,7 @@ export class FriendshipService {
         include: {
           friends: true,
           FriendRequestReceived: true,
+          FriendRequestSent: true,
         },
       });
       return user;
@@ -151,22 +150,21 @@ export class FriendshipService {
     }
   }
 
-  async blockFriend(senderId: string, recId: string): Promise<User> {
+  async blockFriend(senderId: string, recId: string) {
     try {
       console.log('sender ', senderId);
       console.log('rec ', recId);
       const user = await this.prisma.user.update({
-        where: { login: recId },
+        where: { login: senderId },
         data: {
-          blockedFriends: { connect: { login: senderId } },
+          blocked: { connect: { login: recId } },
           totalFriends: { decrement: 1 },
           totalBlockedFriends: { increment: 1 },
         },
         include: {
-          blockedFriends: true,
+          blocked: true,
         },
       });
-      console.log('le suer qui a bloqué ', user);
       return user;
     } catch (e) {
       console.log(e);

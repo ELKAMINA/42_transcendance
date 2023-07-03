@@ -33,13 +33,13 @@ export class FriendshipController {
     return users;
   }
 
-  @Post('/blockedFriends')
-  async getAllBlockedFriends(@Body() body: FriendshipDto) {
-    const users = await this.friendshipService.getAllBlockedFriends(
-      body.nickname,
-    );
-    return users;
-  }
+  // @Post('/blockedFriends')
+  // async getAllBlockedFriends(@Body() body: FriendshipDto) {
+  //   const users = await this.friendshipService.getAllBlockedFriends(
+  //     body.nickname,
+  //   );
+  //   return users;
+  // }
 
   async acceptFriend(senderLogin: string, receiverLogin: string) {
     const user = await this.friendshipService.acceptFriend(

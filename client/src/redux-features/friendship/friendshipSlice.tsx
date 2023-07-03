@@ -96,8 +96,9 @@ export function FetchAllUsers() {
                 .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
                 .then((res) => {
                     const friends = Object.values(res.data);
+                    console.log('la response pr Firends ', res.data);
                     const withoutFriends: any = updatedArray.filter((obj1: any) =>
-                    !friends.some((obj2: any) => obj2.senderId === obj1.login)
+                    !friends.some((obj2: any) => obj2.login === obj1.login)
 
                   );
                   api

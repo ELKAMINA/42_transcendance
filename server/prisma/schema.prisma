@@ -28,7 +28,7 @@ model User {
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt
   user_id               String          @id @default(uuid())
-  login                 String?         @unique
+  login                 String          @unique
   email                 String?         @unique
   hash                  String?
   rtHash                String?
@@ -47,8 +47,8 @@ model User {
   totalFriends          Int?            @default(0)
   FriendRequestSent     FriendRequest[] @relation("Sender")
   FriendRequestReceived FriendRequest[] @relation("Receiver")
-  blockedFriends        User[]          @relation("BlockedFriends")
-  blockedBy             User[]          @relation("BlockedFriends")
+  blocked               User[]          @relation("haters")
+  blockedBy             User[]          @relation("haters")
   totalBlockedFriends   Int?
   // blockedFriends        User[]          @relation("haters")
   // hatersId              String[]
@@ -64,7 +64,7 @@ model User {
   // channelName    String?
   // //*** If the user is creator ***//
 
-  userUser_id String?
+  // userUser_id String
 }
 
 model Channel {
