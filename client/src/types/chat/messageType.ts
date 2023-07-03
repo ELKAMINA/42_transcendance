@@ -4,6 +4,7 @@ import { Channel } from "./channelTypes"
 export type ChatMessage = {
 	id?: number,
 	sentBy: string
+	senderSocketId: string 
 	// sentTo: UserDetails[]
 	message: string
 	sentAt: Date
