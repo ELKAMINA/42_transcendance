@@ -18,10 +18,12 @@ function Chat () {
 	const AppDispatch = useAppDispatch();
 	useEffect(() => {
 		if (selectedChannel !== '')
-			AppDispatch(fetchDisplayedChannel(selectedChannel))}, [selectedChannel]);
+			AppDispatch(fetchDisplayedChannel(selectedChannel))
+	}, [selectedChannel]);
 
 	function handleSelectChannel (channelName : string) {
-		setselectedChannel(channelName)
+		setselectedChannel(channelName);
+
 	}
   
 	return (
