@@ -41,6 +41,7 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 	function sendMessage() {
 		const messageToBeSent = {
 			sentBy: authState.nickname,
+			senderSocketId: '',
 			message: value,
 			sentAt: new Date(),
 			incoming: true,
