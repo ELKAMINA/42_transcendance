@@ -24,12 +24,12 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 	}
 
 	const chat = [...selectedChannel.chatHistory, ...messages];
-	
+	// console.log('chat = ', chat)
 	return (	
 	<Box p={3} >
 		<Stack spacing={3}>
 		{
-			chat.map((el, index) => {
+			chat.filter((el) => el.channel === selectedChannel.name).map((el, index) => {
 				// if (index === 0 || is24HoursApart(el.sentAt, messages[index - 1].sentAt)) {
 				//   return <Timeline key={index} el={el.sentAt} />;
 				// }
