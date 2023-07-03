@@ -4,7 +4,6 @@ import {
   Stack,
   Avatar,
 } from "@mui/material";
-import { Socket } from "socket.io-client";
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import BlockIcon from '@mui/icons-material/Block';
