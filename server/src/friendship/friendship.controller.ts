@@ -13,10 +13,17 @@ export class FriendshipController {
     this.friendshipService.requestFriendship(senderLogin, receiverLogin);
   }
 
-  @Post('/allRequests')
-  async getAllFriendsReq(@Body() body: FriendshipDto) {
-    const users = await this.friendshipService.getAllFriendReq(body.nickname);
-    // console.log('résultat pr friend requests ', users);
+  @Post('/receivedRequests')
+  async getFriendsReqReceived(@Body() body: FriendshipDto) {
+    const users = await this.friendshipService.getFriendReqReceived(
+      body.nickname,
+    );
+    return users;
+  }
+
+  @Post('/sentRequests')
+  async getFriendsReqSent(@Body() body: FriendshipDto) {
+    const users = await this.friendshipService.getFriendReqSent(body.nickname);
     return users;
   }
 
@@ -33,11 +40,6 @@ export class FriendshipController {
     );
     return users;
   }
-
-  // @Get('/suggestions')
-  // findAll() {
-  //   return this.friendshipService.getSuggestions();
-  // }
 
   async acceptFriend(senderLogin: string, receiverLogin: string) {
     const user = await this.friendshipService.acceptFriend(

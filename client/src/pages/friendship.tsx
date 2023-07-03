@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import { io } from 'socket.io-client';
+import { useDispatch } from 'react-redux';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
@@ -63,6 +64,9 @@ function Suggestions () {
             const serializeData = JSON.stringify(data);
             Cookies.set('Authcookie', serializeData, { path: '/' });
           })
+          socket.on('friendAdded', () => {
+            dispatch(FetchAllUsers())
+          })
           return () => {  // cleanUp function when component unmount
             console.log('Suggestions - Unregistering events...');
           }
@@ -106,14 +110,15 @@ function Requests () {
       // dispatch(updateSocketId(socket.id));
       dispatch(FetchAllFriendRequests());
     })
+    dispatch(FetchAllFriendRequests());
   }, [])
   useEffect(() => {
-    socket?.on('friendAdded', () => {
+    socket.on('friendAdded', () => {
+      console.log("je rentre ici ");
       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
       // console.log("les requests restantes", data.FriendRequestReceived);
      dispatch(FetchAllFriendRequests());
     //  dispatch(updateAllFriends(data.friends))
-
     })
     socket?.on('acceptedFriend', (data: any) => {
       // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours

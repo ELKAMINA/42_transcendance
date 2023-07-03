@@ -7,20 +7,31 @@ export class FriendshipService {
   constructor(private prisma: PrismaService) {}
 
   async requestFriendship(senderId: string, receiverId: string) {
-    await this.prisma.friendRequest.create({
-      data: {
-        sender: {
-          connect: { login: senderId },
-        },
-        receiver: {
-          connect: { login: receiverId },
-        },
-        status: 'PENDING',
+    const existingRequest = await this.prisma.friendRequest.findFirst({
+      where: {
+        AND: [{ senderId: senderId }, { receiverId: receiverId }],
       },
     });
+
+    if (existingRequest) {
+      console.log('Friend request already exists!');
+      return;
+    } else {
+      await this.prisma.friendRequest.create({
+        data: {
+          sender: {
+            connect: { login: senderId },
+          },
+          receiver: {
+            connect: { login: receiverId },
+          },
+          status: 'PENDING',
+        },
+      });
+    }
   }
 
-  async getAllFriendReq(userLogin: string) {
+  async getFriendReqReceived(userLogin: string) {
     try {
       const users = await this.prisma.friendRequest.findMany({
         where: {
@@ -30,7 +41,22 @@ export class FriendshipService {
           sender: true,
         },
       });
-      // console.log('users', users);
+      return users;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async getFriendReqSent(userLogin: string) {
+    try {
+      const users = await this.prisma.friendRequest.findMany({
+        where: {
+          senderId: userLogin,
+        },
+        include: {
+          receiver: true,
+        },
+      });
       return users;
     } catch (e) {
       console.log(e);

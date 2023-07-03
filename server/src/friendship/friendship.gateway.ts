@@ -104,7 +104,7 @@ export class FriendshipGateway
   ) {
     console.log('... client sending :', body);
     await this.friends.requestFriendship(body.sender, body.receiver.nickname);
-    return { event: 'friendAdded', data: '' };
+    this.io.emit('friendAdded', '');
   }
 
   @SubscribeMessage('acceptFriend')

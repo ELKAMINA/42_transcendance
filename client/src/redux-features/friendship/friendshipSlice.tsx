@@ -63,30 +63,60 @@ export const selectBlockedFriends = (state: RootState) => state.persistedReducer
 export const selectFriendshipNamespace = (state: RootState) => state.persistedReducer.friendship.friendshipNamespace
 export const selectSocketId = (state: RootState) => state.persistedReducer.friendship.socketId
 
-export function FetchAllUsers() {
-    return async (dispatch:any, getState: any) => {
-        const friends = getState().persistedReducer.friendship.friends;
-        const requests = getState().persistedReducer.friendship.friendRequests;
-        console.log("Les friends ", requests);
-        // console.log("Les requests ", requests);
-        await api
-        .get("http://localhost:4001/user/all")
-        .then((res) => {
-            let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
-            dispatch(updateAllUsers(dt))
-        })
-        .catch((e) => {console.log("error ", e)});
-  } 
-}
+const sleep = (ms: any) => new Promise(r => setTimeout(r, 200))
 
 export function FetchAllFriendRequests() {
     return async (dispatch:any, getState: any) => {
         await api
-        .post("http://0.0.0.0:4001/friendship/allRequests", {nickname: getState().persistedReducer.auth.nickname})
+        .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
+            console.log('je rentre ici ', res.data);
             dispatch(updateAllRequests(res.data))})
         .catch((e) => {console.log("error ", e)});
   }
+}
+
+export function FetchAllUsers() {
+    return async (dispatch:any, getState: any) => {
+        await api
+        .get("http://localhost:4001/user/all")
+        .then((res) => {
+            let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
+            let arr = Object.values(dt);
+            console.log('arr ', arr);
+            api
+            .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
+            .then((res) => {
+                const requests = Object.values(res.data);
+                const updatedArray = arr.filter((obj1: any) =>
+                    !requests.some((obj2: any) => obj2.senderId === obj1.login)
+                  );
+                // console.log(' last array ', updatedArray);
+                api
+                .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
+                .then((res) => {
+                    const friends = Object.values(res.data);
+                    const withoutFriends: any = updatedArray.filter((obj1: any) =>
+                    !friends.some((obj2: any) => obj2.senderId === obj1.login)
+
+                  );
+                  api
+                  .post("http://0.0.0.0:4001/friendship/sentRequests", {nickname: getState().persistedReducer.auth.nickname})
+                  .then((res) => {
+                      const reqSent = Object.values(res.data);
+                      console.log("Req sennnnt ", reqSent);
+                      const withoutreqSent: any = withoutFriends.filter((obj1: any) =>
+                      !reqSent.some((obj2: any) => obj2.receiverId === obj1.login)
+  
+                    );  
+                dispatch(updateAllUsers(withoutreqSent));
+                })
+            })
+        })
+            .catch((e) => {console.log("error ", e)});
+        })
+        .catch((e) => {console.log("error ", e)})
+  } 
 }
 
 export function FetchAllFriends() {
@@ -104,7 +134,7 @@ export function FetchAllBlockedFriends() {
         await api
         .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-            dispatch(updateAllFriends(res.data))})
+            dispatch(updateAllFriends((res.data).values(res.data)))})
         .catch((e) => {console.log("error ", e)});
   }
 }
