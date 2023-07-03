@@ -209,7 +209,7 @@ export class FriendshipGateway
           axios
             .post('http://127.0.0.1:4001/auth/update-cookie', data)
             .then((res) => {
-              console.log('la response ', res);
+            //   console.log('la response ', res);
             })
             .catch((e) => console.log('erooor ', e));
           this.io.emit('newCookie', data);
