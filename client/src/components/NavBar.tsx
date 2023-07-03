@@ -9,6 +9,8 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 
 import "./Navbar.css";
+import { useAppSelector } from '../utils/redux-hooks';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
 // import ForumIcon from '@material-ui/icons/Forum';
 // import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -17,6 +19,7 @@ interface NavbarProps {
   }
 
 const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
+    const nickname = useAppSelector(selectCurrentUser)
     const navigate = useNavigate();
 
     const chat = () => {
@@ -25,7 +28,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     }
     const friendship = () => {
 
-        navigate('/friendship')
+        navigate('/suggestions')
     }
     let componentToRender;
     if (currentRoute === '/welcome') {
@@ -47,7 +50,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     {/* ********************************** */}
         <div className="navbar__header__right">
             <Avatar />
-            <h4> Alina </h4>
+            <h4> {nickname} </h4>
             <IconButton>
                 <LogoutIcon fontSize='large' />
             </IconButton>  
@@ -60,7 +63,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
             <>
                 <div className="navbar__header__right__options">
                     <Avatar />
-                    <h4> Username </h4>
+                    <h4> {nickname} </h4>
                     <IconButton>
                         <LogoutIcon fontSize='large' />
                     </IconButton>  

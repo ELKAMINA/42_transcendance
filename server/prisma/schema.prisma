@@ -11,11 +11,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// enum RequestStatus {
-//   PENDING
-//   REFUSED
-//   ACCEPTED
-// }
+enum RequestStatus {
+  PENDING
+  REFUSED
+  ACCEPTED
+}
 
 // Keywords for prisma :  
 // - Each line of a model is a field. It is composed of 4 informations : 1) Name, 2) The type of the field, 3) Attributes (optionnal and begins with @), 4)
@@ -28,7 +28,7 @@ model User {
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt
   user_id               String          @id @default(uuid())
-  login                 String?         @unique
+  login                 String          @unique
   email                 String?         @unique
   hash                  String?
   rtHash                String?
@@ -36,61 +36,63 @@ model User {
   faEnabled             Boolean?
   avatar                String?
   status                String?
-//   socketId              Int?            @unique
+  //   socketId              Int?            @unique
   totalMatches          Int?
   totalWins             Int?
   totalloss             Int?
   level                 Int?
   rank                  Int?
-//   friends               User[]          @relation("Friendship")
-//   friendOf              User[]          @relation("Friendship")
-//   totalFriends          Int?
-//   FriendRequestSent     FriendRequest[] @relation("Sender")
-//   FriendRequestReceived FriendRequest[] @relation("Receiver")
+  friends               User[]          @relation("Friendship")
+  friendOf              User[]          @relation("Friendship")
+  totalFriends          Int?            @default(0)
+  FriendRequestSent     FriendRequest[] @relation("Sender")
+  FriendRequestReceived FriendRequest[] @relation("Receiver")
+  blocked               User[]          @relation("haters")
+  blockedBy             User[]          @relation("haters")
+  totalBlockedFriends   Int?
+  // blockedFriends        User[]          @relation("haters")
+  // hatersId              String[]
   // Friends and blocked friends
   // lovers         User?    @relation("Friendship", fields: [loversId], references: [user_id])
   // loversId       String? // Foreign Key to connect users with friends
-  // blockedFriends User[]   @relation("haters") // a changer avec l'objet entier ?
-  // haters         User?    @relation("haters", fields: [hatersId], references: [user_id])
-  // hatersId       String?
-  // // Match
+
   // p1             Match[]  @relation("Player1")
   // p2             Match[]  @relation("Player2")
   // // Channel Management
   // //*** Where the user is member ***//
-  channels 				Channel[]	@relation("Membership")
+  channels        Channel[] @relation("Membership")
   // //*** If the user is creator ***//
-  createdChannels 		Channel[]	@relation("ChannelCreator")
-  messagesSent			Message[]	@relation("MessageSender")
+  createdChannels Channel[] @relation("ChannelCreator")
+  messagesSent    Message[] @relation("MessageSender")
 }
 
 model Channel {
-  name      		String	 	@unique
-  channelId			Int		 	@id @default(autoincrement())
-  members     		User[]   	@relation("Membership")
-  createdBy   		User    	@relation("ChannelCreator", fields: [createdById], references: [login])
-  createdById 		String  	@unique
-  createdAt   		DateTime	@default(now())
-  updatedAt   		DateTime	@updatedAt
-  type				String
-  key         		String?
-  chatHistory		Message[]	@relation("channel/message")
+  name        String    @unique
+  channelId   Int       @id @default(autoincrement())
+  members     User[]    @relation("Membership")
+  createdBy   User      @relation("ChannelCreator", fields: [createdById], references: [login])
+  createdById String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  type        String
+  key         String?
+  chatHistory Message[] @relation("channel/message")
 }
 
 model Message {
-	id			Int 		@id @default(autoincrement())
-	sentBy		User		@relation("MessageSender", fields: [sentById], references: [login])
-	sentById	String		
-	message 	String
-	sentAt		DateTime	@default(now())
-	img 		String?
-	preview		String?
-	incoming	Boolean
-	outgoing	Boolean
-	subtype		String?
-	reply		String?
-	channel		Channel		@relation("channel/message", fields: [channelById], references: [name])
-	channelById	String		
+  id          Int      @id @default(autoincrement())
+  sentBy      User     @relation("MessageSender", fields: [sentById], references: [login])
+  sentById    String
+  message     String
+  sentAt      DateTime @default(now())
+  img         String?
+  preview     String?
+  incoming    Boolean
+  outgoing    Boolean
+  subtype     String?
+  reply       String?
+  channel     Channel  @relation("channel/message", fields: [channelById], references: [name])
+  channelById String
 }
 
 model Match {
@@ -112,15 +114,15 @@ model Match {
   ago            DateTime?
 }
 
-// model FriendRequest {
-//   id         String        @id @default(uuid())
-//   sender     User          @relation("Sender", fields: [senderId], references: [user_id])
-//   senderId   String
-//   receiver   User          @relation("Receiver", fields: [receiverId], references: [user_id])
-//   receiverId String
-//   status     RequestStatus @unique @default(PENDING)
-//   createdAt  DateTime      @default(now())
-// }
+model FriendRequest {
+  id         String        @id @unique @default(uuid())
+  sender     User          @relation("Sender", fields: [senderId], references: [login])
+  senderId   String
+  receiver   User          @relation("Receiver", fields: [receiverId], references: [login])
+  receiverId String
+  status     RequestStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+}
 
 // enum Role { 
 //   BASIC

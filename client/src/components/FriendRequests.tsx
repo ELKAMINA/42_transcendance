@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Stack,
@@ -6,10 +6,17 @@ import {
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
+import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector } from "../utils/redux-hooks";
+import { useState } from "react";
 
-import { selectSocket } from "../redux-features/friendship/friendshipSlice";
+// import { selectSocket } from "../redux-features/friendship/friendshipSlice";
+import { selectCurrentUser } from "../redux-features/auth/authSlice";
+// import { FriendReqSocket } from "../pages/friendship";
+// import { socket } from '../socket'
+import { socket } from '../pages/friendship';
+
 
 type FriendshipProps = {
     id: string,
@@ -19,9 +26,38 @@ type FriendshipProps = {
   };
 
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type}) => {
-    const socket = useAppSelector(selectSocket);
+    const [buttonColor, setButtonColor] = useState('red'); // State to track the button color
+    const [blockBgColor, setBlockBgColor] = useState('yellowgreen');
+    const sender = useAppSelector(selectCurrentUser);
+    const receiver = {
+        nickname: login,
+        avatar: avatar,
+    }
     const addFriend = () => {
-        console.log("Est ce que j'ai récupéré la socket ou pas ?? ", socket )
+        socket.emit('friendReq', {
+            sender: sender,
+            receiver: receiver,
+        })
+    }
+    const accept = () => {
+        socket.emit('acceptFriend', {
+            sender: sender,
+            receiver: receiver,
+        })
+    }
+    const deny = () => {
+        socket.emit('denyFriend', {
+            sender: receiver,
+            receiver: sender,
+        })
+    }
+    const block = () => {
+        socket.emit('blockFriend', {
+            sender: sender,
+            receiver: receiver,
+        })
+        setButtonColor('grey')
+        setBlockBgColor('grey')
     }
     return (
         <>
@@ -33,7 +69,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                 width: 150,
                 height: 40,
                 borderRadius: 2,
-                backgroundColor: 'yellowgreen',
+                backgroundColor: blockBgColor,
                 '&:hover': {
                     backgroundColor: 'grey',
                 },
@@ -46,12 +82,17 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                     {type === "request" && <AddIcon sx={{ color: 'yellow' }} onClick={addFriend}/>}
                     {type === "requestReception" && (
                         <>
-                            <DoneIcon sx={{ color: 'green' }}/>
-                            <CloseIcon sx={{ color: 'red' }}/>               
+                            <DoneIcon sx={{ color: 'green' }} onClick={accept}/>
+                            <CloseIcon sx={{ color: 'red' }} onClick={deny}/>               
+                        </>
+                    )}
+                    {(type === 'myFriends') && (
+                        <>
+                            <BlockIcon sx={{ color: buttonColor, width: 20, height: 20 }} onClick={block}/>
                         </>
                     )}
                 </Stack>
             </Box>
-        </>
+        </> 
     )
 }

@@ -38,7 +38,7 @@ export class AuthService {
         },
         {
           secret: this.config.get('ACCESS_TOKEN'),
-          expiresIn: 60 * 15,
+          expiresIn: 60 * 15 * 20,
         },
       ), // access token
       this.jwt.signAsync(
@@ -101,15 +101,19 @@ export class AuthService {
     });
   }
 
-  verifyJwt(jwt: string): Promise<any> {
-    return this.jwt.verifyAsync(jwt, {
+  async verifyJwt(jwt: string): Promise<any> {
+    const verification = this.jwt.verifyAsync(jwt, {
       secret: this.config.get('ACCESS_TOKEN'),
       maxAge: 60 * 15,
     });
+    return verification;
   }
 
-  async setCookie(data: CookieType, res: Response) {
+  async setCookie(data: object, res: Response) {
     const serializeData = JSON.stringify(data);
+    // console.log("seriiialized data ", serializeData)
+    // console.log("la data ",data);
+    res.cookie('Authcookie', '', { expires: new Date(0) });
     res.cookie('Authcookie', serializeData, {
       httpOnly: false,
       sameSite: 'lax',
@@ -198,17 +202,19 @@ export class AuthService {
     // res.clearCookie('Authcookie', { path: '/' });
   }
 
-  async refresh(userInfo: JwtPayload, refreshToken: string) {
+  async refresh(userNick: string, refreshToken: string) {
     const us = await this.prisma.user.findUnique({
       where: {
-        user_id: userInfo.sub,
+        login: userNick,
       },
     });
-    if (!us || !us.rtHash) throw new ForbiddenException('Access Denied');
+    // console.log('le user qui se co ', us);
+    if (!us || !us.rtHash) throw new ForbiddenException('1 - Access Denied');
     const rtMatches = await argon.verify(us.rtHash, refreshToken);
-    if (rtMatches == false) throw new ForbiddenException('Access Denied');
+    if (rtMatches == false) throw new ForbiddenException('2 - Access Denied');
     const tokens = await this.signTokens(us.user_id, us.login);
     await this.updateRtHash(us.user_id, tokens.refresh_token);
+    // console.log('les tookens from refresh function ', tokens);
     return tokens;
   }
 
@@ -331,4 +337,5 @@ export class AuthService {
       refresh_token: tokens.refresh_token,
     };
   }
+
 }

@@ -32,6 +32,12 @@ const authSlice = createSlice({
             // console.log("RT ", state.refresh_token)
             state.nickname = nickname
         },
+        setOnlyTokens: (state, action) => {
+            // console.log("Action ", action.payload)
+            const {accessToken, refreshToken} = action.payload
+            state.access_token = accessToken
+            state.refresh_token = refreshToken
+        },
         logOut: (state, action) => {
             state.access_token = ""
             state.refresh_token = ""
@@ -42,7 +48,7 @@ const authSlice = createSlice({
     },
 })
 
-export const { setSignCredentials, logOut, setTokens} = authSlice.actions
+export const { setSignCredentials, logOut, setTokens, setOnlyTokens} = authSlice.actions
 
 export default authSlice.reducer
 

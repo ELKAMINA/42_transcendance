@@ -13,9 +13,6 @@ export const store = configureStore({
         // The reducerPath is a unique key that your service will be mounted to in your store. If you call createApi more than once in your application, you will need to provide a unique value each time. Defaults to api. A key defining where the Redux store will store the cache
 
         // A standard redux reducer that enables core functionality
-        // auth: authReducer,
-        // friendship: friendshipReducer,
-        // socket: socketSliceReducer,
         persistedReducer,
     },
     middleware: getDefaultMiddleware => // allow us to customize the dispatch function

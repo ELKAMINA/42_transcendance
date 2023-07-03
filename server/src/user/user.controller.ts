@@ -11,6 +11,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('/all')
+  @Public()
   findAll() {
     return this.userService.findAll();
   }

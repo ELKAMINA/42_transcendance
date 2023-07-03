@@ -1,6 +1,5 @@
 import { Injectable, ExecutionContext } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
 
 // Keyword : Interceptor - Execution Context :  is an object that provides methods to access the route handler and class that can be called or invoked
 @Injectable()
