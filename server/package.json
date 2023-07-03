@@ -14,7 +14,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:migrate:dev": "sleep 1 && npx prisma migrate:dev:deploy && npm run start:dev",
+    "start:migrate:dev": "sleep 1 && npm run prisma:dev:deploy && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
