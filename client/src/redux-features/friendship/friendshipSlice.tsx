@@ -83,7 +83,7 @@ export function FetchAllUsers() {
         .then((res) => {
             let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
             let arr = Object.values(dt);
-            console.log('arr ', arr);
+            // console.log('arr ', arr);
             api
             .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
             .then((res) => {
@@ -96,7 +96,7 @@ export function FetchAllUsers() {
                 .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
                 .then((res) => {
                     const friends = Object.values(res.data);
-                    console.log('la response pr Firends ', res.data);
+                    // console.log('la response pr Firends ', res.data);
                     const withoutFriends: any = updatedArray.filter((obj1: any) =>
                     !friends.some((obj2: any) => obj2.login === obj1.login)
 
@@ -105,7 +105,7 @@ export function FetchAllUsers() {
                   .post("http://0.0.0.0:4001/friendship/sentRequests", {nickname: getState().persistedReducer.auth.nickname})
                   .then((res) => {
                       const reqSent = Object.values(res.data);
-                      console.log("Req sennnnt ", reqSent);
+                    //   console.log("Req sennnnt ", reqSent);
                       const withoutreqSent: any = withoutFriends.filter((obj1: any) =>
                       !reqSent.some((obj2: any) => obj2.receiverId === obj1.login)
   
