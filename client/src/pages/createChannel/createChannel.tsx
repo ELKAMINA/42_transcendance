@@ -2,7 +2,7 @@ import "./createChannel.css"
 
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import React from "react";
+import React, { useEffect } from "react";
 import CreateName from "./createName";
 import CreateUsersList from "./createUsersList";
 import CreateType from "./createChannelType";
@@ -15,6 +15,7 @@ import api from '../../utils/Axios-config/Axios'
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
+import { io } from "socket.io-client";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -28,8 +29,8 @@ function CreateChannel(props : CreateChannelProps) {
 	const channelUsersList = useSelector((state : RootState) => state.persistedReducer.channelUser);
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
+	const dispatch = useDispatch();
 
-	// const dispatch = useDispatch();
 	const dummyMessage = {
 		sentBy: 'casper',
 		sentTo: 'bugs bunny',
@@ -59,6 +60,7 @@ function CreateChannel(props : CreateChannelProps) {
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
 			dispatch(resetChannelUser());
+
 		})
 		.catch ((error) => {
 			console.log('error = ', error);
@@ -81,7 +83,6 @@ function CreateChannel(props : CreateChannelProps) {
 		props.setTrigger(false);
 	}
 
-	const dispatch = useDispatch();
 
 	function handleCancelFormSubmit() {
 		dispatch(resetChannelType());
