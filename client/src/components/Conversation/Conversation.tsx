@@ -2,48 +2,49 @@
 	import Header from "./Header"
 	import Footer from "./Footer"
 	import Message from "./Message"
-	import { useEffect, useState } from "react"
+	import { useEffect, useRef, useState } from "react"
 	import { Socket, io } from "socket.io-client"
 	import { ChatMessage } from "../../types/chat/messageType"
-	import { useSelector } from "react-redux"
+	import socketIOClient from 'socket.io-client';
+	import { Channel } from "../../types/chat/channelTypes"
+	import { useAppSelector } from "../../utils/redux-hooks"
+	import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
+	import { RootState } from "../../app/store"
+
 
 	function Conversation() {
 
-		const [socket, setSocket] = useState<Socket>()
-
-		const [messages, setMessages] = useState<ChatMessage[]>([])
-
-
-		// whenever we hit the "send" button...
-		const send = (value: ChatMessage) => {
-			// console.log('message to be sent = ', value);
-			// socket?.emit('message', value); // it emits an event called 'message'
-			socket?.emit('chatToServer', value);
-		}
-
-		// after the component has been rendered for the first time, we want to create a new socket
-		useEffect( () => {
-			const newSocket = io("http://localhost:4002")
-			setSocket(newSocket)
-		}, [setSocket]);
-
-		// get the message received from the backend and put them all in the 'message' state.
-		const messageListener = (message: ChatMessage) => {
-			setMessages([...messages, message]);
-		}
+		const selectedChannel : Channel = useAppSelector((state: RootState) => selectDisplayedChannel(state));
+		const roomId = selectedChannel.name;
+		const [messages, setMessages] = useState<ChatMessage[]>([]);
+		const socketRef = useRef<Socket>();
 
 		useEffect(() => {
-			// Setting an event listener of the 'socket' object.
-			// It listens for the event called 'message'.
-			// When a event called 'message' is emitted from
-			// the backend, the 'messageListener' function
-			// is called.
-			socket?.on("chatToClient", messageListener)
-			// clean up function
+			
+			socketRef.current = socketIOClient("http://localhost:4002", {
+				query: {roomId}
+			})
+
+			socketRef.current.on('newChatMessage:' + roomId, (message : ChatMessage) => {
+				const incomingMessage : ChatMessage = {
+					...message,
+					outgoing: message.senderSocketId !== socketRef.current?.id,
+					incoming: message.senderSocketId === socketRef.current?.id,
+				}
+				setMessages((messages) => [...messages, incomingMessage])
+			})
+
 			return () => {
-				socket?.off("chatToClient", messageListener)
+				socketRef.current?.disconnect()
 			}
-		}, [messageListener])
+
+		}, [selectedChannel])
+
+		const send = (value : ChatMessage) => {
+			if (socketRef.current)
+				value.senderSocketId = socketRef.current.id
+			socketRef.current?.emit('newChatMessage', value)
+		}
 
 		return (
 			<Stack
