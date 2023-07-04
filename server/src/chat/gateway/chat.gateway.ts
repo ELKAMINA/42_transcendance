@@ -16,11 +16,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  this.logger.log('Initialized!');
 	}
 
-	@SubscribeMessage('newChatMessage')
+	@SubscribeMessage('ChatToServer')
 	handleNewChatMessage(socket: Socket, dto: MessageDto): void {
 	  const roomId = socket.handshake.query.roomId as string;
 	  this.ChatService.createMessage(dto);
-	  this.server.to(roomId).emit('newChatMessage:' + roomId, dto);
+	  this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
 	}
   
 	handleConnection(socket: Socket) {
