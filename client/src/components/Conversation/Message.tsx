@@ -1,11 +1,11 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { DocMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
 import { ChatMessage } from '../../types/chat/messageType'
-import { useAppSelector } from '../../utils/redux-hooks';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { Channel } from '../../types/chat/channelTypes';
 import areDifferentDays from '../../utils/areDifferentDays';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 function renderSwitchComponent(el : ChatMessage, index: number) {
 	switch (el.subtype) {
@@ -42,10 +42,6 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 
 	const chat : ChatMessage[] = [...selectedChannel.chatHistory, ...messages];
 
-	// chat.filter((el) => el.channelById === selectedChannel.name).map((el, index) => {
-		// console.log('el.sentAt', el.sentAt);
-	// })
-
 	return (	
 		<Box p={3}>
 			<Stack spacing={3}>
@@ -54,9 +50,9 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 				.map((el, index) => {
 					if (index === 0 || areDifferentDays(el.sentAt, chat[index - 1].sentAt)) {
 					return (
-						<React.Fragment key={index}>
-						<Timeline key={index} date={el.sentAt} />
-							{renderSwitchComponent(el, index)}
+						<React.Fragment key={`timeline-${index}`}>
+							<Timeline key={`timeline-${index}`} date={el.sentAt} />
+								{renderSwitchComponent(el, index)}
 						</React.Fragment>
 					);
 					}
