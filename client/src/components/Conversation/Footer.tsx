@@ -54,7 +54,8 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
 		if (e.key === 'Enter') {
-		  sendMessage();
+			sendMessage();
+			setValue('');
 		}
 	}
 
