@@ -23,32 +23,32 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 		)
 	}
 
-	const chat = [...selectedChannel.chatHistory, ...messages];
-	// console.log('chat = ', chat)
+	const chat : ChatMessage[] = [...selectedChannel.chatHistory, ...messages];
+
 	return (	
-	<Box p={3} >
-		<Stack spacing={3}>
-		{
-			chat.filter((el) => el.channel === selectedChannel.name).map((el, index) => {
-				// if (index === 0 || is24HoursApart(el.sentAt, messages[index - 1].sentAt)) {
-				//   return <Timeline key={index} el={el.sentAt} />;
-				// }
-				switch (el.subtype) {
-					case 'img':
-						return <MediaMsg key={index} el={el} />;
-					case 'doc':
-						return <DocMsg key={index} el={el} />;
-					case 'link':
-						return <LinkMsg key={index} el={el} />;
-					case 'reply':
-						return <ReplyMsg key={index} el={el} />;
-					default:
-						return <TextMsg key={index} el={el} />;
-				}
-			})
-		}
-		</Stack>
-	</Box>
+		<Box p={3} >
+			<Stack spacing={3}>
+			{
+				chat.filter((el) => el.channelById === selectedChannel.name).map((el, index) => {
+					// if (index === 0 || is24HoursApart(el.sentAt, messages[index - 1].sentAt)) {
+					//   return <Timeline key={index} el={el.sentAt} />;
+					// }
+					switch (el.subtype) {
+						case 'img':
+							return <MediaMsg key={index} el={el} />;
+						case 'doc':
+							return <DocMsg key={index} el={el} />;
+						case 'link':
+							return <LinkMsg key={index} el={el} />;
+						case 'reply':
+							return <ReplyMsg key={index} el={el} />;
+						default:
+							return <TextMsg key={index} el={el} />;
+					}
+				})
+			}
+			</Stack>
+		</Box>
 	)
 }
 
