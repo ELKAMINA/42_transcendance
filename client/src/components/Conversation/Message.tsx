@@ -4,6 +4,23 @@ import { ChatMessage } from '../../types/chat/messageType'
 import { useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { Channel } from '../../types/chat/channelTypes';
+import areDifferentDays from '../../utils/areDifferentDays';
+import React from 'react';
+
+function renderSwitchComponent(el : ChatMessage, index: number) {
+	switch (el.subtype) {
+	  case 'img':
+		return <MediaMsg key={index} el={el} />;
+	  case 'doc':
+		return <DocMsg key={index} el={el} />;
+	  case 'link':
+		return <LinkMsg key={index} el={el} />;
+	  case 'reply':
+		return <ReplyMsg key={index} el={el} />;
+	  default:
+		return <TextMsg key={index} el={el} />;
+	}
+}
 
 const Message = ({ messages }: { messages : ChatMessage[] }) => {
 
@@ -25,28 +42,26 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 
 	const chat : ChatMessage[] = [...selectedChannel.chatHistory, ...messages];
 
+	// chat.filter((el) => el.channelById === selectedChannel.name).map((el, index) => {
+		// console.log('el.sentAt', el.sentAt);
+	// })
+
 	return (	
-		<Box p={3} >
+		<Box p={3}>
 			<Stack spacing={3}>
-			{
-				chat.filter((el) => el.channelById === selectedChannel.name).map((el, index) => {
-					// if (index === 0 || is24HoursApart(el.sentAt, messages[index - 1].sentAt)) {
-					//   return <Timeline key={index} el={el.sentAt} />;
-					// }
-					switch (el.subtype) {
-						case 'img':
-							return <MediaMsg key={index} el={el} />;
-						case 'doc':
-							return <DocMsg key={index} el={el} />;
-						case 'link':
-							return <LinkMsg key={index} el={el} />;
-						case 'reply':
-							return <ReplyMsg key={index} el={el} />;
-						default:
-							return <TextMsg key={index} el={el} />;
+				{chat
+				.filter((el) => el.channelById === selectedChannel.name)
+				.map((el, index) => {
+					if (index === 0 || areDifferentDays(el.sentAt, chat[index - 1].sentAt)) {
+					return (
+						<React.Fragment key={index}>
+						<Timeline key={index} date={el.sentAt} />
+							{renderSwitchComponent(el, index)}
+						</React.Fragment>
+					);
 					}
-				})
-			}
+					return renderSwitchComponent(el, index);
+				})}
 			</Stack>
 		</Box>
 	)
