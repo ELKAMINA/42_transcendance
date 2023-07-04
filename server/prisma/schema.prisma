@@ -91,8 +91,8 @@ model Message {
   outgoing    Boolean
   subtype     String?
   reply       String?
-  channel     Channel  @relation("channel/message", fields: [channelById], references: [name])
-  channelById String
+  channel     Channel?  @relation("channel/message", fields: [channelById], references: [name], onDelete: SetNull)
+  channelById String?
 }
 
 model Match {
