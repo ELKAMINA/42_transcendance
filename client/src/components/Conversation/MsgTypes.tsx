@@ -210,7 +210,7 @@ type TimelineProps = {
 };
 
 const Timeline = ({ date }: TimelineProps) => {
-  console.log('date = ', date);
+//   console.log('date = ', date);
   const currentDate = new Date(date);
   const today = new Date(); // Get the current date and time
 //   console.log('today = ', today)
