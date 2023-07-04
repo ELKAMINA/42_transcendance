@@ -18,9 +18,9 @@
 		const roomId = selectedChannel.name;
 		const [messages, setMessages] = useState<ChatMessage[]>([]);
 		const socketRef = useRef<Socket>();
+		const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 
 		useEffect(() => {
-			
 			socketRef.current = socketIOClient("http://localhost:4002", {
 				query: {roomId}
 			})
@@ -38,7 +38,6 @@
 			return () => {
 				socketRef.current?.disconnect()
 			}
-
 		}, [selectedChannel])
 
 		const send = (value : ChatMessage) => {
@@ -46,6 +45,22 @@
 				value.senderSocketId = socketRef.current.id
 			socketRef.current?.emit('ChatToServer', value)
 		}
+
+		// scroll the Box element to the bottom by setting the scrollTop property to the scrollHeight hehe
+		const scrollMessageContainerToBottom = () => {
+			if (messageContainerRef.current) {
+			  messageContainerRef.current.scrollTop =
+				messageContainerRef.current.scrollHeight;
+			}
+		};
+
+		useEffect(() => {
+			scrollMessageContainerToBottom();
+		}, [messages]); // call the function when messages change
+
+		useEffect(() => {
+			scrollMessageContainerToBottom(); // scroll to bottom when the component is rendered
+		}, []);
 
 		return (
 			<Stack
@@ -62,6 +77,7 @@
 						height:'100%',
 						overflowY:'scroll',	
 					}}
+					ref={messageContainerRef}
 				>
 					<Message messages = {messages} />
 				</Box>
