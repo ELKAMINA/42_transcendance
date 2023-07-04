@@ -25,12 +25,13 @@
 				query: {roomId}
 			})
 
-			socketRef.current.on('newChatMessage:' + roomId, (message : ChatMessage) => {
+			socketRef.current.on('ServerToChat:' + roomId, (message : ChatMessage) => {
 				const incomingMessage : ChatMessage = {
 					...message,
 					outgoing: message.senderSocketId !== socketRef.current?.id,
 					incoming: message.senderSocketId === socketRef.current?.id,
 				}
+				// console.log('incoming message = ', incomingMessage)
 				setMessages((messages) => [...messages, incomingMessage])
 			})
 
@@ -43,7 +44,7 @@
 		const send = (value : ChatMessage) => {
 			if (socketRef.current)
 				value.senderSocketId = socketRef.current.id
-			socketRef.current?.emit('newChatMessage', value)
+			socketRef.current?.emit('ChatToServer', value)
 		}
 
 		return (
