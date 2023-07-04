@@ -26,12 +26,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	handleConnection(socket: Socket) {
 	  const roomId = socket.handshake.query.roomId as string;
 	  socket.join(roomId);
-	  console.log(`Client ${socket.id} connected to ${roomId}`);
+	//   console.log(`Client ${socket.id} connected to ${roomId}`);
 	}
   
 	handleDisconnect(socket: Socket) {
 		const roomId = socket.handshake.query.roomId as string;
 	  	socket.leave(roomId);
-	  	console.log(`Client ${socket.id} disconnected from ${roomId}`);
+	  	// console.log(`Client ${socket.id} disconnected from ${roomId}`);
 	}
 }
