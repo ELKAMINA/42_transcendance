@@ -3,6 +3,7 @@ import Link from '@mui/material/Link';
 import DownloadIcon from '@mui/icons-material/Download';
 import ImageIcon from '@mui/icons-material/Image';
 import { ChatMessage } from '../../types/chat/messageType';
+import { format, isToday, isYesterday, startOfDay, endOfDay, isSameDay } from 'date-fns'
 
 type TextMsgProps = {
 	el: ChatMessage;
@@ -205,25 +206,39 @@ const TextMsg = ({el} : TextMsgProps) => {
 }
 
 type TimelineProps = {
-	el: Date
+	date: Date
 };
 
-const Timeline = ({el} : TimelineProps) => {
-	const formattedDate = el.toLocaleString();
-	return (
-		<Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-		{/* <Divider sx={{width: '100%',}}>{el.text}</Divider> */}
-	
-		<Divider sx={{width: '46%',}} />
-			<Typography
-				variant='caption'
-				sx={{color: '#475d70'}}
-			>{formattedDate}</Typography>
-		<Divider sx={{width: '46%',}} />
-	
-		</Stack >
-	)
-  
-}
+const Timeline = ({ date }: TimelineProps) => {
+  console.log('date = ', date);
+  const currentDate = new Date(date);
+  const today = new Date(); // Get the current date and time
+//   console.log('today = ', today)
+  let formattedDate;
+
+//   console.log('current date = ', currentDate);
+//   console.log('isToday(currentDate) = ', isSameDay(currentDate, today));
+
+  if (isSameDay(currentDate, today)) {
+    formattedDate = 'today';
+  } else if (isYesterday(currentDate)) {
+    formattedDate = 'yesterday';
+  } else {
+    formattedDate = format(currentDate, 'dd-MM-yyyy');
+  }
+
+  return (
+    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+      {/* <Divider sx={{width: '100%',}}>{el.text}</Divider> */}
+      <Divider sx={{width: '46%',}} />
+      <Typography variant='caption' sx={{color: '#475d70'}}>
+        {formattedDate}
+      </Typography>
+      <Divider sx={{width: '46%',}} />
+    </Stack>
+  );
+};
+
+
 
 export { Timeline, TextMsg, MediaMsg, ReplyMsg, LinkMsg, DocMsg };
