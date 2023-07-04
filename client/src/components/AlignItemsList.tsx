@@ -28,25 +28,24 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 	React.useEffect(() => {AppDispatch(fetchUserChannels())}, []);
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 
-	// const dispatch = useDispatch();
-
 	// this function allow to remove channels or users from the displayed list
 	// it is triggered when the user click on the DeleteButton component
 	function handleClick(index: number): void {
-		// dispatch(deleteChat(channels[index].name))
 		console.log('I am supposed to delete this channel');
 	}
 
-	// That stuff if to handle what happens when you click on an item of the list -----
-	const [selectedIndex, setSelectedIndex] = React.useState(0);
-	const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-		index: number, ) => {
-		setSelectedIndex(index); // get the selected to change its color
-		
-		const selectedChannel = channels[index];
-		const chatID = selectedChannel.name;
-		getSelectedItem(chatID)
+	const [selectedIndex, setSelectedIndex] = React.useState(() => {
+		// Retrieve the stored index value from localStorage
+		const storedIndex = localStorage.getItem('selectedItemIndex');
+		return storedIndex !== null ? Number(storedIndex) : 0;
+	});
+
+	const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number, ) => {
+		setSelectedIndex(index);
+		localStorage.setItem('selectedItemIndex', String(index)); // Store the selected index in localStorage
+		getSelectedItem(channels[index].name)
 	};
+
 	// --------------------------------------------------------------------------------
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
