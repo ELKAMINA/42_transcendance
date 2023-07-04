@@ -47,6 +47,7 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 			incoming: true,
 			outgoing: false,
 			channel: displayedChannel.name,
+			channelById: displayedChannel.name,
 		}
 		send(messageToBeSent);
 	}
