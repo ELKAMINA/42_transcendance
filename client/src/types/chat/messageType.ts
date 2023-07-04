@@ -15,4 +15,5 @@ export type ChatMessage = {
 	subtype?: string
 	reply?: string
 	channel: string
+	channelById: string
 }
