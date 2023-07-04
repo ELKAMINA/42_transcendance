@@ -13,17 +13,26 @@ import { fetchDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 function Chat () {
 	const currentRoute = window.location.pathname;
-	const [selectedChannel, setselectedChannel] = useState<string>('')
+	const [selectedChannel, setSelectedChannel] = useState<string>('')
 	
 	const AppDispatch = useAppDispatch();
 	useEffect(() => {
-		if (selectedChannel !== '')
-			AppDispatch(fetchDisplayedChannel(selectedChannel))
+		const storedChannel = localStorage.getItem('selectedChannel');
+		if (storedChannel) {
+		  setSelectedChannel(storedChannel);
+		  AppDispatch(fetchDisplayedChannel(storedChannel));
+		}
+	  }, []);
+	
+	useEffect(() => {
+		if (selectedChannel !== '') {
+			localStorage.setItem('selectedChannel', selectedChannel);
+			AppDispatch(fetchDisplayedChannel(selectedChannel));
+		}
 	}, [selectedChannel]);
 
 	function handleSelectChannel (channelName : string) {
-		setselectedChannel(channelName);
-
+		setSelectedChannel(channelName);
 	}
   
 	return (
