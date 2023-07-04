@@ -65,6 +65,25 @@ export class ChannelService {
 		}
 	}
 
+	async  deleteAllChannels(): Promise<void> {
+		try {
+			// Fetch all channels from the database
+			const channels = await this.prisma.channel.findMany();
+		
+			// Delete each channel
+			for (const channel of channels) {
+				await this.prisma.channel.delete({
+				where: { channelId: channel.channelId },
+				});
+				console.log(`Deleted channel with ID: ${channel.channelId}`);
+		  }
+	  
+		console.log('All channels have been deleted.');
+		} catch (error: any) {
+			throw error;
+		}
+	  }	  
+
 	async getUserChannels(requestBody: {}): Promise<object> {
 		const user = await this.prisma.user.findUnique({
 			where: requestBody,
