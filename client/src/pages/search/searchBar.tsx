@@ -1,7 +1,7 @@
 import SearchIcon from '@mui/icons-material/Search';
 import "./searchBar.css";
 
-import { FetchAllUsers, selectSuggestions} from '../../redux-features/friendship/friendshipSlice';
+import { FetchAllFriends, FetchAllUsers, selectFriends, selectSuggestions} from '../../redux-features/friendship/friendshipSlice';
 // import { User } from "../../../../server/src/user/types/user-types.user.ts";
 import { UserDetails } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
@@ -15,15 +15,15 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 
 	const dispatch = useAppDispatch();
 
-	// when the search component is mounted the first time, get the list of users
-	useEffect(() => {dispatch(FetchAllUsers())}, []);
-	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
-	
+	useEffect(() => {dispatch(FetchAllFriends())}, []); // get the friends
+	const friends = useAppSelector(selectFriends) as UserDetails[];
+	// console.log('friends = ', friends);
+
 	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []);
 	let channels = useAppSelector((state) => selectAllChannels (state)) as Channel[];
 	channels = channels.filter(channel => channel.type !== 'private')
 	
-	const usersAndChannels = [...allUsers, ...channels];
+	const usersAndChannels = [...friends, ...channels];
 
 	function fetchData(value:string) {
 		const results = usersAndChannels.filter((item) => {
