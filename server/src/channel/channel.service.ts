@@ -48,6 +48,23 @@ export class ChannelService {
 		}
 	}
 
+	async deleteChannelByName(requestBody : {name : string | string[]}): Promise<void> {
+		try {
+		  	const channelNames = Array.isArray(requestBody.name) ? requestBody.name : [requestBody.name];
+			for (const name of channelNames) {
+				const channel = await this.prisma.channel.findUnique({ where: {name : name} });
+				if (!channel) {
+					throw new NotFoundException(`Channel with name '${name}' not found.`);
+				}
+		
+				await this.prisma.channel.delete({ where: { name : name } });
+				console.log(`The channel named '${name}' has been deleted.`);
+			}
+		} catch (error: any) {
+			throw error;
+		}
+	}
+
 	async getUserChannels(requestBody: {}): Promise<object> {
 		const user = await this.prisma.user.findUnique({
 			where: requestBody,
