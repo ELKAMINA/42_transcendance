@@ -14,6 +14,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import { fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { Channel } from '../types/chat/channelTypes';
+import api from '../utils/Axios-config/Axios';
 
 type getSelectedItemFunction = (pwd: string) => void;
 
@@ -28,10 +29,17 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 	React.useEffect(() => {AppDispatch(fetchUserChannels())}, []);
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 
+	async function deleteChannel(channelToDelete : string) {
+		await api
+		.post('http://localhost:4001/channel/deleteChannelByName', {name : channelToDelete})
+		.then((response) => {console.log('channel deleted!'); AppDispatch(fetchUserChannels())})
+		.catch((error) => console.log('error while deleting channel', error))
+	}
+
 	// this function allow to remove channels or users from the displayed list
 	// it is triggered when the user click on the DeleteButton component
-	function handleClick(index: number): void {
-		console.log('I am supposed to delete this channel');
+	function handleClick(channelToDelete : string): void {
+		deleteChannel(channelToDelete)
 	}
 
 	const [selectedIndex, setSelectedIndex] = React.useState(() => {
@@ -64,7 +72,7 @@ export default function AlignItemsList({getSelectedItem} : alignItemsProps) {
 					<ListItem
 						alignItems="center"
 						secondaryAction={
-							<Stack onClick={() => handleClick(index)} direction={'row'} spacing={5} alignItems={'end'}>
+							<Stack onClick={() => handleClick(element.name)} direction={'row'} spacing={5} alignItems={'end'}>
 								
 								{element.type === 'private' && (
 									 <Tooltip title="private channel" placement="top">
