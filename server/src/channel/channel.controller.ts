@@ -51,4 +51,10 @@ export class channelController {
 	getDisplayedChannel(@Body() requestBody : {}): Promise<object> {
 			return this.ChannelService.getDisplayedChannel(requestBody);
 		}
+
+	@Post('/deleteChannelByName')
+	@Public() // TODO - remove public
+	deleteChannelByName(@Body() requestBody : {name : string | string[]}): Promise<void> {
+			return this.ChannelService.deleteChannelByName(requestBody);
+		}
 }
