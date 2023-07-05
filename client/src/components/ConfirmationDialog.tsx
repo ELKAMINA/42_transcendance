@@ -8,7 +8,7 @@ import Dialog from '@mui/material/Dialog';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { Tooltip } from '@mui/material';
+import { TextField, Tooltip, Typography } from '@mui/material';
 import { IconButton } from '@mui/material';
 import Fade from '@mui/material/Fade';
 import { useDispatch, useSelector } from 'react-redux';
@@ -66,6 +66,7 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
     >
       <DialogTitle>{dialogTitle}</DialogTitle>
       <DialogContent dividers>
+		<Typography>Beware, this action is permanent.</Typography>
         <RadioGroup
           ref={radioGroupRef}
           aria-label="confirmation"
