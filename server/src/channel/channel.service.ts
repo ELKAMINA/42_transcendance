@@ -10,10 +10,8 @@ export class ChannelService {
 		private prisma: PrismaService) {}
 
 	async createChannel(dto: ChannelDto): Promise<object> {
-		// console.log('dto = ', dto);
-		const pwd = await argon.hash(dto.key);
+		const pwd = dto.key !== '' ? await argon.hash(dto.key) : '';
 		try {
-
 			// before creating the Channel record, 
 			// we fetch the User record with the specified login value using this.prisma.user.findUnique(). 
 			// If the creator record is not found, 
@@ -36,6 +34,7 @@ export class ChannelService {
 					key: pwd,
 				} as Prisma.ChannelCreateInput,
 			});
+			// we return the newly created channel
 			return channel;
 		} catch (error: any) {
 			  throw error;
