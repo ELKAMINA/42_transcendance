@@ -14,9 +14,9 @@ import ClearAllIcon from '@mui/icons-material/ClearAll';
 import Fade from '@mui/material/Fade';
 import { useDispatch, useSelector } from 'react-redux';
 
-const options = [
-  'Yes, I do want to delete all my chats',
-];
+// const options = [
+//   'Yes, I do want to delete all my chats',
+// ];
 
 export interface ConfirmationDialogRawProps {
   id: string;
@@ -24,10 +24,11 @@ export interface ConfirmationDialogRawProps {
   value: string;
   open: boolean;
   onClose: (value?: string) => void;
+  options: string[];
 }
 
 function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
-  const { onClose, value: valueProp, open, ...other } = props;
+  const { onClose, value: valueProp, open, options, ...other } = props;
   const [value, setValue] = React.useState(valueProp);
   const radioGroupRef = React.useRef<HTMLElement>(null);
 
@@ -92,7 +93,14 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
   );
 }
 
-export default function ConfirmationDialog() {
+export interface ConfirmationDialogProps {
+	title : string;
+	id : string;
+	options : string[];
+}
+
+export default function ConfirmationDialog(props : ConfirmationDialogProps) {
+	const {title, id, options} = props;
   	const [open, setOpen] = React.useState(false);
   	const [value, setValue] = React.useState('Dione');
 
@@ -128,6 +136,7 @@ export default function ConfirmationDialog() {
         open={open}
         onClose={handleClose}
         value={value}
+		options={options}
       />
     </Box>
   );
