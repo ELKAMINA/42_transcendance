@@ -10,6 +10,7 @@ export class ChannelService {
 		private prisma: PrismaService) {}
 
 	async createChannel(dto: ChannelDto): Promise<object> {
+		// console.log('dto = ', dto);
 		const pwd = await argon.hash(dto.key);
 		try {
 
@@ -23,7 +24,6 @@ export class ChannelService {
 			if (!creator) {
 				throw new NotFoundException(`User with login '${dto.createdBy}' not found.`);
 			}
-
 			// we create channel record
 			const channel = await this.prisma.channel.create({
 				data: {
@@ -36,14 +36,8 @@ export class ChannelService {
 					key: pwd,
 				} as Prisma.ChannelCreateInput,
 			});
-		console.log('this channel has been added to the database : ', channel)
-		return channel;
+			return channel;
 		} catch (error: any) {
-			if (error instanceof Prisma.PrismaClientKnownRequestError) {
-				if (error.code === 'P2002') {
-				  throw new ForbiddenException('Credentials taken');
-				}
-			  }
 			  throw error;
 		}
 	}
@@ -154,7 +148,6 @@ export class ChannelService {
 				chatHistory: true,
 			}
 		});
-
 		if (!channel) {
 			throw new NotFoundException('User not found');
 		}
