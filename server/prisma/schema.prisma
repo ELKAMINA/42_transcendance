@@ -71,7 +71,7 @@ model Channel {
   channelId   Int       @id @default(autoincrement())
   members     User[]    @relation("Membership")
   createdBy   User      @relation("ChannelCreator", fields: [createdById], references: [login])
-  createdById String    @unique
+  createdById String    
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   type        String
