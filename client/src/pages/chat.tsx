@@ -7,21 +7,26 @@ import Conversation from '../components/Conversation/Conversation';
 import { Provider } from 'react-redux';
 import { store } from '../app/store';
 import { Box, Stack } from '@mui/material';
-import { useAppDispatch } from "../utils/redux-hooks";
+import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { useEffect, useState } from "react";
-import { fetchDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { Channel } from 'diagnostics_channel';
 
 function Chat () {
 	const currentRoute = window.location.pathname;
 	const [selectedChannel, setSelectedChannel] = useState<string>('')
+	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 	
 	const AppDispatch = useAppDispatch();
 	useEffect(() => {
-		const storedChannel = localStorage.getItem('selectedChannel');
-		// TO DO --> add a check to verify weither or not channel still has not been deleted
+		let storedChannel = localStorage.getItem('selectedChannel');
 		if (storedChannel) {
-		  setSelectedChannel(storedChannel);
-		  AppDispatch(fetchDisplayedChannel(storedChannel));
+			if (!channels.some(channel => channel.name === storedChannel))
+				typeof channels[0].name === 'string' && (storedChannel = channels[0].name);
+			else 
+				setSelectedChannel(storedChannel);
+			AppDispatch(fetchDisplayedChannel(storedChannel));
+			AppDispatch(fetchUserChannels());
 		}
 	  }, []);
 	
@@ -29,6 +34,7 @@ function Chat () {
 		if (selectedChannel !== '') {
 			localStorage.setItem('selectedChannel', selectedChannel);
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
+			AppDispatch(fetchUserChannels());
 		}
 	}, [selectedChannel]);
 

@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LockIcon from '@mui/icons-material/Lock';
-import { fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { Channel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
@@ -28,8 +28,15 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const [showIcons, setShowIcons] = React.useState(true);
 	const AppDispatch = useAppDispatch();
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
+	const selectedChannel = useAppSelector((state) => selectDisplayedChannel(state)) as Channel;
 
-	React.useEffect(() => { AppDispatch(fetchUserChannels()); }, []);
+
+	React.useEffect(() => { 
+		AppDispatch(fetchUserChannels());
+		// console.log('selectedChannel.name = ', selectedChannel.name)
+		if (channels.findIndex(channel => channel.name === selectedChannel.name) === -1) // when refreshing the page, if the selectedChannel is not in the list of channels anymore, sent index to 0 (aka first item in the list) 
+			setSelectedIndex(0);
+	}, []);
 
 	async function deleteChannel(channelToDelete: string) {
 	await api
@@ -46,8 +53,9 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 		deleteChannel(channelToDelete);
 	}
 
+
 	const [selectedIndex, setSelectedIndex] = React.useState(() => {
-	const storedIndex = localStorage.getItem('selectedItemIndex');
+		const storedIndex = localStorage.getItem('selectedItemIndex');
 		return storedIndex !== null ? Number(storedIndex) : 0;
 	});
 
@@ -71,7 +79,6 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			window.removeEventListener('resize', handleWindowResize);
 	};
 	}, []);
-
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
 			{channels.map((element, index) => (
@@ -125,9 +132,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 							id = 'delete-channel'
 							options = { ['Yes, I want to delete this channel.'] }
 							icon={
-								<IconButton aria-label="delete" sx={{ p: 0,  marginLeft: 'auto' }}>
-									<DeleteIcon sx={{ color: 'red' }} fontSize="small"/>
-								</IconButton>
+								<DeleteIcon sx={{ color: 'red', p: 0, marginLeft: 'auto',}} fontSize="small"/>
 							}
 							handleConfirm={() => handleClick(element.name)}
 							dialogTitle='Delete this channel from the database?'
