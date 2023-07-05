@@ -102,9 +102,13 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 						</Tooltip>
 					)}
 					</Stack>
-					<ListItemText sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0 }} primary={element.name} />
+					{/* <ListItemText sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0 }} primary={element.name} /> */}
+					<ListItemText
+						sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+						primary={element.name}
+					/>
 					{showIcons && (
-					<IconButton aria-label="delete" sx={{ p: 0 }}>
+					<IconButton aria-label="delete" sx={{ p: 0,  marginLeft: 'auto' }}>
 						<Tooltip title="delete chat" placement="top">
 						<DeleteIcon sx={{ color: 'red' }} fontSize="small" />
 						</Tooltip>
