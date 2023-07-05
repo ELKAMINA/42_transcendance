@@ -59,7 +59,11 @@ function SideBar({handleSelectItem} : SideBarProps) {
 				<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
 			</Box>
 			<Box>
-				<ConfirmationDialog />
+				<ConfirmationDialog
+					title = 'delete all'
+					id = 'delete-channel'
+					options = { ['Yes, I want to delete all the channels.'] }
+				/>
 			</Box>
 		</Stack>
 		<Stack className='alignItemsListContainer'>
