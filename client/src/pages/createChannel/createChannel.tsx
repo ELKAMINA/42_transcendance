@@ -16,6 +16,8 @@ import { resetChannelName } from "../../redux-features/chat/createChannel/channe
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
 import { io } from "socket.io-client";
+import { useAppDispatch } from "../../utils/redux-hooks";
+import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -30,6 +32,7 @@ function CreateChannel(props : CreateChannelProps) {
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 	const dispatch = useDispatch();
+	const appDispatch = useAppDispatch();
 
 	const dummyMessage = {
 		sentBy: 'casper',
@@ -56,11 +59,11 @@ function CreateChannel(props : CreateChannelProps) {
 			chatHistory: [dummyMessage],
 		})
 		.then ((response) => {
-			console.log('this channel has been added to the database = ', response);
+			// console.log('this channel has been added to the database = ', response);
+			appDispatch(fetchUserChannels());
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
 			dispatch(resetChannelUser());
-
 		})
 		.catch ((error) => {
 			console.log('error = ', error);
