@@ -10,7 +10,6 @@ import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Tooltip } from '@mui/material';
 import { IconButton } from '@mui/material';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
 import Fade from '@mui/material/Fade';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -25,10 +24,11 @@ export interface ConfirmationDialogRawProps {
   open: boolean;
   onClose: (value?: string) => void;
   options: string[];
+  dialogTitle: string
 }
 
 function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
-  const { onClose, value: valueProp, open, options, ...other } = props;
+  const { onClose, value: valueProp, open, options, dialogTitle, ...other } = props;
   const [value, setValue] = React.useState(valueProp);
   const radioGroupRef = React.useRef<HTMLElement>(null);
 
@@ -64,7 +64,7 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
       open={open}
       {...other}
     >
-      <DialogTitle>Delete all?</DialogTitle>
+      <DialogTitle>{dialogTitle}</DialogTitle>
       <DialogContent dividers>
         <RadioGroup
           ref={radioGroupRef}
@@ -93,14 +93,19 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
   );
 }
 
+type handleConfirmFunction = (channelName : string) => void;
+
 export interface ConfirmationDialogProps {
 	title : string;
 	id : string;
 	options : string[];
+	icon: React.ReactNode; // New prop for the icon
+	handleConfirm: handleConfirmFunction;
+	dialogTitle: string;
 }
 
 export default function ConfirmationDialog(props : ConfirmationDialogProps) {
-	const {title, id, options} = props;
+	const {title, id, options, icon, handleConfirm, dialogTitle} = props;
   	const [open, setOpen] = React.useState(false);
   	const [value, setValue] = React.useState('Dione');
 
@@ -116,6 +121,7 @@ export default function ConfirmationDialog(props : ConfirmationDialogProps) {
   	  if (newValue) {
 		console.log(newValue);
   	    setValue(newValue);
+		handleConfirm('')
 		// dispatch(deleteAllChats(true)); // TODO delete all channels
   	  }
   	};
@@ -125,18 +131,20 @@ export default function ConfirmationDialog(props : ConfirmationDialogProps) {
       <Tooltip
         TransitionComponent={Fade}
         TransitionProps={{ timeout: 600 }} 
-        title="delete all">
+        title={title}>
       <IconButton onClick={handleClickListItem}>
-        <ClearAllIcon sx={{color: 'white',}} fontSize='medium'/>
+        {/* <ClearAllIcon sx={{color: 'white',}} fontSize='medium'/> */}
+		{icon}
       </IconButton>
       </Tooltip>
       <ConfirmationDialogRaw
-        id="delete-chats"
+        id={id}
         keepMounted
         open={open}
         onClose={handleClose}
         value={value}
 		options={options}
+		dialogTitle={dialogTitle}
       />
     </Box>
   );

@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import { IconButton, ListItemButton, Stack, Tooltip } from '@mui/material';
+import { Box, IconButton, ListItemButton, Stack, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
@@ -14,11 +14,14 @@ import { fetchUserChannels, selectUserChannels } from '../redux-features/chat/ch
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { Channel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
+import ConfirmationDialog from './ConfirmationDialog';
+import ClearAllIcon from '@mui/icons-material/ClearAll';
+
 
 type getSelectedItemFunction = (pwd: string) => void;
 
 interface alignItemsProps {
-getSelectedItem: getSelectedItemFunction;
+	getSelectedItem: getSelectedItemFunction;
 }
 
 export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
@@ -39,6 +42,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	}
 
 	function handleClick(channelToDelete: string): void {
+		console.log('channelToDelete = ', channelToDelete);
 		deleteChannel(channelToDelete);
 	}
 
@@ -107,13 +111,28 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 						sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
 						primary={element.name}
 					/>
+					{/* {showIcons && (
+						<IconButton aria-label="delete" sx={{ p: 0,  marginLeft: 'auto' }}>
+							<Tooltip title="delete chat" placement="top">
+								<DeleteIcon sx={{ color: 'red' }} fontSize="small" onClick={() => handleClick(element.name)} />
+							</Tooltip>
+						</IconButton>
+					)} */}
 					{showIcons && (
-					<IconButton aria-label="delete" sx={{ p: 0,  marginLeft: 'auto' }}>
-						<Tooltip title="delete chat" placement="top">
-						<DeleteIcon sx={{ color: 'red' }} fontSize="small" />
-						</Tooltip>
-					</IconButton>
-					)}
+					<Box>
+						<ConfirmationDialog
+							title = 'delete channel'
+							id = 'delete-channel'
+							options = { ['Yes, I want to delete this channel.'] }
+							icon={
+								<IconButton aria-label="delete" sx={{ p: 0,  marginLeft: 'auto' }}>
+									<DeleteIcon sx={{ color: 'red' }} fontSize="small"/>
+								</IconButton>
+							}
+							handleConfirm={() => handleClick(element.name)}
+							dialogTitle='Delete this channel from the database?'
+						/>
+					</Box>)}
 				</ListItem>
 				</ListItemButton>
 			</Stack>

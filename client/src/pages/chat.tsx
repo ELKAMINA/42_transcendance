@@ -18,6 +18,7 @@ function Chat () {
 	const AppDispatch = useAppDispatch();
 	useEffect(() => {
 		const storedChannel = localStorage.getItem('selectedChannel');
+		// TO DO --> add a check to verify weither or not channel still has not been deleted
 		if (storedChannel) {
 		  setSelectedChannel(storedChannel);
 		  AppDispatch(fetchDisplayedChannel(storedChannel));

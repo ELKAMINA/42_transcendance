@@ -7,6 +7,7 @@ import ConfirmationDialog from '../components/ConfirmationDialog.tsx';
 import AlignItemsList from '../components/AlignItemsList.tsx';
 import { Box, Button, Stack, Divider } from '@mui/material';
 import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
+import ClearAllIcon from '@mui/icons-material/ClearAll';
 
 import "./sideBar.css"
 import { Channel } from '../types/chat/channelTypes.ts';
@@ -27,6 +28,11 @@ function SideBar({handleSelectItem} : SideBarProps) {
 	
 	function getSelectedItem (selectedItem : string) {
 		handleSelectItem(selectedItem)
+	}
+
+	function handleClick() {
+		console.log('I will delete all the channels you created');
+		// delete only the channels 'createdBy = auth.nickname'
 	}
 
 	return (
@@ -61,8 +67,11 @@ function SideBar({handleSelectItem} : SideBarProps) {
 			<Box>
 				<ConfirmationDialog
 					title = 'delete all'
-					id = 'delete-channel'
+					id = 'delete-channels'
 					options = { ['Yes, I want to delete all the channels.'] }
+					icon={<ClearAllIcon sx={{ color: 'white' }} fontSize="medium" />}
+					handleConfirm={handleClick}
+					dialogTitle='Delete all channels from database?'
 				/>
 			</Box>
 		</Stack>
