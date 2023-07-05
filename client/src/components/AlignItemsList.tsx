@@ -18,104 +18,102 @@ import api from '../utils/Axios-config/Axios';
 type getSelectedItemFunction = (pwd: string) => void;
 
 interface alignItemsProps {
-  getSelectedItem: getSelectedItemFunction;
+getSelectedItem: getSelectedItemFunction;
 }
 
 export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
-  const [showIcons, setShowIcons] = React.useState(true);
-  const AppDispatch = useAppDispatch();
+	const [showIcons, setShowIcons] = React.useState(true);
+	const AppDispatch = useAppDispatch();
+	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 
-  React.useEffect(() => {
-    AppDispatch(fetchUserChannels());
-  }, []);
-  const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
+	React.useEffect(() => { AppDispatch(fetchUserChannels()); }, []);
 
-  async function deleteChannel(channelToDelete: string) {
-    await api
-      .post('http://localhost:4001/channel/deleteChannelByName', { name: channelToDelete })
-      .then((response) => {
-        console.log('channel deleted!');
-        AppDispatch(fetchUserChannels());
-      })
-      .catch((error) => console.log('error while deleting channel', error));
-  }
+	async function deleteChannel(channelToDelete: string) {
+	await api
+		.post('http://localhost:4001/channel/deleteChannelByName', { name: channelToDelete })
+		.then((response) => {
+			console.log('channel deleted!');
+			AppDispatch(fetchUserChannels());
+		})
+		.catch((error) => console.log('error while deleting channel', error));
+	}
 
-  function handleClick(channelToDelete: string): void {
-    deleteChannel(channelToDelete);
-  }
+	function handleClick(channelToDelete: string): void {
+		deleteChannel(channelToDelete);
+	}
 
-  const [selectedIndex, setSelectedIndex] = React.useState(() => {
-    const storedIndex = localStorage.getItem('selectedItemIndex');
-    return storedIndex !== null ? Number(storedIndex) : 0;
-  });
+	const [selectedIndex, setSelectedIndex] = React.useState(() => {
+	const storedIndex = localStorage.getItem('selectedItemIndex');
+		return storedIndex !== null ? Number(storedIndex) : 0;
+	});
 
-  const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
-    setSelectedIndex(index);
-    localStorage.setItem('selectedItemIndex', String(index));
-    getSelectedItem(channels[index].name);
-  };
+	const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
+		setSelectedIndex(index);
+		localStorage.setItem('selectedItemIndex', String(index));
+		getSelectedItem(channels[index].name);
+	};
 
-  const handleWindowResize = () => {
-    if (window.innerWidth < 600) {
-      setShowIcons(false);
-    } else {
-      setShowIcons(true);
-    }
-  };
+	const handleWindowResize = () => {
+		if (window.innerWidth < 600) {
+			setShowIcons(false);
+		} else {
+			setShowIcons(true);
+		}
+	};
 
-  React.useEffect(() => {
-    window.addEventListener('resize', handleWindowResize);
-    return () => {
-      window.removeEventListener('resize', handleWindowResize);
-    };
-  }, []);
+	React.useEffect(() => {
+		window.addEventListener('resize', handleWindowResize);
+		return () => {
+			window.removeEventListener('resize', handleWindowResize);
+	};
+	}, []);
 
-  return (
-    <List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
-      {channels.map((element, index) => (
-        <Stack key={index}>
-          <Divider variant="inset" component="li" />
-          <ListItemButton
-            selected={selectedIndex === index}
-            onClick={(event) => handleListItemClick(event, index)}
-            sx={{
-              '&:hover': { backgroundColor: 'rgba(116, 131, 145, 0.4)' },
-              '&.Mui-selected': { backgroundColor: '#032B50' }
-            }}
-          >
-            <ListItem alignItems="center">
-              <ListItemAvatar>
-                <Avatar alt={element.name} src={element.avatar} />
-              </ListItemAvatar>
-              <Stack direction="row" alignItems="center">
-                {showIcons && element.type === 'private' && (
-                  <Tooltip title="private channel" placement="top">
-                    <SensorDoor />
-                  </Tooltip>
-                )}
-                {showIcons && element.type === 'public' && (
-                  <Tooltip title="public channel" placement="top">
-                    <Diversity3Icon />
-                  </Tooltip>
-                )}
-                {showIcons && element.protected_by_password === true && (
-                  <Tooltip title="protected by password" placement="top">
-                    <LockIcon />
-                  </Tooltip>
-                )}
-              </Stack>
-              <ListItemText sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0 }} primary={element.name} />
-              {showIcons && (
-                <IconButton aria-label="delete" sx={{ p: 0 }}>
-                  <Tooltip title="delete chat" placement="top">
-                    <DeleteIcon sx={{ color: 'red' }} fontSize="small" />
-                  </Tooltip>
-                </IconButton>
-              )}
-            </ListItem>
-          </ListItemButton>
-        </Stack>
-      ))}
-    </List>
-  );
+	return (
+		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
+			{channels.map((element, index) => (
+			<Stack key={index}>
+				<Divider variant="inset" component="li" />
+				<ListItemButton
+					selected={selectedIndex === index}
+					onClick={(event) => handleListItemClick(event, index)}
+					sx={{
+						'&:hover': { backgroundColor: 'rgba(116, 131, 145, 0.4)' },
+						'&.Mui-selected': { backgroundColor: '#032B50' }
+					}}
+				>
+				<ListItem alignItems="center">
+					<ListItemAvatar>
+					<Avatar alt={element.name} src={element.avatar} />
+					</ListItemAvatar>
+					<Stack direction="row" alignItems="center" spacing={2}>
+					{showIcons && element.type === 'private' && (
+						<Tooltip title="private channel" placement="top">
+						<SensorDoor />
+						</Tooltip>
+					)}
+					{showIcons && element.type === 'public' && (
+						<Tooltip title="public channel" placement="top">
+						<Diversity3Icon />
+						</Tooltip>
+					)}
+					{showIcons && element.key !== '' && (
+						<Tooltip title="protected by password" placement="top">
+						<LockIcon />
+						</Tooltip>
+					)}
+					</Stack>
+					<ListItemText sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0 }} primary={element.name} />
+					{showIcons && (
+					<IconButton aria-label="delete" sx={{ p: 0 }}>
+						<Tooltip title="delete chat" placement="top">
+						<DeleteIcon sx={{ color: 'red' }} fontSize="small" />
+						</Tooltip>
+					</IconButton>
+					)}
+				</ListItem>
+				</ListItemButton>
+			</Stack>
+			))}
+		</List>
+		);
 }
