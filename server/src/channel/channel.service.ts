@@ -10,6 +10,8 @@ export class ChannelService {
 		private prisma: PrismaService) {}
 
 	async createChannel(dto: ChannelDto): Promise<object> {
+		console.log("dto = ", dto);
+
 		const pwd = dto.key !== '' ? await argon.hash(dto.key) : '';
 		try {
 			// before creating the Channel record, 
@@ -35,6 +37,7 @@ export class ChannelService {
 				} as Prisma.ChannelCreateInput,
 			});
 			// we return the newly created channel
+			console.log('channel added = ', channel);
 			return channel;
 		} catch (error: any) {
 			  throw error;
@@ -58,24 +61,33 @@ export class ChannelService {
 		}
 	}
 
-	async  deleteAllChannels(): Promise<void> {
+	async  deleteAllChannels(requestBody : {createdBy : string}): Promise<void> {
 		try {
-			// Fetch all channels from the database
-			const channels = await this.prisma.channel.findMany();
-		
-			// Delete each channel
-			for (const channel of channels) {
-				await this.prisma.channel.delete({
-				where: { channelId: channel.channelId },
-				});
-				console.log(`Deleted channel with ID: ${channel.channelId}`);
-		  }
-	  
-		console.log('All channels have been deleted.');
+			const channelsToDelete = await this.prisma.channel.findMany({
+				where: {
+					createdById: requestBody.createdBy,
+				},
+			});
+		  
+			// delete all the associated messages 
+			for (const channel of channelsToDelete) {
+			await this.prisma.message.deleteMany({
+				where: {
+					channelById: channel.name,
+				},
+			});
+			}
+		  
+			// delete all the channels that match the 'createdBy' string
+			await this.prisma.channel.deleteMany({
+				where: {
+					createdById: requestBody.createdBy,
+				},
+			});
 		} catch (error: any) {
 			throw error;
-		}
-	  }	  
+		  }
+	}
 
 	async getUserChannels(requestBody: {}): Promise<object> {
 		const user = await this.prisma.user.findUnique({
