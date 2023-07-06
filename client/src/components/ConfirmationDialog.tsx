@@ -8,14 +8,9 @@ import Dialog from '@mui/material/Dialog';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { TextField, Tooltip, Typography } from '@mui/material';
+import { Tooltip, Typography } from '@mui/material';
 import { IconButton } from '@mui/material';
 import Fade from '@mui/material/Fade';
-import { useDispatch, useSelector } from 'react-redux';
-
-// const options = [
-//   'Yes, I do want to delete all my chats',
-// ];
 
 export interface ConfirmationDialogRawProps {
   id: string;
@@ -31,7 +26,7 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
   const { onClose, value: valueProp, open, options, dialogTitle, ...other } = props;
   const [value, setValue] = React.useState(valueProp);
   const radioGroupRef = React.useRef<HTMLElement>(null);
-
+  
   React.useEffect(() => {
     if (!open) {
       setValue(valueProp);
@@ -110,8 +105,6 @@ export default function ConfirmationDialog(props : ConfirmationDialogProps) {
   	const [open, setOpen] = React.useState(false);
   	const [value, setValue] = React.useState('Dione');
 
-	const dispatch = useDispatch();
-
   	const handleClickListItem = () => {
     	setOpen(true);
   	};
@@ -120,10 +113,8 @@ export default function ConfirmationDialog(props : ConfirmationDialogProps) {
   	  setOpen(false);
 
   	  if (newValue) {
-		console.log(newValue);
   	    setValue(newValue);
 		handleConfirm('')
-		// dispatch(deleteAllChats(true)); // TODO delete all channels
   	  }
   	};
 
@@ -134,7 +125,6 @@ export default function ConfirmationDialog(props : ConfirmationDialogProps) {
         TransitionProps={{ timeout: 600 }} 
         title={title}>
       <IconButton onClick={handleClickListItem}>
-        {/* <ClearAllIcon sx={{color: 'white',}} fontSize='medium'/> */}
 		{icon}
       </IconButton>
       </Tooltip>
