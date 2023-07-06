@@ -1,19 +1,73 @@
 import { Box } from "@mui/material";
 import "./searchResult.css";
+import { useAppDispatch } from "../../utils/redux-hooks";
+import { useSelector } from "react-redux";
+import { fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectDisplayedChannel } from "../../redux-features/chat/channelsSlice";
+import { selectFriends, selectSuggestions } from "../../redux-features/friendship/friendshipSlice";
+import { UserDetails } from "../../types/users/userType";
+import { Channel } from "../../types/chat/channelTypes";
+import { selectCurrentUser } from "../../redux-features/auth/authSlice";
+import api from "../../utils/Axios-config/Axios";
 
 export const SearchResult = ({ result }: { result: string }) => {
+	const AppDispatch = useAppDispatch();
+	const channels = useSelector(selectAllChannels) as Channel[];
+	const users = useSelector(selectSuggestions) as UserDetails[];
+	const friends = useSelector(selectFriends) as UserDetails[];
+	const currentuser = useSelector(selectCurrentUser);
 
-	// if result is a channel that <login> is a creator/member, display message component
-	// if result is a public channel not protected by password, display message component
-	// if result is a public channel protected by a password, ask for password than display message component
+	const channel = channels.find(channel => channel.name === result); 
+	const user = users.find(user => user.login === result);
 
-	// if result is a user that already has an non-empty message_history  with <login>, open message component
-	// if result is a user that has an empty message_history with <login>, open user profile
+	async function createPrivateConv() {
+		await api
+		.post ('http://localhost:4001/channel/creation', {
+			name: result,
+			channelId: Date.now(),	
+			type: 'privateConv',
+			createdBy: currentuser,
+			protected_by_password: false,
+			key: '',
+			members: [user],
+			avatar: user?.avatar,
+			chatHistory: [],
+		})
+		.then ((response) => {
+			// console.log('this channel has been added to the database = ', response);
+			AppDispatch(fetchUserChannels());
+			// AppDispatch(fetchDisplayedChannel(result));
+		})
+		.catch ((error) => {
+			console.log('error = ', error);
+		})
+	}
+
+	function onClick() {
+
+		if (channel) {
+			if (channel.type === 'privateConv' 
+				|| (channel.type === 'private' && (channel.createdBy === currentuser || channel.members?.find(member => member.login === currentuser))) 
+				|| channel.type === 'public')
+				AppDispatch(fetchDisplayedChannel(result));
+			if (channel.key !== '')
+				console.log('needs password!');
+		}
+
+		else if (user) {
+			// const isFriend = friends.find(friend => friend.login === currentuser);
+			const isFriend = 'true';
+			if (isFriend) {
+				createPrivateConv();
+			}
+			else
+				console.log('go to user profile page!')
+		}
+	}
 	
 	return (
 		<Box
-		className="search-result"
-		onClick={() => alert(`You selected ${result}!`)}
+			className="search-result"
+			onClick={onClick}
 		>
 		{result}
 		</Box>
