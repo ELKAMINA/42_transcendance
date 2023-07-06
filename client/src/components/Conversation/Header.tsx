@@ -41,6 +41,9 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const Header = () => {
 
 	const channel :  Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	console.log('channel name = ', channel.name);
+	const isPrivateConv = channel.members?.length === 1 ? true : false;
+	console.log('isPrivateConv = ', isPrivateConv);
 
 	const [openBlock, setOpenBlock] = useState<boolean>(false);
 
