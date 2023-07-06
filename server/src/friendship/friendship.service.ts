@@ -71,14 +71,17 @@ export class FriendshipService {
         },
         include: {
           friends: true,
+          friendOf: true,
         },
       });
-      if (user) return user.friends;
-    } catch (e) {
+      if (user){
+        return (user.friends.concat(user.friendOf));
+    } 
+  }
+    catch (e) {
       console.log(e);
     }
-  }
-
+}
   // async getSuggestions()
 
   // async getAllBlockedFriends(userLogin: string) {

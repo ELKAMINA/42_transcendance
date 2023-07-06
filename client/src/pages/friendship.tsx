@@ -172,7 +172,7 @@ function Friends () {
       // dispatch(updateSocketId(socket.id));
       dispatch(FetchAllFriends());
     })
-    dispatch(FetchAllFriends);
+    dispatch(FetchAllFriends());
   }, [])
   useEffect(() => {
     socket?.on('friendBlocked', (data: any) => {
@@ -180,6 +180,9 @@ function Friends () {
     })
     socket?.on('acceptedFriend', (data: any) => {
       dispatch(FetchAllFriends())
+     })
+    socket?.on('denyFriend', (data: any) => {
+      
      })
     return () => {
       console.log('From friends - Unregistering events...');

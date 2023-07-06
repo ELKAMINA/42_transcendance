@@ -117,7 +117,7 @@ export class FriendshipGateway
       body.sender,
       body.receiver.nickname,
     );
-    return { event: 'acceptedFriend', data: user };
+    this.io.emit('acceptedFriend', user);
   }
 
   @SubscribeMessage('denyFriend')
@@ -130,7 +130,7 @@ export class FriendshipGateway
       body.sender.nickname,
       body.receiver,
     );
-    return { event: 'denyFriend', data: user };
+    this.io.emit('denyFriend', user);
   }
 
   @SubscribeMessage('blockFriend')
@@ -143,7 +143,7 @@ export class FriendshipGateway
       body.sender,
       body.receiver.nickname,
     );
-    return { event: 'blockFriend', data: user };
+    this.io.emit('blockFriend', user);
   }
 
   isAlreadyConnected(user: object): Array<Socket> {
@@ -176,7 +176,7 @@ export class FriendshipGateway
     const allUsers = (await this.userServ.findAll()).filter(
       (us) => us.login != user,
     );
-    return { event: 'realTimeUsers', data: allUsers };
+    this.io.emit('realTimeUsers', user);
   }
 
   async verifyJwtSocketConnections(client: Socket, response: Response) {
