@@ -33,7 +33,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const AppDispatch = useAppDispatch();
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 	const selectedChannel = useAppSelector((state) => selectDisplayedChannel(state)) as Channel;
-
+	const [isPasswordCorrect, setIsPasswordCorrect] = React.useState<boolean>(false); 
 
 	React.useEffect(() => { 
 		AppDispatch(fetchUserChannels());
@@ -93,8 +93,16 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 		if (selectedChannel.key) {
 			try {
 				// Verify the password using argon2.verify function
-				const isPasswordCorrect = await argon.verify(selectedChannel.key, pwd);
-				if (isPasswordCorrect) {
+				// const isPasswordCorrect = await argon.verify(selectedChannel.key, pwd);
+					await api
+						.post('http://localhost:4001/channel/checkPwd', {pwd : pwd, obj : {name : selectedChannel.name}})
+						.then((response) => {
+							console.log('is password correct? = ', response.data); 
+							setIsPasswordCorrect(response.data)
+							
+						})
+						.catch((error) => console.log('caught error while checking password : ', error));
+				if (isPasswordCorrect === true) {
 				  // enter channel
 				  console.log('Password is correct!');
 				} else {
