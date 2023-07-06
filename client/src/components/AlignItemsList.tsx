@@ -16,6 +16,9 @@ import { Channel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
 import ConfirmationDialog from './ConfirmationDialog';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
+import AlertDialogSlide from './AlertDialogSlide';
+import EnterPassword from './EnterPassword';
+import * as argon from 'argon2';
 
 
 type getSelectedItemFunction = (pwd: string) => void;
@@ -26,6 +29,7 @@ interface alignItemsProps {
 
 export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const [showIcons, setShowIcons] = React.useState(true);
+	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = React.useState(false);
 	const AppDispatch = useAppDispatch();
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 	const selectedChannel = useAppSelector((state) => selectDisplayedChannel(state)) as Channel;
@@ -62,7 +66,12 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
 		setSelectedIndex(index);
 		localStorage.setItem('selectedItemIndex', String(index));
-		getSelectedItem(channels[index].name);
+		const clickedItem = channels[index];
+		getSelectedItem(clickedItem.name);
+		if (clickedItem.key !== '') {
+			console.log('propetected by password!')
+			setAlertDialogSlideOpen(true);
+		}
 	};
 
 	const handleWindowResize = () => {
@@ -79,6 +88,31 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			window.removeEventListener('resize', handleWindowResize);
 	};
 	}, []);
+
+	async function checkPassword(pwd : string) {
+		if (selectedChannel.key) {
+			try {
+				// Verify the password using argon2.verify function
+				const isPasswordCorrect = await argon.verify(selectedChannel.key, pwd);
+				if (isPasswordCorrect) {
+				  // enter channel
+				  console.log('Password is correct!');
+				} else {
+				  // do nothing
+				  console.log('Wrong password!');
+				}
+			} catch (error) {
+				console.error('Error occurred while verifying password:', error);
+			}
+		} else {
+			console.log("Something went wrong... no need for password here!")
+		}
+	}
+
+	function handlepwd(pwd: string) {
+		checkPassword(pwd);
+	}
+
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
 			{channels.map((element, index) => (
@@ -92,6 +126,10 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 						'&.Mui-selected': { backgroundColor: '#032B50' }
 					}}
 				>
+				<AlertDialogSlide 
+					open={AlertDialogSlideOpen} 
+					setOpen={setAlertDialogSlideOpen} 
+					dialogContent={<EnterPassword handlepwd={handlepwd} passwordFieldId={`passwordfield-${index}`}/>} />
 				<ListItem alignItems="center">
 					<ListItemAvatar>
 					<Avatar alt={element.name} src={element.avatar} />
@@ -118,13 +156,6 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 						sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
 						primary={element.name}
 					/>
-					{/* {showIcons && (
-						<IconButton aria-label="delete" sx={{ p: 0,  marginLeft: 'auto' }}>
-							<Tooltip title="delete chat" placement="top">
-								<DeleteIcon sx={{ color: 'red' }} fontSize="small" onClick={() => handleClick(element.name)} />
-							</Tooltip>
-						</IconButton>
-					)} */}
 					{showIcons && (
 					<Box>
 						<ConfirmationDialog
