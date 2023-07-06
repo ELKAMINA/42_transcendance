@@ -35,7 +35,7 @@ export const SearchResult = ({ result }: { result: string }) => {
 		.then ((response) => {
 			// console.log('this channel has been added to the database = ', response);
 			AppDispatch(fetchUserChannels());
-			// AppDispatch(fetchDisplayedChannel(result));
+			AppDispatch(fetchDisplayedChannel(result));
 		})
 		.catch ((error) => {
 			console.log('error = ', error);
@@ -54,13 +54,13 @@ export const SearchResult = ({ result }: { result: string }) => {
 		}
 
 		else if (user) {
-			// const isFriend = friends.find(friend => friend.login === currentuser);
+			// const isFriend = friends.find(friend => friend.login === currentuser); // TODO 
 			const isFriend = 'true';
 			if (isFriend) {
 				createPrivateConv();
 			}
 			else
-				console.log('go to user profile page!')
+				console.log('go to user profile page!') // TODO
 		}
 	}
 	
