@@ -11,6 +11,10 @@ import ClearAllIcon from '@mui/icons-material/ClearAll';
 
 import "./sideBar.css"
 import { Channel } from '../types/chat/channelTypes.ts';
+import api from '../utils/Axios-config/Axios.tsx';
+import { useAppDispatch, useAppSelector } from '../utils/redux-hooks.tsx';
+import { fetchUserChannels } from '../redux-features/chat/channelsSlice.tsx';
+import { selectCurrentUser } from '../redux-features/auth/authSlice.tsx';
 
 type handleSelectItemFunction = (pwd: string) => void;
 
@@ -19,7 +23,8 @@ interface SideBarProps {
 }
 
 function SideBar({handleSelectItem} : SideBarProps) {
-
+	const AppDispatch = useAppDispatch();
+	const nickname = useAppSelector(selectCurrentUser) as string
 	// button that opens the create channel window
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 	
@@ -30,9 +35,17 @@ function SideBar({handleSelectItem} : SideBarProps) {
 		handleSelectItem(selectedItem)
 	}
 
+	async function deleteAllChannels() {
+		await api
+			.post('http://localhost:4001/channel/deleteAllChannels', {createdBy: nickname})
+			.then((response) => {
+				AppDispatch(fetchUserChannels());
+			})
+			.catch((error) => console.log('error while deleting channel', error));
+	}
+
 	function handleClick() {
-		console.log('I will delete all the channels you created');
-		// delete only the channels 'createdBy = auth.nickname'
+		deleteAllChannels()
 	}
 
 	return (
@@ -68,7 +81,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 				<ConfirmationDialog
 					title = 'delete all'
 					id = 'delete-channels'
-					options = { ['Yes, I want to delete all the channels.'] }
+					options = { ['Yes, I want to delete all the channels I created.'] }
 					icon={<ClearAllIcon sx={{ color: 'white' }} fontSize="medium" />}
 					handleConfirm={handleClick}
 					dialogTitle='Delete all channels from database?'
