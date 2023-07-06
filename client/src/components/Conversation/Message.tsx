@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material'
-import { DocMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
+import { DocMsg, InfoMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
 import { ChatMessage } from '../../types/chat/messageType'
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
@@ -9,16 +9,18 @@ import React, { useEffect } from 'react';
 
 function renderSwitchComponent(el : ChatMessage, index: number) {
 	switch (el.subtype) {
-	  case 'img':
-		return <MediaMsg key={index} el={el} />;
-	  case 'doc':
-		return <DocMsg key={index} el={el} />;
-	  case 'link':
-		return <LinkMsg key={index} el={el} />;
-	  case 'reply':
-		return <ReplyMsg key={index} el={el} />;
-	  default:
-		return <TextMsg key={index} el={el} />;
+		case 'img':
+			return <MediaMsg key={index} el={el} />;
+		case 'doc':
+			return <DocMsg key={index} el={el} />;
+		case 'link':
+			return <LinkMsg key={index} el={el} />;
+		case 'reply':
+			return <ReplyMsg key={index} el={el} />;
+		case 'infoMsg':
+			return <InfoMsg key={index} el={el} />;
+	  	default:
+			return <TextMsg key={index} el={el} />;
 	}
 }
 

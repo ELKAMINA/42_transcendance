@@ -182,6 +182,32 @@ const MediaMsg = ({el} : TextMsgProps) => {
 	)
 }
 
+const InfoMsg = ({el} : TextMsgProps) => {
+	return (
+	  <Stack
+		  direction={'row'}
+		  justifyContent={el.incoming? 'start' : 'end'}
+	  >
+		  <Box p={1.5} sx={{
+				  backgroundColor: 'transparent',
+				  borderRadius: 1.5, // 1.5 * 8 => 12px
+				  width: 'max-content'
+			  }}
+		  >
+			  <Typography
+				  variant='body2'
+				  color={ el.incoming? '#15176b' : '#07457E' }
+				  sx={{
+					fontStyle: 'italic',
+				  }}
+			  >
+				  {el.message}
+			  </Typography>
+		  </Box>
+	  </Stack>
+	)	
+}
+
 const TextMsg = ({el} : TextMsgProps) => {
   return (
 	<Stack
@@ -241,4 +267,4 @@ const Timeline = ({ date }: TimelineProps) => {
 
 
 
-export { Timeline, TextMsg, MediaMsg, ReplyMsg, LinkMsg, DocMsg };
+export { Timeline, TextMsg, MediaMsg, ReplyMsg, LinkMsg, DocMsg, InfoMsg };
