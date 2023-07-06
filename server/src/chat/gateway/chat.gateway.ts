@@ -24,14 +24,40 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
   
 	handleConnection(socket: Socket) {
-	  const roomId = socket.handshake.query.roomId as string;
-	  socket.join(roomId);
-	//   console.log(`Client ${socket.id} connected to ${roomId}`);
+	  	const roomId = socket.handshake.query.roomId as string;
+	  	// const username = socket.handshake.query.username as string;
+	  	socket.join(roomId);
+		// const welcomeMessage = {
+		// 	sentBy: username,
+		// 	senderSocketId: socket.id, 
+		// 	message: `${username} entered the chat`,
+		// 	sentAt: new Date(),
+		// 	incoming: false,
+		// 	outgoing: true,
+		// 	subtype: 'infoMsg',
+		// 	channel: roomId,
+		// 	channelById: roomId,
+		// }
+		// this.server.to(roomId).emit('userEntered:' + roomId, welcomeMessage)
+	  	// console.log(`Client ${socket.id} connected to ${roomId}`);
 	}
   
 	handleDisconnect(socket: Socket) {
 		const roomId = socket.handshake.query.roomId as string;
+		// const username = socket.handshake.query.username as string;
 	  	socket.leave(roomId);
+		//   const goodbyeMessage = {
+		// 	sentBy: username,
+		// 	senderSocketId: socket.id, 
+		// 	message: `${username} left the chat`,
+		// 	sentAt: new Date(),
+		// 	incoming: false,
+		// 	outgoing: true,
+		// 	subtype: 'infoMsg',
+		// 	channel: roomId,
+		// 	channelById: roomId,
+		// }
+		// this.server.to(roomId).emit('userLeft:' + roomId, goodbyeMessage)
 	  	// console.log(`Client ${socket.id} disconnected from ${roomId}`);
 	}
 }
