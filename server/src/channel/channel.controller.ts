@@ -60,7 +60,7 @@ export class channelController {
 
 	@Post('/deleteAllChannels')
 	@Public() // TODO - remove public
-	deleteAllChannels(): Promise<void> {
-			return this.ChannelService.deleteAllChannels();
+	deleteAllChannels(@Body() requestBody : {createdBy : string}): Promise<void> {
+			return this.ChannelService.deleteAllChannels(requestBody);
 		}
 }
