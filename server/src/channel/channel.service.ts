@@ -61,6 +61,7 @@ export class ChannelService {
 		}
 	}
 
+	// deletes only the channels created by the user which nickname is passed as a parameter
 	async  deleteAllChannels(requestBody : {createdBy : string}): Promise<void> {
 		try {
 			const channelsToDelete = await this.prisma.channel.findMany({
