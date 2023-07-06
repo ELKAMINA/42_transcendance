@@ -53,7 +53,7 @@ function  CreateType() {
 				<FormControlLabel control={<Checkbox checked={checkedPrivate} onChange={handlePrivate} name="private" />} label="private" />
 				<FormControlLabel control={<Checkbox checked={checkedProtected} onChange={handleProtected} name="protected_by_password" />} label="protected by password" />
 				{checkedProtected && (
-					<PasswordField handlePwd={handlePwd}/>
+					<PasswordField handlePwd={handlePwd} passwordFieldId='createChannelPwd'/>
 				)}
 			</FormGroup>
 		</Stack>
