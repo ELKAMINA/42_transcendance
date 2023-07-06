@@ -63,4 +63,10 @@ export class channelController {
 	deleteAllChannels(@Body() requestBody : {createdBy : string}): Promise<void> {
 			return this.ChannelService.deleteAllChannels(requestBody);
 		}
+
+	@Post('/checkPwd')
+	@Public() // TODO - remove public
+	checkPwd(@Body() requestBody : {pwd : string, obj : {name: string}}): Promise<boolean> {
+			return this.ChannelService.checkPwd(requestBody);
+		}
 }
