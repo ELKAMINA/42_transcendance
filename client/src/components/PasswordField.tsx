@@ -8,13 +8,14 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-type HandlePwdFunction = (pwd: string) => void;
+export type HandlePwdFunction = (pwd: string) => void;
 
 interface PasswordFieldProps {
-  handlePwd: HandlePwdFunction;
+	passwordFieldId: string;
+  	handlePwd: HandlePwdFunction;
 }
 
-export default function PasswordField({ handlePwd }: PasswordFieldProps) {
+export default function PasswordField({ handlePwd,  passwordFieldId}: PasswordFieldProps) {
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -31,11 +32,11 @@ export default function PasswordField({ handlePwd }: PasswordFieldProps) {
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-        <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-          	<InputLabel htmlFor="outlined-adornment-password">password</InputLabel>
+        <FormControl sx={{ m: 1, width: '100%' }} variant="outlined">
+          	<InputLabel htmlFor={passwordFieldId}>password</InputLabel>
           	<OutlinedInput
 				onChange={handleChange}
-            	id="outlined-adornment-password"
+            	id={passwordFieldId}
             	type={showPassword ? 'text' : 'password'}
             	endAdornment={
 				<InputAdornment position="end">
