@@ -20,7 +20,7 @@ function Chat () {
 	const AppDispatch = useAppDispatch();
 	useEffect(() => {
 		let storedChannel = localStorage.getItem('selectedChannel');
-		if (storedChannel) {
+		if (storedChannel && channels.length > 0) {
 			if (!channels.some(channel => channel.name === storedChannel))
 				typeof channels[0].name === 'string' && (storedChannel = channels[0].name);
 			else 
