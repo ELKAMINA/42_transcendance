@@ -15,7 +15,7 @@ export interface friendshipState {
     friends: object [], // all friends that accepted invitation
     friendRequests: object [], // people asking me to join 
     blockedFriends: object [],
-    socketId: string,
+    selectedItems: string,
 }
 
 const initialState: friendshipState = {
@@ -24,7 +24,7 @@ const initialState: friendshipState = {
     friends: [],
     friendRequests: [],
     blockedFriends: [],
-    socketId: '',
+    selectedItems: '',
     // socket: {} as unknown as Socket ,
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -47,23 +47,21 @@ export const friendshipSlice = createSlice({
         updateFriendshipNamespace: (state, action: PayloadAction<string>) => {
             state.friendshipNamespace = action.payload;
         },
-        updateSocketId: (state = initialState, action: PayloadAction<string>) => {
-            state.socketId = action.payload;
-        }    
+        setSelectedItem: (state, action) => {
+            state.selectedItems = action.payload;
+        }
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
 // && !friends.includes(dat) && !requests.includes(dat.receiverId)
-export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, updateSocketId } = friendshipSlice.actions
+export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
 export const selectBlockedFriends = (state: RootState) => state.persistedReducer.friendship.blockedFriends
 export const selectFriendshipNamespace = (state: RootState) => state.persistedReducer.friendship.friendshipNamespace
-export const selectSocketId = (state: RootState) => state.persistedReducer.friendship.socketId
-
-const sleep = (ms: any) => new Promise(r => setTimeout(r, 200))
+export const selectItems = (state: RootState) => state.persistedReducer.friendship.selectedItems
 
 export function FetchAllFriendRequests() {
     return async (dispatch:any, getState: any) => {

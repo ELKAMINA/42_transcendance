@@ -1,14 +1,17 @@
 .navbar {
     padding: 7px 8px;
-    position: sticky;
     background-color: #07457E;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 100;
     top: 0;
     /* box-shadow: 0px 12px 10px -9px rgb(186, 209, 34); */
-    height: 5vh; /* Add height property */
+    height: 8vh; /* Add height property */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999
 }
 
 .navbar__header__middle {

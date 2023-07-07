@@ -9,8 +9,8 @@ import Navbar from '../components/NavBar';
 import Cookies from 'js-cookie';
 // import { ConnectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateSocketId, updateAllUsers } from '../redux-features/friendship/friendshipSlice';
-import { selectSuggestions, selectFrRequests, selectFriends, selectSocketId } from '../redux-features/friendship/friendshipSlice';
+import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllUsers } from '../redux-features/friendship/friendshipSlice';
+import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-features/friendship/friendshipSlice';
 import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends, FetchAllBlockedFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentAccessToken, setOnlyTokens } from '../redux-features/auth/authSlice';
 
@@ -25,17 +25,8 @@ export const socket = io('http://localhost:4001/friendship', {
 })
 
 function Suggestions () {
-  const socketId = useAppSelector(selectSocketId);
-  const currentRoute = window.location.pathname;
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   let suggestions = useAppSelector(selectSuggestions);
-  const getFriendsRequests = () => {
-      navigate('/friendRequests');
-    }
-  const getAllMyFriends = () => {
-      navigate('/friends');
-    }
       useEffect(() => {
         socket.connect()
         socket.on('connect', () => {
@@ -78,18 +69,12 @@ function Suggestions () {
         
         const content = (
     <div>
-      <Navbar currentRoute={ currentRoute }/>
-      <h1> Get all user from Database </h1>
-      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='100vw' minHeight='20vh' alignItems='center' justifyContent='center' >
+      {/* <Navbar currentRoute={ currentRoute }/> */}
+      <h1> You may know... </h1>
+      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
         {suggestions.map((sugg: any) => 
           <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request"/>)}
       </Stack>
-      <Button onClick={getFriendsRequests}>
-        See my friend requests
-      </Button>
-      <Button onClick={getAllMyFriends}>
-        See my friends
-      </Button>
     </div>
   )
   return content;
@@ -98,7 +83,6 @@ function Suggestions () {
 // Suggestions -------------------
 
 function Requests () {
-  const currentRoute = window.location.pathname;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -131,7 +115,6 @@ function Requests () {
     })
     return () => {
       // console.log('Unregistering events...');
-      dispatch(updateSocketId(''));
       // socket.disconnect();
       // socket.off('onMessage');
     }
@@ -145,11 +128,10 @@ function Requests () {
   
   const content = (
     <div>
-      <Navbar currentRoute={ currentRoute }/>
-      <h1> Get all user from Database </h1>
-      {(friendsRequests.length === 0) && <h2 style={{'color': 'yellow', 'fontSize': '13px'}} >No one wanna be your friend </h2> }
-      {(friendsRequests.length > 0) && 
-      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='100vw' minHeight='20vh' alignItems='center' justifyContent='center' >
+      {/* <Navbar currentRoute={ currentRoute }/> */}
+      {(friendsRequests.length === 0) && <h1>No one wanna be your friend </h1> }
+      {(friendsRequests.length > 0) && <h1> They want to be your friend... </h1> &&
+      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
         {friendsRequests.map((sugg: any) => 
           <FriendSuggestion id={sugg.user_id} login={sugg.senderId} avatar={sugg.avatar} type="requestReception"/>)}
       </Stack>
@@ -162,7 +144,6 @@ function Requests () {
 }
 
 function Friends () {
-  const currentRoute = window.location.pathname;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -193,9 +174,9 @@ function Friends () {
   
   const content = (
     <div>
-      <Navbar currentRoute={ currentRoute }/>
-      <h1> Get all user from Database </h1>
-      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='100vw' minHeight='20vh' alignItems='center' justifyContent='center' >
+      {/* <Navbar currentRoute={ currentRoute }/> */}
+      <h1> Your beloved... </h1>
+      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
         {friends.map((sugg: any) => 
           <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends"/>)}
       </Stack>

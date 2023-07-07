@@ -36,7 +36,6 @@ model User {
   faEnabled             Boolean?
   avatar                String?
   status                String?
-  //   socketId              Int?            @unique
   totalMatches          Int?
   totalWins             Int?
   totalloss             Int?
