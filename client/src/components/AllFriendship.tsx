@@ -24,8 +24,8 @@ interface Myprops {
 }
 
 export default function FriendshipComponent(props: Myprops) {
-    const [selectedIndex, setSelectedIndex] = useState(1);
-    const dispatch = useAppDispatch();
+  const [selectedIndex, setSelectedIndex] = useState(1);
+  const dispatch = useAppDispatch();
     const selectedItem = useAppSelector(selectItems);
     
     const { items } = props;
@@ -33,10 +33,10 @@ export default function FriendshipComponent(props: Myprops) {
       event: React.MouseEvent<HTMLDivElement, MouseEvent>,
       index: number,
       text: any) => {
-        // setSelectedItem(text);
         dispatch(setSelectedItem(text));
     }
     const renderSelectedBox = () => {
+      console.log("selected items ", selectedItem)
       switch (selectedItem) {
         case 'Suggestions':
           return <Suggestions />;
