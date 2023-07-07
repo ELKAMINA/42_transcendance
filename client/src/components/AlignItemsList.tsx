@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import { Box, IconButton, ListItemButton, Stack, Tooltip } from '@mui/material';
+import { Alert, AlertTitle, Box, IconButton, ListItemButton, Stack, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
@@ -19,6 +19,7 @@ import ClearAllIcon from '@mui/icons-material/ClearAll';
 import AlertDialogSlide from './AlertDialogSlide';
 import EnterPassword from './EnterPassword';
 import * as argon from 'argon2';
+import FullScreenAlert from './FullScreenAlert';
 
 
 type getSelectedItemFunction = (pwd: string) => void;
@@ -46,17 +47,14 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	await api
 		.post('http://localhost:4001/channel/deleteChannelByName', { name: channelToDelete })
 		.then((response) => {
-			console.log('channel deleted!');
 			AppDispatch(fetchUserChannels());
 		})
 		.catch((error) => console.log('error while deleting channel', error));
 	}
 
 	function handleClick(channelToDelete: string): void {
-		console.log('channelToDelete = ', channelToDelete);
 		deleteChannel(channelToDelete);
 	}
-
 
 	const [selectedIndex, setSelectedIndex] = React.useState(() => {
 		const storedIndex = localStorage.getItem('selectedItemIndex');
@@ -64,13 +62,19 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	});
 
 	const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
+		// set index and save it in local storage
 		setSelectedIndex(index);
 		localStorage.setItem('selectedItemIndex', String(index));
+
+		// get the channel corresponding to the index
 		const clickedItem = channels[index];
-		getSelectedItem(clickedItem.name);
+		
+		// if the selected channel is protected by a password, open password dialog slide
 		if (clickedItem.key !== '') {
-			console.log('propetected by password!')
 			setAlertDialogSlideOpen(true);
+		} else {
+			// if no password protection, update 'displayedChannel' slice through prop 'getSelectedItem'
+			getSelectedItem(clickedItem.name);
 		}
 	};
 
@@ -90,25 +94,14 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	}, []);
 
 	async function checkPassword(pwd : string) {
-		if (selectedChannel.key) {
+		if (channels[selectedIndex].key) {
 			try {
-				// Verify the password using argon2.verify function
-				// const isPasswordCorrect = await argon.verify(selectedChannel.key, pwd);
-					await api
-						.post('http://localhost:4001/channel/checkPwd', {pwd : pwd, obj : {name : selectedChannel.name}})
-						.then((response) => {
-							console.log('is password correct? = ', response.data); 
-							setIsPasswordCorrect(response.data)
-							
-						})
-						.catch((error) => console.log('caught error while checking password : ', error));
-				if (isPasswordCorrect === true) {
-				  // enter channel
-				  console.log('Password is correct!');
-				} else {
-				  // do nothing
-				  console.log('Wrong password!');
-				}
+				await api
+					.post('http://localhost:4001/channel/checkPwd', {pwd : pwd, obj : {name : channels[selectedIndex].name}})
+					.then((response) => {
+						setIsPasswordCorrect(response.data)
+					})
+					.catch((error) => console.log('caught error while checking password : ', error));
 			} catch (error) {
 				console.error('Error occurred while verifying password:', error);
 			}
@@ -119,6 +112,25 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 
 	function handlepwd(pwd: string) {
 		checkPassword(pwd);
+	}
+
+	const [alertError, setAlertError] = React.useState<boolean>(false);
+	const [alertSuccess, setAlertSuccess] = React.useState<boolean>(false);
+
+	// handle what happens when the passwordfield window closes
+  	const handleClose = () => {
+		if (isPasswordCorrect === true) {
+		  	getSelectedItem(selectedChannel.name);
+			setAlertSuccess(true);
+		} else {
+			setAlertError(true);
+		}
+		setAlertDialogSlideOpen(false);
+ 	};
+
+	const handleCloseAlert = () => {
+		setAlertError(false);
+		setAlertSuccess(false);
 	}
 
 	return (
@@ -134,10 +146,6 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 						'&.Mui-selected': { backgroundColor: '#032B50' }
 					}}
 				>
-				<AlertDialogSlide 
-					open={AlertDialogSlideOpen} 
-					setOpen={setAlertDialogSlideOpen} 
-					dialogContent={<EnterPassword handlepwd={handlepwd} passwordFieldId={`passwordfield-${index}`}/>} />
 				<ListItem alignItems="center">
 					<ListItemAvatar>
 					<Avatar alt={element.name} src={element.avatar} />
@@ -159,11 +167,11 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 						</Tooltip>
 					)}
 					</Stack>
-					{/* <ListItemText sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0 }} primary={element.name} /> */}
 					<ListItemText
 						sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
 						primary={element.name}
 					/>
+
 					{showIcons && (
 					<Box>
 						<ConfirmationDialog
@@ -181,6 +189,20 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 				</ListItemButton>
 			</Stack>
 			))}
+			{AlertDialogSlideOpen && <AlertDialogSlide 
+				handleClose={handleClose}
+				open={AlertDialogSlideOpen}
+				dialogContent={<EnterPassword handlepwd={handlepwd} passwordFieldId={'passwordfield'} isPwdCorrect={isPasswordCorrect} />} />}
+			<Box>
+				{ alertError &&
+					<FullScreenAlert severity='error' alertTitle='Error' normalTxt='incorrect password --' 
+						strongTxt='you may not enter this channel.' open={alertError} handleClose={handleCloseAlert}/>
+				}
+				{ alertSuccess &&
+					<FullScreenAlert severity='success' alertTitle='Success' normalTxt='password is correct! --' 
+						strongTxt='you may enter this channel.' open={alertSuccess} handleClose={handleCloseAlert}/>
+				}
+			</Box>
 		</List>
 		);
 }
