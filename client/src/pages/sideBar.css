@@ -5,7 +5,7 @@
 	width: 30vw;
 	/* vh = viewport height = the visible portion of the web page */
 	/* the height of the .sideBar element will be 100% of the viewport height, */
-	height: 95vh;
+	height: 100%;
 	margin: 0px 0px 0px 0px;
 	padding-left: 0%;
 	padding-right: 0.2%; /* allow the scrollbar to not stick to the border */
@@ -17,7 +17,6 @@
   }
   
   .search-bar-container {
-	padding-top: 1vh;
 	padding-left: 0vh;
 	/* 20 pourcent of the width of the parent container */
 	width: 90%;
