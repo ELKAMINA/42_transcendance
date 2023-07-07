@@ -1,5 +1,19 @@
-.chat {
+.chat-container {
+	display: flex;
+	flex-direction: column; /*create a vertical layout where the Navbar, Toolbar, and chat content are stacked on top of each other.*/
+	width: 100vw; /*full width of the */
+	height: 100vh;
+  }
+  
+  .chat-wrapper {
+	flex: 1;
+	display: flex;
+	overflow: hidden;
+  }
+  
+  .chat {
+	flex: 1;
 	background-color: #FFFFFF;
-	width: 100vw;
-	height: 95vh;
-}
+	overflow: auto;
+  }
+  
