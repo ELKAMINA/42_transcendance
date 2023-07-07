@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 import * as argon from 'argon2';
-import { Prisma } from '@prisma/client';
+import { Channel, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ChannelService {
@@ -165,5 +165,22 @@ export class ChannelService {
 		}
 		// console.log('displayed channel found = ', channel);
 		return channel;
+	}
+
+	async checkPwd(requestBody: {pwd: string, obj : {name : string}}) : Promise<boolean> {
+		console.log('pwd = ', requestBody.pwd)
+		console.log('obj = ', requestBody.obj)
+
+		try {
+			const channel = await this.prisma.channel.findUnique({
+				where : requestBody.obj,
+			})
+			// console.log("channel found : ", channel);
+			const isPasswordCorrect = await argon.verify(channel.key, requestBody.pwd);
+			console.log("isPasswordCorrect : ", isPasswordCorrect);
+			return isPasswordCorrect;
+		} catch (error : any) {
+			throw error;
+		}
 	}
 }
