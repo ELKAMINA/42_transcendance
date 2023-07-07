@@ -168,16 +168,11 @@ export class ChannelService {
 	}
 
 	async checkPwd(requestBody: {pwd: string, obj : {name : string}}) : Promise<boolean> {
-		console.log('pwd = ', requestBody.pwd)
-		console.log('obj = ', requestBody.obj)
-
 		try {
 			const channel = await this.prisma.channel.findUnique({
 				where : requestBody.obj,
 			})
-			// console.log("channel found : ", channel);
 			const isPasswordCorrect = await argon.verify(channel.key, requestBody.pwd);
-			console.log("isPasswordCorrect : ", isPasswordCorrect);
 			return isPasswordCorrect;
 		} catch (error : any) {
 			throw error;
