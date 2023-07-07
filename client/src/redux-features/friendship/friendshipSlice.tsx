@@ -44,9 +44,6 @@ export const friendshipSlice = createSlice({
         updateBlockedFriends: (state, action: PayloadAction<[{}]>) => {
             state.blockedFriends = action.payload;
         },
-        updateFriendshipNamespace: (state, action: PayloadAction<string>) => {
-            state.friendshipNamespace = action.payload;
-        },
         setSelectedItem: (state, action) => {
             state.selectedItems = action.payload;
         }
@@ -54,13 +51,11 @@ export const friendshipSlice = createSlice({
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-// && !friends.includes(dat) && !requests.includes(dat.receiverId)
 export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
 export const selectBlockedFriends = (state: RootState) => state.persistedReducer.friendship.blockedFriends
-export const selectFriendshipNamespace = (state: RootState) => state.persistedReducer.friendship.friendshipNamespace
 export const selectItems = (state: RootState) => state.persistedReducer.friendship.selectedItems
 
 export function FetchAllFriendRequests() {

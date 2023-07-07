@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { useEffect, useState } from "react";
 import { fetchDisplayedChannel, fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { Channel } from 'diagnostics_channel';
+import Toolbar from '@mui/material/Toolbar';
 
 function Chat () {
 	const currentRoute = window.location.pathname;
@@ -45,9 +46,11 @@ function Chat () {
 	return (
 		<Provider store={store}>
 			<Navbar currentRoute={ currentRoute }/>
+			<Toolbar/>
 			<Stack className='chat' direction={'row'} sx={{width: '100%'}}>
 				<SideBar handleSelectItem={handleSelectChannel} />
 				<Box sx={{
+					top: '20px',
 					height: '95vh',
 					width: '100vw',
 					backgroundColor: '#fff',
@@ -55,6 +58,7 @@ function Chat () {
 					<Conversation />
 				</Box>
 			</Stack>
+
 		</Provider>
 	)
 }

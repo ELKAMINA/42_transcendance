@@ -23,7 +23,7 @@ interface Myprops {
   items: string[];
 }
 
-export default function PermanentSidebar(props: Myprops) {
+export default function FriendshipComponent(props: Myprops) {
     const [selectedIndex, setSelectedIndex] = useState(1);
     const dispatch = useAppDispatch();
     const selectedItem = useAppSelector(selectItems);
