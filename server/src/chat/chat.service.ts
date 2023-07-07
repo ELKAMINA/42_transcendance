@@ -10,14 +10,16 @@ export class ChatService {
 
 		async createMessage(dto: MessageDto): Promise<void> {
 			try {
+				
 				const creator = await this.prisma.user.findUnique({
 					where: { login: dto.sentBy },
 				});
+
 				if (!creator) {
 					throw new NotFoundException(`User with login '${dto.sentBy}' not found.`);
 				}
 
-				const message = await this.prisma.message.create({
+				await this.prisma.message.create({
 					data: {
 						sentBy: { connect: {login: dto.sentBy} },
 						message: dto.message,
@@ -33,10 +35,8 @@ export class ChatService {
 						}
 					} as Prisma.MessageCreateInput,
 				});
-				console.log('this message has been added to the database : ', message)
 			} catch (error: any) {
-					console.log('error is : ', error)
-					throw error;
+				throw error;
 			}
 		}
 }
