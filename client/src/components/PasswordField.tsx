@@ -13,10 +13,10 @@ export type HandlePwdFunction = (pwd: string) => void;
 interface PasswordFieldProps {
 	passwordFieldId: string;
   	handlePwd: HandlePwdFunction;
+	isPwdCorrect?: boolean;
 }
 
-export default function PasswordField({ handlePwd,  passwordFieldId}: PasswordFieldProps) {
-
+export default function PasswordField({ handlePwd,  passwordFieldId, isPwdCorrect}: PasswordFieldProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -32,7 +32,7 @@ export default function PasswordField({ handlePwd,  passwordFieldId}: PasswordFi
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-        <FormControl sx={{ m: 1, width: '100%' }} variant="outlined">
+        <FormControl error={!isPwdCorrect} sx={{ m: 1, width: '100%' }} variant="outlined" color={isPwdCorrect? 'success' : 'warning'}>
           	<InputLabel htmlFor={passwordFieldId}>password</InputLabel>
           	<OutlinedInput
 				onChange={handleChange}
