@@ -18,38 +18,35 @@ const Transition = React.forwardRef(function Transition(
 });
 
 export type setOpenFunction = (open : boolean) => void;
+export type handleCloseFunction = () => void;
+
 export interface AlertDialogSlideProps {
 	open: boolean,
-	setOpen: setOpenFunction,
+	handleClose: handleCloseFunction,
 	dialogContent: React.ReactNode,
 }
 
 export default function AlertDialogSlide(props : AlertDialogSlideProps) {
-	const {setOpen, open, dialogContent} = props;
-
-  	const handleClose = () => {
-   		setOpen(false);
- 	};
-
-  return (
-    <div>
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
-		sx={{
-			'& .MuiBackdrop-root': { // backdrop = toile de fond
-			  backgroundColor: 'rgba(0, 0, 0, 0.3)', // Adjust the opacity as needed
-			},
-		}}
-      >
-		{dialogContent}
-        <DialogActions>
-          <Button onClick={handleClose}>Enter channel</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+	const {open, handleClose, dialogContent} = props;
+	return (
+		<div>
+		<Dialog
+			open={open}
+			TransitionComponent={Transition}
+			keepMounted
+			onClose={handleClose}
+			aria-describedby="alert-dialog-slide-description"
+			sx={{
+				'& .MuiBackdrop-root': { // backdrop = toile de fond
+				backgroundColor: 'rgba(0, 0, 0, 0.3)', // Adjust the opacity as needed
+				},
+			}}
+		>
+			{dialogContent}
+			<DialogActions>
+			<Button onClick={handleClose}>Enter channel</Button>
+			</DialogActions>
+		</Dialog>
+		</div>
+	);
 }
