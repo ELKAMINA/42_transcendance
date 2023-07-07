@@ -10,8 +10,6 @@ export class ChannelService {
 		private prisma: PrismaService) {}
 
 	async createChannel(dto: ChannelDto): Promise<object> {
-		console.log("dto = ", dto);
-
 		const pwd = dto.key !== '' ? await argon.hash(dto.key) : '';
 		try {
 			// before creating the Channel record, 
@@ -37,7 +35,6 @@ export class ChannelService {
 				} as Prisma.ChannelCreateInput,
 			});
 			// we return the newly created channel
-			console.log('channel added = ', channel);
 			return channel;
 		} catch (error: any) {
 			  throw error;
@@ -54,7 +51,6 @@ export class ChannelService {
 				}
 		
 				await this.prisma.channel.delete({ where: { name : name } });
-				console.log(`The channel named '${name}' has been deleted.`);
 			}
 		} catch (error: any) {
 			throw error;
@@ -163,7 +159,6 @@ export class ChannelService {
 		if (!channel) {
 			throw new NotFoundException('User not found');
 		}
-		// console.log('displayed channel found = ', channel);
 		return channel;
 	}
 
