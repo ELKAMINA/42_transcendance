@@ -15,11 +15,11 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 
 	const dispatch = useAppDispatch();
 
-	useEffect(() => {dispatch(FetchAllFriends())}, []); // get the friends
-	const friends = useAppSelector(selectFriends) as UserDetails[];
+	// useEffect(() => {dispatch(FetchAllFriends())}, [dispatch]); // get the friends
+	// const friends = useAppSelector(selectFriends) as UserDetails[];
 	// console.log('friends = ', friends);
-	// useEffect(() => {dispatch(FetchAllUsers())}, []); // get the friends
-	// const friends = useAppSelector(selectSuggestions) as UserDetails[]
+	useEffect(() => {dispatch(FetchAllUsers())}, []); // get the friends
+	const friends = useAppSelector(selectSuggestions) as UserDetails[]
 
 	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []);
 	let channels = useAppSelector((state) => selectAllChannels (state)) as Channel[];

@@ -15,7 +15,7 @@ async function main() {
       login: 'Acliclas',
       hash: await argon.hash('tutututututu'),
       status:
-        "We are excited to share that today's Prisma ORM release adds stable support for MongoDB!",
+        "Offline",
       fA: 'cava',
       faEnabled: true,
     },
@@ -28,7 +28,7 @@ async function main() {
       login: 'Fuma',
       hash: await argon.hash('lululululu'),
       status:
-        'Learn about everything in the Prisma ecosystem and community from January to March 2022.',
+        'Online',
       fA: '',
       faEnabled: false,
     },
@@ -40,7 +40,7 @@ async function main() {
     create: {
       login: 'Naykee',
       hash: await argon.hash('rhoooooooooooooooooo'),
-      status: 'kikou',
+      status: 'Playing',
       fA: 'salutcava',
       faEnabled: true,
     },

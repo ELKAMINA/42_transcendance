@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { useEffect, useState } from "react";
 import { fetchDisplayedChannel, fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { Channel } from 'diagnostics_channel';
-import Toolbar from '@mui/material/Toolbar';
 
 function Chat () {
 	const currentRoute = window.location.pathname;

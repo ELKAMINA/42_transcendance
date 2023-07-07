@@ -10,7 +10,7 @@ import { Route, Routes } from "react-router-dom";
 import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
 // import { Suggestions, Requests, Friends } from './pages/friendship';
-
+import UserProfile from './pages/userProfile';
 import { setTokens } from './redux-features/auth/authSlice';
 import FriendshipContainer from './containers/Friendship/Friendship';
 
@@ -36,6 +36,7 @@ const App = () => {
             <Route path="/welcome" element={<HomePage />}/>
             <Route path="/chat" element={<Chat />}/>
             <Route path="/friendship" element={<FriendshipContainer />}/>
+            <Route path="/userprofile" element={<UserProfile />}/>
           </Route>
           <Route path="tfa" element={<Tfa />}/>
         </Route>

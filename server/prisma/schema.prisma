@@ -17,6 +17,12 @@ enum RequestStatus {
   ACCEPTED
 }
 
+enum Status {
+  Online
+  Offline
+  Playing
+}
+
 // Keywords for prisma :  
 // - Each line of a model is a field. It is composed of 4 informations : 1) Name, 2) The type of the field, 3) Attributes (optionnal and begins with @), 4)
 // - Field types : 
@@ -35,7 +41,7 @@ model User {
   fA                    String?
   faEnabled             Boolean?
   avatar                String?
-  status                String?
+  status                Status?
   totalMatches          Int?
   totalWins             Int?
   totalloss             Int?
@@ -70,7 +76,7 @@ model Channel {
   channelId   Int       @id @default(autoincrement())
   members     User[]    @relation("Membership")
   createdBy   User?     @relation("ChannelCreator", fields: [createdById], references: [login], onDelete: SetNull)
-  createdById String?    
+  createdById String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   type        String
@@ -90,7 +96,7 @@ model Message {
   outgoing    Boolean
   subtype     String?
   reply       String?
-  channel     Channel?  @relation("channel/message", fields: [channelById], references: [name], onDelete: SetNull)
+  channel     Channel? @relation("channel/message", fields: [channelById], references: [name], onDelete: SetNull)
   channelById String?
 }
 

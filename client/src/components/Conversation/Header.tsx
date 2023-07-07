@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider } from '@mui/material'
+import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button } from '@mui/material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -8,6 +8,8 @@ import BlockUser from './BlockUser';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
 import { Channel } from '../../types/chat/channelTypes';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/Axios-config/Axios';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -39,7 +41,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   }));
 
 const Header = () => {
-
+	const navigate = useNavigate();
 	const channel :  Channel = useAppSelector((state) => selectDisplayedChannel(state));
 	// console.log('channel name = ', channel.name);
 	const isPrivateConv = channel.members?.length === 1 ? true : false;
@@ -49,6 +51,24 @@ const Header = () => {
 
 	const handleCloseBlock = () => {
 		setOpenBlock(false);
+	}
+
+	const handleProfile = async (name: string) => {
+		await api
+		.get('http://localhost:4001/user/userprofile', {
+			params: {
+				ProfileName: name,
+			}
+		})
+		.then((res) => {
+			const params = new URLSearchParams(res.data).toString()
+			// const data = JSON.parse(res.data);
+			// console.log('la data du serveuuuuur ', data)
+			navigate(`/userprofile?data=${params}`)})
+		.catch((e) => {
+			console.log('ERROR from request with params ', e)
+		})
+		
 	}
 
 	return (
@@ -72,11 +92,13 @@ const Header = () => {
 							}}
 							variant="dot"
 						>
+							<Button onClick={() => handleProfile(channel.name)}>
 							<Avatar
 								alt={channel.name}
 								src={channel.avatar}
 								sx={{ bgcolor: '#fcba03' }}
 							/>
+							</Button>
 						</StyledBadge>
 					</Box>
 					<Stack spacing={0.2}>

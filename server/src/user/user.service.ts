@@ -29,4 +29,11 @@ export class UserService {
       console.log(e);
     }
   }
+
+  async getUserProfile(query: Record<string, any>){
+    const { ProfileName } = query;
+    const user = await this.searchUser(ProfileName);
+    if (user) return user;
+    else return null;
+  }
 }
