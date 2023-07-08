@@ -7,7 +7,17 @@ import { store } from '../app/store';
 import { current } from '@reduxjs/toolkit';
 import Navbar from '../components/NavBar';
 import './userProfile.css';
-import ProfileInfo from '../containers/ProfileInfo/ProfileInfo';
+import ProfileInfo from '../components/UserProfile/Statistics/ProfileInfo';
+
+
+function transformData(queryParams: URLSearchParams) {
+  const obj: Record<string, string> = {};
+
+  for (const [key, value] of queryParams.entries()) {
+    obj[key] = value;
+  }
+  return obj;
+}
 
 const UserProfile = () => {
   const location = useLocation();
@@ -17,13 +27,10 @@ const UserProfile = () => {
     myBlockedFriend: false,
     thoseWhoBlockedMe: false
   })
-  const queryParams = new URLSearchParams(location.search);
-  console.log('query paramq ', queryParams.values());
-  const name = queryParams.get('login');
-  const status = queryParams.get('status');
-  const friendship = async () => await api.post('http://localhost:4001/friendship/ismyfriend', {me: store.getState().persistedReducer.auth.nickname, him: name })
+  const userToStalk = transformData(new URLSearchParams(location.search));
+
+  const friendship = async () => await api.post('http://localhost:4001/friendship/ismyfriend', {me: store.getState().persistedReducer.auth.nickname, him: userToStalk.login })
   .then((res) => {
-    console.log("la data pour savoir si firne ou non", res)
     setMyFriend(res.data);
   })
   .catch((e) => console.log('eroooor ', e));
@@ -38,8 +45,8 @@ const UserProfile = () => {
         <Navbar currentRoute={currentRoute}/>
       </div>
       <div className='userprofile-middle'>
-        <UserProfileHeader name={name} status={status} friendship={isMyfriend}/>
-        <ProfileInfo/>
+        <UserProfileHeader name={userToStalk.login} status={userToStalk.status} friendship={isMyfriend}/>
+        <ProfileInfo interestProfile={userToStalk}/>
       </div>
       <div className='userprofile-infos'>
 

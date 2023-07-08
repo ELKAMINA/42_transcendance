@@ -18,6 +18,41 @@ export type User = {
 	friend: boolean;
   }
 
+  export interface UserPrisma  {
+	createdAt:       		Date
+	updatedAt:        	 Date           
+	user_id:               string          
+	login:                 string          
+	email:                 string         
+	hash:                  string
+	rtHash:                string
+	fA:                    string
+	faEnabled:             boolean
+	avatar:              	string
+	status:                string
+	friends:               UserPrisma[]          
+	friendOf:              UserPrisma[]          
+	totalFriends:          number           
+	FriendRequestSent:     [{}] 
+	FriendRequestReceived: [{}] 
+	blocked:              User[]          
+	blockedBy:             User[]          
+	totalBlockedFriends:   number
+	totalMatches:          number
+	totalWins:             number
+	totalloss:             number
+	level:                 number
+	rank:                  number
+	p1:                    [{}]         
+	p2:                    [{}]         
+	// // Channel Management
+	// //*** Where the user is member ***//
+	channels:              [{}]       
+	// //*** If the user is creator ***//
+	createdChannels:       [{}]      
+	messagesSent:          [{}]     
+  }
+
 export const userList:User[] = [
 	{
 		name: 'Rick_Sanchez',

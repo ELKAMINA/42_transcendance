@@ -6,6 +6,10 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Statistics from './Skeleton';
+import { Rank, Wins, Loss, TotalMatches} from './Scores';
+import { UserPrisma } from '../../../data/userList';
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -16,7 +20,6 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -41,17 +44,17 @@ function a11yProps(index: number) {
   };
 }
 
-export default function ProfileInfo() {
+interface Myprops {
+  interestProfile: Record<string,string>,
+}
+
+export default function ProfileInfo(props: Myprops) {
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-
-  // const handleChangeIndex = (index: number) => {
-  //   setValue(index);
-  // };
 
   return (
     <Box sx={{ bgcolor: 'background.paper', width: '90vw'}}>
@@ -64,22 +67,27 @@ export default function ProfileInfo() {
           variant="fullWidth"
           aria-label="full width tabs example"
         >
-          <Tab label="Statistics" {...a11yProps(0)} />
-          <Tab label="Events" {...a11yProps(1)} />
+          <Tab label="Statistics" {...a11yProps(0)} sx={{ backgroundColor: '#07457E'}} />
+          <Tab label="Events" {...a11yProps(1)} sx={{ backgroundColor: '#07457E'}}/>
         </Tabs>
       </AppBar>
-      {/* <SwipeableViews
-        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-        index={value}
-        onChangeIndex={handleChangeIndex}
-      > */}
+
         <TabPanel value={value} index={0} dir={theme.direction}>
-          Statistics
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignContent: 'center',
+            flexWrap: 'wrap',
+            }}>
+            <Rank him={props.interestProfile}/>
+            <Wins him={props.interestProfile}/>
+            <Loss him={props.interestProfile}/>
+            <TotalMatches him={props.interestProfile}/>
+          </Box>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
           Events
         </TabPanel>
-      {/* </SwipeableViews> */}
     </Box>
   );
 }

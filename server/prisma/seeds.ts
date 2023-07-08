@@ -18,6 +18,11 @@ async function main() {
         "Offline",
       fA: 'cava',
       faEnabled: true,
+      rank: 2,
+      level: 100,
+      totalloss: 20,
+      totalWins: 60,
+      totalMatches: 80,
     },
   });
 
@@ -31,6 +36,11 @@ async function main() {
         'Online',
       fA: '',
       faEnabled: false,
+      rank: 3,
+      level: 250,
+      totalloss: 80,
+      totalWins: 50,
+      totalMatches: 130,
     },
   });
 
@@ -43,8 +53,21 @@ async function main() {
       status: 'Playing',
       fA: 'salutcava',
       faEnabled: true,
+      rank: 1,
+      level: 950,
+      totalloss: 10,
+      totalWins: 150,
+      totalMatches: 160,
     },
   });
+
+  const globalInfo = await prisma.globalInformation.upsert({
+    where: { pid: '1' },
+    update: {},
+    create: {
+      totalPlayers: 4,
+    },
+  })
 
   // console.log({ post1, post2 });
 }

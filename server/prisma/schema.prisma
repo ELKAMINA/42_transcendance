@@ -42,11 +42,6 @@ model User {
   faEnabled             Boolean?
   avatar                String?
   status                Status?
-  totalMatches          Int?
-  totalWins             Int?
-  totalloss             Int?
-  level                 Int?
-  rank                  Int?
   friends               User[]          @relation("Friendship")
   friendOf              User[]          @relation("Friendship")
   totalFriends          Int?            @default(0)
@@ -55,20 +50,20 @@ model User {
   blocked               User[]          @relation("haters")
   blockedBy             User[]          @relation("haters")
   totalBlockedFriends   Int?
-  // blockedFriends        User[]          @relation("haters")
-  // hatersId              String[]
-  // Friends and blocked friends
-  // lovers         User?    @relation("Friendship", fields: [loversId], references: [user_id])
-  // loversId       String? // Foreign Key to connect users with friends
-
-  // p1             Match[]  @relation("Player1")
-  // p2             Match[]  @relation("Player2")
+  totalMatches          Int?
+  totalWins             Int?
+  totalloss             Int?
+  totalPoints           Int?
+  level                 Int?
+  rank                  Int?
+  p1                    Match[]         @relation("Player1")
+  p2                    Match[]         @relation("Player2")
   // // Channel Management
   // //*** Where the user is member ***//
-  channels        Channel[] @relation("Membership")
+  channels              Channel[]       @relation("Membership")
   // //*** If the user is creator ***//
-  createdChannels Channel[] @relation("ChannelCreator")
-  messagesSent    Message[] @relation("MessageSender")
+  createdChannels       Channel[]       @relation("ChannelCreator")
+  messagesSent          Message[]       @relation("MessageSender")
 }
 
 model Channel {
@@ -105,9 +100,9 @@ model Match {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   player1Id      String
-  // player1        User      @relation("Player1", fields: [player1Id], references: [user_id])
-  // player2Id      String
-  // player2        User      @relation("Player2", fields: [player2Id], references: [user_id])
+  player1        User      @relation("Player1", fields: [player1Id], references: [login])
+  player2Id      String
+  player2        User      @relation("Player2", fields: [player2Id], references: [login])
   duration       DateTime?
   p1_rankbfmatch Int // Rank of the winner before match
   p1_rankafmatch Int // Rank of the winner after match
@@ -129,7 +124,8 @@ model FriendRequest {
   createdAt  DateTime      @default(now())
 }
 
-// enum Role { 
-//   BASIC
-//   ADMIN
-// }
+model GlobalInformation {
+  id           String @id @unique @default(uuid())
+  pid          String @unique @default("1")
+  totalPlayers Int?
+}

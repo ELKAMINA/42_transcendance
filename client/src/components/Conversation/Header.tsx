@@ -42,6 +42,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Header = () => {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 	const channel :  Channel = useAppSelector((state) => selectDisplayedChannel(state));
 	// console.log('channel name = ', channel.name);
 	const isPrivateConv = channel.members?.length === 1 ? true : false;
@@ -54,6 +55,8 @@ const Header = () => {
 	}
 
 	const handleProfile = async (name: string) => {
+		// const result = dispatch(FetchInterestedProfile(name)); 
+		// console.log('résultat ', result);
 		await api
 		.get('http://localhost:4001/user/userprofile', {
 			params: {
