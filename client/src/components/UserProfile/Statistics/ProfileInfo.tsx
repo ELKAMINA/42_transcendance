@@ -7,8 +7,9 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Statistics from './Skeleton';
-import { Rank, Wins, Loss, TotalMatches} from './Scores';
+import { Rank, Wins, Loss, TotalMatches, Level} from './Scores';
 import { UserPrisma } from '../../../data/userList';
+import MatchHistory from '../Events/Skeleton';
 
 
 interface TabPanelProps {
@@ -68,7 +69,7 @@ export default function ProfileInfo(props: Myprops) {
           aria-label="full width tabs example"
         >
           <Tab label="Statistics" {...a11yProps(0)} sx={{ backgroundColor: '#07457E'}} />
-          <Tab label="Events" {...a11yProps(1)} sx={{ backgroundColor: '#07457E'}}/>
+          <Tab label="Matches History" {...a11yProps(1)} sx={{ backgroundColor: '#07457E'}}/>
         </Tabs>
       </AppBar>
 
@@ -83,10 +84,17 @@ export default function ProfileInfo(props: Myprops) {
             <Wins him={props.interestProfile}/>
             <Loss him={props.interestProfile}/>
             <TotalMatches him={props.interestProfile}/>
+            <Level him={props.interestProfile}/>
+
           </Box>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          Events
+          {/* remplacer par le tableau de match joués et recuperer les infos */}
+          <MatchHistory name="test" data="haha"/>
+          <MatchHistory name="test" data="haha"/>
+          <MatchHistory name="test" data="haha"/>
+          <MatchHistory name="test" data="haha"/>
+          <MatchHistory name="test" data="haha"/>
         </TabPanel>
     </Box>
   );

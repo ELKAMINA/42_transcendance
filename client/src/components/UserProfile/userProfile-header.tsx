@@ -71,8 +71,8 @@ function UserProfileHeader(props: myProps) {
     sx={{
       width: '90vw',
       height: '20vh',
-      backgroundColor: 'yellow',
-      borderRadius:'20px',
+      backgroundColor: '#20B2AA',
+      borderRadius:'10px',
     }}>
       <Box display="flex" flexDirection="row" alignItems="center">
         <Avatar src='' alt="User Avatar"

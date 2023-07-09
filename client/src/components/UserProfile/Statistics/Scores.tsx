@@ -61,5 +61,16 @@ const TotalMatches = (props: Myprops) => {
     )
 }
 
-export  {Rank, Wins, Loss, TotalMatches};
+const Level = (props: Myprops) => {
+    const dispatch = useAppDispatch();
+    React.useEffect(() => {
+        // dispatch(FetchTotalMatchesWon());
+    }, [])
+    // const totalPlayers = useAppSelector(selectTotalPlayers);
+    return (
+        <Statistics name="Level" data={props.him.level}/>
+    )
+}
+
+export  {Rank, Wins, Loss, TotalMatches, Level};
 // export default Rank
