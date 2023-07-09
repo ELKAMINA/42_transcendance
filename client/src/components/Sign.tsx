@@ -2,6 +2,8 @@
 import Cookies from 'js-cookie';
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
+import { useState, useRef } from 'react';
+// import { useAppDispatch } from '../utils/redux-hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 
 import './Sign.css';
 import logoft from "../img/42 white.png";
-import { setSignCredentials, setTokens } from '../redux-features/auth/authSlice';
+import { setSignCredentials, setTokens, setAvatar } from '../redux-features/auth/authSlice';
 import { useSignupMutation, useSigninMutation} from '../app/api/authApiSlice';
 
 
@@ -21,10 +23,9 @@ interface Signing {
 export default function Sign(props: Signing){
     const userRef = React.useRef<HTMLInputElement>(null)
     const errRef = React.useRef<HTMLInputElement>(null)
-
     const [nickname, setNickname] = React.useState('')
     const [password, setPwd] = React.useState('')
-    const [avatar, setAvatar] = React.useState('')
+    const [avatar, setAr] = React.useState('')
     const [errMsg, setErrMsg] = React.useState('')
     const [ signin] = useSigninMutation();
     const [signup] = useSignupMutation(); // isLoading : Frequently Used Query Hook Return Values => When true, indicates that the query is currently loading for the first time, and has no data yet. This will be true for the first request fired off, but not for subsequent requests.
@@ -43,10 +44,38 @@ export default function Sign(props: Signing){
         window.open("http://localhost:4001/auth/42/callback", "_self");
     }
 
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            // setSelectedImage(reader.result as string);
+            const imageSrc = reader.result as string;
+            setSelectedImage(imageSrc);
+            dispatch(setAvatar(imageSrc));
+            setAr(imageSrc)
+          };
+          reader.readAsDataURL(file);
+        }
+    };
+
+    const handleButtonClick = () => {
+        const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+        fileInput?.click();
+    
+    };
+
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         try {
             let userData = null;
+            if (selectedImage)
+            {
+                dispatch(setAvatar(selectedImage));
+                setAr(selectedImage)
+            }
             if (props.type === "Sign up")
             {
                 userData = await signup({ nickname, password, avatar }).unwrap() // unwrap extracts the payload of a fulfilled action or to throw either the error
@@ -55,16 +84,10 @@ export default function Sign(props: Signing){
             {
                 userData = await signin({ nickname, password, avatar }).unwrap()
             }
-            dispatch(setSignCredentials({...userData, nickname, avatar}))
+            dispatch(setSignCredentials({...userData, nickname}))
             setNickname('')
             setPwd('')
             setAvatar('')
-
-            // if (userData.faEnabled === true) /* Attention à gérer le tfa quand signin */
-            // {
-            //     navigate('/tfa')
-            // }
-            // else
             navigate('/welcome')
         } catch (err: any) {
             if (!err)
@@ -97,19 +120,12 @@ export default function Sign(props: Signing){
                 />
             </form>
             <input
-                type="file"
-                accept="image/*"
+                id="image-upload"
+                type="file" accept="image/*" onChange={handleImageUpload}
                 style={{ display: 'none' }}
-                id="contained-button-file"
-                value={avatar}
-                onChange={(e)=>setAvatar(e.target.value)}
             />
-            <label htmlFor="contained-button-file">
-                <IconButton color="primary" component="span">
-                    <Avatar/>
-                    Upload your avatar
-                </IconButton>
-            </label>
+            <IconButton onClick={handleButtonClick}> Upload your avatar </IconButton>
+            {selectedImage && <Avatar src={selectedImage}/>}
             <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>{props.type}</Button>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
             <hr></hr>

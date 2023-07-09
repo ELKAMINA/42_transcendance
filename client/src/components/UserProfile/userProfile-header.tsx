@@ -23,6 +23,7 @@ interface myProps {
       myBlockedFriend: boolean,
       thoseWhoBlockedMe: boolean
     }
+    srcAvatar: string | undefined,
     // friendship: boolean,
 }
 
@@ -75,7 +76,7 @@ function UserProfileHeader(props: myProps) {
       borderRadius:'10px',
     }}>
       <Box display="flex" flexDirection="row" alignItems="center">
-        <Avatar src='' alt="User Avatar"
+        <Avatar src={props.srcAvatar} alt="User Avatar"
         sx={{
           width: '150px',
           height: '150px',
@@ -95,8 +96,8 @@ function UserProfileHeader(props: myProps) {
           </StyledBadge>
         </Box>
         <Box ml={2} display="flex" flexDirection='row' justifyContent='space-between' flexWrap='wrap'>
-        {props.friendship.myBlockedFriend && <div className='userprof-header'>Blocked Friend</div> }
-        {props.friendship.thoseWhoBlockedMe && <div className='userprof-header'>He Blocked Friend</div> }
+        {props.friendship.myBlockedFriend && <div className='userprof-header'>Not friends - Blocked by you</div> }
+        {props.friendship.thoseWhoBlockedMe && <div className='userprof-header'> Not friends - Blocked you</div> }
         {props.friendship.isMyfriend && <div className='userprof-header'>Friend</div> }
         {!props.friendship.isMyfriend && !props.friendship.thoseWhoBlockedMe && !props.friendship.myBlockedFriend && <div className='userprof-header'>Not Friends</div>}
         </Box> 

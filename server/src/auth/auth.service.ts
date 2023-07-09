@@ -126,6 +126,7 @@ export class AuthService {
 
   async signup(dto: AuthDto, res: Response): Promise<object> {
     const pwd = await argon.hash(dto.password);
+    console.log('dto', dto)
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -168,6 +169,16 @@ export class AuthService {
       if (us && (await argon.verify(us.hash, dto.password)) == false) {
         throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
       }
+      if (us.avatar !== dto.avatar){
+        await this.prisma.user.update({
+          where: {
+            login: dto.nickname,
+          },
+          data: {
+            avatar: dto.avatar,
+          }
+        });
+      }
       const tokens = await this.signTokens(us.user_id, us.login);
       await this.updateRtHash(us.user_id, tokens.refresh_token);
       this.setCookie(
@@ -187,10 +198,11 @@ export class AuthService {
     }
   }
 
-  async logout(userInfo: JwtPayload) {
+  async logout(userInfo: string) {
+    console.log('userInfo, userInfo', userInfo)
     await this.prisma.user.updateMany({
       where: {
-        user_id: userInfo.sub,
+        login: userInfo,
         rtHash: {
           not: null,
         },
@@ -199,7 +211,6 @@ export class AuthService {
         rtHash: null,
       },
     });
-    // res.clearCookie('Authcookie', { path: '/' });
   }
 
   async refresh(userNick: string, refreshToken: string) {

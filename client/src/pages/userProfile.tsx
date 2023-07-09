@@ -10,7 +10,7 @@ import './userProfile.css';
 import ProfileInfo from '../components/UserProfile/Statistics/ProfileInfo';
 
 
-function transformData(queryParams: URLSearchParams) {
+export function transformData(queryParams: URLSearchParams) {
   const obj: Record<string, string> = {};
 
   for (const [key, value] of queryParams.entries()) {
@@ -28,7 +28,7 @@ const UserProfile = () => {
     thoseWhoBlockedMe: false
   })
   const userToStalk = transformData(new URLSearchParams(location.search));
-
+  // console.log("userTostalk ", userToStalk)
   const friendship = async () => await api.post('http://localhost:4001/friendship/ismyfriend', {me: store.getState().persistedReducer.auth.nickname, him: userToStalk.login })
   .then((res) => {
     setMyFriend(res.data);
@@ -45,7 +45,7 @@ const UserProfile = () => {
         <Navbar currentRoute={currentRoute}/>
       </div>
       <div className='userprofile-middle'>
-        <UserProfileHeader name={userToStalk.login} status={userToStalk.status} friendship={isMyfriend}/>
+        <UserProfileHeader name={userToStalk.login} status={userToStalk.status} friendship={isMyfriend} srcAvatar= {userToStalk.avatar}/>
         <ProfileInfo interestProfile={userToStalk}/>
       </div>
       <div className='userprofile-infos'>

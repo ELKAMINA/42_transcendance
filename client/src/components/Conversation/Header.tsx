@@ -43,8 +43,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const Header = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
+	const [user, setUser] = useState(null);
 	const channel :  Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	// console.log('channel name = ', channel.name);
 	const isPrivateConv = channel.members?.length === 1 ? true : false;
 	// console.log('isPrivateConv = ', isPrivateConv);
 
@@ -55,25 +55,21 @@ const Header = () => {
 	}
 
 	const handleProfile = async (name: string) => {
-		// const result = dispatch(FetchInterestedProfile(name)); 
-		// console.log('résultat ', result);
+
 		await api
 		.get('http://localhost:4001/user/userprofile', {
-			params: {
-				ProfileName: name,
-			}
-		})
+				params: {
+						ProfileName: name,
+					}
+				})
 		.then((res) => {
 			const params = new URLSearchParams(res.data).toString()
-			// const data = JSON.parse(res.data);
-			// console.log('la data du serveuuuuur ', data)
 			navigate(`/userprofile?data=${params}`)})
 		.catch((e) => {
 			console.log('ERROR from request with params ', e)
 		})
 		
 	}
-
 	return (
 		<Box 
 		p={2}
@@ -98,7 +94,7 @@ const Header = () => {
 							<Button onClick={() => handleProfile(channel.name)}>
 							<Avatar
 								alt={channel.name}
-								src={channel.avatar}
+								src={channel.members?.at(0)?.avatar}
 								sx={{ bgcolor: '#fcba03' }}
 							/>
 							</Button>

@@ -9,7 +9,6 @@ export interface GameState {
     totalMatchesLost: number,
     totalMatchesWon: number,
     totalPlayers: number,
-    totalPoints: number,
     level: number,
     rank: number,
     MatchesLost: [],
@@ -23,7 +22,6 @@ const initialState: GameState = {
     totalMatchesPlayed: 0,
     totalMatchesLost: 0,
     totalMatchesWon: 0,
-    totalPoints: 0,
     level: 0,
     rank: 0,
     MatchesLost: [],
@@ -45,9 +43,9 @@ export const gameSlice = createSlice({
         updateTotalMatchesWon: (state, action: PayloadAction<number>) => {
             state.totalMatchesWon = action.payload;
         },
-        updateTotalPoints: (state, action: PayloadAction<number>) => {
-            state.totalPoints = action.payload;
-        },
+        // updateTotalPoints: (state, action: PayloadAction<number>) => {
+        //     state.totalPoints = action.payload;
+        // },
         updateTotalPlayers: (state, action: PayloadAction<number>) => {
             state.totalPlayers = action.payload;
         },
@@ -73,11 +71,11 @@ export const gameSlice = createSlice({
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-export const { updateTotalMatchesPlayed, updateTotalMatchesLost,updateTotalMatchesWon,updateTotalPoints,updateTotalPlayers, updateLevel,updateRank,updateAllMatches,updateMatchesLost,updateMatchesWon } = gameSlice.actions
+export const { updateTotalMatchesPlayed, updateTotalMatchesLost,updateTotalMatchesWon,updateTotalPlayers, updateLevel,updateRank,updateAllMatches,updateMatchesLost,updateMatchesWon } = gameSlice.actions
 export const selectTotalMatchesPlayed: any = (state: RootState) => state.persistedReducer.game.totalMatchesPlayed
 export const selectTotalMatchesLost = (state: RootState) => state.persistedReducer.game.totalMatchesLost
 export const selectTotalMatchesWon = (state: RootState) => state.persistedReducer.game.totalMatchesWon
-export const selectTotalPoints = (state: RootState) => state.persistedReducer.game.totalPoints
+// export const selectTotalPoints = (state: RootState) => state.persistedReducer.game.totalPoints
 export const selectTotalPlayers = (state: RootState) => state.persistedReducer.game.totalPlayers
 export const selectRank = (state: RootState) => state.persistedReducer.game.rank
 export const selectLevel = (state: RootState) => state.persistedReducer.game.level

@@ -24,6 +24,7 @@
 .navbar__header__right {
     display: flex;
     align-items: center;
+    margin: 10px;
 }
 
 .navbar__header__right__options {
