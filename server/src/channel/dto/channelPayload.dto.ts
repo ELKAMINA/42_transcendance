@@ -18,10 +18,9 @@ export class ChannelDto {
 	@ApiProperty()
 	type: string;
 
-	@IsString()
 	@IsNotEmpty()
 	@ApiProperty()
-	createdBy: string;
+	createdBy: UserDetails;
 
 	@ApiProperty()
 	protected_by_password: boolean;
