@@ -18,6 +18,7 @@ import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
 import { io } from "socket.io-client";
 import { useAppDispatch } from "../../utils/redux-hooks";
 import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
+import { UserDetails } from "../../types/users/userType";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -30,7 +31,7 @@ function CreateChannel(props : CreateChannelProps) {
 	const newName = useSelector((state: RootState) => state.persistedReducer.channelName);
 	const channelUsersList = useSelector((state : RootState) => state.persistedReducer.channelUser);
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
-	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
+	const currentUser = useSelector((state : RootState) => state.persistedReducer.auth);
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
 
@@ -46,16 +47,24 @@ function CreateChannel(props : CreateChannelProps) {
 	}
 
 	const channelCreation = async () => {
+		
+		const createdBy : UserDetails = {
+			login : currentUser.nickname, 
+			displayName : currentUser.nickname, 
+			email: 'dumdum@dum.dum', 
+			avatar : ''
+		};
+
 		await api
 		.post ('http://localhost:4001/channel/creation', {
 			name: newName,
 			channelId: Date.now(),
 			type: channelType.type,
-			createdBy: authState.nickname,
+			createdBy: createdBy,
 			protected_by_password: channelType.protected_by_password,
 			key: channelType.key,
 			members: channelUsersList,
-			avatar: authState.avatar,
+			avatar: currentUser.avatar,
 			chatHistory: [dummyMessage],
 		})
 		.then ((response) => {
