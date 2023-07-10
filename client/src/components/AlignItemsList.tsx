@@ -122,7 +122,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	// handle what happens when the passwordfield window closes
   	const handleClose = () => {
 		if (isPasswordCorrect === true) {
-		  	getSelectedItem(selectedChannel.name);
+			getSelectedItem(channels[selectedIndex].name);
 			setAlertSuccess(true);
 		} else {
 			setAlertError(true);
