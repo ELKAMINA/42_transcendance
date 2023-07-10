@@ -20,12 +20,20 @@ export const SearchResult = ({ result }: { result: string }) => {
 	const user = users.find(user => user.login === result);
 
 	async function createPrivateConv() {
+
+		const createdBy : UserDetails = {
+			login : currentuser, 
+			displayName : currentuser, 
+			email: 'dumdum@dum.dum', 
+			avatar : ''
+		};
+
 		await api
 		.post ('http://localhost:4001/channel/creation', {
 			name: result,
 			channelId: Date.now(),	
 			type: 'privateConv',
-			createdBy: currentuser,
+			createdBy: createdBy,
 			protected_by_password: false,
 			key: '',
 			members: [user],
@@ -46,7 +54,7 @@ export const SearchResult = ({ result }: { result: string }) => {
 
 		if (channel) {
 			if (channel.type === 'privateConv' 
-				|| (channel.type === 'private' && (channel.createdBy === currentuser || channel.members?.find(member => member.login === currentuser))) 
+				|| (channel.type === 'private' && (channel.createdBy.login === currentuser || channel.members?.find(member => member.login === currentuser))) 
 				|| channel.type === 'public')
 				AppDispatch(fetchDisplayedChannel(result));
 			if (channel.key !== '')
