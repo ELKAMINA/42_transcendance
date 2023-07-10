@@ -6,7 +6,7 @@ export const channelList:Channel[] = [
 	{
 		name: 'Chihiro',
 		channelId: 0,
-		createdBy: 'casper_le_fantome',
+		createdBy:  {login : 'casper_le_fantome', displayName : 'casper_le_fantome', email: 'casper@fantome.soul', avatar : 'white_sheet'},
 		avatar: chihiro,
 		type: 'public',
 		protected_by_password: true,
@@ -18,7 +18,7 @@ export const channelList:Channel[] = [
 	{
 		name: 'Totoro',
 		channelId: 1,
-		createdBy: 'satsuki_3003',
+		createdBy:  {login : 'casper_le_fantome', displayName : 'casper_le_fantome', email: 'casper@fantome.soul', avatar : 'white_sheet'},
 		avatar: totoro,
 		type: 'private',
 		protected_by_password: false,
