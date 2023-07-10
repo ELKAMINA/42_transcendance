@@ -9,7 +9,7 @@ import { store } from '../app/store';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { useEffect, useState } from "react";
 import { fetchDisplayedChannel, fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
-import { Channel } from 'diagnostics_channel';
+import { Channel } from '../types/chat/channelTypes';
 
 function Chat () {
 	const currentRoute = window.location.pathname;
@@ -40,6 +40,19 @@ function Chat () {
 	function handleSelectChannel (channelName : string) {
 		setSelectedChannel(channelName);
 	}
+
+	// clean up the local storage when the window / tab is closed
+	// useEffect(() => {
+	// 	const clearLocalStorage = () => {
+	// 		localStorage.clear();
+	// 	};
+
+	// 	window.addEventListener('beforeunload', clearLocalStorage);
+
+	// 	return () => {
+	// 		window.removeEventListener('beforeunload', clearLocalStorage);
+	// 	};
+	// }, []);
 
 	return (
 		<Provider store={store}>
