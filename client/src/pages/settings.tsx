@@ -15,25 +15,22 @@ import { setAvatar } from '../redux-features/auth/authSlice';
 
 
 
-export const socket = io('http://localhost:4001/profile', {
+export const socket = io('http://localhost:4003', {
   withCredentials: true,
   transports: ['websocket'], 
   upgrade: false,
   autoConnect: false,
-  // reconnection: true,
+//   reconnection: false,
 })
 
 export function PersonalInformation () {
     const userRef = React.useRef<HTMLInputElement>(null)
-    const errRef = React.useRef<HTMLInputElement>(null)
     const [nickname, setNickname] = React.useState('')
     const [password, setPwd] = React.useState('')
     const [avatar, setAr] = React.useState('')
     const [email, setEmail] = React.useState('')
-    const [errMsg, setErrMsg] = React.useState('')
 
     const dispatch = useDispatch()
-    const navigate = useNavigate();
     React.useEffect(() => {
         socket.connect()
         socket.on('connect', () => {

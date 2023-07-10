@@ -51,6 +51,7 @@ function Suggestions () {
             })
           })
           socket.on('newCookie', (data) => {
+            console.log('loooool je rentre ici ')
             dispatch(setOnlyTokens({...data}));
             const serializeData = JSON.stringify(data);
             Cookies.set('Authcookie', serializeData, { path: '/' });
