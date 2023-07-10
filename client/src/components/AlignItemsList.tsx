@@ -20,6 +20,8 @@ import AlertDialogSlide from './AlertDialogSlide';
 import EnterPassword from './EnterPassword';
 import * as argon from 'argon2';
 import FullScreenAlert from './FullScreenAlert';
+import { RootState } from '../app/store';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
 
 
 type getSelectedItemFunction = (pwd: string) => void;
@@ -32,8 +34,10 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const [showIcons, setShowIcons] = React.useState(true);
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = React.useState(false);
 	const AppDispatch = useAppDispatch();
-	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
-	const selectedChannel = useAppSelector((state) => selectDisplayedChannel(state)) as Channel;
+	const channels = useAppSelector((state : RootState) => selectUserChannels(state)) as Channel[];
+	// console.log('channels = ', channels);
+	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
+	const selectedChannel = useAppSelector((state : RootState) => selectDisplayedChannel(state)) as Channel;
 	const [isPasswordCorrect, setIsPasswordCorrect] = React.useState<boolean>(false); 
 
 	React.useEffect(() => { 
@@ -135,60 +139,62 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
-			{channels.map((element, index) => (
-			<Stack key={index}>
-				<Divider variant="inset" component="li" />
-				<ListItemButton
-					selected={selectedIndex === index}
-					onClick={(event) => handleListItemClick(event, index)}
-					sx={{
-						'&:hover': { backgroundColor: 'rgba(116, 131, 145, 0.4)' },
-						'&.Mui-selected': { backgroundColor: '#032B50' }
-					}}
-				>
-				<ListItem alignItems="center">
-					<ListItemAvatar>
-					<Avatar alt={element.name} src={element.avatar} />
-					</ListItemAvatar>
-					<Stack direction="row" alignItems="center" spacing={2}>
-					{showIcons && element.type === 'private' && (
-						<Tooltip title="private channel" placement="top">
-						<SensorDoor />
-						</Tooltip>
-					)}
-					{showIcons && element.type === 'public' && (
-						<Tooltip title="public channel" placement="top">
-						<Diversity3Icon />
-						</Tooltip>
-					)}
-					{showIcons && element.key !== '' && (
-						<Tooltip title="protected by password" placement="top">
-						<LockIcon />
-						</Tooltip>
-					)}
-					</Stack>
-					<ListItemText
-						sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-						primary={element.name}
-					/>
+			{channels.map((element, index) => {
+				return (
+					<Stack key={index}>
+						<Divider variant="inset" component="li" />
+						<ListItemButton
+							selected={selectedIndex === index}
+							onClick={(event) => handleListItemClick(event, index)}
+							sx={{
+								'&:hover': { backgroundColor: 'rgba(116, 131, 145, 0.4)' },
+								'&.Mui-selected': { backgroundColor: '#032B50' }
+							}}
+						>
+						<ListItem alignItems="center">
+							<ListItemAvatar>
+							<Avatar alt={element.name} src={element.avatar} />
+							</ListItemAvatar>
+							<Stack direction="row" alignItems="center" spacing={2}>
+							{showIcons && element.type === 'private' && (
+								<Tooltip title="private channel" placement="top">
+								<SensorDoor />
+								</Tooltip>
+							)}
+							{showIcons && element.type === 'public' && (
+								<Tooltip title="public channel" placement="top">
+								<Diversity3Icon />
+								</Tooltip>
+							)}
+							{showIcons && element.key !== '' && (
+								<Tooltip title="protected by password" placement="top">
+								<LockIcon />
+								</Tooltip>
+							)}
+							</Stack>
+							<ListItemText
+								sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+								primary={element.name === currentUser ? element.createdBy.login : element.name}
+							/>
 
-					{showIcons && (
-					<Box>
-						<ConfirmationDialog
-							title = 'delete channel'
-							id = 'delete-channel'
-							options = { ['Yes, I want to delete this channel.'] }
-							icon={
-								<DeleteIcon sx={{ color: 'red', p: 0, marginLeft: 'auto',}} fontSize="small"/>
-							}
-							handleConfirm={() => handleClick(element.name)}
-							dialogTitle='Delete this channel from the database?'
-						/>
-					</Box>)}
-				</ListItem>
-				</ListItemButton>
-			</Stack>
-			))}
+							{showIcons && (
+							<Box>
+								<ConfirmationDialog
+									title = 'delete channel'
+									id = 'delete-channel'
+									options = { ['Yes, I want to delete this channel.'] }
+									icon={
+										<DeleteIcon sx={{ color: 'red', p: 0, marginLeft: 'auto',}} fontSize="small"/>
+									}
+									handleConfirm={() => handleClick(element.name)}
+									dialogTitle='Delete this channel from the database?'
+								/>
+							</Box>)}
+						</ListItem>
+						</ListItemButton>
+					</Stack>
+				);
+			})}
 			{AlertDialogSlideOpen && <AlertDialogSlide 
 				handleClose={handleClose}
 				open={AlertDialogSlideOpen}
