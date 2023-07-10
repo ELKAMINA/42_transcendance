@@ -69,6 +69,11 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
       navigate("/sign");
     }
 
+    const handleSubmit = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        event.preventDefault();
+        navigate('/settings')
+    }
+
     useEffect(()=> {
         dispatch(FetchUser());
     }, [])
@@ -134,7 +139,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
                 }}
             >
                 <MenuItem onClick={getMyProfile}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>Settings</MenuItem>
+                <MenuItem component="a" href="/" onClick={handleSubmit}>Settings</MenuItem>
                 <MenuItem component="a" href="/" onClick={logOut}>Logout</MenuItem>
             </Menu>            
             <IconButton component="a" href="/" onClick={logOut}>
@@ -178,7 +183,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
                         }}
                     >
                     <MenuItem onClick={getMyProfile}>Profile</MenuItem>
-                    <MenuItem onClick={handleClose}>Settings</MenuItem>
+                    <MenuItem component="a" href="/" onClick={handleSubmit}>Settings</MenuItem>
                     <MenuItem component="a" href="/" onClick={logOut}>Logout</MenuItem>
                     </Menu>
                     <IconButton component="a" href="/" onClick={logOut}>

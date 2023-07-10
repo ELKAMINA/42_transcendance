@@ -161,6 +161,7 @@ export class AuthService {
 
   async signin(dto: AuthDto, res: Response): Promise<object> {
     try {
+      // console.log("DTOOOO ", dto)
       const us = await this.prisma.user.findUniqueOrThrow({
         where: {
           login: dto.nickname,
@@ -169,7 +170,7 @@ export class AuthService {
       if (us && (await argon.verify(us.hash, dto.password)) == false) {
         throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
       }
-      if (us.avatar !== dto.avatar){
+      if (us.avatar !== dto.avatar && dto.avatar !== ''){
         await this.prisma.user.update({
           where: {
             login: dto.nickname,
@@ -189,7 +190,7 @@ export class AuthService {
         },
         res,
       );
-      return { faEnabled: us.faEnabled, tokens };
+      return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
     } catch (e: any) {
       if (e.code === 'P2025') {
         throw new HttpException('No user found', HttpStatus.FORBIDDEN);

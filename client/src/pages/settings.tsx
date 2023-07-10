@@ -5,10 +5,10 @@ import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import { useDispatch } from 'react-redux';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
+import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Cookies from 'js-cookie';
 import { setAvatar } from '../redux-features/auth/authSlice';
@@ -17,7 +17,7 @@ import { setAvatar } from '../redux-features/auth/authSlice';
 
 export const socket = io('http://localhost:4001/profile', {
   withCredentials: true,
-  transports: ['websocket'],
+  transports: ['websocket'], 
   upgrade: false,
   autoConnect: false,
   // reconnection: true,
@@ -75,7 +75,6 @@ export function PersonalInformation () {
             mail: email,
             atr: avatar,
         })
-        
     }
 
     const handleButtonClick = () => {
@@ -85,10 +84,19 @@ export function PersonalInformation () {
     };
 
     const content = (
-        <div>
+        <Stack sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            margin: 10,
+            flex: 1,
+        }}>
             <h2>Personal Information</h2>
             <form id='form'>
-                <label>
+                <Stack spacing={2} sx={{
+                    margin: '10px',
+                    width: '50vw',
+                }}>
                     <input
                         type="text"
                         placeholder="Nickname" 
@@ -97,9 +105,6 @@ export function PersonalInformation () {
                         value={nickname}
                         required
                     />
-                    Login
-                </label>
-                <label>
                     <input 
                         type="password"
                         placeholder="Password"
@@ -107,9 +112,6 @@ export function PersonalInformation () {
                         onChange={(e)=> setPwd(e.target.value)}
                         required
                     />
-                    password
-                </label>
-                <label>
                     <input 
                         type="email"
                         placeholder="Email"
@@ -117,18 +119,22 @@ export function PersonalInformation () {
                         onChange={(e)=> setEmail(e.target.value)}
                         required
                     />
-                    Email address
-                </label>
+
+                </Stack>
             </form>
             <input
                 id="image-upload"
                 type="file" accept="image/*" onChange={handleImageUpload}
                 style={{ display: 'none' }}
             />
-            <IconButton onClick={handleButtonClick}> Upload your avatar </IconButton>
+            <IconButton onClick={handleButtonClick} sx={{
+                fontSize: '15px'
+            }}> Upload your avatar </IconButton>
             {selectedImage && <Avatar src={selectedImage}/>}
+            <br>
+            </br>
             <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Save</Button>
-        </div>
+        </Stack>
     )
     return content;
 }

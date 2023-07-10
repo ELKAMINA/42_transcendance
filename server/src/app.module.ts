@@ -20,6 +20,8 @@ import { ChatService } from './chat/chat.service';
 import { GlobalController } from './global/global.controller';
 import { GlobalService } from './global/global.service';
 import { GlobalModule } from './global/global.module';
+import { ProfileGateway } from './profile/home.gateway';
+import { HomeService } from './profile/home.service';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { GlobalModule } from './global/global.module';
     HomeModule,
     PassportModule.register({}),
     FriendshipModule,
+    HomeModule,
     GlobalModule,
      // j'ai enlevé session:true
   ],
@@ -47,7 +50,9 @@ import { GlobalModule } from './global/global.module';
 	ChannelService,
     JwtService,
 	ChatGateway,
+  ProfileGateway, 
 	ChatService,
+  HomeService,
 	GlobalService,
   ],
 })

@@ -75,6 +75,7 @@ export default function Sign(props: Signing){
             {
                 dispatch(setAvatar(selectedImage));
                 setAr(selectedImage)
+                console.log('Avatarrr ', avatar)
             }
             if (props.type === "Sign up")
             {
@@ -84,7 +85,9 @@ export default function Sign(props: Signing){
             {
                 userData = await signin({ nickname, password, avatar }).unwrap()
             }
+            // console.log('la UUSERDATA ', userData)
             dispatch(setSignCredentials({...userData, nickname}))
+            dispatch(setAvatar(userData.avatar))
             setNickname('')
             setPwd('')
             setAvatar('')
