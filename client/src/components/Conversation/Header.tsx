@@ -3,11 +3,14 @@ import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider } from '@mui
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BlockUser from './BlockUser';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
 import { Channel } from '../../types/chat/channelTypes';
+import { emptyChannel } from '../../data/emptyChannel';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { UserDetails } from '../../types/users/userType';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -39,11 +42,25 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   }));
 
 const Header = () => {
+	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
+	let channelName : string = 'error';
 
-	const channel :  Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	// console.log('channel name = ', channel.name);
-	const isPrivateConv = channel.members?.length === 1 ? true : false;
-	// console.log('isPrivateConv = ', isPrivateConv);
+	const channel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
+	const isPrivateConv : boolean = channel.members?.length === 1 && channel.type === 'privateConv' ? true : false;
+	
+	// if the conversation is private, 
+	// the name of the channel should be the name of 
+	// the channel member that is not the current user
+	if (isPrivateConv) {
+		if (channel.members[0].login === currentUser) {
+			channelName = channel.createdBy.login; 
+		}
+		else {
+			channelName = channel.members[0].login;
+		}
+	} else {
+		channelName = channel.name;
+	}
 
 	const [openBlock, setOpenBlock] = useState<boolean>(false);
 
@@ -73,14 +90,14 @@ const Header = () => {
 							variant="dot"
 						>
 							<Avatar
-								alt={channel.name}
+								alt={channelName}
 								src={channel.avatar}
 								sx={{ bgcolor: '#fcba03' }}
 							/>
 						</StyledBadge>
 					</Box>
 					<Stack spacing={0.2}>
-							<Typography variant="subtitle2">{channel.name}</Typography>
+							<Typography variant="subtitle2">{channelName}</Typography>
 							<Typography variant="caption">online</Typography>
 					</Stack>
 				</Stack>
