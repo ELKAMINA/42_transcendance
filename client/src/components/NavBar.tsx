@@ -177,9 +177,9 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
                         horizontal: 'left',
                         }}
                     >
-                        <MenuItem onClick={handleClose}>Profile</MenuItem>
-                        <MenuItem onClick={handleClose}>My account</MenuItem>
-                        <MenuItem onClick={handleClose}>Logout</MenuItem>
+                    <MenuItem onClick={getMyProfile}>Profile</MenuItem>
+                    <MenuItem onClick={handleClose}>Settings</MenuItem>
+                    <MenuItem component="a" href="/" onClick={logOut}>Logout</MenuItem>
                     </Menu>
                     <IconButton component="a" href="/" onClick={logOut}>
                         <LogoutIcon fontSize='medium' />

@@ -10,7 +10,7 @@ interface authState {
     refresh_token: string,
     avatar: string | undefined,
     qrCode: string,
-
+    selectedItems: string,
 }
 
 // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -52,10 +52,13 @@ const authSlice = createSlice({
         setAvatar: (state, action: PayloadAction<string>) => {
             state.avatar = action.payload
         },
+        setSelectedItem: (state, action: PayloadAction<string>) => {
+            state.selectedItems = action.payload
+        },
     },
 })
 
-export const { setSignCredentials, logOut, setTokens, setOnlyTokens, setAvatar} = authSlice.actions
+export const { setSignCredentials, logOut, setTokens, setOnlyTokens, setAvatar, setSelectedItem} = authSlice.actions
 
 export default authSlice.reducer
 
@@ -63,6 +66,7 @@ export const selectCurrentUser = (state: RootState) => state.persistedReducer.au
 export const selectCurrentAccessToken = (state: RootState) => state.persistedReducer.auth.access_token
 export const selectCurrentRefreshToken = (state: RootState) => state.persistedReducer.auth.refresh_token
 export const selectCurrentAvatar = (state: RootState) => state.persistedReducer.auth.avatar
+export const selectItems = (state: RootState) => state.persistedReducer.auth.selectedItems
 
 
 export function FetchUser() {
