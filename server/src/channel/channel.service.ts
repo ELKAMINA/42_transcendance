@@ -17,7 +17,7 @@ export class ChannelService {
 			// If the creator record is not found, 
 			// we throw a NotFoundException with an appropriate error message.
 			const creator = await this.prisma.user.findUnique({
-				where: { login: dto.createdBy },
+				where: { login: dto.createdBy.login },
 			});
 			if (!creator) {
 				throw new NotFoundException(`User with login '${dto.createdBy}' not found.`);
@@ -28,7 +28,7 @@ export class ChannelService {
 					name: dto.name,
 					members: {connect: dto.members.map((user) => ({ login: user.login })),},
 					createdBy: {
-						connect: {login: dto.createdBy}
+						connect: {login: dto.createdBy.login}
 					},
 					type: dto.type,
 					key: pwd,
@@ -94,8 +94,20 @@ export class ChannelService {
 			// 'createdChannels' fields of the user in 
 			// addition to the main user entity.
 			include: {
-				channels : true,
-				createdChannels: true,
+				channels: {
+					include: {
+						members: true,
+						createdBy: true,
+						chatHistory: true,
+					}
+				},
+				createdChannels: {
+					include: {
+						members: true,
+						createdBy: true,
+						chatHistory: true,
+					}
+				},
 			}
 		});
 
@@ -112,7 +124,13 @@ export class ChannelService {
 			where: requestBody,
 			include: {
 				channels : false, 
-				createdChannels: true,
+				createdChannels: {
+					include: {
+						members: true,
+						createdBy: true,
+						chatHistory: true,
+					}
+				},
 			}
 		});
 
@@ -128,7 +146,13 @@ export class ChannelService {
 		const user = await this.prisma.user.findUnique({
 			where: requestBody,
 			include: {
-				channels : true, 
+				channels: {
+					include: {
+						members: true,
+						createdBy: true,
+						chatHistory: true,
+					}
+				},
 				createdChannels: false,
 			}
 		});
