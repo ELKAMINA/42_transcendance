@@ -1,3 +1,6 @@
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import React, { useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +22,7 @@ import { io } from 'socket.io-client';
 /* *** Internal imports *** */ 
 import api from '../utils/Axios-config/Axios';
 import Cookies from 'js-cookie';
+import e from 'express';
 
 interface NavbarProps {
     currentRoute: string;
@@ -33,8 +37,31 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     const refresh_token = useAppSelector(selectCurrentRefreshToken)
     const user = useAppSelector(selectCurrentUser);
 
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
 
-    const logOut = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const getMyProfile = async () => {
+        await api
+		.get('http://localhost:4001/user/userprofile', {
+				params: {
+						ProfileName: user,
+					}
+				})
+		.then((res) => {
+			const params = new URLSearchParams(res.data).toString()
+			navigate(`/userprofile?data=${params}`)})
+		.catch((e) => {
+			console.log('ERROR from request with params ', e)
+		})
+    }
+
+    const logOut = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       event.preventDefault();
       await logout({user, access_token, refresh_token});
       if (Cookies.get('Authcookie') !== undefined)
@@ -46,7 +73,6 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
         dispatch(FetchUser());
     }, [])
     const srcAvatar = useAppSelector(selectCurrentAvatar);
-    console.log('lavatarrrr ', srcAvatar);
     const chat = () => {
 
         navigate('/chat')
@@ -79,8 +105,39 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
                 width: 50,
                 height: 50,
             }}/>
-            <h4> {nickname} </h4>
-            <IconButton onClick={logOut}>
+            <Button
+                id="demo-positioned-button"
+                aria-controls={open ? 'demo-positioned-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
+                sx={{color: 'white'}}
+            >
+                {nickname}
+            </Button>
+            <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                sx={{
+                    zIndex:0,
+                }}
+            >
+                <MenuItem onClick={getMyProfile}>Profile</MenuItem>
+                <MenuItem onClick={handleClose}>Settings</MenuItem>
+                <MenuItem component="a" href="/" onClick={logOut}>Logout</MenuItem>
+            </Menu>            
+            <IconButton component="a" href="/" onClick={logOut}>
                 <LogoutIcon fontSize='medium'/>
             </IconButton>  
         </div>
@@ -96,8 +153,35 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
                         width: 50,
                         height: 50,
                     }}/>
-                    <h4> {nickname} </h4>
-                    <IconButton onClick={logOut}>
+                    <Button
+                        id="demo-positioned-button"
+                        aria-controls={open ? 'demo-positioned-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleClick}
+                    >
+                        {nickname}
+                    </Button>
+                    <Menu
+                        id="demo-positioned-menu"
+                        aria-labelledby="demo-positioned-button"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                        }}
+                    >
+                        <MenuItem onClick={handleClose}>Profile</MenuItem>
+                        <MenuItem onClick={handleClose}>My account</MenuItem>
+                        <MenuItem onClick={handleClose}>Logout</MenuItem>
+                    </Menu>
+                    <IconButton component="a" href="/" onClick={logOut}>
                         <LogoutIcon fontSize='medium' />
                     </IconButton>  
                 </div>
@@ -106,5 +190,10 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     }
     return <div className='navbar'> { componentToRender} </div>
 }
+
+
+
+
+
 
 export default Navbar;
