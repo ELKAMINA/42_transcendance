@@ -20,6 +20,8 @@
     "date-fns": "^2.30.0",
     "eslint-import-resolver-typescript": "^3.5.5",
     "js-cookie": "^3.0.5",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-42-login": "^1.0.0",
@@ -32,6 +34,8 @@
     "redux-socket.io": "^1.4.0",
     "socket.io-client": "^4.7.1",
     "typescript": "^5.0.4",
+    "url": "^0.11.1",
+    "util": "^0.12.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
