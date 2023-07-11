@@ -2,8 +2,9 @@ import { UserDetails } from "../users/userType"
 import { Channel } from "./channelTypes"
 
 export type ChatMessage = {
-	id?: number,
+	id?: number
 	sentBy: string
+	sentById: string
 	senderSocketId: string 
 	// sentTo: UserDetails[]
 	message: string
