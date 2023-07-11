@@ -11,6 +11,7 @@ import { Channel } from '../../types/chat/channelTypes';
 import { emptyChannel } from '../../data/emptyChannel';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { UserDetails } from '../../types/users/userType';
+import ChannelMenu from '../ChannelMenu';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -111,9 +112,7 @@ const Header = () => {
 						<RemoveCircleIcon />
 					</IconButton>
 					<Divider orientation="vertical" flexItem/>
-					<IconButton>
-						<ExpandMoreIcon />
-					</IconButton>
+					<ChannelMenu />
 				</Stack>
 			</Stack>
 			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock}/>}
