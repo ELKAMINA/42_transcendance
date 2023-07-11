@@ -26,7 +26,7 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 
 
 
-const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
+const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 
 	const [value, setValue] = useState("");
 
@@ -41,6 +41,7 @@ const Footer = ({ send }: { send: (val: ChatMessage) => void} ) => {
 	function sendMessage() {
 		const messageToBeSent = {
 			sentBy: authState.nickname,
+			sentById: authState.nickname,
 			senderSocketId: '',
 			message: value,
 			sentAt: new Date(),
