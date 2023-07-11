@@ -10,6 +10,7 @@
 	import { useAppSelector } from "../../utils/redux-hooks"
 	import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
 	import { RootState } from "../../app/store"
+import { selectCurrentUser } from "../../redux-features/auth/authSlice"
 
 
 	function Conversation() {
@@ -19,7 +20,8 @@
 		const [messages, setMessages] = useState<ChatMessage[]>([]);
 		const socketRef = useRef<Socket>();
 		const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
-
+		const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
+		
 		useEffect(() => {
 			socketRef.current = socketIOClient("http://localhost:4002", {
 				query: {roomId}
@@ -28,8 +30,10 @@
 			socketRef.current.on('ServerToChat:' + roomId, (message : ChatMessage) => {
 				const incomingMessage : ChatMessage = {
 					...message,
-					outgoing: message.senderSocketId !== socketRef.current?.id,
-					incoming: message.senderSocketId === socketRef.current?.id,
+					// outgoing: message.senderSocketId === socketRef.current?.id,
+					// incoming: message.senderSocketId !== socketRef.current?.id,
+					outgoing: message.sentBy === currentUser,
+					incoming: message.sentBy !== currentUser,
 				}
 				// console.log('incoming message = ', incomingMessage)
 				setMessages((messages) => [...messages, incomingMessage])
@@ -41,8 +45,9 @@
 		}, [selectedChannel])
 
 		const send = (value : ChatMessage) => {
-			if (socketRef.current)
+			if (socketRef.current) {
 				value.senderSocketId = socketRef.current.id
+			}
 			socketRef.current?.emit('ChatToServer', value)
 		}
 
