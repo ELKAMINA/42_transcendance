@@ -7,6 +7,7 @@ import { format, isToday, isYesterday, startOfDay, endOfDay, isSameDay } from 'd
 import { useAppSelector } from '../../utils/redux-hooks';
 import { RootState } from '../../app/store';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { useEffect } from 'react';
 
 type TextMsgProps = {
 	el: ChatMessage;
@@ -216,42 +217,48 @@ const InfoMsg = ({el} : TextMsgProps) => {
 
 const TextMsg = ({el} : TextMsgProps) => {
 
-	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
-	const incoming = el.sentById === currentUser ? false : true;
-	console.log('incoming = ', incoming);
-	
+	const currentUser : string = useAppSelector((state : RootState) => selectCurrentUser(state));
+	const incoming : boolean = el.sentById === currentUser ? false : true;
+
   return (
 	<Stack
-		direction={'column'}
+		direction={'row'}
 		justifyContent={incoming? 'start' : 'end'}
 	>
-		<Box p={1.5} sx={{
-				backgroundColor: incoming? '#07457E' : '#f2f4f5',
-				borderRadius: 1.5, // 1.5 * 8 => 12px
-				width: 'max-content'
-			}}
+		<Stack
+			direction={'column'}
+			justifyContent={'space-evenly'}
 		>
-			<Typography
-				variant='body2'
-				color={ incoming? '#f2f4f5' : '#07457E' }
-			>
-				{el.message}
-			</Typography>
-		</Box>
-		<Box p={1} sx={{
+			{incoming && <Box p={1} sx={{
 				backgroundColor: 'transparent',
 				borderRadius: 1.5, // 1.5 * 8 => 12px
 				width: 'max-content'
 			}}
-		>
-			<Typography
-				variant='body2'
-				color={'#07457E'}
 			>
-				{el.sentById}
-			</Typography>
-		</Box>
+				<Typography
+					variant='body2'
+					color={'#07457E'}
+				>
+					{el.sentById}
+				</Typography>
+			</Box>}
+			<Box p={1.5} sx={{
+				backgroundColor: incoming? '#07457E' : '#f2f4f5', //ca marche
+				borderRadius: 1.5, // 1.5 * 8 => 12px
+				width: 'max-content'
+			}}
+			>
+				<Typography
+					variant='body2'
+					color={ incoming? '#f2f4f5' : '#07457E' } //ca marche
+				>
+					{el.message}
+				</Typography>
+			</Box>
+
+		</Stack>
 	</Stack>
+
   )	
 }
 
