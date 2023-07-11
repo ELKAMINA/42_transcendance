@@ -4,16 +4,22 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ImageIcon from '@mui/icons-material/Image';
 import { ChatMessage } from '../../types/chat/messageType';
 import { format, isToday, isYesterday, startOfDay, endOfDay, isSameDay } from 'date-fns'
+import { useAppSelector } from '../../utils/redux-hooks';
+import { RootState } from '../../app/store';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 type TextMsgProps = {
 	el: ChatMessage;
 }
 
 const DocMsg = ({ el }: TextMsgProps) => {
+
+	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
+
 	return (
 		<Stack
 			direction={'column'}
-			justifyContent={el.incoming? 'start' : 'end'}
+			justifyContent={el.sentById === currentUser ? 'start' : 'end'}
 			spacing={0.3}
 		>
 			<Box px={1.5} py={1.5} sx={{
@@ -30,12 +36,12 @@ const DocMsg = ({ el }: TextMsgProps) => {
 						spacing={3}
 						alignItems="center"
 						sx={{
-							backgroundColor: el.incoming? '#07457E' : '#f2f4f5',
+							backgroundColor: el.sentById === currentUser? '#07457E' : '#f2f4f5',
 							borderRadius: 1,
 						}}
 					>
 						<ImageIcon fontSize='large' sx={{color: 'white'}}/>
-						<Typography variant="caption" color={ el.incoming? '#f2f4f5' : '#07457E' }>Abstract.png</Typography>
+						<Typography variant="caption" color={ el.sentById === currentUser ? '#f2f4f5' : '#07457E' }>Abstract.png</Typography>
 						<IconButton>
 							<DownloadIcon sx={{color: 'white'}}/>
 						</IconButton>
@@ -43,7 +49,7 @@ const DocMsg = ({ el }: TextMsgProps) => {
 				</Stack>
 				</Box>
 				<Box px={1.5} py={1.5} sx={{
-					backgroundColor: el.incoming? '#07457E' : '#f2f4f5',
+					backgroundColor: el.sentById === currentUser? '#07457E' : '#f2f4f5',
 					borderRadius: 1.5, // 1.5 * 8 => 12px
 					width: 'max-content'
 				}}
@@ -51,7 +57,7 @@ const DocMsg = ({ el }: TextMsgProps) => {
 					<Stack spacing={1}>
 						<Typography
 							variant='body2'
-							color={ el.incoming? '#f2f4f5' : '#07457E' }
+							color={ el.sentById === currentUser? '#f2f4f5' : '#07457E' }
 						>
 							{el.message}
 						</Typography>
@@ -209,22 +215,40 @@ const InfoMsg = ({el} : TextMsgProps) => {
 }
 
 const TextMsg = ({el} : TextMsgProps) => {
+
+	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
+	const incoming = el.sentById === currentUser ? false : true;
+	console.log('incoming = ', incoming);
+	
   return (
 	<Stack
-		direction={'row'}
-		justifyContent={el.incoming? 'start' : 'end'}
+		direction={'column'}
+		justifyContent={incoming? 'start' : 'end'}
 	>
 		<Box p={1.5} sx={{
-				backgroundColor: el.incoming? '#07457E' : '#f2f4f5',
+				backgroundColor: incoming? '#07457E' : '#f2f4f5',
 				borderRadius: 1.5, // 1.5 * 8 => 12px
 				width: 'max-content'
 			}}
 		>
 			<Typography
 				variant='body2'
-				color={ el.incoming? '#f2f4f5' : '#07457E' }
+				color={ incoming? '#f2f4f5' : '#07457E' }
 			>
 				{el.message}
+			</Typography>
+		</Box>
+		<Box p={1} sx={{
+				backgroundColor: 'transparent',
+				borderRadius: 1.5, // 1.5 * 8 => 12px
+				width: 'max-content'
+			}}
+		>
+			<Typography
+				variant='body2'
+				color={'#07457E'}
+			>
+				{el.sentById}
 			</Typography>
 		</Box>
 	</Stack>
