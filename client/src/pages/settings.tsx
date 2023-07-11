@@ -12,10 +12,10 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Cookies from 'js-cookie';
 import { setAvatar } from '../redux-features/auth/authSlice';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
 
 
-
-export const socket = io('http://localhost:4003', {
+export const sock = io('http://localhost:4003', {
   withCredentials: true,
   transports: ['websocket'], 
   upgrade: false,
@@ -29,17 +29,25 @@ export function PersonalInformation () {
     const [password, setPwd] = React.useState('')
     const [avatar, setAr] = React.useState('')
     const [email, setEmail] = React.useState('')
+    const currUser = useAppSelector(selectCurrentUser)
+    const [errMsg, setErrMsg] = React.useState('')
+    const errRef = React.useRef<HTMLInputElement>(null)
 
+
+    React.useEffect(() => {
+        setErrMsg('')
+    }, [nickname, password])
+    console.log('user actuel ', currUser)
     const dispatch = useDispatch()
     React.useEffect(() => {
-        socket.connect()
-        socket.on('connect', () => {
-          // console.log("la socket id ", socket.id);
+        sock.connect()
+        sock.on('connect', () => {
+        //   console.log("la socket id ", sock.id);
           // dispatch(updateSocketId(socket.id));
         })
         return () => {  // cleanUp function when component unmount
           console.log('Settings - Unregistering events...');
-          // // socket.disconnect();
+        //   sock.disconnect();
           // dispatch(updateSocketId(''));
           // socket.off('denyFriend');
           // socket.off('friendAdded')
@@ -57,7 +65,7 @@ export function PersonalInformation () {
             // setSelectedImage(reader.result as string);
             const imageSrc = reader.result as string;
             setSelectedImage(imageSrc);
-            dispatch(setAvatar(imageSrc));
+            // dispatch(setAvatar(imageSrc));
             setAr(imageSrc)
           };
           reader.readAsDataURL(file);
@@ -66,12 +74,24 @@ export function PersonalInformation () {
 
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
-        socket.emit('changeProfile', {
-            login: nickname,
-            pwd: password,
-            mail: email,
-            atr: avatar,
-        })
+        try{
+            sock.emit('changeProfile', {
+                oldNick: currUser,
+                login: nickname,
+                pwd: password,
+                mail: email,
+                atr: avatar,
+            })
+        }
+        catch (err: any) {
+            if (!err)
+                setErrMsg('No Server Response');
+            else
+             setErrMsg(err.data.message);
+            if (errRef && errRef.current)
+                errRef.current.focus();
+        }
+
     }
 
     const handleButtonClick = () => {
@@ -131,6 +151,7 @@ export function PersonalInformation () {
             <br>
             </br>
             <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Save</Button>
+            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
         </Stack>
     )
     return content;

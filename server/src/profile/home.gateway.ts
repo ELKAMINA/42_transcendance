@@ -32,7 +32,10 @@ import {
 //       credentials: true,
 //     },
 //   }) // every front client can connect to our gateway. Marks the class as the WebSocket gateway<; This is a socket constructor
-  @WebSocketGateway(4003, {cors:'*'})
+  @WebSocketGateway(4003, {cors: {
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }})
   @Injectable()
   export class ProfileGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -72,11 +75,11 @@ import {
         // console.log('test ', this.server)
         // console.log('client ', client);
         // console.log('al reponse ', response);
-        this.verifyJwtSocketConnections(client, response);
         // this.io.emit('newUserConnected', {});
         this.logger.log(`WS Client with id: ${client.id}  connected!`);
         // this.logger.debug(`Number of connected sockets ${sockets.size}`);
         this.logger.log(`Client connected: ${client.id}`);
+        this.verifyJwtSocketConnections(client, response);
       } catch(e) {
         console.log('A la connexion ça a merdé ', e);
       } // console.log('users connected ', this.users);
@@ -104,8 +107,9 @@ import {
       @ConnectedSocket() socket: Socket,
       @MessageBody() body: any,
     ) {
-        // console.log('les sockets ', socket)
-        console.log('... client sending :', body);
+        // console.log('les sockets ', socket.id)
+        // console.log('... client sending :', body);
+        await this.userServ.updateUserInfo(body)
     //   await this.friends.requestFriendship(body.sender, body.receiver.nickname);
     //   this.io.emit('friendAdded', '');
     }
@@ -171,7 +175,7 @@ import {
 
       async createUser(userInfo: object, client: Socket) {
         const userConnected = this.isAlreadyConnected(userInfo);
-        console.log(userConnected)
+        // console.log(userConnected)
         if (userConnected) {
             userConnected.push(client);
         }

@@ -32,10 +32,8 @@ import { HomeService } from './profile/home.service';
     UserModule,
 	channelModule,
     PrismaModule,
-    HomeModule,
     PassportModule.register({}),
     FriendshipModule,
-    HomeModule,
     GlobalModule,
      // j'ai enlevé session:true
   ],
