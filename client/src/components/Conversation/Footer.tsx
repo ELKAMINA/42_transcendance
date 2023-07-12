@@ -51,26 +51,30 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 			console.log(`${user} sends a message to ${displayedChannel.name}`)
 			try {
 				UserToCheck = await FetchUserByName(displayedChannel.name)
-				console.log("UserTOCHeck ", UserToCheck.blockedBy.at(0))
 				
 			}
 			catch {
 			}
 
 		}
-
-		const messageToBeSent = {
-			sentBy: authState.nickname,
-			sentById: authState.nickname,
-			senderSocketId: '',
-			message: value,
-			sentAt: new Date(),
-			incoming: true,
-			outgoing: false,
-			channel: displayedChannel.name,
-			channelById: displayedChannel.name,
+		if ((UserToCheck.blockedBy).includes(user) === true)
+		{
+			console.log("NOOOOOO je peux pas envoyer message ")
 		}
-		send(messageToBeSent);
+		else {
+			const messageToBeSent = {
+				sentBy: authState.nickname,
+				sentById: authState.nickname,
+				senderSocketId: '',
+				message: value,
+				sentAt: new Date(),
+				incoming: true,
+				outgoing: false,
+				channel: displayedChannel.name,
+				channelById: displayedChannel.name,
+			}
+			send(messageToBeSent);
+		}
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
