@@ -24,7 +24,7 @@
 		const selectedChannel : Channel = useAppSelector((state: RootState) => selectDisplayedChannel(state));
 		const roomId = selectedChannel.name;
 		const [messages, setMessages] = useState<ChatMessage[]>([]);
-		// const socketRef = useRef<Socket>();
+		const socketRef = useRef<Socket>();
 		const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 
 		useEffect(() => {
@@ -74,7 +74,7 @@
 				maxHeight={'100vh'}
 				width={'auto'}
 			>
-				<Header socket={socketRef.current} />
+				<Header />
 				{/* Msg */}
 				<Box
 					width={'100%'}

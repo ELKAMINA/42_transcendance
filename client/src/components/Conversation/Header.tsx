@@ -42,11 +42,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	},
   }));
 
-type Myprop  = {
-	socket: any,
-}
 
-const Header = (props: Myprop) => {
+const Header = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const user = useAppSelector(selectCurrentUser);
@@ -126,7 +123,7 @@ const Header = (props: Myprop) => {
 					</IconButton>
 				</Stack>
 			</Stack>
-			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} props={props?.socket} sender={user} receiver={channel.name}/>}
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} />}
 		</Box>
 		)
 }
