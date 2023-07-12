@@ -3,12 +3,15 @@ import { MessageDto } from '../dto/messagePayload.dto';
 import { ChatService } from '../chat.service';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
+import { FriendshipService } from '../../friendship/friendship.service';
+
 
 @WebSocketGateway(4002, {cors:'*'}) // we want every front and client to be able to connect with our gateway
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() server : Server;
 
-	constructor(private ChatService: ChatService) {};
+	constructor(private ChatService: ChatService, private friends: FriendshipService,
+		) {};
 
 	private logger: Logger = new Logger('ChatGateway');
 
@@ -23,6 +26,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
 	}
   
+	@SubscribeMessage('blockUser')
+	async handleBlockUser(socket: Socket, @MessageBody() body: any,
+	): Promise<void> {
+		console.log('LA socket from Chat GATEWAY ', socket)
+		// const roomId = socket.handshake.query.roomId as string;
+		const user = await this.friends.blockFriend(
+			body.sender,
+			body.receiver,
+		  );
+		console.log('user ', user);
+		//   this.server.to(roomId).emit('FriendBlocked', user)
+	}
+
 	handleConnection(socket: Socket) {
 	  	const roomId = socket.handshake.query.roomId as string;
 		console.log('je rentre ici ???');

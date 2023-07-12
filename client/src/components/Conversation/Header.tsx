@@ -10,6 +10,8 @@ import { selectDisplayedChannel, selectUserChannels } from '../../redux-features
 import { Channel } from '../../types/chat/channelTypes';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/Axios-config/Axios';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { Socket } from 'socket.io-client';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -40,10 +42,14 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	},
   }));
 
-const Header = () => {
+type Myprop  = {
+	socket: any,
+}
+
+const Header = (props: Myprop) => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const [user, setUser] = useState(null);
+	const user = useAppSelector(selectCurrentUser);
 	const channel :  Channel = useAppSelector((state) => selectDisplayedChannel(state));
 	const isPrivateConv = channel.members?.length === 1 ? true : false;
 	// console.log('isPrivateConv = ', isPrivateConv);
@@ -120,7 +126,7 @@ const Header = () => {
 					</IconButton>
 				</Stack>
 			</Stack>
-			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock}/>}
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} props={props?.socket} sender={user} receiver={channel.name}/>}
 		</Box>
 		)
 }

@@ -97,16 +97,17 @@ export class UserService {
           }
         })
         console.log('le user apres modif ', finalUser);
+        return finalUser
     }
     catch(error: any){
       if (
         error.constructor.name === Prisma.PrismaClientKnownRequestError.name
       ) {
         if (error.code === 'P2002') {
-          throw new ForbiddenException('Credentials taken');
+          return new ForbiddenException('Credentials taken');
         }
       }
-      throw error;
+      return error;
     } // PrismaClientKnownRequestEr
     }
   }

@@ -22,6 +22,7 @@ import { GlobalService } from './global/global.service';
 import { GlobalModule } from './global/global.module';
 import { ProfileGateway } from './profile/home.gateway';
 import { HomeService } from './profile/home.service';
+import { FriendshipService } from './friendship/friendship.service';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { HomeService } from './profile/home.service';
 	ChatService,
   HomeService,
 	GlobalService,
+  FriendshipService,
   ],
 })
 export default class AppModule {}

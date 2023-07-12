@@ -41,7 +41,7 @@ import {
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   {
     //OnGatewayConnection : means that we want it to run when anyone connects to the server
-    @WebSocketServer() server : Server;
+    @WebSocketServer() io : Namespace;
   
     private users: Map<object, Array<Socket>> = new Map<object, Array<Socket>>();
   
@@ -109,9 +109,9 @@ import {
     ) {
         // console.log('les sockets ', socket.id)
         // console.log('... client sending :', body);
-        await this.userServ.updateUserInfo(body)
+        const newInfos = await this.userServ.updateUserInfo(body)
     //   await this.friends.requestFriendship(body.sender, body.receiver.nickname);
-    //   this.io.emit('friendAdded', '');
+        this.io.emit('UpdateInfoUser',  newInfos);
     }
 
     getUserInfoFromSocket(cookie: string) {

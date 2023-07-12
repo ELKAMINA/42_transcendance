@@ -11,13 +11,20 @@
 	import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
 	import { RootState } from "../../app/store"
 
+	export const socket = io('http://localhost:4002', {
+		withCredentials: true,
+		transports: ['websocket'],
+		upgrade: false,
+		autoConnect: false,
+		// reconnection: true,
+	})
 
 	function Conversation() {
 
 		const selectedChannel : Channel = useAppSelector((state: RootState) => selectDisplayedChannel(state));
 		const roomId = selectedChannel.name;
 		const [messages, setMessages] = useState<ChatMessage[]>([]);
-		const socketRef = useRef<Socket>();
+		// const socketRef = useRef<Socket>();
 		const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 
 		useEffect(() => {
@@ -25,7 +32,7 @@
 				query: {roomId}
 			})
 
-			socketRef.current.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+			socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
 				const incomingMessage : ChatMessage = {
 					...message,
 					outgoing: message.senderSocketId !== socketRef.current?.id,
@@ -61,14 +68,13 @@
 		useEffect(() => {
 			scrollMessageContainerToBottom(); // scroll to bottom when the component is rendered
 		}, []);
-
 		return (
 			<Stack
 				height={'100%'} 
 				maxHeight={'100vh'}
 				width={'auto'}
 			>
-				<Header />
+				<Header socket={socketRef.current} />
 				{/* Msg */}
 				<Box
 					width={'100%'}

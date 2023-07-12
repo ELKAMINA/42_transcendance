@@ -24,10 +24,17 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 body: { ...cred },
                 credentials: 'include',
             }),
-        })
+        }),
+        tfaAuthenticate: builder.mutation({  
+            query: credentials => ({
+                url: '/auth/2fa/authenticate',
+                method: 'POST',
+                body: { ...credentials }
+            }),
+        }),
     })
 })
 
 export const {
-    useSignupMutation, useSigninMutation, useLogOutMutation
+    useSignupMutation, useSigninMutation, useLogOutMutation, useTfaAuthenticateMutation
 } = authApiSlice

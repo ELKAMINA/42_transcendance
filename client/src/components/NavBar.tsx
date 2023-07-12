@@ -13,7 +13,7 @@ import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 
 import "./Navbar.css";
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
-import { selectCurrentUser, FetchUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken } from '../redux-features/auth/authSlice';
+import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken } from '../redux-features/auth/authSlice';
 // import ForumIcon from '@material-ui/icons/Forum';
 // import LogoutIcon from '@mui/icons-material/Logout';
 // import { useDispatch } from 'react-redux';
@@ -35,7 +35,6 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     const [logout] = useLogOutMutation();
     const access_token = useAppSelector(selectCurrentAccessToken)
     const refresh_token = useAppSelector(selectCurrentRefreshToken)
-    const user = useAppSelector(selectCurrentUser);
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -50,7 +49,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
         await api
 		.get('http://localhost:4001/user/userprofile', {
 				params: {
-						ProfileName: user,
+						ProfileName: nickname,
 					}
 				})
 		.then((res) => {
@@ -63,7 +62,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
 
     const logOut = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       event.preventDefault();
-      await logout({user, access_token, refresh_token});
+      await logout({nickname, access_token, refresh_token});
       if (Cookies.get('Authcookie') !== undefined)
         Cookies.remove('Authcookie');
       navigate("/sign");
@@ -73,10 +72,9 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
         event.preventDefault();
         navigate('/settings')
     }
-
-    useEffect(()=> {
-        dispatch(FetchUser());
-    }, [])
+    const home = async () => {
+        navigate('/welcome')
+    }
     const srcAvatar = useAppSelector(selectCurrentAvatar);
     const chat = () => {
 
@@ -87,12 +85,12 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
         navigate('/friendship')
     }
     let componentToRender;
-    if (currentRoute === '/welcome') {
+    // if (currentRoute === '/welcome' ) {
         componentToRender = (
         <>
         <div className='navbar__header__middle'>
             <div className="navbar__header__options navbar__header__options--active">
-                <HomeIcon fontSize="large"/>
+                <HomeIcon fontSize="large" onClick={home}/>
             </div>
             <div className="navbar__header__options">
                 <PersonAddIcon fontSize="large" onClick={friendship}/>
@@ -148,51 +146,50 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
         </div>
     </>
 )
-    }
-    else {
-        componentToRender = (
-            <>
-                <div className="navbar__header__right__options">
-                    <Avatar src={srcAvatar} sx={{
-                        margin: '5px',
-                        width: 50,
-                        height: 50,
-                    }}/>
-                    <Button
-                        id="demo-positioned-button"
-                        aria-controls={open ? 'demo-positioned-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
-                        onClick={handleClick}
-                    >
-                        {nickname}
-                    </Button>
-                    <Menu
-                        id="demo-positioned-menu"
-                        aria-labelledby="demo-positioned-button"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                        }}
-                        transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                        }}
-                    >
-                    <MenuItem onClick={getMyProfile}>Profile</MenuItem>
-                    <MenuItem component="a" href="/" onClick={handleSubmit}>Settings</MenuItem>
-                    <MenuItem component="a" href="/" onClick={logOut}>Logout</MenuItem>
-                    </Menu>
-                    <IconButton component="a" href="/" onClick={logOut}>
-                        <LogoutIcon fontSize='medium' />
-                    </IconButton>  
-                </div>
-            </>
-        )
-    }
+    // }
+    // else {
+    //     componentToRender = (
+    //         <>
+    //             <div className="navbar__header__right__options">
+    //                 <Avatar src={srcAvatar} sx={{
+    //                     margin: '5px',
+    //                     width: 50,
+    //                     height: 50,
+    //                 }}/>
+    //                 <Button
+    //                     id="demo-positioned-button"
+    //                     aria-controls={open ? 'demo-positioned-menu' : undefined}
+    //                     aria-haspopup="true"
+    //                     aria-expanded={open ? 'true' : undefined}
+    //                     onClick={handleClick}
+    //                 >
+    //                     {nickname}
+    //                 </Button>
+    //                 <Menu
+    //                     id="demo-positioned-menu"
+    //                     aria-labelledby="demo-positioned-button"
+    //                     anchorEl={anchorEl}
+    //                     open={open}
+    //                     onClose={handleClose}
+    //                     anchorOrigin={{
+    //                     vertical: 'top',
+    //                     horizontal: 'left',
+    //                     }}
+    //                     transformOrigin={{
+    //                     vertical: 'top',
+    //                     horizontal: 'left',
+    //                     }}
+    //                 >
+    //                 <MenuItem onClick={getMyProfile}>Profile</MenuItem>
+    //                 <MenuItem component="a" href="/" onClick={handleSubmit}>Settings</MenuItem>
+    //                 <MenuItem component="a" href="/" onClick={logOut}>Logout</MenuItem>
+    //                 </Menu>
+    //                 <IconButton component="a" href="/" onClick={logOut}>
+    //                     <LogoutIcon fontSize='medium' />
+    //                 </IconButton>  
+    //             </div>
+    //         </>
+    //     )
     return <div className='navbar'> { componentToRender} </div>
 }
 

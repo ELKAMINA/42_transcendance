@@ -10,10 +10,15 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
+import Popup from 'reactjs-popup';
 import Cookies from 'js-cookie';
-import { setAvatar } from '../redux-features/auth/authSlice';
-import { selectCurrentUser } from '../redux-features/auth/authSlice';
-
+import { selectCurrentUser, setNick, setMail, setAvatar, setTfaAuth, selectTfaAuth, setQrCode, selectQrCode, selectTfaState, setTfaState, selectAfterSub, setAfterSub  } from '../redux-features/auth/authSlice';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Box from '@mui/material/Box';
+import api from '../utils/Axios-config/Axios';
+import './settings.css';
 
 export const sock = io('http://localhost:4003', {
   withCredentials: true,
@@ -31,14 +36,16 @@ export function PersonalInformation () {
     const [email, setEmail] = React.useState('')
     const currUser = useAppSelector(selectCurrentUser)
     const [errMsg, setErrMsg] = React.useState('')
+    const [confMsg, setConfMsg] = React.useState('')
     const errRef = React.useRef<HTMLInputElement>(null)
+    const confRef = React.useRef<HTMLInputElement>(null)
+    const dispatch = useAppDispatch();
 
 
     React.useEffect(() => {
         setErrMsg('')
     }, [nickname, password])
     console.log('user actuel ', currUser)
-    const dispatch = useDispatch()
     React.useEffect(() => {
         sock.connect()
         sock.on('connect', () => {
@@ -55,6 +62,27 @@ export function PersonalInformation () {
         }
       }, [])
 
+      React.useEffect(() => {
+        sock.on('UpdateInfoUser', (data: any) => {
+            if (data.status === 403){
+                setErrMsg(data.message);
+            }
+            else {
+                if (data.login) dispatch(setNick(data.login));
+                if (data.email) dispatch(setMail(data.email));
+                if (data.avatar) dispatch(setAvatar(data.avatar));
+                setConfMsg('Changes registered')
+            }
+        })
+        return () => {  // cleanUp function when component unmount
+          console.log('Settings - Unregistering events...');
+        //   sock.disconnect();
+          // dispatch(updateSocketId(''));
+          // socket.off('denyFriend');
+          // socket.off('friendAdded')
+          // socket.off('connect');
+        }
+      }, [dispatch, setErrMsg])
     const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +93,6 @@ export function PersonalInformation () {
             // setSelectedImage(reader.result as string);
             const imageSrc = reader.result as string;
             setSelectedImage(imageSrc);
-            // dispatch(setAvatar(imageSrc));
             setAr(imageSrc)
           };
           reader.readAsDataURL(file);
@@ -151,6 +178,7 @@ export function PersonalInformation () {
             <br>
             </br>
             <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Save</Button>
+            <p ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</p>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
         </Stack>
     )
@@ -158,8 +186,107 @@ export function PersonalInformation () {
 }
 
 export function Security () {
+    const user = useAppSelector(selectCurrentUser)
+    const afterSub = useAppSelector(selectAfterSub)
+    const twofa = useAppSelector(selectTfaState)
+    const checked = useAppSelector(selectTfaAuth)
+    const qrcode = useAppSelector(selectQrCode)
+    let [TfaCode, setTfaCode] = React.useState('')
+    const navigate = useNavigate();
+    const [confMsg, setConfMsg] = React.useState('')
+    const confRef = React.useRef<HTMLInputElement>(null)
+    const dispatch = useAppDispatch()
+
+    const tfa = async () => {
+        await api
+        .post("http://0.0.0.0:4001/auth/2fa/generate")
+        .then((res) => {dispatch(setQrCode(res.data));})
+        .catch((e) => {console.log("error ", e)});
+      }
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(setTfaAuth(event.target.checked))
+        if (checked === false){
+            dispatch(setTfaState('Two Factor authentication is On'))
+            tfa();
+        }
+        else {
+            dispatch(setTfaState('Two Factor authentication is Off'))
+            dispatch(setQrCode(''))
+            setTfaCode('')
+        }
+      };
+      const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.preventDefault(); // faire pareil que ci-dessus
+        await api
+        .post("http://0.0.0.0:4001/auth/2fa/turn-on", {TfaCode})
+        .then((res) => {
+            setConfMsg('Two Factor authentication is now activated')
+            setTfaCode('')
+            dispatch(setQrCode(''))
+            dispatch(setAfterSub(true))
+        })
+        .catch((e) => {console.log("error ", e)});
+    }
     return (
         <>
+            <h1>Two Factor Authentication </h1>
+            <Stack sx={{
+                display: 'flex',
+                flexDirection: 'column',
+            }}>
+                <Box sx={{
+                    display: 'flex',
+
+                }}>
+                    <FormControlLabel control={<Switch
+                        checked={checked}
+                        onChange={handleChange}
+                        //   inputProps={{ 'aria-label': 'controlled' }}
+                    />} label={twofa} sx={{
+                    }}/>
+                    <Popup 
+                        // trigger={<div>TFA</div>}
+                        position="right center" 
+                        on="click"
+                        closeOnDocumentClick
+                        modal
+                        nested    
+                    >
+                    </Popup>
+                    <img
+                    src={qrcode}
+                    alt=""
+                    className='omg'
+                    />
+
+                    {checked === true && afterSub === false && 
+                        <>
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                margin: '10px',
+                                flex: 1,
+                            }}>
+                                <form id='form'>
+                                    <input
+                                        type="text"
+                                        onChange={(e)=> setTfaCode(e.target.value)}
+                                        placeholder="Tfa-Code"
+                                        value={TfaCode}
+                                        required
+                                    />
+                                </form>
+                                <Button className="tfa-btn" type="submit" variant="contained" onClick={handleSubmit}>Send code</Button>
+                                <p ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</p>
+                            </Box>
+                        </>
+
+                    }   
+                </Box>
+
+            </Stack>
         </>
     )
 }
