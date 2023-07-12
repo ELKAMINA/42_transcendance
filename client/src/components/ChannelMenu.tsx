@@ -9,9 +9,11 @@ import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
 import { Box, IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ManageAdminDialog from './ManageAdminDialog';
 
 export default function ChannelMenu() {
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = React.useState<boolean>(false);
+	const [openDialog, setOpenDialog] = React.useState<boolean>(false);
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
 
 	const handleToggle = () => {
@@ -28,10 +30,10 @@ export default function ChannelMenu() {
 	  
 		setOpen(false);
 	  
-		// You can access the optional argument here
 		if (actionSelected) {
-		  // Perform any necessary actions with the provided string
-		  console.log('Action selected:', actionSelected);
+			// console.log('Action selected:', actionSelected);
+			setOpenDialog(true);
+			// console.log("openDialog = ", openDialog);
 		}
 	  };
 	  
@@ -56,6 +58,8 @@ export default function ChannelMenu() {
 	}, [open]);
 
 	return (
+		<React.Fragment>
+
 		<Stack direction="row" spacing={2}>
 		<div>
 			<IconButton
@@ -104,5 +108,8 @@ export default function ChannelMenu() {
 			</Popper>
 		</div>
 		</Stack>
+			<ManageAdminDialog openDialog={openDialog} setOpenDialog={setOpenDialog}/>	
+		</React.Fragment>
+
 	);
 }

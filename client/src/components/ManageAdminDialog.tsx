@@ -8,19 +8,19 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
-export default function ManageAdminDialog({openDialog} : {openDialog : boolean}) {
+export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-	const [open, setOpen] = React.useState(openDialog)
+
 	const handleClose = () => {
-		setOpen(false);
+		setOpenDialog(false);
 	};
 
   return (
 	<div>
 		<Dialog
 			fullScreen={fullScreen}
-			open={open}
+			open={openDialog}
 			onClose={handleClose}
 			aria-labelledby="manage-admin-dialog"
 		>
