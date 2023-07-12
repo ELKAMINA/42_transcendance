@@ -2,7 +2,8 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 import * as argon from 'argon2';
-import { Channel, Prisma } from '@prisma/client';
+import { Channel, Prisma, User } from '@prisma/client';
+import { UserDetails } from 'src/user/types';
 
 @Injectable()
 export class ChannelService {
@@ -200,6 +201,44 @@ export class ChannelService {
 			const isPasswordCorrect = await argon.verify(channel.key, requestBody.pwd);
 			return isPasswordCorrect;
 		} catch (error : any) {
+			throw error;
+		}
+	}
+
+	async updateAdmins(requestBody : {channelName : {name : string}, admins : User[]}) : Promise<Channel> {
+		console.log('requestBody', requestBody);
+		try 
+		{
+			const { channelName, admins } = requestBody;
+		
+			// Find the channel by name
+			const channel = await this.prisma.channel.findUnique({
+				where: {
+					name: channelName.name,
+				},
+			});
+		
+			if (!channel) {
+				throw new Error(`Channel with name '${channelName.name}' not found.`);
+			}
+
+			// Convert admins array into an array of UserWhereUniqueInput objects
+		    const adminIds = admins.map((admin) => ({ user_id: admin.user_id }));
+		
+			// Update the channel's admins with the new array
+			const updatedChannel = await this.prisma.channel.update({
+				where: {
+					channelId: channel.channelId,
+				},
+				data: {
+					admins: {
+						set: adminIds,
+					},
+				},
+			});
+			// console.log('updatedChannel = ',updatedChannel);
+			return updatedChannel;
+		} catch (error) {
 			throw error;
 		}
 	}
