@@ -7,14 +7,22 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Checkbox from '@mui/material/Checkbox';
 import Avatar from '@mui/material/Avatar';
 import { UserDetails } from '../types/users/userType';
+import { useAppSelector } from '../utils/redux-hooks';
+import { Channel } from '../types/chat/channelTypes';
+import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 type UserListProp = {
 	channelMembers : UserDetails[],
 }
 
-export default function UserList({channelMembers} : UserListProp) {
-  	const [checked, setChecked] = React.useState([1]);
-	
+export default function UserList() {
+	const selectedChannel : Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	const channelAdmins : UserDetails[] = selectedChannel.admins;
+	const channelMembers : UserDetails[] = selectedChannel.members;
+	const adminIndexes : number[] = channelAdmins.map(admin => channelMembers.indexOf(admin));
+	console.log('admin indexes = ', adminIndexes);
+  	const [checked, setChecked] = React.useState<number[]>(adminIndexes);
+  
 	const handleToggle = (value: number) => () => {
 		
 		const currentIndex = checked.indexOf(value);
@@ -27,7 +35,7 @@ export default function UserList({channelMembers} : UserListProp) {
 	    }
 
     	setChecked(newChecked);
-		console.log('newChecked = ', newChecked);
+		const updatedChannelAdmins: UserDetails[] = newChecked.map((index) => channelMembers[index]);
   	};
 
   return (

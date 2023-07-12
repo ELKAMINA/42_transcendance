@@ -7,11 +7,13 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import UserList from './UserList';
+import { useAppSelector } from '../utils/redux-hooks';
+import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-
 	const handleClose = () => {
 		setOpenDialog(false);
 	};
@@ -33,13 +35,11 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 				An administrator can kick out, ban or mute another
 				member of the channel, except the owner. 
 			</DialogContentText>
+			<UserList />
 		</DialogContent>
 		<DialogActions>
-			<Button autoFocus onClick={handleClose}>
-			Disagree
-			</Button>
 			<Button onClick={handleClose} autoFocus>
-			Agree
+			SUBMIT
 			</Button>
 		</DialogActions>
 		</Dialog>
