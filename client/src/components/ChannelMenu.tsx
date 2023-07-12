@@ -15,6 +15,7 @@ export default function ChannelMenu() {
 	const [open, setOpen] = React.useState<boolean>(false);
 	const [openDialog, setOpenDialog] = React.useState<boolean>(false);
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
+	const isAdmin : boolean = false;
 
 	const handleToggle = () => {
 		setOpen((prevOpen) => !prevOpen);
@@ -35,7 +36,7 @@ export default function ChannelMenu() {
 			setOpenDialog(true);
 			// console.log("openDialog = ", openDialog);
 		}
-	  };
+	};
 	  
 
 	function handleListKeyDown(event: React.KeyboardEvent) {
