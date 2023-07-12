@@ -15,7 +15,7 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 
 	const dispatch = useAppDispatch();
 
-	// useEffect(() => {dispatch(FetchAllFriends())}, []); // get the friends
+	// useEffect(() => {dispatch(FetchAllFriends())}, [dispatch]); // get the friends
 	// const friends = useAppSelector(selectFriends) as UserDetails[];
 	// console.log('friends = ', friends);
 	useEffect(() => {dispatch(FetchAllUsers())}, []); // get the friends

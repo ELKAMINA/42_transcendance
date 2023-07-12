@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider } from '@mui/material'
+import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button } from '@mui/material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -12,6 +12,10 @@ import { emptyChannel } from '../../data/emptyChannel';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { UserDetails } from '../../types/users/userType';
 import ChannelMenu from '../ChannelMenu';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/Axios-config/Axios';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { Socket } from 'socket.io-client';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -43,6 +47,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   }));
 
 const Header = () => {
+	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
 	let channelName : string = 'error';
 
@@ -69,6 +75,22 @@ const Header = () => {
 		setOpenBlock(false);
 	}
 
+	const handleProfile = async (name: string) => {
+
+		await api
+		.get('http://localhost:4001/user/userprofile', {
+				params: {
+						ProfileName: name,
+					}
+				})
+		.then((res) => {
+			const params = new URLSearchParams(res.data).toString()
+			navigate(`/userprofile?data=${params}`)})
+		.catch((e) => {
+			console.log('ERROR from request with params ', e)
+		})
+		
+	}
 	return (
 		<Box 
 		p={2}
@@ -90,11 +112,13 @@ const Header = () => {
 							}}
 							variant="dot"
 						>
+							<Button onClick={() => handleProfile(channel.name)}>
 							<Avatar
-								alt={channelName}
-								src={channel.avatar}
+								alt={channel.name}
+								src={channel.members?.at(0)?.avatar}
 								sx={{ bgcolor: '#fcba03' }}
 							/>
+							</Button>
 						</StyledBadge>
 					</Box>
 					<Stack spacing={0.2}>
@@ -115,7 +139,7 @@ const Header = () => {
 					<ChannelMenu />
 				</Stack>
 			</Stack>
-			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock}/>}
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} />}
 		</Box>
 		)
 }

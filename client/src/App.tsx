@@ -10,7 +10,8 @@ import { Route, Routes } from "react-router-dom";
 import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
 // import { Suggestions, Requests, Friends } from './pages/friendship';
-
+import UserProfile from './pages/userProfile';
+import SettingsContainer from './containers/Settings/Settings';
 import { setTokens } from './redux-features/auth/authSlice';
 import FriendshipContainer from './containers/Friendship/Friendship';
 
@@ -20,7 +21,6 @@ const App = () => {
   if (myCookie !== undefined)
   {
     let cookieParsed = JSON.parse(myCookie);
-    console.log("credentials ", cookieParsed);
     const credentials = {
       access_token : cookieParsed.accessToken,
       refresh_token : cookieParsed.refreshToken,
@@ -37,8 +37,10 @@ const App = () => {
             <Route path="/welcome" element={<HomePage />}/>
             <Route path="/chat" element={<Chat />}/>
             <Route path="/friendship" element={<FriendshipContainer />}/>
+            <Route path="/userprofile" element={<UserProfile />}/>
+            <Route path="/settings" element={<SettingsContainer />}/>
+            <Route path="/tfa" element={<Tfa />}/>
           </Route>
-          <Route path="tfa" element={<Tfa />}/>
         </Route>
       </Routes>
     </div>

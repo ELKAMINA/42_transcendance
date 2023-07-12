@@ -17,6 +17,12 @@ import channelModule from './channel/channel.module';
 import { ChannelService } from './channel/channel.service';
 import { ChatGateway } from './chat/gateway/chat.gateway';
 import { ChatService } from './chat/chat.service';
+import { GlobalController } from './global/global.controller';
+import { GlobalService } from './global/global.service';
+import { GlobalModule } from './global/global.module';
+import { ProfileGateway } from './profile/home.gateway';
+import { HomeService } from './profile/home.service';
+import { FriendshipService } from './friendship/friendship.service';
 
 @Module({
   imports: [
@@ -27,12 +33,12 @@ import { ChatService } from './chat/chat.service';
     UserModule,
 	channelModule,
     PrismaModule,
-    HomeModule,
     PassportModule.register({}),
     FriendshipModule,
+    GlobalModule,
      // j'ai enlevé session:true
   ],
-  controllers: [],
+  controllers: [GlobalController],
   providers: [
     {
       provide: APP_GUARD,
@@ -43,7 +49,11 @@ import { ChatService } from './chat/chat.service';
 	ChannelService,
     JwtService,
 	ChatGateway,
+  ProfileGateway, 
 	ChatService,
+  HomeService,
+	GlobalService,
+  FriendshipService,
   ],
 })
 export default class AppModule {}

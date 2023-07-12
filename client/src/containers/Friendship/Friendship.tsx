@@ -1,5 +1,5 @@
 import React from 'react'
-import PermanentSidebar from '../../components/AllFriendship'
+import FriendshipComponent from '../../components/AllFriendship'
 import Navbar from '../../components/NavBar';
 import './Friendship.css';
 
@@ -9,7 +9,7 @@ function FriendshipContainer() {
   return (
     <div>
         <Navbar currentRoute={ currentRoute }/>
-        <PermanentSidebar items= {itemList}/>
+        <FriendshipComponent items= {itemList}/>
     </div>
   )
 }

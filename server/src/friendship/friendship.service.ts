@@ -82,6 +82,76 @@ export class FriendshipService {
       console.log(e);
     }
 }
+
+async ismyfriend(body) {
+  const resultat = {
+    isMyfriend: false,
+    myBlockedFriend: false,
+    thoseWhoBlockedMe: false
+  }
+  const user = await this.prisma.user.findUniqueOrThrow({
+    where: {
+      login: body.me,
+    },
+    select: {
+      friends:{
+        select:{
+          login: true,
+        },
+        where: {
+          login: body.him,
+        }
+      },
+      friendOf:{
+        select:{
+          login: true,
+        },
+        where: {
+          login: body.him,
+        }
+      },
+    }
+  })
+  const isUserInFriendsArray = user?.friends.length > 0 || user?.friendOf.length > 0;
+  resultat.isMyfriend = isUserInFriendsArray;
+  if (isUserInFriendsArray) {
+    const iBlocked = await this.prisma.user.findUniqueOrThrow({
+      where: {
+        login: body.me,
+      },
+      select: {
+        blocked:{
+          select:{
+            login: true,
+          },
+          where: {
+            login: body.him,
+          }
+        },
+      }
+    })
+    const isUserBlockedArray = iBlocked?.blocked.length > 0
+    resultat.myBlockedFriend = isUserBlockedArray;
+  }
+  const theyBlocked = await this.prisma.user.findUniqueOrThrow({
+    where: {
+      login: body.me,
+    },
+    select: {
+      blockedBy:{
+        select:{
+          login: true,
+        },
+        where: {
+          login: body.him,
+        }
+      },
+    }
+  })
+  const amInBlockedArray = theyBlocked?.blockedBy.length > 0
+  resultat.thoseWhoBlockedMe = amInBlockedArray;
+  return resultat;
+}
   // async getSuggestions()
 
   // async getAllBlockedFriends(userLogin: string) {

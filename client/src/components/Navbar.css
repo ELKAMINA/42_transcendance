@@ -11,7 +11,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 9999
+    z-index: auto
 }
 
 .navbar__header__middle {
@@ -24,6 +24,7 @@
 .navbar__header__right {
     display: flex;
     align-items: center;
+    margin: 10px;
 }
 
 .navbar__header__right__options {

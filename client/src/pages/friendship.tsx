@@ -51,6 +51,7 @@ function Suggestions () {
             })
           })
           socket.on('newCookie', (data) => {
+            console.log('loooool je rentre ici ')
             dispatch(setOnlyTokens({...data}));
             const serializeData = JSON.stringify(data);
             Cookies.set('Authcookie', serializeData, { path: '/' });
@@ -71,7 +72,13 @@ function Suggestions () {
     <div>
       {/* <Navbar currentRoute={ currentRoute }/> */}
       <h1> You may know... </h1>
-      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
+      <Stack spacing={2} sx={{
+        // display: 'flex',
+        flexDirection: 'row',
+        flexWrap:'wrap',
+        alignItems:'center',
+        justifyContent: 'space-between',
+      }} >
         {suggestions.map((sugg: any) => 
           <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request"/>)}
       </Stack>
@@ -172,6 +179,7 @@ function Friends () {
   }, [dispatch]);
   const friends = useAppSelector(selectFriends);
   
+  console.log("frieeeends ", friends);
   const content = (
     <div>
       {/* <Navbar currentRoute={ currentRoute }/> */}

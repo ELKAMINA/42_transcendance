@@ -13,6 +13,13 @@
 	import { selectCurrentUser } from "../../redux-features/auth/authSlice"
 	import { emptyChannel } from "../../data/emptyChannel"
 
+	export const socket = io('http://localhost:4002', {
+		withCredentials: true,
+		transports: ['websocket'],
+		upgrade: false,
+		autoConnect: false,
+		// reconnection: true,
+	})
 
 	function Conversation() {
 
@@ -28,7 +35,7 @@
 				query: {roomId}
 			})
 
-			socketRef.current.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+			socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
 				const incomingMessage : ChatMessage = {
 					...message,
 					// outgoing: message.senderSocketId === socketRef.current?.id,
@@ -67,7 +74,6 @@
 		useEffect(() => {
 			scrollMessageContainerToBottom(); // scroll to bottom when the component is rendered
 		}, []);
-
 		return (
 			<Stack
 				height={'100%'} 

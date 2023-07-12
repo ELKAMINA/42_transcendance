@@ -57,7 +57,7 @@ export default class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('Logout')
   @ApiOkResponse({ type: Tokens })
-  logout(@GetCurrentUserId() userInfo: JwtPayload) {
+  logout(@GetCurrentUserId() userInfo: string) {
     return this.authService.logout(userInfo);
   }
 
@@ -106,7 +106,7 @@ export default class AuthController {
   /* ******************** */
 
   /* 2FA Strategy */
-
+  @Public()
   @Post('2fa/generate')
   async register(@Res() response: Response, @Req() request) {
     const qrCode = await this.authService.generateTwoFactorAuthenticationSecret(
@@ -115,6 +115,7 @@ export default class AuthController {
     return response.json(qrCode);
   }
 
+  @Public()
   @Post('2fa/turn-on')
   async turnOnTwoFactorAuthentication(@Req() request, @Body() body) {
     this.authService.isTwoFactorAuthenticationCodeValid(
@@ -124,14 +125,19 @@ export default class AuthController {
     this.authService.turnOnTwoFactorAuthentication(request.user.sub);
   }
 
+  @Public()
   @Post('2fa/authenticate')
+  // @Redirect('http://localhost:3000/welcome')
   @HttpCode(200)
-  async authenticate(@Req() request, @Body() body) {
-    this.authService.isTwoFactorAuthenticationCodeValid(
-      body.TfaCode,
-      request.user,
+  async authenticate(@Req() request, @Body() body, @Res() res) {
+    console.log('2 normalement je rentre ci ', body)
+    const validation = await this.authService.isTwoFactorAuthenticationCodeValid(
+      body.tfaCode,
+      body.nickname,
     );
-    return this.authService.loginWith2fa(request.user);
+    console.log('validation ', validation)
+    const payload = this.authService.loginWith2fa(body.nickname, res)
+    return payload;
   }
 
   @Public()
