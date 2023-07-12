@@ -20,6 +20,7 @@ import EnterPassword from './EnterPassword';
 import FullScreenAlert from './FullScreenAlert';
 import { RootState } from '../app/store';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
+import { emptyChannel } from '../data/emptyChannel';
 
 
 type getSelectedItemFunction = (pwd: string) => void;
@@ -35,7 +36,8 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const channels = useAppSelector((state : RootState) => selectUserChannels(state)) as Channel[];
 	// console.log('channels = ', channels);
 	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
-	const selectedChannel = useAppSelector((state : RootState) => selectDisplayedChannel(state)) as Channel;
+	const selectedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
+
 	const [isPasswordCorrect, setIsPasswordCorrect] = React.useState<boolean>(false); 
 
 	React.useEffect(() => { 
