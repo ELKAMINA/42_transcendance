@@ -1,0 +1,12 @@
+.blockmsg{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 200px;
+	height: 80px;
+	border-radius: 10px;
+	font-size: 12px;
+	color: black;
+	font-weight: bold;
+	background-color:red;
+}

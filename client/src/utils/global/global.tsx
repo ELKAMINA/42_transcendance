@@ -18,10 +18,6 @@ export async function FetchUserByName(name: string ): Promise<Object> {
 			}
 		})
 		.then((res) => {
-			// console.log('res.data ', res.data )
-			// const params =  new URLSearchParams(res.data)
-            // const userData: any =  transformData(params)
-			// console.log("blocked ",userData)
 			return res.data
 		})
 		.catch((e) => {
