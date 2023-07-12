@@ -9,7 +9,6 @@ import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
 import { Channel } from '../../types/chat/channelTypes';
 import { emptyChannel } from '../../data/emptyChannel';
-import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { UserDetails } from '../../types/users/userType';
 import ChannelMenu from '../ChannelMenu';
 import { useNavigate } from 'react-router-dom';
@@ -46,15 +45,18 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	},
   }));
 
-const Header = () => {
+  type HeaderProps = {
+	socketRef: React.MutableRefObject<Socket | undefined>;
+  };
+  
+  function Header({ socketRef }: HeaderProps) {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
 	let channelName : string = 'error';
-
 	const channel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	const isPrivateConv : boolean = channel.members?.length === 1 && channel.type === 'privateConv' ? true : false;
-	
+
 	// if the conversation is private, 
 	// the name of the channel should be the name of 
 	// the channel member that is not the current user
@@ -73,6 +75,7 @@ const Header = () => {
 
 	const handleCloseBlock = () => {
 		setOpenBlock(false);
+
 	}
 
 	const handleProfile = async (name: string) => {
@@ -139,7 +142,7 @@ const Header = () => {
 					<ChannelMenu />
 				</Stack>
 			</Stack>
-			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} />}
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef}/>}
 		</Box>
 		)
 }

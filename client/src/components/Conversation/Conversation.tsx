@@ -80,7 +80,7 @@
 				maxHeight={'100vh'}
 				width={'auto'}
 			>
-				<Header />
+				<Header socketRef={socketRef}/>
 				{/* Msg */}
 				<Box
 					width={'100%'}
