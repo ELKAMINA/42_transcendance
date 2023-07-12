@@ -10,8 +10,8 @@
 	import { useAppSelector } from "../../utils/redux-hooks"
 	import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
 	import { RootState } from "../../app/store"
-import { selectCurrentUser } from "../../redux-features/auth/authSlice"
-import { emptyChannel } from "../../data/emptyChannel"
+	import { selectCurrentUser } from "../../redux-features/auth/authSlice"
+	import { emptyChannel } from "../../data/emptyChannel"
 
 
 	function Conversation() {
@@ -19,7 +19,7 @@ import { emptyChannel } from "../../data/emptyChannel"
 		const selectedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 		const roomId = selectedChannel.name;
 		const [messages, setMessages] = useState<ChatMessage[]>([]);
-		const socketRef = useRef<Socket>();
+		const socketRef = useRef<Socket>(); // by using useRef, the reference to the socket instance is preserved across re-renders of the component. 
 		const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 		const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
 		
