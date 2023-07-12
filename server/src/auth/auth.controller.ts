@@ -98,6 +98,7 @@ export default class AuthController {
         nickname: infos.user,
         accessToken: infos.accessToken,
         refreshToken: infos.refreshToken,
+		avatar: infos.avatar,
       },
       res,
     );

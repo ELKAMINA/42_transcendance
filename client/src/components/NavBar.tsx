@@ -76,6 +76,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
         navigate('/welcome')
     }
     const srcAvatar = useAppSelector(selectCurrentAvatar);
+	console.log(' Avatar ', srcAvatar)
     const chat = () => {
 
         navigate('/chat')

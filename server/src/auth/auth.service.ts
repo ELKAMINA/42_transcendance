@@ -263,6 +263,7 @@ export class AuthService {
       user: user.login,
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
+	  avatar: user.avatar,
     };
   }
 

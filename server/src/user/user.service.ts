@@ -17,6 +17,12 @@ export class UserService {
         where: {
           login: nick,
         },
+		include: {
+			blocked: true,
+			blockedBy: true,
+			friendOf:true,
+			friends: true,
+		}
       });
       return user;
     } catch (e) {

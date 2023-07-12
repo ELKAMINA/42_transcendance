@@ -98,24 +98,3 @@ export const selectQrCode = (state: RootState) => state.persistedReducer.auth.qr
 export const selectTfaState = (state: RootState) => state.persistedReducer.auth.tfaState
 export const selectAfterSub = (state: RootState) => state.persistedReducer.auth.afterSub
 export const selectTfaInput = (state: RootState) => state.persistedReducer.auth.tfaInput
-
-
-
-// export function FetchUser() {
-//     return async (dispatch:any, getState: any) => {
-//         await api
-// 		.get('http://localhost:4001/user/userprofile', {
-// 			params: {
-// 				ProfileName: getState().persistedReducer.auth.nickname,
-// 			}
-// 		})
-// 		.then((res) => {
-// 			const params = new URLSearchParams(res.data)
-//             const userData = transformData(params)
-//             // console.log('params ', userData)
-//             dispatch(setAvatar(userData.avatar))})
-// 		.catch((e) => {
-// 			console.log('ERROR from request with params ', e)
-// 		})
-//   }
-// }
