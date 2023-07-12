@@ -41,7 +41,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	handleConnection(socket: Socket) {
 	  	const roomId = socket.handshake.query.roomId as string;
-		console.log('je rentre ici ???');
 	  	// const username = socket.handshake.query.username as string;
 	  	socket.join(roomId);
 		// const welcomeMessage = {
