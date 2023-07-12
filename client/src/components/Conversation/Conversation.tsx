@@ -11,11 +11,12 @@
 	import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
 	import { RootState } from "../../app/store"
 import { selectCurrentUser } from "../../redux-features/auth/authSlice"
+import { emptyChannel } from "../../data/emptyChannel"
 
 
 	function Conversation() {
 
-		const selectedChannel : Channel = useAppSelector((state: RootState) => selectDisplayedChannel(state));
+		const selectedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 		const roomId = selectedChannel.name;
 		const [messages, setMessages] = useState<ChatMessage[]>([]);
 		const socketRef = useRef<Socket>();
