@@ -27,6 +27,7 @@ export class ChannelService {
 				data: {
 					name: dto.name,
 					members: {connect: dto.members.map((user) => ({ login: user.login })),},
+					admins: {connect: dto.admins.map((user) => ({ login: user.login })),},
 					createdBy: {
 						connect: {login: dto.createdBy.login}
 					},
@@ -97,6 +98,7 @@ export class ChannelService {
 				channels: {
 					include: {
 						members: true,
+						admins: true,
 						createdBy: true,
 						chatHistory: true,
 					}
@@ -104,6 +106,7 @@ export class ChannelService {
 				createdChannels: {
 					include: {
 						members: true,
+						admins: true,
 						createdBy: true,
 						chatHistory: true,
 					}
@@ -127,6 +130,7 @@ export class ChannelService {
 				createdChannels: {
 					include: {
 						members: true,
+						admins: true,
 						createdBy: true,
 						chatHistory: true,
 					}
@@ -149,6 +153,7 @@ export class ChannelService {
 				channels: {
 					include: {
 						members: true,
+						admins: true,
 						createdBy: true,
 						chatHistory: true,
 					}
@@ -176,6 +181,7 @@ export class ChannelService {
 			where: requestBody,
 			include: {
 				members: true,
+				admins: true,
 				createdBy: true,
 				chatHistory: true,
 			}

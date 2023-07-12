@@ -7,6 +7,7 @@ export type Channel = {
 	channelId?: number
 	members: UserDetails[],
 	createdBy: UserDetails,
+	admins: UserDetails[],
 	protected_by_password?: boolean
 	type?: string
 	key?: string

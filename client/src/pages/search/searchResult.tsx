@@ -34,6 +34,7 @@ export const SearchResult = ({ result }: { result: string }) => {
 			channelId: Date.now(),	
 			type: 'privateConv',
 			createdBy: createdBy,
+			admins: [createdBy],
 			protected_by_password: false,
 			key: '',
 			members: [user],

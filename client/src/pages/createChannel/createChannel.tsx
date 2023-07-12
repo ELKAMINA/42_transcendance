@@ -61,6 +61,7 @@ function CreateChannel(props : CreateChannelProps) {
 			channelId: Date.now(),
 			type: channelType.type,
 			createdBy: createdBy,
+			admins: [createdBy],
 			protected_by_password: channelType.protected_by_password,
 			key: channelType.key,
 			members: channelUsersList,

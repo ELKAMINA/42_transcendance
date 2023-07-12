@@ -70,10 +70,10 @@ export function fetchUserChannels() {
 			login: getState().persistedReducer.auth.nickname,
 	  	};
 	  try {
-		const response = await api.post(
-			"http://localhost:4001/channel/userchannels",
-		  	requestBody
-		);
+			const response = await api.post(
+				"http://localhost:4001/channel/userchannels",
+				requestBody
+			);
 			// console.log('getting channels from database = ', response.data);
 			dispatch(updateUserChannels(response.data));
 
