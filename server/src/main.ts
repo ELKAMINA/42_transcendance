@@ -2,6 +2,7 @@ import * as passport from 'passport';
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import AppModule from './app.module';
@@ -19,10 +20,11 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(passport.initialize());
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'http://0.0.0.0:4001', 'http://localhost:4001', '*'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'authorization'],
   });
+  app.useWebSocketAdapter(new IoAdapter(app));
   /* Communications layer : FIN */
 
   // For Swagger

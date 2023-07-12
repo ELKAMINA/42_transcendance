@@ -17,7 +17,7 @@ import { AuthDto } from './dto/auth.dto';
 import { UserService } from '../user/user.service';
 import { Payload2FA } from './types/payload2FA.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { JwtPayload, OauthPayload } from './types';
+import { JwtPayload, OauthPayload, CookieType } from './types';
 import { UserDetails } from '../user/types/user-types.user';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class AuthService {
         },
         {
           secret: this.config.get('ACCESS_TOKEN'),
-          expiresIn: 60 * 0.5,
+          expiresIn: 60 * 15 * 20,
         },
       ), // access token
       this.jwt.signAsync(
@@ -68,7 +68,7 @@ export class AuthService {
         },
         {
           secret: this.config.get('ACCESS_TOKEN'),
-          expiresIn: 60 * 20,
+          expiresIn: 60 * 60 * 24 * 7,
         },
       ), // access token
       this.jwt.signAsync(
@@ -101,8 +101,32 @@ export class AuthService {
     });
   }
 
-  async signup(dto: AuthDto): Promise<object> {
+  async verifyJwt(jwt: string): Promise<any> {
+    const verification = this.jwt.verifyAsync(jwt, {
+      secret: this.config.get('ACCESS_TOKEN'),
+      maxAge: 60 * 15,
+    });
+    return verification;
+  }
+
+  async setCookie(data: object, res: Response) {
+    const serializeData = JSON.stringify(data);
+    // console.log("seriiialized data ", serializeData)
+    // console.log("la data ",data);
+    res.cookie('Authcookie', '', { expires: new Date(0) });
+    res.cookie('Authcookie', serializeData, {
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 1800000000,
+      domain: 'localhost',
+      path: '/',
+    });
+  }
+
+  async signup(dto: AuthDto, res: Response): Promise<object> {
     const pwd = await argon.hash(dto.password);
+    console.log('dto', dto)
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -114,7 +138,14 @@ export class AuthService {
       // console.log("user ", user);
       const tokens = await this.signTokens(user.user_id, user.login);
       await this.updateRtHash(user.user_id, tokens.refresh_token);
-      // console.log(tokens);
+      this.setCookie(
+        {
+          nickname: dto.nickname,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        },
+        res,
+      );
       return { faEnabled: user.faEnabled, tokens };
     } catch (error: any) {
       if (
@@ -128,8 +159,9 @@ export class AuthService {
     } // PrismaClientKnownRequestError to catch the unique prisma duplicate error (for instance for the email that is duplicated )
   }
 
-  async signin(dto: AuthDto): Promise<object> {
+  async signin(dto: AuthDto, res: Response): Promise<object> {
     try {
+      // console.log("DTOOOO ", dto)
       const us = await this.prisma.user.findUniqueOrThrow({
         where: {
           login: dto.nickname,
@@ -138,9 +170,32 @@ export class AuthService {
       if (us && (await argon.verify(us.hash, dto.password)) == false) {
         throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
       }
+      if (us.avatar !== dto.avatar && dto.avatar !== ''){
+        await this.prisma.user.update({
+          where: {
+            login: dto.nickname,
+          },
+          data: {
+            avatar: dto.avatar,
+          }
+        });
+      }
+      // if (us.faEnabled === true) {
+      //   // console.log('je rentre ici pour signin ')
+      //   res.redirect(307, `http://localhost:3000/tfa`)
+      //   return ;
+      // } /* A revoir */
       const tokens = await this.signTokens(us.user_id, us.login);
       await this.updateRtHash(us.user_id, tokens.refresh_token);
-      return { faEnabled: us.faEnabled, tokens };
+      this.setCookie(
+        {
+          nickname: us.login,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        },
+        res,
+      );
+      return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
     } catch (e: any) {
       if (e.code === 'P2025') {
         throw new HttpException('No user found', HttpStatus.FORBIDDEN);
@@ -149,10 +204,11 @@ export class AuthService {
     }
   }
 
-  async logout(userInfo: JwtPayload) {
+  async logout(userInfo: string) {
+    console.log('userInfo, userInfo', userInfo)
     await this.prisma.user.updateMany({
       where: {
-        user_id: userInfo.sub,
+        login: userInfo,
         rtHash: {
           not: null,
         },
@@ -163,17 +219,19 @@ export class AuthService {
     });
   }
 
-  async refresh(userInfo: JwtPayload, refreshToken: string) {
+  async refresh(userNick: string, refreshToken: string) {
     const us = await this.prisma.user.findUnique({
       where: {
-        user_id: userInfo.sub,
+        login: userNick,
       },
     });
-    if (!us || !us.rtHash) throw new ForbiddenException('Access Denied');
+    // console.log('le user qui se co ', us);
+    if (!us || !us.rtHash) throw new ForbiddenException('1 - Access Denied');
     const rtMatches = await argon.verify(us.rtHash, refreshToken);
-    if (rtMatches == false) throw new ForbiddenException('Access Denied');
+    if (rtMatches == false) throw new ForbiddenException('2 - Access Denied');
     const tokens = await this.signTokens(us.user_id, us.login);
     await this.updateRtHash(us.user_id, tokens.refresh_token);
+    // console.log('les tookens from refresh function ', tokens);
     return tokens;
   }
 
@@ -223,18 +281,22 @@ export class AuthService {
     });
   }
 
-  async isTwoFactorAuthenticationCodeValid(TfaCode: string, user: JwtPayload) {
+  async isTwoFactorAuthenticationCodeValid(TfaCode: string, user: string) {
     // verify the authentication code with the user's secret
     try {
-      const us = await this.userServ.searchUser(user.nickname);
-      const verif = authenticator.verify({
-        token: TfaCode,
+      const us = await this.userServ.searchUser(user);
+      console.log('le user ', us);
+      const verif = await authenticator.verify({
+        token: authenticator.generate(us.fA),
         secret: us.fA,
       });
+      console.log("3 - normalement cest Hamid ", verif)
       if (!verif) {
+        console.log ('error ??')
         throw new UnauthorizedException('Wrong authentication code');
       }
     } catch (e: any) {
+      console.log ('error icii????')
       // console.log(e);
     }
   }
@@ -281,19 +343,35 @@ export class AuthService {
   }
 
   // ****** Authentication 2FA ******************
-  async loginWith2fa(user: JwtPayload) {
-    const usr = await this.userServ.searchUser(user.nickname);
-    const payload = {
-      login: usr.login,
-      faEnabled: usr.faEnabled,
-      authTFA: true,
-    };
-    const tokens = await this.signTokens2FA(payload);
-    await this.updateRtHash(usr.user_id, tokens.refresh_token);
-    return {
-      login: payload.login,
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token,
-    };
+  async loginWith2fa(user: string, res: Response) {
+    try {
+      const usr = await this.userServ.searchUser(user);
+      console.log('le user qui fait TFA', usr)
+      const payload = {
+        login: usr.login,
+        faEnabled: usr.faEnabled,
+        authTFA: true,
+      };
+      const tokens = await this.signTokens2FA(payload);
+      await this.updateRtHash(usr.user_id, tokens.refresh_token);
+      this.setCookie(
+        {
+          nickname: usr.login,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        },
+        res,
+      );
+      console.log('4, jarrive jusque là???')
+      return {
+        login: payload.login,
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+      };
+    }
+  catch(e){
+    console.log('TFA EROOOOR ', e)
   }
 }
+
+} 

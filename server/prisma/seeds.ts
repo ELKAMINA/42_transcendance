@@ -15,9 +15,14 @@ async function main() {
       login: 'Acliclas',
       hash: await argon.hash('tutututututu'),
       status:
-        "We are excited to share that today's Prisma ORM release adds stable support for MongoDB!",
+        "Offline",
       fA: 'cava',
       faEnabled: true,
+      rank: 2,
+      level: 100,
+      totalloss: 20,
+      totalWins: 60,
+      totalMatches: 80,
     },
   });
 
@@ -28,9 +33,14 @@ async function main() {
       login: 'Fuma',
       hash: await argon.hash('lululululu'),
       status:
-        'Learn about everything in the Prisma ecosystem and community from January to March 2022.',
+        'Online',
       fA: '',
       faEnabled: false,
+      rank: 3,
+      level: 250,
+      totalloss: 80,
+      totalWins: 50,
+      totalMatches: 130,
     },
   });
 
@@ -40,11 +50,24 @@ async function main() {
     create: {
       login: 'Naykee',
       hash: await argon.hash('rhoooooooooooooooooo'),
-      status: 'kikou',
+      status: 'Playing',
       fA: 'salutcava',
       faEnabled: true,
+      rank: 1,
+      level: 950,
+      totalloss: 10,
+      totalWins: 150,
+      totalMatches: 160,
     },
   });
+
+  const globalInfo = await prisma.globalInformation.upsert({
+    where: { pid: '1' },
+    update: {},
+    create: {
+      totalPlayers: 4,
+    },
+  })
 
   // console.log({ post1, post2 });
 }

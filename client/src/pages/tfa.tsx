@@ -1,22 +1,30 @@
-import api from '../utils/Axios'
-import Button from '@mui/material/Button';
-import { useDispatch } from "react-redux"
 import * as React from 'react';
+import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch} from '../utils/redux-hooks';
+import { useSelector } from 'react-redux';
 
 import './home.css';
-import { useNavigate } from 'react-router-dom';
-import { setTokens } from '../features/auth/authSlice';
+import api from '../utils/Axios-config/Axios'
+import { selectCurrentUser, setTokens } from '../redux-features/auth/authSlice';
+import { useTfaAuthenticateMutation } from '../app/api/authApiSlice';
 
 function Tfa () {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const nickname = useSelector(selectCurrentUser)
     const navigate = useNavigate();
     let [TfaCode, setTfaCode] = React.useState('')
+    const [tfaAuthenticate] = useTfaAuthenticateMutation();
 
     const handleSubmit = async () => {
-        await api
-        .post("http://0.0.0.0:4001/auth/2fa/authenticate", {TfaCode})
-        .then((res) => {dispatch(setTokens({...res.data})); navigate('/welcome')})
-        .catch((e) => {console.log("error ", e)});
+        // await api
+        // .post("http://0.0.0.0:4001/auth/2fa/authenticate", {TfaCode, nickname})
+        // .then((res) => {
+        //   console.log('je dois absolument rentrer ic')
+        //   dispatch(setTokens({...res.data})); navigate('/welcome')})
+        // .catch((e) => {console.log("error ", e)});
+        const tfaAuthenitcation = await tfaAuthenticate({TfaCode, nickname}).unwrap()
+        console.log('tfaaaaa ', tfaAuthenitcation)
       }
     return (
         <div>
