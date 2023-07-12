@@ -37,6 +37,11 @@ export class ChannelDto {
 	@IsOptional()
 	members: UserDetails[];
 
+	// @IsNotEmpty()
+	@ApiProperty()
+	@IsOptional()
+	admins: UserDetails[];
+
 	@IsString()
 	@ApiProperty()
 	@IsOptional()
