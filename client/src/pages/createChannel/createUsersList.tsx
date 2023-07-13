@@ -43,12 +43,7 @@ export default function MultipleSelectChip() {
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
 
-	// when the search component is mounted the first time, get the list of users
-	React.useEffect(() => {
-		appDispatch(FetchUsersDb())}, [appDispatch]);
-
 	const allUsers : UserDetails[] = useAppSelector(selectAllUsersInDb);
-	
 	console.log('allUser', allUsers);
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
