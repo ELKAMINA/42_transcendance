@@ -13,6 +13,7 @@ export interface friendshipState {
     blockedFriends: object [],
     selectedItems: string,
 	user: [],
+	allUsers: [],
 }
 
 const initialState: friendshipState = {
@@ -23,6 +24,7 @@ const initialState: friendshipState = {
     blockedFriends: [],
     selectedItems: '',
 	user: [],
+	allUsers: [],
     // socket: {} as unknown as Socket ,
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -47,17 +49,23 @@ export const friendshipSlice = createSlice({
         },
 		getUserByname: (state, action) => {
             state.user = action.payload;
-        }
+        },
+		getAllUsersInDb:(state, action) => {
+            state.allUsers = action.payload;
+        }, 
+		
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem, getUserByname } = friendshipSlice.actions
+export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem, getUserByname, getAllUsersInDb } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
 export const selectBlockedFriends = (state: RootState) => state.persistedReducer.friendship.blockedFriends
 export const selectItems = (state: RootState) => state.persistedReducer.friendship.selectedItems
+export const selectAllUsersInDb = (state: RootState) => state.persistedReducer.friendship.allUsers
+
 
 export function FetchAllFriendRequests() {
     return async (dispatch:any, getState: any) => {
@@ -135,6 +143,23 @@ export function FetchAllBlockedFriends() {
   }
 }
 
+export function FetchUsersDb() {
+	console.log('coucou !!!');
+
+	return async (dispatch:any, getState: any) => {
+        await api
+        .get("http://localhost:4001/user/all")
+        .then((res) => {
+            let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
+			dispatch(getAllUsersInDb(dt));
+            // dispatch(getAllUsersInDb((res.data).values(res.data)))
+
+		})
+		.catch((e) => {
+			console.log("Error - All users from db except me")
+		})
+	}
+}
 
 
 // export function FetchUserByName(name: string ) {
