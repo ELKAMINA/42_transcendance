@@ -13,13 +13,13 @@
 	import { selectCurrentUser } from "../../redux-features/auth/authSlice"
 	import { emptyChannel } from "../../data/emptyChannel"
 
-	export const socket = io('http://localhost:4002', {
-		withCredentials: true,
-		transports: ['websocket'],
-		upgrade: false,
-		autoConnect: false,
-		// reconnection: true,
-	})
+	// export const socket = io('http://localhost:4002', {
+	// 	withCredentials: true,
+	// 	transports: ['websocket'],
+	// 	upgrade: false,
+	// 	autoConnect: false,
+	// 	// reconnection: true,
+	// })
 
 	function Conversation() {
 
