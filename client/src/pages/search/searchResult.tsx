@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 import "./searchResult.css";
-import { useAppDispatch } from "../../utils/redux-hooks";
+import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { useSelector } from "react-redux";
-import { fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectDisplayedChannel } from "../../redux-features/chat/channelsSlice";
+import { fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectDisplayedChannel, selectUserChannels } from "../../redux-features/chat/channelsSlice";
 import { selectFriends, selectSuggestions } from "../../redux-features/friendship/friendshipSlice";
 import { UserDetails } from "../../types/users/userType";
 import { Channel } from "../../types/chat/channelTypes";
@@ -11,13 +11,15 @@ import api from "../../utils/Axios-config/Axios";
 
 export const SearchResult = ({ result }: { result: string }) => {
 	const AppDispatch = useAppDispatch();
-	const channels = useSelector(selectAllChannels) as Channel[];
-	const users = useSelector(selectSuggestions) as UserDetails[];
-	const friends = useSelector(selectFriends) as UserDetails[];
-	const currentuser = useSelector(selectCurrentUser);
+	const channels = useAppSelector(selectAllChannels) as Channel[];
+	const userChannels : Channel[] = useSelector(selectUserChannels);
+	const friends = useAppSelector(selectFriends) as UserDetails[];
+	const currentuser = useAppSelector(selectCurrentUser);
 
-	const channel = channels.find(channel => channel.name === result); 
-	const user = users.find(user => user.login === result);
+	const channel = channels.find(channel => channel.name === result);
+	// console.log('channel = ', channel);
+	const friend = friends.find(friend => friend.login === result);
+	// console.log('friend =', friend);
 
 	async function createPrivateConv() {
 
@@ -37,8 +39,8 @@ export const SearchResult = ({ result }: { result: string }) => {
 			admins: [createdBy],
 			protected_by_password: false,
 			key: '',
-			members: [user],
-			avatar: user?.avatar,
+			members: [friend],
+			avatar: friend?.avatar,
 			chatHistory: [],
 		})
 		.then ((response) => {
@@ -52,7 +54,6 @@ export const SearchResult = ({ result }: { result: string }) => {
 	}
 
 	function onClick() {
-
 		if (channel) {
 			if (channel.type === 'privateConv' 
 				|| (channel.type === 'private' && (channel.createdBy.login === currentuser || channel.members?.find(member => member.login === currentuser))) 
@@ -61,15 +62,15 @@ export const SearchResult = ({ result }: { result: string }) => {
 			if (channel.key !== '')
 				console.log('needs password!');
 		}
-
-		else if (user) {
-			// const isFriend = friends.find(friend => friend.login === currentuser); // TODO 
-			const isFriend = 'true';
-			if (isFriend) {
+		// if selected result is a user, create a new conv if does not exist, or go to existing conv
+		else if (friend) {
+			if (!userChannels.some(channel => channel.name === friend.login)) {
 				createPrivateConv();
 			}
-			else
-				console.log('go to user profile page!') // TODO
+			else {
+				// console.log('you already have a conversation with ', friend.login)
+				AppDispatch(fetchDisplayedChannel(result));
+			}
 		}
 	}
 	
