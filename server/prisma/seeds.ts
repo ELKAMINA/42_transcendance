@@ -61,6 +61,23 @@ async function main() {
     },
   });
 
+  const CasperLeFantome = await prisma.user.upsert({
+    where: { login: 'CasperLeFantome' },
+    update: {},
+    create: {
+      login: 'CasperLeFantome',
+      hash: await argon.hash('CasperLeFantome'),
+      status: 'Playing',
+      fA: 'salutcava',
+      faEnabled: true,
+      rank: 1,
+      level: 950,
+      totalloss: 10,
+      totalWins: 150,
+      totalMatches: 160,
+    },
+  });
+
   const globalInfo = await prisma.globalInformation.upsert({
     where: { pid: '1' },
     update: {},
@@ -69,13 +86,13 @@ async function main() {
     },
   })
 
-  const post4 = await prisma.channel.upsert({
-    where: { name: 'EmptyChannel' },
+  const WelcomeChannel = await prisma.channel.upsert({
+    where: { name: 'WelcomeChannel' },
     update: {},
     create: {
-      name: 'EmptyChannel',
-      members: {connect: {login: 'Naykee'}},
-      admins: {connect: {login: 'Naykee'}},
+      name: 'WelcomeChannel',
+      members: {connect: {login: 'CasperLeFantome'}},
+      admins: {connect: {login: 'CasperLeFantome'}},
       type: 'public',
     },
   });
