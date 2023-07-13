@@ -40,11 +40,9 @@ export default function MultipleSelectChip() {
 	const theme = useTheme();
 	const [personName, setPersonName] = React.useState<string[]>([]);
 
-	const dispatch = useDispatch();
-	const appDispatch = useAppDispatch();
+	const dispatch = useAppDispatch();
 
 	const allUsers : UserDetails[] = useAppSelector(selectAllUsersInDb);
-	console.log('allUser', allUsers);
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
