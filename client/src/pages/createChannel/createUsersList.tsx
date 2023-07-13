@@ -7,12 +7,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-
-import { useDispatch } from "react-redux";
 import { Stack } from '@mui/material';
 import { UserDetails } from '../../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { FetchAllUsers, FetchUsersDb, selectAllUsersInDb, selectSuggestions } from '../../redux-features/friendship/friendshipSlice';
+import { selectFriends } from '../../redux-features/friendship/friendshipSlice';
 
 
 const ITEM_HEIGHT = 48;
@@ -42,7 +40,10 @@ export default function MultipleSelectChip() {
 
 	const dispatch = useAppDispatch();
 
-	const allUsers : UserDetails[] = useAppSelector(selectAllUsersInDb);
+	let friends = useAppSelector(selectFriends) as UserDetails[];
+
+	if (friends.length === 0)
+		friends = [{login: 'no friends to display', avatar: '', email: '', displayName: ''}]
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
@@ -54,7 +55,7 @@ export default function MultipleSelectChip() {
 			typeof value === 'string' ? value.split(',') : value,
 		);
 		
-		const newUsers: UserDetails[] = allUsers.filter((user) => value.includes(user.login));
+		const newUsers: UserDetails[] = friends.filter((friend) => value.includes(friend.login));
 		dispatch({
 			type: "channelUser/addChannelUser",
 			payload: newUsers,
@@ -84,7 +85,7 @@ export default function MultipleSelectChip() {
 						)}
 						MenuProps={MenuProps}
 					>
-						{allUsers.map((user) => (
+						{friends.map((user) => (
 							<MenuItem
 							key={user.login}
 							value={user.login}
