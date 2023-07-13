@@ -144,16 +144,12 @@ export function FetchAllBlockedFriends() {
 }
 
 export function FetchUsersDb() {
-	console.log('coucou !!!');
-
 	return async (dispatch:any, getState: any) => {
         await api
         .get("http://localhost:4001/user/all")
         .then((res) => {
             let dt = (res.data).filter((dat: any) => (dat.login !== getState().persistedReducer.auth.nickname));
 			dispatch(getAllUsersInDb(dt));
-            // dispatch(getAllUsersInDb((res.data).values(res.data)))
-
 		})
 		.catch((e) => {
 			console.log("Error - All users from db except me")
