@@ -8,26 +8,36 @@ import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { useEffect, useState } from 'react';
 import { fetchAllChannelsInDatabase, selectAllChannels } from '../../redux-features/chat/channelsSlice';
 import { Channel } from '../../types/chat/channelTypes';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { FetchUserByName } from '../../utils/global/global';
 
 function SearchBar({content, setResults }: { content: string; setResults: React.Dispatch<React.SetStateAction<(UserDetails | Channel)[] >> }) {	  
 
 	const [input, setInput] = useState<string>('');
-
 	const dispatch = useAppDispatch();
 
-	// useEffect(() => {dispatch(FetchAllFriends())}, [dispatch]); // get the friends
-	// const friends = useAppSelector(selectFriends) as UserDetails[];
+	const currentUserName : string = useAppSelector(selectCurrentUser);
+
+	useEffect(() => {dispatch(FetchAllFriends())}, [dispatch]); // get the friends
+	const friends = useAppSelector(selectFriends) as UserDetails[];
 	// console.log('friends = ', friends);
-	useEffect(() => {dispatch(FetchAllUsers())}, []); // get the friends
-	const friends = useAppSelector(selectSuggestions) as UserDetails[]
 
-	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []);
+	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []); // get the channels
 	let channels = useAppSelector((state) => selectAllChannels (state)) as Channel[];
-	channels = channels.filter(channel => channel.type !== 'private')
 	
-	const usersAndChannels = [...friends, ...channels];
-
-	function fetchData(value:string) {
+	// if the channel is of type 'private'or 'privateConv' and the current user is not a member,
+	// we won't display it.
+	// so I filter all the private channels and privateConv channels of which I am not a member or
+	// a creator.
+	channels = channels.filter(channel => (
+		(channel.type === 'private' || channel.type === 'privateConv') && 
+		!channel.members?.some(user => user.login === currentUserName) && 
+		channel.createdBy?.login !== currentUserName
+	));
+	console.log('channels = ', channels);
+	const usersAndChannels = [...friends, ...channels]; // join friends and channels
+	
+	function displayResult(value:string) {
 		const results = usersAndChannels.filter((item) => {
 			// const name = user?.login?.toLowerCase();
 			// return value && user && name && name.includes(value);
@@ -46,7 +56,7 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 	function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value;
 		setInput(value);
-		fetchData(value);
+		displayResult(value);
 	}
 
 	return (
