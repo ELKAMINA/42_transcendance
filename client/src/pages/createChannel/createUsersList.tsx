@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { Stack } from '@mui/material';
 import { UserDetails } from '../../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { FetchAllUsers, selectSuggestions } from '../../redux-features/friendship/friendshipSlice';
+import { FetchAllUsers, FetchUsersDb, selectAllUsersInDb, selectSuggestions } from '../../redux-features/friendship/friendshipSlice';
 
 
 const ITEM_HEIGHT = 48;
@@ -41,13 +41,15 @@ export default function MultipleSelectChip() {
 	const [personName, setPersonName] = React.useState<string[]>([]);
 
 	const dispatch = useDispatch();
-	const dispatchSync = useAppDispatch();
+	const appDispatch = useAppDispatch();
 
 	// when the search component is mounted the first time, get the list of users
-	React.useEffect(() => {dispatchSync(FetchAllUsers())}, []);
+	React.useEffect(() => {
+		appDispatch(FetchUsersDb())}, [appDispatch]);
 
-	// const allUsers:UserDetails[] = useAppSelector(selectSuggestions);
-	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
+	const allUsers : UserDetails[] = useAppSelector(selectAllUsersInDb);
+	
+	console.log('allUser', allUsers);
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
