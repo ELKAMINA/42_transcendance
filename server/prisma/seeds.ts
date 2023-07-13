@@ -69,6 +69,17 @@ async function main() {
     },
   })
 
+  const post4 = await prisma.channel.upsert({
+    where: { name: 'EmptyChannel' },
+    update: {},
+    create: {
+      name: 'EmptyChannel',
+      members: {connect: {login: 'Naykee'}},
+      admins: {connect: {login: 'Naykee'}},
+      type: 'public',
+    },
+  });
+
   // console.log({ post1, post2 });
 }
 
