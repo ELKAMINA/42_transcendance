@@ -94,7 +94,6 @@ export default function Sign(props: Signing){
             {
                 dispatch(setAvatar(selectedImage));
                 setAr(selectedImage)
-                console.log('Avatarrr ', avatar)
             }
             if (props.type === "Sign up")
             {
