@@ -29,13 +29,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('blockUser')
 	async handleBlockUser(socket: Socket, @MessageBody() body: any,
 	): Promise<void> {
-		console.log('LA socket from Chat GATEWAY ', socket)
 		// const roomId = socket.handshake.query.roomId as string;
 		const user = await this.friends.blockFriend(
 			body.sender,
 			body.receiver,
 		  );
-		console.log('user ', user);
 		//   this.server.to(roomId).emit('FriendBlocked', user)
 	}
 

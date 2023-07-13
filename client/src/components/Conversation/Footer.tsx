@@ -6,9 +6,13 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { Channel } from '../../types/chat/channelTypes';
 import { ChatMessage } from '../../types/chat/messageType';
+import { FetchUserByName } from '../../utils/global/global';
+import { transformData } from '../../pages/userProfile';
+// import { FetchUserByName } from '../../redux-features/friendship/friendshipSlice';
 
 const StyledInput = styled(TextField)(({ theme }) => ({
 	backgroundColor: 'transparent',
@@ -27,7 +31,8 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 
 
 const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
-
+	const user = useAppSelector(selectCurrentUser)
+	const dispatch = useAppDispatch()
 	const [value, setValue] = useState("");
 
 	// record message
@@ -38,19 +43,38 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	function sendMessage() {
-		const messageToBeSent = {
-			sentBy: authState.nickname,
-			sentById: authState.nickname,
-			senderSocketId: '',
-			message: value,
-			sentAt: new Date(),
-			incoming: true,
-			outgoing: false,
-			channel: displayedChannel.name,
-			channelById: displayedChannel.name,
+	async function sendMessage() {
+		let UserToCheck: any;
+		if (displayedChannel.type === 'privateConv'){
+			console.log('To whom we want to speak ', displayedChannel.name);
+			console.log("the current user is = ", user)
+			console.log(`${user} sends a message to ${displayedChannel.name}`)
+			try {
+				UserToCheck = await FetchUserByName(displayedChannel.name)
+				
+			}
+			catch {
+			}
+
 		}
-		send(messageToBeSent);
+		if ((UserToCheck.blockedBy).includes(user) === true)
+		{
+			console.log("NOOOOOO je peux pas envoyer message ")
+		}
+		else {
+			const messageToBeSent = {
+				sentBy: authState.nickname,
+				sentById: authState.nickname,
+				senderSocketId: '',
+				message: value,
+				sentAt: new Date(),
+				incoming: true,
+				outgoing: false,
+				channel: displayedChannel.name,
+				channelById: displayedChannel.name,
+			}
+			send(messageToBeSent);
+		}
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {

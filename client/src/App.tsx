@@ -12,7 +12,7 @@ import RequireAuth from './components/RequireAuth';
 // import { Suggestions, Requests, Friends } from './pages/friendship';
 import UserProfile from './pages/userProfile';
 import SettingsContainer from './containers/Settings/Settings';
-import { setTokens } from './redux-features/auth/authSlice';
+import { setAvatar, setTokens } from './redux-features/auth/authSlice';
 import FriendshipContainer from './containers/Friendship/Friendship';
 
 const App = () => {
@@ -25,8 +25,10 @@ const App = () => {
       access_token : cookieParsed.accessToken,
       refresh_token : cookieParsed.refreshToken,
       nickname : cookieParsed.nickname,
+	  avatar: cookieParsed.avatar,
     }
     dispatch(setTokens({...credentials }))
+	dispatch(setAvatar(credentials.avatar))
   }
   return (
     <div className="app">

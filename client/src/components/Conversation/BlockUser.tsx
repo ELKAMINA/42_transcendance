@@ -5,13 +5,15 @@ import { Socket } from 'socket.io-client';
 
 type BlockUserProps = {
 	open: boolean;
+	sender: string;
+	receiver: string;
 	handleClose: React.Dispatch<React.SetStateAction<boolean>>
 	socketRef: React.MutableRefObject<Socket | undefined>;
 };
 
-const BlockUser = ({open , handleClose, socketRef} : BlockUserProps ) => {
+const BlockUser = ({open , handleClose, socketRef, sender, receiver} : BlockUserProps ) => {
 
-	console.log("socketRef in block user = ", socketRef?.current?.id);
+	// console.log("socketRef in block user = ", socketRef?.current?.id);
 
 	// to give the slide effect
 	const Transition = React.forwardRef(function Transition(
@@ -29,6 +31,10 @@ const BlockUser = ({open , handleClose, socketRef} : BlockUserProps ) => {
 	
 	const handleBlock = () => {
 		handleClose(true); // Pass true to indicate block
+		socketRef.current?.emit('blockUser', {
+			sender: sender,
+			receiver: receiver,
+		})
 	};
 
 	return (

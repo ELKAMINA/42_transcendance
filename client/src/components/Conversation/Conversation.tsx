@@ -43,7 +43,6 @@
 					outgoing: message.sentBy === currentUser,
 					incoming: message.sentBy !== currentUser,
 				}
-				// console.log('incoming message = ', incomingMessage)
 				setMessages((messages) => [...messages, incomingMessage])
 			})
 

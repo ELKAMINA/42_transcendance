@@ -2,12 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from '../../app/store';
 import  api  from '../../utils/Axios-config/Axios';
-// export const SOCKET = "SOCKET"
+import { transformData } from "../../pages/userProfile";
 
-// export interface ISocketType {
-//   type: typeof SOCKET,
-//   payload: Socket
-// }
 
 export interface friendshipState {
     friendshipNamespace: string,
@@ -16,6 +12,7 @@ export interface friendshipState {
     friendRequests: object [], // people asking me to join 
     blockedFriends: object [],
     selectedItems: string,
+	user: [],
 }
 
 const initialState: friendshipState = {
@@ -25,6 +22,7 @@ const initialState: friendshipState = {
     friendRequests: [],
     blockedFriends: [],
     selectedItems: '',
+	user: [],
     // socket: {} as unknown as Socket ,
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -46,12 +44,15 @@ export const friendshipSlice = createSlice({
         },
         setSelectedItem: (state, action) => {
             state.selectedItems = action.payload;
+        },
+		getUserByname: (state, action) => {
+            state.user = action.payload;
         }
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem } = friendshipSlice.actions
+export const { updateAllUsers, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem, getUserByname } = friendshipSlice.actions
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests
@@ -128,10 +129,32 @@ export function FetchAllBlockedFriends() {
         await api
         .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-            dispatch(updateAllFriends((res.data).values(res.data)))})
+			console.log(' BLOCKED FRIENDS ', res.data )
+            dispatch(updateBlockedFriends((res.data).values(res.data)))})
         .catch((e) => {console.log("error ", e)});
   }
 }
+
+
+
+// export function FetchUserByName(name: string ) {
+//     return async (dispatch:any, getState: any) => {
+//         await api
+// 		.get('http://localhost:4001/user/userprofile', {
+// 			params: {
+// 				ProfileName: name,
+// 			}
+// 		})
+// 		.then((res) => {
+// 			const params = new URLSearchParams(res.data)
+//             const userData = transformData(params)
+// 			dispatch(getUserbyName(userData))
+// 		})
+// 		.catch((e) => {
+// 			console.log('ERROR from request with params ', e)
+// 		})
+//   }
+// }
 
 export default friendshipSlice.reducer
 

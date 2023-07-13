@@ -75,11 +75,9 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 	const handleCloseBlock = () => {
 		setOpenBlock(false);
-
 	}
 
 	const handleProfile = async (name: string) => {
-
 		await api
 		.get('http://localhost:4001/user/userprofile', {
 				params: {
@@ -142,7 +140,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					{!isPrivateConv && <ChannelMenu />}
 				</Stack>
 			</Stack>
-			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef}/>}
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
 		</Box>
 		)
 }
