@@ -19,6 +19,7 @@ import { io } from "socket.io-client";
 import { useAppDispatch } from "../../utils/redux-hooks";
 import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
 import { UserDetails } from "../../types/users/userType";
+import { FetchUsersDb } from "../../redux-features/friendship/friendshipSlice";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -45,6 +46,9 @@ function CreateChannel(props : CreateChannelProps) {
 		outgoing: true,
 		channel: newName,
 	}
+
+	// when the search component is mounted the first time, get the list of users
+	React.useEffect(() => {appDispatch(FetchUsersDb())}, [appDispatch]);
 
 	const channelCreation = async () => {
 		
