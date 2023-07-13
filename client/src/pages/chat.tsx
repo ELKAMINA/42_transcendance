@@ -16,11 +16,9 @@ import { emptyChannel } from '../data/emptyChannel';
 function Chat () {
 	const currentRoute = window.location.pathname;
 	const AppDispatch = useAppDispatch();
+
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 	const displayedChannel : Channel = useAppSelector(selectDisplayedChannel);
-	console.log('displayedChannel = ', displayedChannel);
-	
-	const currentUser = useAppSelector(selectCurrentUser);
 
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0) {
@@ -29,22 +27,9 @@ function Chat () {
 			return displayedChannel.name;
 		}
 	})
-
-	// useEffect(() => {
-	// 	AppDispatch(fetchUserChannels());
-	// 	if (channels.length === 0) {
-	// 		AppDispatch(fetchDisplayedChannel('WelcomeChannel'));
-	// 	} else {
-	// 		console.log('selectedChannel = ', selectedChannel);
-	// 		AppDispatch(fetchDisplayedChannel(selectedChannel));
-	// 	}
-	// }, []);
 	
 	useEffect(() => {
-		console.log('I am triggered and selectedChannel = ', selectedChannel);
 		if (selectedChannel !== '') {
-			// // localStorage.setItem('selectedChannel', selectedChannel);
-			// localStorage.setItem('user', currentUser);
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
 			AppDispatch(fetchUserChannels());
 		}
@@ -53,19 +38,6 @@ function Chat () {
 	function handleSelectChannel (channelName : string) {
 		setSelectedChannel(channelName);
 	}
-
-	// clean up the local storage when the window / tab is closed
-	// useEffect(() => {
-	// 	const clearLocalStorage = () => {
-	// 		localStorage.clear();
-	// 	};
-
-	// 	window.addEventListener('beforeunload', clearLocalStorage);
-
-	// 	return () => {
-	// 		window.removeEventListener('beforeunload', clearLocalStorage);
-	// 	};
-	// }, []);
 
 	return (
 		<Provider store={store}>
