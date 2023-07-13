@@ -29,7 +29,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 	
 	// the userList for the search bar
-	const [results, setResults] = useState<(UserDetails| Channel)[]>([])
+	const [results, setResults] = useState<(UserDetails | Channel)[]>([])
 	
 	function getSelectedItem (selectedItem : string) {
 		handleSelectItem(selectedItem)
