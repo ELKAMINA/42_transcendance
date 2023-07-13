@@ -45,7 +45,7 @@ export function PersonalInformation () {
     React.useEffect(() => {
         setErrMsg('')
     }, [nickname, password])
-    console.log('user actuel ', currUser)
+    // console.log('user actuel ', currUser)
     React.useEffect(() => {
         sock.connect()
         sock.on('connect', () => {

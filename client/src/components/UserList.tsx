@@ -11,17 +11,24 @@ import { useAppSelector } from '../utils/redux-hooks';
 import { Channel } from '../types/chat/channelTypes';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
-type UserListProp = {
-	channelMembers : UserDetails[],
+type UserListProps = {
+	updatedAdmins? : UserDetails[],
+	setUpdatedAdmins : (admins : UserDetails[]) => void,
 }
 
-export default function UserList() {
+export default function UserList({setUpdatedAdmins} : UserListProps) {
 	const selectedChannel : Channel = useAppSelector((state) => selectDisplayedChannel(state));
 	const channelAdmins : UserDetails[] = selectedChannel.admins;
 	const channelMembers : UserDetails[] = selectedChannel.members;
-	const adminIndexes : number[] = channelAdmins.map(admin => channelMembers.indexOf(admin));
-	console.log('admin indexes = ', adminIndexes);
-  	const [checked, setChecked] = React.useState<number[]>(adminIndexes);
+
+	const adminIndexes : number[] = [];
+	for (let i = 0; i < channelAdmins.length; i++) {
+		if (channelAdmins[i].login === channelMembers[i].login)
+			adminIndexes.push(i);
+	}
+
+	const [checked, setChecked] = React.useState<number[]>(adminIndexes[0] === -1 ? [0] : adminIndexes);
+
   
 	const handleToggle = (value: number) => () => {
 		
@@ -35,7 +42,8 @@ export default function UserList() {
 	    }
 
     	setChecked(newChecked);
-		const updatedChannelAdmins: UserDetails[] = newChecked.map((index) => channelMembers[index]);
+		const updatedAdmins: UserDetails[] = [selectedChannel.createdBy, ...newChecked.map((index) => channelMembers[index])];
+		setUpdatedAdmins(updatedAdmins);
   	};
 
   return (

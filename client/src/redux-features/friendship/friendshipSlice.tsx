@@ -64,7 +64,7 @@ export function FetchAllFriendRequests() {
         await api
         .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-            console.log('je rentre ici ', res.data);
+            // console.log('je rentre ici ', res.data);
             dispatch(updateAllRequests(res.data))})
         .catch((e) => {console.log("error ", e)});
   }
@@ -129,7 +129,7 @@ export function FetchAllBlockedFriends() {
         await api
         .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-			console.log(' BLOCKED FRIENDS ', res.data )
+			// console.log(' BLOCKED FRIENDS ', res.data )
             dispatch(updateBlockedFriends((res.data).values(res.data)))})
         .catch((e) => {console.log("error ", e)});
   }

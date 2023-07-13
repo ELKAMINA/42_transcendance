@@ -8,13 +8,36 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import UserList from './UserList';
-import { useAppSelector } from '../utils/redux-hooks';
-import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { UserDetails } from '../types/users/userType';
+import api from '../utils/Axios-config/Axios';
+import { Channel } from '../types/chat/channelTypes';
 
 export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+	// const updatedAdmins : UserDetails[] = [];
+	const selectedChannel : Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	const [updatedAdmins, setUpdatedAdmins] = React.useState<UserDetails[]>([]);
+	const AppDispatch = useAppDispatch();
+
+	async function updateAdmins() : Promise<void> {
+		await api
+			.post('http://localhost:4001/channel/updateAdmins', {
+				channelName : {name : selectedChannel.name},
+				admins : updatedAdmins,
+			})
+			.then((response) => {
+				console.log("response = ", response)
+				AppDispatch(fetchUserChannels());
+				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
+			})
+			.catch((error) => console.log('error while updating admins : ', error))
+	}
+
 	const handleClose = () => {
+		updateAdmins();
 		setOpenDialog(false);
 	};
 
@@ -35,7 +58,7 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 				An administrator can kick out, ban or mute another
 				member of the channel, except the owner. 
 			</DialogContentText>
-			<UserList />
+			<UserList updatedAdmins={updatedAdmins} setUpdatedAdmins={setUpdatedAdmins}/>
 		</DialogContent>
 		<DialogActions>
 			<Button onClick={handleClose} autoFocus>

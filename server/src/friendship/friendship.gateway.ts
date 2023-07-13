@@ -102,7 +102,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
-    console.log('... client sending :', body);
+    // console.log('... client sending :', body);
     await this.friends.requestFriendship(body.sender, body.receiver.nickname);
     this.io.emit('friendAdded', '');
   }
@@ -112,7 +112,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
-    console.log('... client sending :', body);
+    // console.log('... client sending :', body);
     const user = await this.friends.acceptFriend(
       body.sender,
       body.receiver.nickname,
@@ -125,7 +125,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
-    console.log('... client sending :', body);
+    // console.log('... client sending :', body);
     const user = await this.friends.denyFriend(
       body.sender.nickname,
       body.receiver,
@@ -138,7 +138,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
-    console.log('... client sending :', body);
+    // console.log('... client sending :', body);
     const user = await this.friends.blockFriend(
       body.sender,
       body.receiver.nickname,
@@ -215,7 +215,7 @@ export class FriendshipGateway
           this.io.emit('newCookie', data);
           return newTokens;
         } catch(e) {
-          console.log('lerreuuuuuur ', e);
+        //   console.log('lerreuuuuuur ', e);
           throw new ForbiddenException('Invalid access and refresh tokens');
         }
       }

@@ -116,7 +116,7 @@ export function fetchUserIsAMemberChannels() {
 				"http://localhost:4001/channel/ismember",
 				requestBody
 			);
-			console.log('getting is member channels from database = ', response.data);
+			// console.log('getting is member channels from database = ', response.data);
 			dispatch(updateMemberedChannels(response.data));
 		} catch (error) {
 			console.log('error while getting is member channels from database', error);

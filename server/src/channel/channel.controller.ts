@@ -6,6 +6,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 
 import { ChannelService } from 'src/channel/channel.service';
+import { UserDetails } from 'src/user/types';
+import { Channel, User } from '@prisma/client';
 
 @Controller('channel')
 @ApiTags('channel')
@@ -68,5 +70,11 @@ export class channelController {
 	@Public() // TODO - remove public
 	checkPwd(@Body() requestBody : {pwd : string, obj : {name: string}}): Promise<boolean> {
 			return this.ChannelService.checkPwd(requestBody);
+		}
+
+	@Post('/updateAdmins')
+	@Public() // TODO - remove public
+	updateAdmins(@Body() requestBody : {channelName : {name : string}, admins: User[]}): Promise<Channel> {
+			return this.ChannelService.updateAdmins(requestBody);
 		}
 }

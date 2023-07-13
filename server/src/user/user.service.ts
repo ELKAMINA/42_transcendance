@@ -54,7 +54,7 @@ export class UserService {
             login: userInfo.oldNick,
           }
         })
-        console.log('le user ', userInfo);
+        // console.log('le user ', userInfo);
         // const {login, hash, avatar, email} = user
         if ((await argon.verify(user.hash, userInfo.pwd) == false) && userInfo.pwd != ''){
           const newHashedPwd = (await argon.hash(userInfo.pwd))
@@ -102,7 +102,7 @@ export class UserService {
             login: userInfo.login,
           }
         })
-        console.log('le user apres modif ', finalUser);
+        // console.log('le user apres modif ', finalUser);
         return finalUser
     }
     catch(error: any){

@@ -136,8 +136,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					>
 						<RemoveCircleIcon />
 					</IconButton>
-					<Divider orientation="vertical" flexItem/>
-					<ChannelMenu />
+					{!isPrivateConv && <Divider orientation="vertical" flexItem/>}
+					{!isPrivateConv && <ChannelMenu />}
 				</Stack>
 			</Stack>
 			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
