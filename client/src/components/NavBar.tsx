@@ -23,6 +23,7 @@ import { io } from 'socket.io-client';
 import api from '../utils/Axios-config/Axios';
 import Cookies from 'js-cookie';
 import e from 'express';
+import { fetchDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 interface NavbarProps {
     currentRoute: string;
@@ -59,6 +60,11 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
 			console.log('ERROR from request with params ', e)
 		})
     }
+
+	useEffect(() => {
+		console.log('reset displayed channel')
+		dispatch(fetchDisplayedChannel('WelcomeChannel')); // reset displayed channel to WelcomeChannel
+	}, [logout]) // means this useEffect will be triggered every time the logout function is called
 
     const logOut = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       event.preventDefault();
