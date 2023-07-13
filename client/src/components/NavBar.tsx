@@ -62,7 +62,6 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     }
 
 	useEffect(() => {
-		console.log('reset displayed channel')
 		dispatch(fetchDisplayedChannel('WelcomeChannel')); // reset displayed channel to WelcomeChannel
 	}, [logout]) // means this useEffect will be triggered every time the logout function is called
 
