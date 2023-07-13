@@ -54,6 +54,57 @@ export class channelController {
 			return this.ChannelService.getDisplayedChannel(requestBody);
 		}
 
+	
+	
+	
+	
+	@Post('/fetchUserPrivateChannels')
+	@Public() // TODO - remove public
+	getUserPrivateChannels(
+		@Body() requestBody : {}): Promise<object> {
+				return this.ChannelService.getUserPrivateChannels(requestBody);
+		}
+
+	@Post('/fetchUserPublicChannels')
+	@Public() // TODO - remove public
+	getUserPublicChannels(
+		@Body() requestBody : {}): Promise<object> {
+				return this.ChannelService.getUserPublicChannels(requestBody);
+		}
+
+	@Post('/fetchUserPrivateConvs')
+	@Public() // TODO - remove public
+	getUserPrivateConvs(
+	@Body() requestBody : {}): Promise<object> {
+			return this.ChannelService.getUserPrivateConvs(requestBody);
+	}
+
+	@Post('/fetchPrivateChannels')
+	@Public() // TODO - remove public
+	getPrivateChannels(): Promise<object> {
+				return this.ChannelService.getAllPrivateChannelsInDatabase();
+		}
+
+	@Post('/fetchPublicChannels')
+	@Public() // TODO - remove public
+	getPublicChannels(): Promise<object> {
+				return this.ChannelService.getAllPublicChannelsInDatabase();
+		}
+
+	@Post('/fetchPrivateConvs')
+	@Public() // TODO - remove public
+	getPrivateConvs(): Promise<object> {
+				return this.ChannelService.getAllPrivateConvsInDatabase();
+		}
+
+
+
+
+
+
+
+
+
 	@Post('/deleteChannelByName')
 	@Public() // TODO - remove public
 	deleteChannelByName(@Body() requestBody : {name : string | string[]}): Promise<void> {

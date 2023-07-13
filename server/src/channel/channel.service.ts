@@ -193,6 +193,178 @@ export class ChannelService {
 		return channel;
 	}
 
+
+
+
+
+
+	async getUserPrivateChannels(requestBody: {}): Promise<object> {
+		try {
+			const user = await this.prisma.user.findUnique({
+				where: requestBody,
+				// the include option means that when fetching the user information, 
+				// the response will include the 'channels' and 
+				// 'createdChannels' fields of the user in 
+				// addition to the main user entity.
+				include: {
+					channels: {
+						where: {
+							type: 'private' // Filter channels by type 'private'
+						},
+						include: {
+							members: true,
+							admins: true,
+							createdBy: true,
+							chatHistory: true,
+						}
+					},
+					createdChannels: {
+						where: {
+							type: 'private' // Filter channels by type 'private'
+						},
+						include: {
+							members: true,
+							admins: true,
+							createdBy: true,
+							chatHistory: true,
+						}
+					},
+				}
+			});
+	
+			if (!user) {
+				throw new NotFoundException('User not found');
+			}
+	
+			const output = [...user.channels, ...user.createdChannels];
+			return output;
+		} catch (error : any) {
+			console.log('error = ', error);
+		}
+	}
+
+
+	async getUserPublicChannels(requestBody: {}): Promise<object> {
+		try {
+			const user = await this.prisma.user.findUnique({
+				where: requestBody,
+				// the include option means that when fetching the user information, 
+				// the response will include the 'channels' and 
+				// 'createdChannels' fields of the user in 
+				// addition to the main user entity.
+				include: {
+					channels: {
+						where: {
+							type: 'public' // Filter channels by type 'public'
+						},
+						include: {
+							members: true,
+							admins: true,
+							createdBy: true,
+							chatHistory: true,
+						}
+					},
+					createdChannels: {
+						where: {
+							type: 'public' // Filter channels by type 'public'
+						},
+						include: {
+							members: true,
+							admins: true,
+							createdBy: true,
+							chatHistory: true,
+						}
+					},
+				}
+			});
+	
+			if (!user) {
+				throw new NotFoundException('User not found');
+			}
+	
+			const output = [...user.channels, ...user.createdChannels];
+			return output;
+		} catch (error : any) {
+			console.log('error = ', error);
+		}
+	}
+
+
+	async getUserPrivateConvs(requestBody: {}): Promise<object> {
+		try {
+			const user = await this.prisma.user.findUnique({
+				where: requestBody,
+				// the include option means that when fetching the user information, 
+				// the response will include the 'channels' and 
+				// 'createdChannels' fields of the user in 
+				// addition to the main user entity.
+				include: {
+					channels: {
+						where: {
+							type: 'privateConv' // Filter channels by type 'privateConv'
+						},
+						include: {
+							members: true,
+							admins: true,
+							createdBy: true,
+							chatHistory: true,
+						}
+					},
+					createdChannels: {
+						where: {
+							type: 'privateConv' // Filter channels by type 'privateConv'
+						},
+						include: {
+							members: true,
+							admins: true,
+							createdBy: true,
+							chatHistory: true,
+						}
+					},
+				}
+			});
+	
+			if (!user) {
+				throw new NotFoundException('User not found');
+			}
+	
+			const output = [...user.channels, ...user.createdChannels];
+			return output;
+		} catch (error) {
+			console.log('error : ', error);
+		}
+	}
+
+	async getAllPrivateChannelsInDatabase(): Promise<object> {
+		const channels = await this.prisma.channel.findMany({
+			where: {
+				type: 'private' // Filter channels by type 'private'
+			}
+		});
+		
+		return channels;
+	}
+
+	async getAllPublicChannelsInDatabase(): Promise<object> {
+		const channels = await this.prisma.channel.findMany({
+			where: {
+				type: 'public' // Filter channels by type 'public'
+			}
+		});
+		
+		return channels;
+	}
+
+	async getAllPrivateConvsInDatabase(): Promise<object> {
+		const channels = await this.prisma.channel.findMany({
+			where: {
+				type: 'privateConv' // Filter channels by type 'privateConv'
+			}
+		});
+		
+		return channels;
+	}
+
 	async checkPwd(requestBody: {pwd: string, obj : {name : string}}) : Promise<boolean> {
 		try {
 			const channel = await this.prisma.channel.findUnique({
