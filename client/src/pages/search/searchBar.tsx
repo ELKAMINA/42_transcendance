@@ -34,7 +34,7 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 		!channel.members?.some(user => user.login === currentUserName) && 
 		channel.createdBy?.login !== currentUserName
 	));
-	console.log('channels = ', channels);
+	// console.log('channels = ', channels);
 	const usersAndChannels = [...friends, ...channels]; // join friends and channels
 	
 	function displayResult(value:string) {
