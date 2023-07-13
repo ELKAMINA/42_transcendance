@@ -24,7 +24,7 @@ function Tfa () {
         //   dispatch(setTokens({...res.data})); navigate('/welcome')})
         // .catch((e) => {console.log("error ", e)});
         const tfaAuthenitcation = await tfaAuthenticate({TfaCode, nickname}).unwrap()
-        console.log('tfaaaaa ', tfaAuthenitcation)
+        // console.log('tfaaaaa ', tfaAuthenitcation)
       }
     return (
         <div>

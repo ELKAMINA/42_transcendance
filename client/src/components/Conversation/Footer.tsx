@@ -46,9 +46,9 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 	async function sendMessage() {
 		let UserToCheck: any;
 		if (displayedChannel.type === 'privateConv'){
-			console.log('To whom we want to speak ', displayedChannel.name);
-			console.log("the current user is = ", user)
-			console.log(`${user} sends a message to ${displayedChannel.name}`)
+			// console.log('To whom we want to speak ', displayedChannel.name);
+			// console.log("the current user is = ", user)
+			// console.log(`${user} sends a message to ${displayedChannel.name}`)
 			try {
 				UserToCheck = await FetchUserByName(displayedChannel.name)
 				

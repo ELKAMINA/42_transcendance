@@ -13,7 +13,7 @@ export class SessionSerializer extends PassportSerializer {
 
   serializeUser(user: User, done: Function) {
     // to convert a user object into a session object
-    console.log('Serialize the User', user);
+    // console.log('Serialize the User', user);
     done(null, user);
   }
 

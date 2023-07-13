@@ -20,7 +20,7 @@ const Chat = () => {
 
     useEffect(() => {
         socket.on("MsgToClient", (data) => {
-            console.log('la data qui revient ', data)
+            // console.log('la data qui revient ', data)console.log(
         // dispatch(sendMessage(data));
         });
     }, []);

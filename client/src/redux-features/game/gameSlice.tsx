@@ -88,7 +88,7 @@ export function FetchTotalPlayers() {
         await api
         .get("http://localhost:4001/global/totalPlayers")
         .then((res) => {
-            console.log('Total Players ', res.data);
+            // console.log('Total Players ', res.data);
             dispatch(updateTotalPlayers(res.data))
         }
         )

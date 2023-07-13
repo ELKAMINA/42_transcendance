@@ -131,12 +131,12 @@ export default class AuthController {
   // @Redirect('http://localhost:3000/welcome')
   @HttpCode(200)
   async authenticate(@Req() request, @Body() body, @Res() res) {
-    console.log('2 normalement je rentre ci ', body)
+    // console.log('2 normalement je rentre ci ', body)
     const validation = await this.authService.isTwoFactorAuthenticationCodeValid(
       body.tfaCode,
       body.nickname,
     );
-    console.log('validation ', validation)
+    // console.log('validation ', validation)
     const payload = this.authService.loginWith2fa(body.nickname, res)
     return payload;
   }

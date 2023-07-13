@@ -24,7 +24,7 @@ const authSlice = createSlice({
     initialState: { nickname:"", access_token: "", refresh_token: "", qrCode: "", avatar: undefined, tfaAuth: false, tfaState: 'Two Factor authentication is Off', afterSub: false, tfaInput: false } as authState,
     reducers: {
         setSignCredentials: (state, action) => {
-            console.log('payloooaad ', action.payload)
+            // console.log('payloooaad ', action.payload)
             const { nickname } = action.payload
             const {access_token, refresh_token} = action.payload.tokens
             state.access_token = access_token

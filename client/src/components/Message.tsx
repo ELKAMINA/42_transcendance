@@ -19,7 +19,7 @@ const Chat = () => {
     // const chat = useSelector((state) => state?.chat);
     // const username = useSelector((state) => state?.user?.name);
     const sendMessage = () => {
-        console.log('lol');
+        // console.log('lol');
         socket.emit('MsgToServer', {msg:"Hello, i'm the client REACT"})
         // const socket = io('http://localhost:4001/chat');   
         // socket.on("MsgToClient", (data) => {
@@ -29,15 +29,15 @@ const Chat = () => {
         };
 
         socket.on('onMessage', (data)=> {
-            console.log("la data reçue du serveur ", data);
+            // console.log("la data reçue du serveur ", data);
         });
         
         useEffect(() => {
             socket.on('connect', () => {
-                console.log('From Client side --  Connected ')
+                // console.log('From Client side --  Connected ')
             })
             return () => {
-                console.log('Unregistering events...');
+                // console.log('Unregistering events...');
                 socket.off('onMessage');
             }
         } //when the component mounts, the connection between server and client is on

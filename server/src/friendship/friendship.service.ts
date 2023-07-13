@@ -225,8 +225,8 @@ async ismyfriend(body) {
 
   async blockFriend(senderId: string, recId: string) {
     try {
-      console.log('sender ', senderId);
-      console.log('rec ', recId);
+    //   console.log('sender ', senderId);
+    //   console.log('rec ', recId);
       const user = await this.prisma.user.update({
         where: { login: senderId },
         data: {
