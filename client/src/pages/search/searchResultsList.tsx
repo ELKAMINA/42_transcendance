@@ -6,24 +6,25 @@ import { Channel } from "../../types/chat/channelTypes.ts";
 
 
 interface SearchResultsListProps {
-  results: (UserDetails | Channel)[];
+  	results: (UserDetails | Channel)[];
+	getSelectedItem: (item: string) => void;
 }
 
 // this will display the list of all the users whose names matches the input
 // results should be an array of Users
-const SearchResultsList: React.FC<SearchResultsListProps> = ({ results }) => {
+const SearchResultsList: React.FC<SearchResultsListProps> = ({ results, getSelectedItem } : SearchResultsListProps) => {
   return (
     <div className="results-list">
 		{results.map((result, id) => {
 			let name: string | undefined;
 	
 			if ('login' in result) {
-			name = result.login;
+				name = result.login;
 			} else if ('name' in result) {
-			name = result.name;
+				name = result.name;
 			}
 	
-			return name ? <SearchResult result={name} key={id} /> : null;
+			return name ? <SearchResult result={name} key={id} getSelectedItem={getSelectedItem}/> : null;
 		})}
 
     </div>
