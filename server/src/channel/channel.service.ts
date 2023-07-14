@@ -172,7 +172,14 @@ export class ChannelService {
 	}
 
 	async getAllChannelsInDatabase(): Promise<object> {
-		const channels = await this.prisma.channel.findMany();
+		const channels = await this.prisma.channel.findMany({
+			include: {
+				members: true,
+				admins: true,
+				createdBy: true,
+				chatHistory: true,
+			  }
+		});
 		return channels;
 	}
 
