@@ -205,7 +205,7 @@ export class AuthService {
   }
 
   async logout(userInfo: string) {
-    console.log('userInfo, userInfo', userInfo)
+    // console.log('userInfo, userInfo', userInfo)
     await this.prisma.user.updateMany({
       where: {
         login: userInfo,
