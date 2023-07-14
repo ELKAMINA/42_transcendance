@@ -9,9 +9,9 @@ import Navbar from '../components/NavBar';
 import Cookies from 'js-cookie';
 // import { ConnectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllUsers } from '../redux-features/friendship/friendshipSlice';
+import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllSuggestions } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-features/friendship/friendshipSlice';
-import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends, FetchAllBlockedFriends } from '../redux-features/friendship/friendshipSlice';
+import { FetchSuggestions, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentAccessToken, setOnlyTokens } from '../redux-features/auth/authSlice';
 
 
@@ -27,46 +27,36 @@ export const socket = io('http://localhost:4001/friendship', {
 function Suggestions () {
   const dispatch = useAppDispatch();
   let suggestions = useAppSelector(selectSuggestions);
-      useEffect(() => {
-        socket.connect()
-        socket.on('connect', () => {
-          // console.log("la socket id ", socket.id);
-          // dispatch(updateSocketId(socket.id));
-          dispatch(FetchAllUsers());
+  useEffect(() => {
+    socket.connect()
+    socket.on('connect', () => {
+      dispatch(FetchSuggestions());
+    })
+    return () => {  // cleanUp function when component unmount
+    }
+  }, [])
+  useEffect(() => {
+      socket.on('newUserConnected', () => {
+        socket.emit('realTimeUsers');
+        socket.on('realTimeUsers', (allUsers) => {
+          dispatch(FetchSuggestions());
         })
-        return () => {  // cleanUp function when component unmount
-          console.log('Suggestions - Unregistering events...');
-          // // socket.disconnect();
-          // dispatch(updateSocketId(''));
-          // socket.off('denyFriend');
-          // socket.off('friendAdded')
-          // socket.off('connect');
-        }
-      }, [])
-      useEffect(() => {
-          socket.on('newUserConnected', () => {
-            socket.emit('realTimeUsers');
-            socket.on('realTimeUsers', (allUsers) => {
-              dispatch(FetchAllUsers());
-            })
-          })
-          socket.on('newCookie', (data) => {
-            // console.log('loooool je rentre ici ')
-            dispatch(setOnlyTokens({...data}));
-            const serializeData = JSON.stringify(data);
-            Cookies.set('Authcookie', serializeData, { path: '/' });
-          })
-          socket.on('friendAdded', () => {
-            dispatch(FetchAllUsers())
-          })
-          socket.on('denyFriend', () => {
-            dispatch(FetchAllUsers())
-          })
-          return () => {  // cleanUp function when component unmount
-            console.log('Suggestions - Unregistering events...');
-          }
-        }, [dispatch]);
-        suggestions = useAppSelector(selectSuggestions)
+      })
+      socket.on('newCookie', (data) => {
+        dispatch(setOnlyTokens({...data}));
+        const serializeData = JSON.stringify(data);
+        Cookies.set('Authcookie', serializeData, { path: '/' });
+      })
+      socket.on('friendAdded', () => {
+        dispatch(FetchSuggestions())
+      })
+      socket.on('denyFriend', () => {
+        dispatch(FetchSuggestions())
+      })
+      return () => {  // cleanUp function when component unmount
+      }
+    }, [dispatch]);
+      suggestions = useAppSelector(selectSuggestions)
         
         const content = (
     <div>
@@ -95,8 +85,6 @@ function Requests () {
   useEffect(() => {
     socket.connect()
     socket.on('connect', () => {
-      // console.log("la socket id ", socket.id);
-      // dispatch(updateSocketId(socket.id));
       dispatch(FetchAllFriendRequests());
     })
     dispatch(FetchAllFriendRequests());
@@ -110,28 +98,14 @@ function Requests () {
      dispatch(FetchAllFriendRequests());
 
     })
-    // socket?.on('blockFriend', (data: any) => {
-    //   // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
-    //   // console.log("les requests restantes", data.FriendRequestReceived);
-    //  dispatch(updateBlockedFriends(data.blockedFriends))
-    // })
     socket?.on('denyFriend', () => {
-      // Il faut trier pour ne laisser que les amis dont le statut de la friendRequest est tjrs en cours
-      // console.log("les requests restantes", data.FriendRequestReceived);
       dispatch(FetchAllFriendRequests());
     })
     return () => {
-      // console.log('Unregistering events...');
-      // socket.disconnect();
-      // socket.off('onMessage');
     }
   }, [dispatch]);
-  // socket = useAppSelector(selectSocket)
   const friendsRequests = useAppSelector(selectFrRequests);
-  // console.log('requestssss', friendsRequests);
-  // FriendReqSocket.on('friendRequestFromServer', (dataServer) => {
-  //   console.log(dataServer);
-  // })
+
   
   const content = (
     <div>
@@ -156,8 +130,6 @@ function Friends () {
   useEffect(() => {
     socket.connect()
     socket.on('connect', () => {
-      // console.log("la socket id ", socket.id);
-      // dispatch(updateSocketId(socket.id));
       dispatch(FetchAllFriends());
     })
     dispatch(FetchAllFriends());
@@ -173,13 +145,10 @@ function Friends () {
       
      })
     return () => {
-      console.log('From friends - Unregistering events...');
-      // Disconnect sockets ?
     }
   }, [dispatch]);
   const friends = useAppSelector(selectFriends);
   
-  console.log("frieeeends ", friends);
   const content = (
     <div>
       {/* <Navbar currentRoute={ currentRoute }/> */}

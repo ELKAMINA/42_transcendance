@@ -122,11 +122,11 @@ export class AuthService {
       domain: 'localhost',
       path: '/',
     });
+    // console.log('je suis rentrée ici pour le Cookie ')
   }
 
   async signup(dto: AuthDto, res: Response): Promise<object> {
     const pwd = await argon.hash(dto.password);
-    console.log('dto', dto)
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -135,7 +135,6 @@ export class AuthService {
           avatar: dto.avatar,
         },
       });
-      // console.log("user ", user);
       const tokens = await this.signTokens(user.user_id, user.login);
       await this.updateRtHash(user.user_id, tokens.refresh_token);
       this.setCookie(
@@ -143,10 +142,11 @@ export class AuthService {
           nickname: dto.nickname,
           accessToken: tokens.access_token,
           refreshToken: tokens.refresh_token,
+          // avatar: user.avatar,
         },
         res,
       );
-      return { faEnabled: user.faEnabled, tokens };
+      return { faEnabled: user.faEnabled, tokens, avatar: user.avatar };
     } catch (error: any) {
       if (
         error.constructor.name === Prisma.PrismaClientKnownRequestError.name
@@ -167,6 +167,7 @@ export class AuthService {
           login: dto.nickname,
         },
       });
+      // console.log('le user Vincent ', us);
       if (us && (await argon.verify(us.hash, dto.password)) == false) {
         throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
       }
@@ -192,9 +193,11 @@ export class AuthService {
           nickname: us.login,
           accessToken: tokens.access_token,
           refreshToken: tokens.refresh_token,
+          // avatar: us.avatar,
         },
         res,
       );
+
       return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
     } catch (e: any) {
       if (e.code === 'P2025') {
@@ -263,7 +266,7 @@ export class AuthService {
       user: user.login,
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
-	  avatar: user.avatar,
+	    avatar: user.avatar,
     };
   }
 
@@ -293,11 +296,10 @@ export class AuthService {
       });
       console.log("3 - normalement cest Hamid ", verif)
       if (!verif) {
-        console.log ('error ??')
         throw new UnauthorizedException('Wrong authentication code');
       }
     } catch (e: any) {
-      console.log ('error icii????')
+      console.log ('isTwoFactorAuthenticationCodeValid ERROR = ', e)
       // console.log(e);
     }
   }
@@ -347,7 +349,6 @@ export class AuthService {
   async loginWith2fa(user: string, res: Response) {
     try {
       const usr = await this.userServ.searchUser(user);
-      console.log('le user qui fait TFA', usr)
       const payload = {
         login: usr.login,
         faEnabled: usr.faEnabled,
@@ -363,7 +364,6 @@ export class AuthService {
         },
         res,
       );
-      console.log('4, jarrive jusque là???')
       return {
         login: payload.login,
         access_token: tokens.access_token,

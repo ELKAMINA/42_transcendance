@@ -57,28 +57,29 @@ model User {
   rank                  Int?
   p1                    Match[]         @relation("Player1")
   p2                    Match[]         @relation("Player2")
+  FriendSuggestions     String[]
   // // Channel Management
   // //*** Where the user is member ***//
-  channels        	Channel[]	@relation("Membership")
+  channels              Channel[]       @relation("Membership")
   // //*** Where the user is creator ***//
-  createdChannels 	Channel[]	@relation("ChannelCreator")
+  createdChannels       Channel[]       @relation("ChannelCreator")
   // //*** Where the user is admin ***//
-  adminChannels		Channel[]	@relation("ChannelAdmin")
-  messagesSent    	Message[]	@relation("MessageSender")
+  adminChannels         Channel[]       @relation("ChannelAdmin")
+  messagesSent          Message[]       @relation("MessageSender")
 }
 
 model Channel {
-  name        	String    @unique
-  channelId   	Int       @id @default(autoincrement())
-  members     	User[]    @relation("Membership")
-  createdBy   	User?     @relation("ChannelCreator", fields: [createdById], references: [login], onDelete: SetNull)
-  createdById 	String?
-  admins		User[]		@relation("ChannelAdmin")
-  createdAt   	DateTime  @default(now())
-  updatedAt   	DateTime  @updatedAt
-  type        	String
-  key         	String?
-  chatHistory 	Message[] @relation("channel/message")
+  name        String    @unique
+  channelId   Int       @id @default(autoincrement())
+  members     User[]    @relation("Membership")
+  createdBy   User?     @relation("ChannelCreator", fields: [createdById], references: [login], onDelete: SetNull)
+  createdById String?
+  admins      User[]    @relation("ChannelAdmin")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  type        String
+  key         String?
+  chatHistory Message[] @relation("channel/message")
 }
 
 model Message {

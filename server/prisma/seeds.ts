@@ -13,7 +13,7 @@ async function main() {
     update: {},
     create: {
       login: 'Acliclas',
-      hash: await argon.hash('tutututututu'),
+      hash: await argon.hash('Acliclas'),
       status:
         "Offline",
       fA: 'cava',
@@ -31,7 +31,7 @@ async function main() {
     update: {},
     create: {
       login: 'Fuma',
-      hash: await argon.hash('lululululu'),
+      hash: await argon.hash('Fumafuma'),
       status:
         'Online',
       fA: '',
@@ -49,7 +49,7 @@ async function main() {
     update: {},
     create: {
       login: 'Naykee',
-      hash: await argon.hash('rhoooooooooooooooooo'),
+      hash: await argon.hash('Naykee'),
       status: 'Playing',
       fA: 'salutcava',
       faEnabled: true,

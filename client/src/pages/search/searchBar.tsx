@@ -1,7 +1,7 @@
 import SearchIcon from '@mui/icons-material/Search';
 import "./searchBar.css";
 
-import { FetchAllFriends, FetchAllUsers, selectFriends, selectSuggestions} from '../../redux-features/friendship/friendshipSlice';
+import { FetchAllFriends, FetchSuggestions, selectFriends, selectSuggestions} from '../../redux-features/friendship/friendshipSlice';
 // import { User } from "../../../../server/src/user/types/user-types.user.ts";
 import { UserDetails } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
@@ -18,7 +18,7 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 	// useEffect(() => {dispatch(FetchAllFriends())}, [dispatch]); // get the friends
 	// const friends = useAppSelector(selectFriends) as UserDetails[];
 	// console.log('friends = ', friends);
-	useEffect(() => {dispatch(FetchAllUsers())}, []); // get the friends
+	useEffect(() => {dispatch(FetchSuggestions())}, []); // get the friends
 	const friends = useAppSelector(selectSuggestions) as UserDetails[]
 
 	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []);

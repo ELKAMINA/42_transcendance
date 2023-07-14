@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie';
-import { useDispatch } from 'react-redux';
 
 import "./App.css";
 import Tfa from './pages/tfa';
@@ -11,12 +10,15 @@ import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
 // import { Suggestions, Requests, Friends } from './pages/friendship';
 import UserProfile from './pages/userProfile';
+import { useAppDispatch, useAppSelector } from './utils/redux-hooks';
 import SettingsContainer from './containers/Settings/Settings';
-import { setAvatar, setTokens } from './redux-features/auth/authSlice';
+import { setTokens, setAvatar } from './redux-features/auth/authSlice';
 import FriendshipContainer from './containers/Friendship/Friendship';
+import { useEffect } from 'react';
+import { FetchActualUser, selectActualUser } from './redux-features/friendship/friendshipSlice';
 
 const App = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   let myCookie: string | undefined = Cookies.get('Authcookie');
   if (myCookie !== undefined)
   {
@@ -25,11 +27,17 @@ const App = () => {
       access_token : cookieParsed.accessToken,
       refresh_token : cookieParsed.refreshToken,
       nickname : cookieParsed.nickname,
-	  avatar: cookieParsed.avatar,
+      // avatar: cookieParsed.avatar,
     }
     dispatch(setTokens({...credentials }))
-	dispatch(setAvatar(credentials.avatar))
   }
+  useEffect(() => {
+    dispatch(FetchActualUser())
+  }, [dispatch])
+  
+  const user = useAppSelector(selectActualUser)
+  dispatch(setAvatar(user.avatar))
+
   return (
     <div className="app">
       <Routes>

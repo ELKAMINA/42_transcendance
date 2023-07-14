@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import api from '../utils/Axios-config/Axios';
 import { useLocation } from 'react-router-dom';
-import  UserProfileHeader  from '../components/UserProfile/userProfile-header';
-import { store } from '../app/store';
-import { current } from '@reduxjs/toolkit';
-import Navbar from '../components/NavBar';
-import './userProfile.css';
-import ProfileInfo from '../components/UserProfile/Statistics/ProfileInfo';
 
+import { store } from '../app/store';
+import Navbar from '../components/NavBar';
+import api from '../utils/Axios-config/Axios';
+import ProfileInfo from '../components/UserProfile/Statistics/ProfileInfo';
+import  UserProfileHeader  from '../components/UserProfile/userProfile-header';
+import './userProfile.css';
 
 export function transformData(queryParams: URLSearchParams) {
   const obj: Record<string, string> = {};

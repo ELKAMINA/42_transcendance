@@ -181,7 +181,7 @@ export class FriendshipGateway
 
   async verifyJwtSocketConnections(client: Socket, response: Response) {
     let newTokens;
-    console.log('Coookie ', client.handshake.headers.cookie);
+    // console.log('Coookie ', client.handshake.headers.cookie);
     const userInfo = this.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );

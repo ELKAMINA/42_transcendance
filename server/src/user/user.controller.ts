@@ -1,4 +1,4 @@
-import { Get } from '@nestjs/common';
+import { Get, Body, Post } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators';
@@ -22,4 +22,11 @@ export class UserController {
   getUserProfile(@Query() query: Record<string, any>) {
     return this.userService.getUserProfile(query);
   }
+
+  @Post('/me')
+  @Public()
+  getActualUser(@Body() body) {
+    return this.userService.getActualUser(body);
+  }
+
 }

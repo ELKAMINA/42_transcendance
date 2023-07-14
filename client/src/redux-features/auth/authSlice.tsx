@@ -1,14 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from '../../app/store';
 // import api from "../../utils/Axios-config/Axios";
-import { transformData } from "../../pages/userProfile";
 
 
 interface authState {
     nickname: string,
     access_token: string,
     refresh_token: string,
-    avatar: string | undefined,
+    avatar: string,
     qrCode: string,
     selectedItems: string,
     email: string,
@@ -16,12 +15,13 @@ interface authState {
     tfaState: string,
     afterSub: boolean,
     tfaInput: boolean,
+    user: Record<string, any>,
 }
 
 // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
 const authSlice = createSlice({
     name: 'auth',
-    initialState: { nickname:"", access_token: "", refresh_token: "", qrCode: "", avatar: undefined, tfaAuth: false, tfaState: 'Two Factor authentication is Off', afterSub: false, tfaInput: false } as authState,
+    initialState: { nickname:"", access_token: "", refresh_token: "", qrCode: "", avatar: "", tfaAuth: false, tfaState: 'Two Factor authentication is Off', afterSub: false, tfaInput: false} as authState,
     reducers: {
         setSignCredentials: (state, action) => {
             // console.log('payloooaad ', action.payload)
@@ -41,6 +41,9 @@ const authSlice = createSlice({
             // console.log("RT ", state.refresh_token)
             state.nickname = nickname
         },
+        setAvatar: (state, action) => {
+            state.avatar = action.payload
+        },
         setOnlyTokens: (state, action) => {
             // console.log("Action ", action.payload)
             const {accessToken, refreshToken} = action.payload
@@ -53,9 +56,6 @@ const authSlice = createSlice({
             state.nickname = ""
             state.avatar = ""
             state.qrCode = ""
-        },
-        setAvatar: (state, action: PayloadAction<string>) => {
-            state.avatar = action.payload
         },
         setSelectedItem: (state, action: PayloadAction<string>) => {
             state.selectedItems = action.payload
@@ -80,13 +80,14 @@ const authSlice = createSlice({
         },
         getTfaInput : (state, action: PayloadAction<boolean>) => {
             state.tfaInput = action.payload
-        } 
+        },
+        // getActualUser : (state, action: PayloadAction<{}>) => {
+        //     state.user = action.payload
+        // }
     },
 })
 
 export const { setSignCredentials, logOut, setTokens, setOnlyTokens, setAvatar, setSelectedItem, setNick, setMail, setTfaAuth, setQrCode, setTfaState, setAfterSub, getTfaInput} = authSlice.actions
-
-export default authSlice.reducer
 
 export const selectCurrentUser = (state: RootState) => state.persistedReducer.auth.nickname
 export const selectCurrentAccessToken = (state: RootState) => state.persistedReducer.auth.access_token
@@ -98,3 +99,7 @@ export const selectQrCode = (state: RootState) => state.persistedReducer.auth.qr
 export const selectTfaState = (state: RootState) => state.persistedReducer.auth.tfaState
 export const selectAfterSub = (state: RootState) => state.persistedReducer.auth.afterSub
 export const selectTfaInput = (state: RootState) => state.persistedReducer.auth.tfaInput
+
+export default authSlice.reducer
+
+

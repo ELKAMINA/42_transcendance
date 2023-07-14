@@ -1,7 +1,8 @@
-import Button from '@mui/material/Button';
+import Cookies from 'js-cookie';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import React, { useEffect } from 'react';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home'
@@ -9,21 +10,15 @@ import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 
 import "./Navbar.css";
-import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
-import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken } from '../redux-features/auth/authSlice';
-// import ForumIcon from '@material-ui/icons/Forum';
-// import LogoutIcon from '@mui/icons-material/Logout';
-// import { useDispatch } from 'react-redux';
-import { useLogOutMutation } from '../app/api/authApiSlice';
-import { io } from 'socket.io-client';
-/* *** Internal imports *** */ 
 import api from '../utils/Axios-config/Axios';
-import Cookies from 'js-cookie';
-import e from 'express';
+import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
+import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, setAvatar} from '../redux-features/auth/authSlice';
+import { useLogOutMutation } from '../app/api/authApiSlice';
+import {FetchActualUser, selectActualUser} from '../redux-features/friendship/friendshipSlice';
 
+/* *** Internal imports *** */ 
 interface NavbarProps {
     currentRoute: string;
   }
@@ -31,6 +26,7 @@ interface NavbarProps {
 const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     const dispatch = useAppDispatch();
     const nickname = useAppSelector(selectCurrentUser)
+    const user = useAppSelector(selectActualUser)
     const navigate = useNavigate();
     const [logout] = useLogOutMutation();
     const access_token = useAppSelector(selectCurrentAccessToken)
@@ -72,19 +68,27 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
         event.preventDefault();
         navigate('/settings')
     }
+
     const home = async () => {
         navigate('/welcome')
     }
-    const srcAvatar = useAppSelector(selectCurrentAvatar);
-	// console.log(' Avatar ', srcAvatar)
-    const chat = () => {
 
+    const chat = () => {
         navigate('/chat')
     }
-    const friendship = () => {
 
+    const friendship = () => {
         navigate('/friendship')
     }
+
+    useEffect(() => {
+        dispatch(FetchActualUser())
+        return () => {
+        }
+    }, [dispatch])
+
+    const srcAvatar = useAppSelector(selectCurrentAvatar);
+    console.log('srcAvatar ', srcAvatar)
     let componentToRender;
     // if (currentRoute === '/welcome' ) {
         componentToRender = (

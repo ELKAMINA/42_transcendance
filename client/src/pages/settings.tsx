@@ -49,16 +49,9 @@ export function PersonalInformation () {
     React.useEffect(() => {
         sock.connect()
         sock.on('connect', () => {
-        //   console.log("la socket id ", sock.id);
-          // dispatch(updateSocketId(socket.id));
+
         })
         return () => {  // cleanUp function when component unmount
-          console.log('Settings - Unregistering events...');
-        //   sock.disconnect();
-          // dispatch(updateSocketId(''));
-          // socket.off('denyFriend');
-          // socket.off('friendAdded')
-          // socket.off('connect');
         }
       }, [])
 
@@ -75,12 +68,7 @@ export function PersonalInformation () {
             }
         })
         return () => {  // cleanUp function when component unmount
-          console.log('Settings - Unregistering events...');
-        //   sock.disconnect();
-          // dispatch(updateSocketId(''));
-          // socket.off('denyFriend');
-          // socket.off('friendAdded')
-          // socket.off('connect');
+
         }
       }, [dispatch, setErrMsg])
     const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
@@ -192,7 +180,6 @@ export function Security () {
     const checked = useAppSelector(selectTfaAuth)
     const qrcode = useAppSelector(selectQrCode)
     let [TfaCode, setTfaCode] = React.useState('')
-    const navigate = useNavigate();
     const [confMsg, setConfMsg] = React.useState('')
     const confRef = React.useRef<HTMLInputElement>(null)
     const dispatch = useAppDispatch()

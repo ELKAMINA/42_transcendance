@@ -69,7 +69,7 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		}
 		if (((UserToCheck.blockedBy).find((bl: any) => bl.login === user)) || ((UserToCheck.blocked).find((bl: any) => bl.login === user)) )
 		{
-			console.log("NOOOOOO je peux pas envoyer message ")
+			// console.log("NOOOOOO je peux pas envoyer message ")
 			setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
 			return ;
 		}

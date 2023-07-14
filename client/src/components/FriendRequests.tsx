@@ -13,6 +13,7 @@ import { useState } from "react";
 
 // import { selectSocket } from "../redux-features/friendship/friendshipSlice";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
+import { FetchUserByName } from "../utils/global/global";
 // import { FriendReqSocket } from "../pages/friendship";
 // import { socket } from '../socket'
 import { socket } from '../pages/friendship';
@@ -28,7 +29,21 @@ type FriendshipProps = {
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type}) => {
     const [buttonColor, setButtonColor] = useState('red'); // State to track the button color
     const [blockBgColor, setBlockBgColor] = useState('yellowgreen');
+    const [avt, setAvtr] = useState('')
     const sender = useAppSelector(selectCurrentUser);
+    let rec: any;
+
+    const getTheReceiver = async () => {
+        try {
+            rec = await FetchUserByName(login)
+            setAvtr(rec.avatar)
+            avatar = ''
+            console.log('le user a afficher ', avatar)
+        }
+        catch {
+            console.log('erreur maybe')
+        }
+    }
     const receiver = {
         nickname: login,
         avatar: avatar,
@@ -59,6 +74,9 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
         setButtonColor('grey')
         setBlockBgColor('grey')
     }
+    useEffect(() => {
+        getTheReceiver()
+    }, [])
     return (
         <>
             <Box
@@ -77,7 +95,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
             }}
             >
                 <Stack direction="row" spacing={1} alignItems='center' >
-                    <Avatar src={avatar} sx={{ width: 30, height: 30 }}/>
+                    <Avatar src={avt} sx={{ width: 30, height: 30 }}/>
                     <h3 style={{'color': 'black', 'fontSize': '13px'}}>{login}</h3>
                     {type === "request" && <AddIcon sx={{ color: 'yellow' }} onClick={addFriend}/>}
                     {type === "requestReception" && (

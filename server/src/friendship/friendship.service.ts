@@ -1,10 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
+import { UserService } from 'src/user/user.service';
 
+
+// interface User {
+//   createdAt: string;
+//   updatedAt: string;
+//   user_id: string;
+//   login: string;
+//   email: string ;
+//   hash: string;
+//   rtHash: string;
+//   fA: string ;
+//   faEnabled: string ;
+//   avatar: string;
+//   status: string ;
+//   totalFriends: number;
+//   totalBlockedFriends: number ;
+//   totalMatches: number ;
+//   totalWins: number ;
+//   totalLoss: number ;
+//   level: number ;
+//   rank: number ;
+//   FriendSuggestions: any[]; // ou spécifiez un type approprié ici
+// }
 @Injectable()
 export class FriendshipService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private userServ: UserService) {}
 
   async requestFriendship(senderId: string, receiverId: string) {
     const existingRequest = await this.prisma.friendRequest.findFirst({
@@ -83,6 +106,27 @@ export class FriendshipService {
     }
 }
 
+async getFriendSuggestions(nick: string) {
+  let toDelete: Array<string> = [];
+  let toDisplay: Array<string> = [];
+  const userConcerned = await this.userServ.searchUser(nick);
+  // console.log('le user ', userConcerned.login)
+  const requestedFriends = userConcerned.FriendRequestSent
+  const friendsThatRequested = userConcerned.FriendRequestReceived
+  const friends = userConcerned.friends
+  const friendOf = userConcerned. friendOf
+  requestedFriends.map((e) => toDelete.push(e.receiverId))
+  friendsThatRequested.map((e) => toDelete.push(e.senderId))
+  friends.map((e) => toDelete.push(e.login))
+  friendOf.map((e) => toDelete.push(e.login))
+  toDelete.push(userConcerned.login);
+  // console.log('toDelete ', toDelete)
+  const allUsers = await this.userServ.findAll()
+  const filteredUsers: User[] = allUsers.filter(obj => !toDelete.includes(obj.login))
+  // console.log('suggestions ', filteredUsers)
+  return filteredUsers;
+}
+
 async ismyfriend(body) {
   const resultat = {
     isMyfriend: false,
@@ -152,23 +196,6 @@ async ismyfriend(body) {
   resultat.thoseWhoBlockedMe = amInBlockedArray;
   return resultat;
 }
-  // async getSuggestions()
-
-  // async getAllBlockedFriends(userLogin: string) {
-  //   try {
-  //     const user = await this.prisma.user.findUniqueOrThrow({
-  //       where: {
-  //         login: userLogin,
-  //       },
-  //       include: {
-  //         blockedFriends: true,
-  //       },
-  //     });
-  //     if (user) return user.blockedFriends;
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
 
   async acceptFriend(senderId: string, recId: string): Promise<User> {
     try {
