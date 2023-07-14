@@ -179,7 +179,7 @@ function Friends () {
   }, [dispatch]);
   const friends = useAppSelector(selectFriends);
   
-  console.log("frieeeends ", friends);
+//   console.log("frieeeends ", friends);
   const content = (
     <div>
       {/* <Navbar currentRoute={ currentRoute }/> */}
