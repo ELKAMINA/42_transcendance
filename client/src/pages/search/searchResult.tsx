@@ -8,18 +8,27 @@ import { UserDetails } from "../../types/users/userType";
 import { Channel } from "../../types/chat/channelTypes";
 import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 import api from "../../utils/Axios-config/Axios";
+import AskForPassword from "../../components/AskForPassword";
+import { useState } from "react";
+import { emptyChannel } from "../../data/emptyChannel";
 
-export const SearchResult = ({ result }: { result: string }) => {
+type SearchResultProps = {
+	result: string ;
+	getSelectedItem: (item: string) => void;
+}
+
+export const SearchResult = ({ result, getSelectedItem }: SearchResultProps) => {
+
+	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = useState(false);
+
 	const AppDispatch = useAppDispatch();
 	const channels = useAppSelector(selectAllChannels) as Channel[];
 	const userChannels : Channel[] = useSelector(selectUserChannels);
 	const friends = useAppSelector(selectFriends) as UserDetails[];
 	const currentuser = useAppSelector(selectCurrentUser);
 
-	const channel = channels.find(channel => channel.name === result);
-	// console.log('channel = ', channel);
-	const friend = friends.find(friend => friend.login === result);
-	// console.log('friend =', friend);
+	const channel = channels.find(channel => channel.name === result); // find result in the list of channels
+	const friend = friends.find(friend => friend.login === result); // find result in the list of friends
 
 	async function createPrivateConv() {
 
@@ -54,32 +63,41 @@ export const SearchResult = ({ result }: { result: string }) => {
 	}
 
 	function onClick() {
-		if (channel) {
-			if (channel.type === 'privateConv' 
-				|| (channel.type === 'private' && (channel.createdBy.login === currentuser || channel.members?.find(member => member.login === currentuser))) 
-				|| channel.type === 'public')
+		if (channel) { // if it is a channel
+			if (channel.key !== '') { // if channel is protected by a password
+				setAlertDialogSlideOpen(true); // open password check dialog slide
+			}
+			else {
 				AppDispatch(fetchDisplayedChannel(result));
-			if (channel.key !== '')
-				console.log('needs password!');
+				// getSelectedItem(result);
+			}
 		}
-		// if selected result is a user, create a new conv if does not exist, or go to existing conv
-		else if (friend) {
-			if (!userChannels.some(channel => channel.name === friend.login)) {
+		else if (friend) { // if selected result is a user
+			if (!userChannels.some(channel => channel.name === friend.login)) { 
 				createPrivateConv();
 			}
 			else {
-				// console.log('you already have a conversation with ', friend.login)
 				AppDispatch(fetchDisplayedChannel(result));
+				// getSelectedItem(result);
 			}
 		}
 	}
 	
+	const PasswordCheckChannel : Channel = channels.find(channel => channel.name === result) || emptyChannel;
 	return (
-		<Box
-			className="search-result"
-			onClick={onClick}
-		>
-		{result}
+		<Box>
+			<Box
+				className="search-result"
+				onClick={onClick}
+			>
+			{result}
+			</Box>
+			<AskForPassword
+				AlertDialogSlideOpen={AlertDialogSlideOpen}
+				setAlertDialogSlideOpen={setAlertDialogSlideOpen}
+				getSelectedItem={getSelectedItem}
+				element={PasswordCheckChannel}
+			/>
 		</Box>
 	);
 };
