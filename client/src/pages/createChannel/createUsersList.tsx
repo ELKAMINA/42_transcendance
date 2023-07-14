@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-import { Stack } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { UserDetails } from '../../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { selectFriends } from '../../redux-features/friendship/friendshipSlice';
@@ -41,9 +41,6 @@ export default function MultipleSelectChip() {
 	const dispatch = useAppDispatch();
 
 	let friends = useAppSelector(selectFriends) as UserDetails[];
-
-	if (friends.length === 0)
-		friends = [{login: 'no friends to display', avatar: '', email: '', displayName: ''}]
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
@@ -97,6 +94,7 @@ export default function MultipleSelectChip() {
 					</Select>
 				</FormControl>
 			</Stack>
+			{(friends.length === 0) && <Typography variant='body1' sx={{color: 'red'}}> No friends found! </Typography>}
 		</Box>
 	);
 }
