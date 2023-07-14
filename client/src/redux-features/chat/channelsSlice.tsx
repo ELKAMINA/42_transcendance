@@ -212,13 +212,12 @@ export function fetchUserPrivateChannels() {
 		const requestBody = {
 			login: getState().persistedReducer.auth.nickname,
 	  	};
-		console.log('request body baby = ', requestBody);
 	  try {
 			const response = await api.post(
 				"http://localhost:4001/channel/fetchUserPrivateChannels",
 				requestBody
 			);
-			console.log('getting user private channels from database = ', response.data);
+			// console.log('getting user private channels from database = ', response.data);
 			dispatch(updateUserPrivateChannels(response.data));
 
 	  } catch (error) {
@@ -238,7 +237,7 @@ export function fetchUserPublicChannels() {
 				"http://localhost:4001/channel/fetchUserPublicChannels",
 				requestBody
 			);
-			console.log('getting user public channels from database = ', response.data);
+			// console.log('getting user public channels from database = ', response.data);
 			dispatch(updateUserPublicChannels(response.data));
 
 	  } catch (error) {
@@ -258,7 +257,7 @@ export function fetchUserPrivateConvs() {
 				"http://localhost:4001/channel/fetchUserPrivateConvs",
 				requestBody
 			);
-			console.log('getting user private convs from database = ', response.data);
+			// console.log('getting user private convs from database = ', response.data);
 			dispatch(updateUserPrivateConvs(response.data));
 
 	  } catch (error) {
@@ -274,7 +273,7 @@ export function fetchPrivateChannels() {
 			const response = await api.post(
 				"http://localhost:4001/channel/fetchPrivateChannels"
 			);
-			console.log('getting private channels from database = ', response.data);
+			// console.log('getting private channels from database = ', response.data);
 			dispatch(updatePrivateChannels(response.data));
 
 	  } catch (error) {
@@ -290,7 +289,7 @@ export function fetchPublicChannels() {
 			const response = await api.post(
 				"http://localhost:4001/channel/fetchPublicChannels"
 			);
-			console.log('getting public channels from database = ', response.data);
+			// console.log('getting public channels from database = ', response.data);
 			dispatch(updatePublicChannels(response.data));
 
 	  } catch (error) {
@@ -306,7 +305,7 @@ export function fetchPrivateConvs() {
 			const response = await api.post(
 				"http://localhost:4001/channel/fetchPrivateConvs"
 			);
-			console.log('getting private convs from database = ', response.data);
+			// console.log('getting private convs from database = ', response.data);
 			dispatch(updatePrivateConvs(response.data));
 
 	  } catch (error) {
