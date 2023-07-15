@@ -33,6 +33,13 @@ export class FriendshipController {
     return users;
   }
 
+  @Post('/suggestions')
+  async getFriendSuggestions(@Body() body) {
+    const suggestions = await this.friendshipService.getFriendSuggestions(body.nickname);
+    // console.log('suggestions ', suggestions)
+    return suggestions;
+  }
+
 
   @Post('/ismyfriend')
   async ismyfriend(@Body() body) {

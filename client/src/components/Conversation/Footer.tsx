@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import * as React from 'react';
 import { Box, Stack, IconButton, TextField, InputAdornment } from '@mui/material'
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import SendIcon from '@mui/icons-material/Send';
@@ -12,6 +13,9 @@ import { Channel } from '../../types/chat/channelTypes';
 import { ChatMessage } from '../../types/chat/messageType';
 import { FetchUserByName } from '../../utils/global/global';
 import { transformData } from '../../pages/userProfile';
+import Popup from 'reactjs-popup';
+import './Footer.css';
+
 // import { FetchUserByName } from '../../redux-features/friendship/friendshipSlice';
 
 const StyledInput = styled(TextField)(({ theme }) => ({
@@ -32,34 +36,42 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 
 const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 	const user = useAppSelector(selectCurrentUser)
+	const blockRef = React.useRef<HTMLInputElement>(null)
+	const [blockMsg, setBlockMsg] = React.useState('')
 	const dispatch = useAppDispatch()
 	const [value, setValue] = useState("");
 
 	// record message
+	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
+	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
 	function handleChange(e : React.ChangeEvent<HTMLInputElement>) {
 		const input = e.target.value;
 		setValue(input);
 	}
 
-	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
-	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	React.useEffect(() => {
+        setBlockMsg('')
+    }, [displayedChannel])
+
 	async function sendMessage() {
 		let UserToCheck: any;
+		let UserToSee: any;
 		if (displayedChannel.type === 'privateConv'){
 			// console.log('To whom we want to speak ', displayedChannel.name);
 			// console.log("the current user is = ", user)
 			// console.log(`${user} sends a message to ${displayedChannel.name}`)
 			try {
 				UserToCheck = await FetchUserByName(displayedChannel.name)
-				
 			}
 			catch {
 			}
 
 		}
-		if ((UserToCheck.blockedBy).includes(user) === true)
+		if (((UserToCheck.blockedBy).find((bl: any) => bl.login === user)) || ((UserToCheck.blocked).find((bl: any) => bl.login === user)) )
 		{
 			console.log("NOOOOOO je peux pas envoyer message ")
+			setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
+			return ;
 		}
 		else {
 			const messageToBeSent = {
@@ -75,6 +87,7 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 			}
 			send(messageToBeSent);
 		}
+
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -101,6 +114,13 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 			}}
 		>
 			<Stack direction={'row'} alignItems={'center'} spacing={3}>
+				<div 
+					// trigger={<div>TFA</div>}
+					ref={blockRef} className={blockMsg ? "blockmsg" : "offscreen"} 
+						aria-live="assertive"
+				>
+					{blockMsg}
+				</div>
 				<StyledInput
 					onChange = {handleChange}
 					onKeyDown= {handleKeyDown}

@@ -25,10 +25,10 @@ const App = () => {
       access_token : cookieParsed.accessToken,
       refresh_token : cookieParsed.refreshToken,
       nickname : cookieParsed.nickname,
-	  avatar: cookieParsed.avatar,
+	    // avatar: cookieParsed.avatar,
     }
     dispatch(setTokens({...credentials }))
-	dispatch(setAvatar(credentials.avatar))
+	// dispatch(setAvatar(credentials.avatar))
   }
   return (
     <div className="app">
