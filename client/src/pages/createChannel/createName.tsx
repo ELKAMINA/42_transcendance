@@ -31,9 +31,9 @@ function CreateName() {
 	  
 
 	return (
-	<Box>
+	<Box sx={{ flexGrow: 1 }}>
 		<Stack alignItems={'center'} direction={'column'} spacing={1}>
-			<label className='form-channel-name' htmlFor='channelName'></label>
+			<label className='create-channel-label' htmlFor='channelName'></label>
 			<TextField
 				type='channelName'
 				label='enter channel name'
