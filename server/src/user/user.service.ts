@@ -22,6 +22,8 @@ export class UserService {
 			blockedBy: true,
 			friendOf:true,
 			friends: true,
+      FriendRequestReceived: true,
+      FriendRequestSent: true,
 		}
       });
       return user;
@@ -43,6 +45,14 @@ export class UserService {
   async getUserProfile(query: Record<string, any>){
     const { ProfileName } = query;
     const user = await this.searchUser(ProfileName);
+    if (user) return user;
+    else return null;
+  }
+
+  async getActualUser(body){
+    // console.log('le body de la requete ', body)
+    const user = await this.searchUser(body.nickname);
+    // console.log('le user ', user)
     if (user) return user;
     else return null;
   }

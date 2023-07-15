@@ -9,9 +9,9 @@ import Navbar from '../components/NavBar';
 import Cookies from 'js-cookie';
 // import { ConnectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllUsers } from '../redux-features/friendship/friendshipSlice';
+import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllSuggestions } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-features/friendship/friendshipSlice';
-import { FetchAllUsers, FetchAllFriendRequests, FetchAllFriends, FetchAllBlockedFriends } from '../redux-features/friendship/friendshipSlice';
+import { FetchSuggestions, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentAccessToken, setOnlyTokens } from '../redux-features/auth/authSlice';
 
 
@@ -32,7 +32,7 @@ function Suggestions () {
         socket.on('connect', () => {
           // console.log("la socket id ", socket.id);
           // dispatch(updateSocketId(socket.id));
-          dispatch(FetchAllUsers());
+          dispatch(FetchSuggestions());
         })
         return () => {  // cleanUp function when component unmount
           console.log('Suggestions - Unregistering events...');
@@ -47,7 +47,7 @@ function Suggestions () {
           socket.on('newUserConnected', () => {
             socket.emit('realTimeUsers');
             socket.on('realTimeUsers', (allUsers) => {
-              dispatch(FetchAllUsers());
+              dispatch(FetchSuggestions());
             })
           })
           socket.on('newCookie', (data) => {
@@ -57,10 +57,10 @@ function Suggestions () {
             Cookies.set('Authcookie', serializeData, { path: '/' });
           })
           socket.on('friendAdded', () => {
-            dispatch(FetchAllUsers())
+            dispatch(FetchSuggestions())
           })
           socket.on('denyFriend', () => {
-            dispatch(FetchAllUsers())
+            dispatch(FetchSuggestions())
           })
           return () => {  // cleanUp function when component unmount
             console.log('Suggestions - Unregistering events...');

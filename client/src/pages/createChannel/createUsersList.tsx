@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { Stack } from '@mui/material';
 import { UserDetails } from '../../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { FetchAllUsers, selectSuggestions } from '../../redux-features/friendship/friendshipSlice';
+import { FetchSuggestions, selectSuggestions } from '../../redux-features/friendship/friendshipSlice';
 
 
 const ITEM_HEIGHT = 48;
@@ -44,7 +44,7 @@ export default function MultipleSelectChip() {
 	const dispatchSync = useAppDispatch();
 
 	// when the search component is mounted the first time, get the list of users
-	React.useEffect(() => {dispatchSync(FetchAllUsers())}, []);
+	React.useEffect(() => {dispatchSync(FetchSuggestions())}, []);
 
 	// const allUsers:UserDetails[] = useAppSelector(selectSuggestions);
 	const allUsers: UserDetails[] = useAppSelector((state) => selectSuggestions(state) as UserDetails[]);
