@@ -19,6 +19,7 @@ import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
 import api from '../utils/Axios-config/Axios';
 import './settings.css';
+import { FetchActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
 
 export const sock = io('http://localhost:4003', {
   withCredentials: true,
@@ -52,6 +53,7 @@ export function PersonalInformation () {
 
         })
         return () => {  // cleanUp function when component unmount
+            sock.disconnect()
         }
       }, [])
 
@@ -71,6 +73,7 @@ export function PersonalInformation () {
             }
         })
         return () => {  // cleanUp function when component unmount
+            sock.disconnect()
 
         }
       }, [dispatch, setErrMsg])
@@ -187,12 +190,23 @@ export function Security () {
     const confRef = React.useRef<HTMLInputElement>(null)
     const dispatch = useAppDispatch()
 
+    useEffect(() => {
+        dispatch(FetchActualUser())
+    }, [])
+    const actualUser = useAppSelector(selectActualUser)
     const tfa = async () => {
         await api
-        .post("http://0.0.0.0:4001/auth/2fa/generate")
+        .post("http://0.0.0.0:4001/auth/2fa/generate", actualUser)
         .then((res) => {dispatch(setQrCode(res.data));})
         .catch((e) => {console.log("error ", e)});
       }
+    
+      const cancelTfa = async () => {
+        await api
+        .post("http://0.0.0.0:4001/auth/2fa/cancel", {nickname: user})
+        .then((res) => {})
+        .catch((e) => {console.log("error ", e)});
+    }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(setTfaAuth(event.target.checked))
@@ -204,12 +218,13 @@ export function Security () {
             dispatch(setTfaState('Two Factor authentication is Off'))
             dispatch(setQrCode(''))
             setTfaCode('')
+            cancelTfa();
         }
       };
       const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault(); // faire pareil que ci-dessus
         await api
-        .post("http://0.0.0.0:4001/auth/2fa/turn-on", {TfaCode})
+        .post("http://0.0.0.0:4001/auth/2fa/turn-on", {TfaCode, actualUser})
         .then((res) => {
             setConfMsg('Two Factor authentication is now activated')
             setTfaCode('')
@@ -232,7 +247,6 @@ export function Security () {
                     <FormControlLabel control={<Switch
                         checked={checked}
                         onChange={handleChange}
-                        //   inputProps={{ 'aria-label': 'controlled' }}
                     />} label={twofa} sx={{
                     }}/>
                     <Popup 

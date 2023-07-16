@@ -25,6 +25,7 @@ import { FtOauthGuard } from '../guards/42-oauth.guard';
 import { GetCurrentUserOAuth } from '../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId } from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
+import { User } from '@prisma/client';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -109,9 +110,10 @@ export default class AuthController {
   /* 2FA Strategy */
   @Public()
   @Post('2fa/generate')
-  async register(@Res() response: Response, @Req() request) {
+  async register(@Res() response: Response, @Body() body: User) {
+    // console.log('la request ', body)
     const qrCode = await this.authService.generateTwoFactorAuthenticationSecret(
-      request.user,
+      body,
     );
     return response.json(qrCode);
   }
@@ -119,26 +121,36 @@ export default class AuthController {
   @Public()
   @Post('2fa/turn-on')
   async turnOnTwoFactorAuthentication(@Req() request, @Body() body) {
+    // console.log('le body ', body)
     this.authService.isTwoFactorAuthenticationCodeValid(
       body.TfaCode,
-      request.user,
+      body.actualUser.login,
     );
-    this.authService.turnOnTwoFactorAuthentication(request.user.sub);
+    this.authService.turnOnTwoFactorAuthentication(body.actualUser.user_id);
   }
 
   @Public()
   @Post('2fa/authenticate')
-  // @Redirect('http://localhost:3000/welcome')
-  @HttpCode(200)
-  async authenticate(@Req() request, @Body() body, @Res() res) {
-    // console.log('2 normalement je rentre ci ', body)
-    const validation = await this.authService.isTwoFactorAuthenticationCodeValid(
-      body.tfaCode,
+  @HttpCode(HttpStatus.OK)
+  async authenticate(@Req() request, @Body() body, @Res({ passthrough: true }) res: Response) {
+    let payload = null;
+    const validation = this.authService.isTwoFactorAuthenticationCodeValid(
+      body.TfaCode,
       body.nickname,
     );
-    // console.log('validation ', validation)
-    const payload = this.authService.loginWith2fa(body.nickname, res)
+    if (validation){
+      payload = await this.authService.loginWith2fa(body.nickname, res)
+      // console.log('validation ', payload)
+    }
     return payload;
+      // return this.authService.loginWith2fa(body.nickname, res) 
+  }
+
+  @Public()
+  @Post('2fa/cancel')
+  @HttpCode(HttpStatus.OK)
+  async cancelTfa(@Body() body) {
+    this.authService.cancelTfa(body.nickname)
   }
 
   @Public()

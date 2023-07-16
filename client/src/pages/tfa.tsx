@@ -8,6 +8,7 @@ import './home.css';
 import api from '../utils/Axios-config/Axios'
 import { selectCurrentUser, setTokens } from '../redux-features/auth/authSlice';
 import { useTfaAuthenticateMutation } from '../app/api/authApiSlice';
+import axios from 'axios';
 
 function Tfa () {
     const dispatch = useAppDispatch();
@@ -17,14 +18,13 @@ function Tfa () {
     const [tfaAuthenticate] = useTfaAuthenticateMutation();
 
     const handleSubmit = async () => {
-        // await api
-        // .post("http://0.0.0.0:4001/auth/2fa/authenticate", {TfaCode, nickname})
-        // .then((res) => {
-        //   console.log('je dois absolument rentrer ic')
-        //   dispatch(setTokens({...res.data})); navigate('/welcome')})
-        // .catch((e) => {console.log("error ", e)});
-        const tfaAuthenitcation = await tfaAuthenticate({TfaCode, nickname}).unwrap()
-        // console.log('tfaaaaa ', tfaAuthenitcation)
+        try {
+          await tfaAuthenticate({TfaCode, nickname}).unwrap()
+          navigate('/welcome')
+        }
+        catch{
+          console.log('this is shit')
+        }
       }
     return (
         <div>

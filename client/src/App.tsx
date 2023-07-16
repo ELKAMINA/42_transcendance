@@ -31,7 +31,6 @@ const App = () => {
     dispatch(setTokens({...credentials }))
   }
 
-
   return (
     <div className="app">
       <Routes>
@@ -43,8 +42,8 @@ const App = () => {
             <Route path="/friendship" element={<FriendshipContainer />}/>
             <Route path="/userprofile" element={<UserProfile />}/>
             <Route path="/settings" element={<SettingsContainer />}/>
-            <Route path="/tfa" element={<Tfa />}/>
           </Route>
+            <Route path="/tfa" element={<Tfa />}/>
         </Route>
       </Routes>
     </div>
