@@ -88,9 +88,11 @@ export class ChannelService {
 		  }
 	}
 
-	async getUserChannels(requestBody: {}): Promise<object> {
+	async getUserChannels(requestBody: string): Promise<object> {
 		const user = await this.prisma.user.findUnique({
-			where: requestBody,
+			where: {
+				login: requestBody
+			},
 			// the include option means that when fetching the user information, 
 			// the response will include the 'channels' and 
 			// 'createdChannels' fields of the user in 
@@ -123,9 +125,9 @@ export class ChannelService {
 		return output;
 	}
 
-	async getCreatedByUserChannels(requestBody: {}): Promise<object> {
+	async getCreatedByUserChannels(requestBody: string): Promise<object> {
 		const user = await this.prisma.user.findUnique({
-			where: requestBody,
+			where:{login: requestBody},
 			include: {
 				channels : false, 
 				createdChannels: {
@@ -147,9 +149,9 @@ export class ChannelService {
 		return output;
 	}
 
-	async getUserIsAMemberChannels(requestBody: {}): Promise<object> {
+	async getUserIsAMemberChannels(requestBody: string): Promise<object> {
 		const user = await this.prisma.user.findUnique({
-			where: requestBody,
+			where: {login: requestBody},
 			include: {
 				channels: {
 					include: {
@@ -177,9 +179,9 @@ export class ChannelService {
 	}
 
 	// requestBody = {name : <name of the channel>}
-	async getDisplayedChannel(requestBody: {}): Promise<object> {
+	async getDisplayedChannel(requestBody: string): Promise<object> {
 		const channel = await this.prisma.channel.findUnique({
-			where: requestBody,
+			where: {name: requestBody},
 			include: {
 				members: true,
 				admins: true,

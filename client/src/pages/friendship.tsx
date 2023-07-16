@@ -9,10 +9,10 @@ import Navbar from '../components/NavBar';
 import Cookies from 'js-cookie';
 // import { ConnectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllSuggestions } from '../redux-features/friendship/friendshipSlice';
+import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllSuggestions, setSelectedItem } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-features/friendship/friendshipSlice';
 import { FetchSuggestions, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
-import { selectCurrentAccessToken, setOnlyTokens } from '../redux-features/auth/authSlice';
+import { selectCurrentAccessToken, selectCurrentUser, setOnlyTokens } from '../redux-features/auth/authSlice';
 
 
 
@@ -24,23 +24,32 @@ export const socket = io('http://localhost:4001/friendship', {
   // reconnection: true,
 })
 
+export type userInfo = {
+  nickname: string,
+  accessToken: string,
+  refreshToken: string,
+}
+
 function Suggestions () {
   const dispatch = useAppDispatch();
+  const currUser = useAppSelector(selectCurrentUser)
   let suggestions = useAppSelector(selectSuggestions);
   useEffect(() => {
     socket.connect()
     socket.on('connect', () => {
+      console.log('first time ')
       dispatch(FetchSuggestions());
     })
-    return () => {  // cleanUp function when component unmount
+    return () => {
+      socket.disconnect()  // cleanUp function when component unmount
+      // dispatch(setSelectedItem(''))
     }
   }, [])
   useEffect(() => {
-      socket.on('newUserConnected', () => {
-        socket.emit('realTimeUsers');
-        socket.on('realTimeUsers', (allUsers) => {
-          dispatch(FetchSuggestions());
-        })
+      socket.on('newUserConnected', (user: string) => {
+          if (user !== currUser ){
+            dispatch(FetchSuggestions());
+          }
       })
       socket.on('newCookie', (data) => {
         dispatch(setOnlyTokens({...data}));
@@ -55,7 +64,7 @@ function Suggestions () {
       })
       return () => {  // cleanUp function when component unmount
       }
-    }, [dispatch]);
+    }, []);
       suggestions = useAppSelector(selectSuggestions)
         
         const content = (
@@ -88,6 +97,10 @@ function Requests () {
       dispatch(FetchAllFriendRequests());
     })
     dispatch(FetchAllFriendRequests());
+    return () => {
+      socket.disconnect()  // cleanUp function when component unmount
+      // dispatch(setSelectedItem(''))
+    }
   }, [])
   useEffect(() => {
     socket?.on('friendAdded', (data: any) => {
@@ -103,7 +116,7 @@ function Requests () {
     })
     return () => {
     }
-  }, [dispatch]);
+  }, []);
   const friendsRequests = useAppSelector(selectFrRequests);
 
   
@@ -133,6 +146,10 @@ function Friends () {
       dispatch(FetchAllFriends());
     })
     dispatch(FetchAllFriends());
+    return () => {
+      socket.disconnect()  // cleanUp function when component unmount
+      // dispatch(setSelectedItem(''))
+    }
   }, [])
   useEffect(() => {
     socket?.on('friendBlocked', (data: any) => {
@@ -146,7 +163,7 @@ function Friends () {
      })
     return () => {
     }
-  }, [dispatch]);
+  }, []);
   const friends = useAppSelector(selectFriends);
   
   const content = (

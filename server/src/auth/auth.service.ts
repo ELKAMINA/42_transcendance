@@ -193,7 +193,6 @@ export class AuthService {
           nickname: us.login,
           accessToken: tokens.access_token,
           refreshToken: tokens.refresh_token,
-          // avatar: us.avatar,
         },
         res,
       );
@@ -228,22 +227,20 @@ export class AuthService {
         login: userNick,
       },
     });
-    // console.log('le user qui se co ', us);
     if (!us || !us.rtHash) throw new ForbiddenException('1 - Access Denied');
     const rtMatches = await argon.verify(us.rtHash, refreshToken);
     if (rtMatches == false) throw new ForbiddenException('2 - Access Denied');
     const tokens = await this.signTokens(us.user_id, us.login);
     await this.updateRtHash(us.user_id, tokens.refresh_token);
-    // console.log('les tookens from refresh function ', tokens);
     return tokens;
   }
 
   async validateUser(details: UserDetails) {
-    const us = await this.prisma.user.findUnique({
+    const us = await this.prisma.user.findUniqueOrThrow({
       where: {
         login: details.login,
       },
-      rejectOnNotFound: true,
+      // rejectOnNotFound: true,
     });
     if (us) {
       return us;

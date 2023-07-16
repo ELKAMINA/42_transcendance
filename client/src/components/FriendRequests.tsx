@@ -38,7 +38,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
             rec = await FetchUserByName(login)
             setAvtr(rec.avatar)
             avatar = ''
-            console.log('le user a afficher ', avatar)
+            // console.log('le user a afficher ', avatar)
         }
         catch {
             console.log('erreur maybe')

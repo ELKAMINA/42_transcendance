@@ -68,10 +68,9 @@ export class FriendshipGateway
   ) {
     try {
       const sockets = this.io.sockets; // toutes les sockets connectées
-      // console.log('client ', client);
       // console.log('al reponse ', response);
-      this.verifyJwtSocketConnections(client, response);
-      this.io.emit('newUserConnected', {});
+      const user = await this.verifyJwtSocketConnections(client, response);
+      this.io.emit('newUserConnected', user.nickname);
       this.logger.log(`WS Client with id: ${client.id}  connected!`);
       this.logger.debug(`Number of connected sockets ${sockets.size}`);
       this.logger.log(`Client connected: ${client.id}`);
@@ -190,6 +189,7 @@ export class FriendshipGateway
         secret: this.config.get('ACCESS_TOKEN'),
       });
       this.createUser(userInfo, client);
+      return userInfo;
     } catch(error: any) {
       // console.log("ERRROOOOOOR ", error);
       if (error.name === 'TokenExpiredError') {
@@ -219,7 +219,6 @@ export class FriendshipGateway
           throw new ForbiddenException('Invalid access and refresh tokens');
         }
       }
-      // return newTokens;
     }
   }
 

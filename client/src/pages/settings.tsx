@@ -60,11 +60,14 @@ export function PersonalInformation () {
             if (data.status === 403){
                 setErrMsg(data.message);
             }
-            else {
+            else if (data !== null) {
                 if (data.login) dispatch(setNick(data.login));
                 if (data.email) dispatch(setMail(data.email));
                 if (data.avatar) dispatch(setAvatar(data.avatar));
                 setConfMsg('Changes registered')
+            }
+            else{
+                console.log('la data est null')
             }
         })
         return () => {  // cleanUp function when component unmount

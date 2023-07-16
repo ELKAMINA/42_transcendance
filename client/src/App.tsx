@@ -27,16 +27,10 @@ const App = () => {
       access_token : cookieParsed.accessToken,
       refresh_token : cookieParsed.refreshToken,
       nickname : cookieParsed.nickname,
-      // avatar: cookieParsed.avatar,
     }
     dispatch(setTokens({...credentials }))
   }
-  useEffect(() => {
-    dispatch(FetchActualUser())
-  }, [dispatch])
-  
-  const user = useAppSelector(selectActualUser)
-  dispatch(setAvatar(user.avatar))
+
 
   return (
     <div className="app">

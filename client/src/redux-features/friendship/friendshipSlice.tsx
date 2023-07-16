@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import  api  from '../../utils/Axios-config/Axios';
 import { RootState } from '../../app/store';
+import { setAvatar } from "../auth/authSlice";
 
 
 export interface friendshipState {
@@ -68,7 +69,7 @@ return async (dispatch:any, getState: any) => {
     await api
     .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
     .then((res) => {
-        console.log('je rentre ici ', res.data);
+        // console.log('je rentre ici ', res.data);
         dispatch(updateAllRequests(res.data))})
         .catch((e) => {console.log("error ", e)});
     }
@@ -80,6 +81,8 @@ export function FetchActualUser() {
         .post("http://localhost:4001/user/me", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
             dispatch(getActualUser(res.data))
+            // console.log('lavatarr ', (res.data).avatar)
+            dispatch(setAvatar((res.data).avatar))
         })
         .catch((e) => {console.log("error ", e)});
     }
@@ -91,6 +94,10 @@ export function FetchSuggestions() {
         await api
         .post("http://0.0.0.0:4001/friendship/suggestions", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
+            console.log(`Les suggestions d'amis pour ${getState().persistedReducer.auth.nickname} sont : `)
+            res.data.forEach((item: any, index: any) => {
+                console.log(`Friend ${index + 1}:`, item.login);
+              });
             dispatch(updateAllSuggestions(res.data))
         })
         .catch((e) => { console.log('cest lerreur de ta vie ', e)})

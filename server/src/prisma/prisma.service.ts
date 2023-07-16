@@ -8,7 +8,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     super({
       datasources: {
         db: {
-          url: config.get('DATABASE_URL'),
+          url: config.get<string>('DATABASE_URL'),
         },
       },
     });
@@ -18,11 +18,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 
-  async enableShutdownHooks(app: INestApplication) {
-    this.$on('beforeExit', async () => {
-      await app.close();
-    });
-  }
+  // async enableShutdownHooks(app: INestApplication) {
+  //   this.$on('beforeExit', async () => {
+  //     await app.close();
+  //   });
+  // }
 
   // async cleanDatabase() {
   //   if (process.env.NODE_ENV === 'production') return;

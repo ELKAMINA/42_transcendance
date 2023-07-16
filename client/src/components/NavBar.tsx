@@ -88,7 +88,8 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     }, [dispatch])
 
     const srcAvatar = useAppSelector(selectCurrentAvatar);
-    console.log('srcAvatar ', srcAvatar)
+    // console.log('avatar ', srcAvatar)
+
     let componentToRender;
     // if (currentRoute === '/welcome' ) {
         componentToRender = (

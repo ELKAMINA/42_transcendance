@@ -24,22 +24,22 @@ export class channelController {
   	@Post('/userchannels')
   	@Public() // TODO - remove public
   	getUserChannels(
-		@Body() requestBody: {}): Promise<object> {
-			return this.ChannelService.getUserChannels(requestBody);
+		@Body() requestBody): Promise<object> {
+			return this.ChannelService.getUserChannels(requestBody.login);
 		}
 
 	@Post('/createdby')
 	@Public() // TODO - remove public
 	getCreatedByUserChannels(
-		@Body() requestBody : {}): Promise<object> {
-			return this.ChannelService.getCreatedByUserChannels(requestBody);
+		@Body() requestBody): Promise<object> {
+			return this.ChannelService.getCreatedByUserChannels(requestBody.login);
 		}
 	
 	@Post('/ismember')
 	@Public() // TODO - remove public
 	getUserIsAMemberChannels(
-		@Body() requestBody : {}): Promise<object> {
-	 		return this.ChannelService.getUserIsAMemberChannels(requestBody);
+		@Body() requestBody): Promise<object> {
+	 		return this.ChannelService.getUserIsAMemberChannels(requestBody.login);
 		}
 
 	@Post('/all')
@@ -50,8 +50,8 @@ export class channelController {
 
 	@Post('/displayed')
 	@Public() // TODO - remove public
-	getDisplayedChannel(@Body() requestBody : {}): Promise<object> {
-			return this.ChannelService.getDisplayedChannel(requestBody);
+	getDisplayedChannel(@Body() requestBody): Promise<object> {
+			return this.ChannelService.getDisplayedChannel(requestBody.name);
 		}
 
 	@Post('/deleteChannelByName')

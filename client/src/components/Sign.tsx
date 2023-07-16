@@ -100,7 +100,7 @@ export default function Sign(props: Signing){
             else
             {
                 userData = await signin({ nickname, password, avatar }).unwrap()
-                console.log('userData ', userData);
+                // console.log('userData ', userData);
                 // if (userData.faEnabled === true)
                 // {
                 //     console.log('1 -- normalement je rentre ici')
