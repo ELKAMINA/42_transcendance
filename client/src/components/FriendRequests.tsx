@@ -8,10 +8,10 @@ import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
-import { useAppSelector } from "../utils/redux-hooks";
+import { useAppSelector, useAppDispatch } from "../utils/redux-hooks";
 import { useState } from "react";
 
-// import { selectSocket } from "../redux-features/friendship/friendshipSlice";
+import { FetchAllBlockedFriends, FetchAllFriendRequests } from "../redux-features/friendship/friendshipSlice";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
 import { FetchUserByName } from "../utils/global/global";
 // import { FriendReqSocket } from "../pages/friendship";
@@ -24,26 +24,16 @@ type FriendshipProps = {
     login: string,
     avatar: string,
     type: string,
+    bgColor: string,
   };
 
-export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type}) => {
+export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type, bgColor}) => {
+    // const [avt, setAvtr] = useState('')
+    const sender = useAppSelector(selectCurrentUser);
     const [buttonColor, setButtonColor] = useState('red'); // State to track the button color
     const [blockBgColor, setBlockBgColor] = useState('yellowgreen');
-    const [avt, setAvtr] = useState('')
-    const sender = useAppSelector(selectCurrentUser);
-    let rec: any;
+    const dispatch = useAppDispatch();
 
-    const getTheReceiver = async () => {
-        try {
-            rec = await FetchUserByName(login)
-            setAvtr(rec.avatar)
-            avatar = ''
-            // console.log('le user a afficher ', avatar)
-        }
-        catch {
-            console.log('erreur maybe')
-        }
-    }
     const receiver = {
         nickname: login,
         avatar: avatar,
@@ -67,6 +57,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
         })
     }
     const block = () => {
+        console.log('je bloque ??')
         socket.emit('blockFriend', {
             sender: sender,
             receiver: receiver,
@@ -74,9 +65,13 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
         setButtonColor('grey')
         setBlockBgColor('grey')
     }
-    useEffect(() => {
-        getTheReceiver()
-    }, [])
+    // useEffect(()=> {
+    //     socket?.on('friendAdded', (data: any) => {
+    //         dispatch(FetchAllFriendRequests());
+    //         dispatch(FetchAllBlockedFriends());
+    //        })
+    // }, [])
+
     return (
         <>
             <Box
@@ -87,15 +82,15 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                 width: 150,
                 height: 40,
                 borderRadius: 2,
-                backgroundColor: blockBgColor,
+                backgroundColor: blockBgColor === 'yellowgreen' ? bgColor : blockBgColor,
                 '&:hover': {
-                    backgroundColor: 'grey',
+                    backgroundColor: '#AFEEEE',
                 },
                 opacity: 0.8,
             }}
             >
                 <Stack direction="row" spacing={1} alignItems='center' >
-                    <Avatar src={avt} sx={{ width: 30, height: 30 }}/>
+                    <Avatar src={avatar} sx={{ width: 30, height: 30 }}/>
                     <h3 style={{'color': 'black', 'fontSize': '13px'}}>{login}</h3>
                     {type === "request" && <AddIcon sx={{ color: 'yellow' }} onClick={addFriend}/>}
                     {type === "requestReception" && (
@@ -107,6 +102,11 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                     {(type === 'myFriends') && (
                         <>
                             <BlockIcon sx={{ color: buttonColor, width: 20, height: 20 }} onClick={block}/>
+                        </>
+                    )}
+                    {(type === 'blockedFriends') && (
+                        <>
+                            <BlockIcon sx={{ color: 'grey', width: 20, height: 20 }}/>
                         </>
                     )}
                 </Stack>

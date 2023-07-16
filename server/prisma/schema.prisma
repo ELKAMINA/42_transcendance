@@ -123,6 +123,7 @@ model FriendRequest {
   senderId   String
   receiver   User          @relation("Receiver", fields: [receiverId], references: [login])
   receiverId String
+  SenderAv   String        @default("None")
   status     RequestStatus @default(PENDING)
   createdAt  DateTime      @default(now())
 }

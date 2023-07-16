@@ -30,6 +30,7 @@ export class FriendshipService {
   constructor(private prisma: PrismaService, private userServ: UserService) {}
 
   async requestFriendship(senderId: string, receiverId: string) {
+    const sender = await this.userServ.searchUser(senderId);
     const existingRequest = await this.prisma.friendRequest.findFirst({
       where: {
         AND: [{ senderId: senderId }, { receiverId: receiverId }],
@@ -49,6 +50,7 @@ export class FriendshipService {
             connect: { login: receiverId },
           },
           status: 'PENDING',
+          SenderAv: sender.avatar,
         },
       });
     }
@@ -95,15 +97,42 @@ export class FriendshipService {
         include: {
           friends: true,
           friendOf: true,
+          blocked: true
         },
       });
       if (user){
-        return (user.friends.concat(user.friendOf));
+        const allFriends = user.friends.concat(user.friendOf);
+        allFriends.forEach((e) => {
+          // console.log('All friends ', e.login)
+        });
+        const blockedFriends = user.blocked
+        const onlyFriends = allFriends.filter((el) => !(blockedFriends).some((obj) => obj.login === el.login ))
+        return onlyFriends;
     } 
   }
     catch (e) {
       console.log(e);
     }
+}
+
+async getAllBlockedFriends(userLogin: string) {
+  try {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: {
+        login: userLogin,
+      },
+      include: {
+        blocked: true,
+        blockedBy: true,
+      },
+    });
+    if (user){
+      return (user.blocked);
+  } 
+}
+  catch (e) {
+    console.log(e);
+  }
 }
 
 async getFriendSuggestions(nick: string) {
@@ -220,6 +249,7 @@ async ismyfriend(body) {
           FriendRequestReceived: true,
         },
       });
+      console.log('le user depuis acceptance ', user.login)
       return user;
     } catch (e) {
       console.log(e);

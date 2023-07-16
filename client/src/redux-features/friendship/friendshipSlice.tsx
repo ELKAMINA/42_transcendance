@@ -69,6 +69,11 @@ return async (dispatch:any, getState: any) => {
     await api
     .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
     .then((res) => {
+        console.log('res.data ', res.data)
+        console.log(`Les friend requests pour ${getState().persistedReducer.auth.nickname} sont : `)
+        res.data.forEach((item: any, index: any) => {
+            console.log(`Friend ${index + 1}:`, item.senderId);
+        });
         // console.log('je rentre ici ', res.data);
         dispatch(updateAllRequests(res.data))})
         .catch((e) => {console.log("error ", e)});
@@ -94,10 +99,10 @@ export function FetchSuggestions() {
         await api
         .post("http://0.0.0.0:4001/friendship/suggestions", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-            console.log(`Les suggestions d'amis pour ${getState().persistedReducer.auth.nickname} sont : `)
-            res.data.forEach((item: any, index: any) => {
-                console.log(`Friend ${index + 1}:`, item.login);
-              });
+            // console.log(`Les suggestions d'amis pour ${getState().persistedReducer.auth.nickname} sont : `)
+            // res.data.forEach((item: any, index: any) => {
+            //     console.log(`Friend ${index + 1}:`, item.login);
+            //   });
             dispatch(updateAllSuggestions(res.data))
         })
         .catch((e) => { console.log('cest lerreur de ta vie ', e)})
@@ -110,6 +115,16 @@ export function FetchSuggestions() {
             .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
             .then((res) => {
                 dispatch(updateAllFriends(res.data))})
+                .catch((e) => {console.log("error ", e)});
+            }
+        }
+
+    export function FetchAllBlockedFriends() {
+        return async (dispatch:any, getState: any) => {
+            await api
+            .post("http://0.0.0.0:4001/friendship/blockedFriends", {nickname: getState().persistedReducer.auth.nickname})
+            .then((res) => {
+                dispatch(updateBlockedFriends(res.data))})
                 .catch((e) => {console.log("error ", e)});
             }
         }

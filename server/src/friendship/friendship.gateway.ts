@@ -142,7 +142,7 @@ export class FriendshipGateway
       body.sender,
       body.receiver.nickname,
     );
-    this.io.emit('blockFriend', user);
+    this.io.emit('blockedFriend', user);
   }
 
   isAlreadyConnected(user: object): Array<Socket> {

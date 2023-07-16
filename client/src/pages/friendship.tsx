@@ -9,7 +9,7 @@ import Navbar from '../components/NavBar';
 import Cookies from 'js-cookie';
 // import { ConnectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllSuggestions, setSelectedItem } from '../redux-features/friendship/friendshipSlice';
+import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllSuggestions, setSelectedItem, FetchAllBlockedFriends, selectBlockedFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-features/friendship/friendshipSlice';
 import { FetchSuggestions, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentAccessToken, selectCurrentUser, setOnlyTokens } from '../redux-features/auth/authSlice';
@@ -37,7 +37,7 @@ function Suggestions () {
   useEffect(() => {
     socket.connect()
     socket.on('connect', () => {
-      console.log('first time ')
+      // console.log('first time ')
       dispatch(FetchSuggestions());
     })
     return () => {
@@ -79,7 +79,7 @@ function Suggestions () {
         justifyContent: 'space-between',
       }} >
         {suggestions.map((sugg: any) => 
-          <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request"/>)}
+          <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>)}
       </Stack>
     </div>
   )
@@ -96,7 +96,7 @@ function Requests () {
     socket.on('connect', () => {
       dispatch(FetchAllFriendRequests());
     })
-    dispatch(FetchAllFriendRequests());
+    // dispatch(FetchAllFriendRequests());
     return () => {
       socket.disconnect()  // cleanUp function when component unmount
       // dispatch(setSelectedItem(''))
@@ -127,7 +127,7 @@ function Requests () {
       {(friendsRequests.length > 0) && <h1> They want to be your friend... </h1> &&
       <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
         {friendsRequests.map((sugg: any) => 
-          <FriendSuggestion id={sugg.user_id} login={sugg.senderId} avatar={sugg.avatar} type="requestReception"/>)}
+          <FriendSuggestion id={sugg.user_id} login={sugg.senderId} avatar={sugg.SenderAv} type="requestReception" bgColor='#AFEEEE'/>)}
       </Stack>
       }
       
@@ -144,8 +144,9 @@ function Friends () {
     socket.connect()
     socket.on('connect', () => {
       dispatch(FetchAllFriends());
+      dispatch(FetchAllBlockedFriends())
     })
-    dispatch(FetchAllFriends());
+    // dispatch(FetchAllFriends());
     return () => {
       socket.disconnect()  // cleanUp function when component unmount
       // dispatch(setSelectedItem(''))
@@ -153,7 +154,7 @@ function Friends () {
   }, [])
   useEffect(() => {
     socket?.on('friendBlocked', (data: any) => {
-
+      dispatch(FetchAllBlockedFriends())
     })
     socket?.on('acceptedFriend', (data: any) => {
       dispatch(FetchAllFriends())
@@ -165,14 +166,17 @@ function Friends () {
     }
   }, []);
   const friends = useAppSelector(selectFriends);
+  const blocked = useAppSelector(selectBlockedFriends)
   
   const content = (
     <div>
       {/* <Navbar currentRoute={ currentRoute }/> */}
       <h1> Your beloved... </h1>
       <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
-        {friends.map((sugg: any) => 
-          <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends"/>)}
+        {friends && friends.map((sugg: any) => 
+          <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends" bgColor='#AFEEEE'/>)}
+          {blocked && blocked.map((sugg: any) => 
+          <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="blockedFriends" bgColor='grey'/>)}
       </Stack>
     </div>
   )
