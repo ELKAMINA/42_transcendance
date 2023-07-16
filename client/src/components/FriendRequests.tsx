@@ -57,7 +57,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
         })
     }
     const block = () => {
-        console.log('je bloque ??')
+        // console.log('je bloque ??')
         socket.emit('blockFriend', {
             sender: sender,
             receiver: receiver,

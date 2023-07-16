@@ -36,7 +36,7 @@ export default function FriendshipComponent(props: Myprops) {
         dispatch(setSelectedItem(text));
     }
     const renderSelectedBox = () => {
-      console.log('selected Item = ', selectedItem)
+      // console.log('selected Item = ', selectedItem)
       switch (selectedItem) {
         case 'Suggestions':
           return <Suggestions />;

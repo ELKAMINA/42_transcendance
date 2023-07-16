@@ -286,12 +286,12 @@ export class AuthService {
     // verify the authentication code with the user's secret
     try {
       const us = await this.userServ.searchUser(user);
-      console.log('le user ', us);
+      // console.log('le user ', us);
       const verif = await authenticator.verify({
         token: authenticator.generate(us.fA),
         secret: us.fA,
       });
-      console.log("3 - normalement cest Hamid ", verif)
+      // console.log("3 - normalement cest Hamid ", verif)
       if (!verif) {
         throw new UnauthorizedException('Wrong authentication code');
       }

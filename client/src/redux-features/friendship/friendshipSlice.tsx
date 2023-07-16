@@ -69,11 +69,11 @@ return async (dispatch:any, getState: any) => {
     await api
     .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
     .then((res) => {
-        console.log('res.data ', res.data)
-        console.log(`Les friend requests pour ${getState().persistedReducer.auth.nickname} sont : `)
-        res.data.forEach((item: any, index: any) => {
-            console.log(`Friend ${index + 1}:`, item.senderId);
-        });
+        // console.log('res.data ', res.data)
+        // console.log(`Les friend requests pour ${getState().persistedReducer.auth.nickname} sont : `)
+        // res.data.forEach((item: any, index: any) => {
+        //     console.log(`Friend ${index + 1}:`, item.senderId);
+        // });
         // console.log('je rentre ici ', res.data);
         dispatch(updateAllRequests(res.data))})
         .catch((e) => {console.log("error ", e)});

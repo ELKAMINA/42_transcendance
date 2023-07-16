@@ -29,7 +29,7 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 				admins : updatedAdmins,
 			})
 			.then((response) => {
-				console.log("response = ", response)
+				// console.log("response = ", response)
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})

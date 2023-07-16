@@ -208,7 +208,7 @@ export class ChannelService {
 	}
 
 	async updateAdmins(requestBody : {channelName : {name : string}, admins : User[]}) : Promise<Channel> {
-		console.log('requestBody', requestBody);
+		// console.log('requestBody', requestBody);
 		try 
 		{
 			const { channelName, admins } = requestBody;
