@@ -101,11 +101,10 @@ export default function Sign(props: Signing){
             else
             {
                 userData = await signin({ nickname, password, avatar }).unwrap()
-                // console.log('userData ', userData);
+                console.log('userData ', userData);
                 if (userData.faEnabled === true)
                 {
 					dispatch(setNick(nickname))
-					dispatch(setSignCredentials({...userData, nickname}))
                     return (navigate('/tfa'))
                 }
 

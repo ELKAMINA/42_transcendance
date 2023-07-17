@@ -30,12 +30,12 @@ const App = () => {
     }
     dispatch(setTokens({...credentials }))
   }
-
   return (
     <div className="app">
       <Routes>
         <Route path="/" element= {<Layout/>}>
           <Route path="/sign" element={<AuthContainer />}/>
+          <Route path="/tfa" element={<Tfa />}/>
           <Route element={<RequireAuth />}>
             <Route path="/welcome" element={<HomePage />}/>
             <Route path="/chat" element={<Chat />}/>
@@ -43,7 +43,6 @@ const App = () => {
             <Route path="/userprofile" element={<UserProfile />}/>
             <Route path="/settings" element={<SettingsContainer />}/>
           </Route>
-            <Route path="/tfa" element={<Tfa />}/>
         </Route>
       </Routes>
     </div>

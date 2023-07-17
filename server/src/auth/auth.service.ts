@@ -111,8 +111,6 @@ export class AuthService {
 
   async setCookie(data: object, res: Response) {
     const serializeData = JSON.stringify(data);
-    // console.log("seriiialized data ", serializeData)
-    // console.log("la data ",data);
     res.cookie('Authcookie', '', { expires: new Date(0) });
     res.cookie('Authcookie', serializeData, {
       httpOnly: false,
@@ -122,7 +120,6 @@ export class AuthService {
       domain: 'localhost',
       path: '/',
     });
-    // console.log('je suis rentrée ici pour le Cookie ')
   }
 
   async signup(dto: AuthDto, res: Response): Promise<object> {
@@ -181,23 +178,22 @@ export class AuthService {
           }
         });
       }
-      // if (us.faEnabled === true) {
-      //   // console.log('je rentre ici pour signin ')
-      //   res.redirect(307, `http://localhost:3000/tfa`)
-      //   return ;
-      // } /* A revoir */
-      const tokens = await this.signTokens(us.user_id, us.login);
-      await this.updateRtHash(us.user_id, tokens.refresh_token);
-      this.setCookie(
-        {
-          nickname: us.login,
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token,
-        },
-        res,
-      );
-
-      return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
+	  if (!us.faEnabled){
+		  const tokens = await this.signTokens(us.user_id, us.login);
+		  await this.updateRtHash(us.user_id, tokens.refresh_token);
+		  this.setCookie(
+		  {
+			  nickname: us.login,
+			  accessToken: tokens.access_token,
+			  refreshToken: tokens.refresh_token,
+		  },
+		  res,
+		  );
+		  return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
+	  }
+	  else {
+		return { faEnabled: us.faEnabled, avatar: us.avatar }
+	  }
     } catch (e: any) {
       if (e.code === 'P2025') {
         throw new HttpException('No user found', HttpStatus.FORBIDDEN);
@@ -255,16 +251,25 @@ export class AuthService {
     return newUser;
   }
 
-  async findUser(userInfo: OauthPayload) {
+  async findUser(userInfo: OauthPayload, res: Response) {
     const user = await this.userServ.searchUser(userInfo.login);
-    const tokens = await this.signTokens(user.user_id, user.login);
-    this.updateRtHash(user.user_id, tokens.refresh_token);
-    return {
-      user: user.login,
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-	    avatar: user.avatar,
-    };
+	if (!user.faEnabled) {
+		const tokens = await this.signTokens(user.user_id, user.login);
+		this.updateRtHash(user.user_id, tokens.refresh_token);
+		this.setCookie(
+		{
+			nickname: user.login,
+			accessToken: tokens.access_token,
+			refreshToken: tokens.refresh_token,
+			avatar: user.avatar,
+		},
+		res,
+		);
+		return res.redirect('http://localhost:3000/welcome')
+	}
+	else{
+		res.redirect('http://localhost:3000/tfa')
+	}
   }
 
   // 2FA Authentication **********************************************************************
@@ -338,7 +343,8 @@ export class AuthService {
   }
 
   // ****** Authentication 2FA ******************
-  async loginWith2fa(user: string, res: Response) {
+  async loginWith2fa(user: string, res: Response): Promise<object>
+   {
     try {
       const usr = await this.userServ.searchUser(user);
       const payload = {
@@ -357,7 +363,7 @@ export class AuthService {
         res,
       );
       return {
-        login: payload.login,
+        nickname: payload.login,
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
       };

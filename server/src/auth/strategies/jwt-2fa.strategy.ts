@@ -9,19 +9,20 @@ export class Jwt2faStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
   constructor(private readonly userServ: UserService, private readonly config: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: config.get<string>('2FA_SECRET'),
+      secretOrKey: config.get<string>('ACCESS_TOKEN'),
     });
   }
 
   async validate(payload: any) {
 	console.log ('PAYLOAD ', payload)
-    const user = await this.userServ.searchUser(payload.login);
+    const user = await this.userServ.searchUser(payload.nickname);
 
-    if (!user.faEnabled) {
-      return user;
-    }
-    if (payload.isTwoFactorAuthenticated) {
-      return user;
-    }
+	return user
+    // if (!user.faEnabled) {
+    //   return user;
+    // }
+    // if (payload.isTwoFactorAuthenticated) {
+    //   return user;
+    // }
   }
 }

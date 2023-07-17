@@ -88,28 +88,18 @@ export default class AuthController {
   @Public()
   @Get('42/redirect')
   @UseGuards(FtOauthGuard)
-  @Redirect('http://localhost:3000/welcome')
+//   @Redirect('http://localhost:3000/welcome')
   async oAuthRedirect(
     @GetCurrentUserOAuth() userInfo: OauthPayload,
     @Res({ passthrough: true }) res: Response,
     /* The passthrough: true make possible to use tha library-specific &&& the built-in concepts to manipulate the responses we define : Ref = https://docs.nestjs.com/controllers */
   ) {
-    const infos = await this.authService.findUser(userInfo);
-    this.authService.setCookie(
-      {
-        nickname: infos.user,
-        accessToken: infos.accessToken,
-        refreshToken: infos.refreshToken,
-		    avatar: infos.avatar,
-      },
-      res,
-    );
-    return infos;
+    await this.authService.findUser(userInfo, res);
   }
   /* ******************** */
 
   /* 2FA Strategy */
-  @Public()
+//   @Public()
   @Post('2fa/generate')
   async register(@Res() response: Response, @Body() body: User) {
     // console.log('la request ', body)
@@ -119,7 +109,7 @@ export default class AuthController {
     return response.json(qrCode);
   }
 
-  @Public()
+//   @Public()
   @Post('2fa/turn-on')
   async turnOnTwoFactorAuthentication(@Req() request, @Body() body) {
     // console.log('le body ', body)
@@ -132,18 +122,16 @@ export default class AuthController {
 
   @Public()
   @Post('2fa/authenticate')
-  @UseGuards(Jwt2faAuthGuard)
   @HttpCode(HttpStatus.OK)
   async authenticate(@Req() request, @Body() body, @Res({ passthrough: true }) res: Response) {
-	console.log('la requete ', request)
     let payload = null;
     const validation = this.authService.isTwoFactorAuthenticationCodeValid(
       body.TfaCode,
       body.nickname,
     );
     if (validation){
-      payload = await this.authService.loginWith2fa(body.nickname, res)
-      // console.log('validation ', payload)
+		// console.log("validation OK")
+      	payload = await	this.authService.loginWith2fa(body.nickname, res)
     }
     return payload;
       // return this.authService.loginWith2fa(body.nickname, res) 

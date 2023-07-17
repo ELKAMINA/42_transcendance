@@ -73,7 +73,7 @@ export function PersonalInformation () {
             }
         })
         return () => {  // cleanUp function when component unmount
-            sock.disconnect()
+            // sock.disconnect()
 
         }
       }, [dispatch, setErrMsg])
@@ -190,9 +190,16 @@ export function Security () {
     const confRef = React.useRef<HTMLInputElement>(null)
     const dispatch = useAppDispatch()
 
-    useEffect(() => {
-        dispatch(FetchActualUser())
-    }, [])
+	React.useEffect(() => {
+		dispatch(FetchActualUser())
+        sock.connect()
+        sock.on('connect', () => {
+
+        })
+        return () => {  // cleanUp function when component unmount
+            sock.disconnect()
+        }
+      }, [])
     const actualUser = useAppSelector(selectActualUser)
     const tfa = async () => {
         await api
