@@ -44,10 +44,10 @@ function  CreateType() {
 	}
 
 	return (
-	<Box className='entry1'>
+	<Box className='form-channel-type'>
 		<Stack direction={'column'} spacing={2} alignItems={'start'}>
 			<Divider />
-			<label className='form-channel-name' htmlFor='channelType'>choose channel type</label>
+			<label className='create-channel-label' htmlFor='channelType'>choose channel type</label>
 			<FormGroup>
 				<FormControlLabel control={<Checkbox checked={checkedPublic} onChange={handlePublic} name="public" />} label="public"/>
 				<FormControlLabel control={<Checkbox checked={checkedPrivate} onChange={handlePrivate} name="private" />} label="private" />

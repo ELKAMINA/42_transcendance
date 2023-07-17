@@ -1,8 +1,8 @@
-	import { Box, Stack } from "@mui/material"
+	import { Box, Stack, Typography } from "@mui/material"
 	import Header from "./Header"
 	import Footer from "./Footer"
 	import Message from "./Message"
-	import { useEffect, useRef, useState } from "react"
+	import React, { useEffect, useRef, useState } from "react"
 	import { Socket, io } from "socket.io-client"
 	import { ChatMessage } from "../../types/chat/messageType"
 	import socketIOClient from 'socket.io-client';
@@ -13,22 +13,24 @@
 	import { selectCurrentUser } from "../../redux-features/auth/authSlice"
 	import { emptyChannel } from "../../data/emptyChannel"
 
-	export const socket = io('http://localhost:4002', {
-		withCredentials: true,
-		transports: ['websocket'],
-		upgrade: false,
-		autoConnect: false,
-		// reconnection: true,
-	})
+	// export const socket = io('http://localhost:4002', {
+	// 	withCredentials: true,
+	// 	transports: ['websocket'],
+	// 	upgrade: false,
+	// 	autoConnect: false,
+	// 	// reconnection: true,
+	// })
 
 	function Conversation() {
 
 		const selectedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
+		const isWelcomeChannel = selectedChannel.name === 'WelcomeChannel' ? true : false;
 		const roomId = selectedChannel.name;
 		const [messages, setMessages] = useState<ChatMessage[]>([]);
 		const socketRef = useRef<Socket>(); // by using useRef, the reference to the socket instance is preserved across re-renders of the component. 
 		const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 		const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
+		
 		
 		useEffect(() => {
 			socketRef.current = socketIOClient("http://localhost:4002", {
@@ -73,26 +75,46 @@
 		useEffect(() => {
 			scrollMessageContainerToBottom(); // scroll to bottom when the component is rendered
 		}, []);
+
 		return (
 			<Stack
 				height={'100%'} 
 				maxHeight={'100vh'}
 				width={'auto'}
 			>
-				<Header socketRef={socketRef}/>
-				{/* Msg */}
-				<Box
-					width={'100%'}
-					sx={{
-						flexGrow:1, // ensures that the message section expands and takes up all the available vertical space between the chat header and footer.
-						height:'100%',
-						overflowY:'scroll',	
-					}}
-					ref={messageContainerRef}
-				>
-					<Message messages = {messages} />
-				</Box>
-				<Footer send = {send} />
+				{isWelcomeChannel && (
+					<Stack direction={'column'} justifyContent={'center'}>
+						<Box
+							sx={{
+								alignItems: 'center',
+								justifyContent: 'center',
+						}}>
+							<Typography 
+								align="center" 
+								variant='h1' 
+								sx={{color: 'grey', fontStyle: 'italic'}}>
+									No channel selected yet...
+							</Typography>
+						</Box>
+					</Stack>
+				)}
+				{!isWelcomeChannel && (
+					<React.Fragment>
+						<Header socketRef={socketRef}/>
+						<Box
+							width={'100%'}
+							sx={{
+								flexGrow:1, // ensures that the message section expands and takes up all the available vertical space between the chat header and footer.
+								height:'100%',
+								overflowY:'scroll',	
+							}}
+							ref={messageContainerRef}
+						>
+							<Message messages = {messages} />
+						</Box>
+						<Footer send = {send} />
+					</React.Fragment>
+				)}
 			</Stack>
 		)
 	}

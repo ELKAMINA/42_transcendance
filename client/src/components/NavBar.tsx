@@ -17,6 +17,7 @@ import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
 import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, setAvatar} from '../redux-features/auth/authSlice';
 import { useLogOutMutation } from '../app/api/authApiSlice';
 import {FetchActualUser, selectActualUser} from '../redux-features/friendship/friendshipSlice';
+import { fetchDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 /* *** Internal imports *** */ 
 interface NavbarProps {
@@ -55,6 +56,10 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
 			console.log('ERROR from request with params ', e)
 		})
     }
+
+	useEffect(() => {
+		dispatch(fetchDisplayedChannel('WelcomeChannel')); // reset displayed channel to WelcomeChannel
+	}, [logout]) // means this useEffect will be triggered every time the logout function is called
 
     const logOut = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       event.preventDefault();

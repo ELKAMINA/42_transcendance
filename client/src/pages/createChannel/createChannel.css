@@ -1,3 +1,4 @@
+/* Everything around the channel creation window */
 .create-channel-popup {
 	position: fixed;
 	top: 0;
@@ -12,49 +13,61 @@
 	z-index: 2;
 }
 
+/* Channel creation window */
 .create-channel-popup-inner {
 	position: relative;
-	width: 20vw;
-	max-height: 80vh; /* Set a maximum height to limit the height of the inner container */
-	padding-bottom: 20px;
+	width: 40%;
+	height: 80%;
+	padding: 0;
+	padding: 2%;
 	background-color: rgb(255, 255, 255);
+	/* background-color: red; */
 	overflow-y: auto; /* Enable vertical scrolling for the inner container */
-	align-items: center;
+	/* align-items: center; */
 }
 
-/* Add scrollbar styles */
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.create-channel-popup-inner {
+		width: 70%; /* Adjust the width for smaller screens */
+	}
+}
+
+@media (max-width: 480px) {
+	.create-channel-popup-inner {
+		width: 90%; /* Adjust the width for even smaller screens */
+	}
+}
+
+/* Add scrollbar styles ---------------------------------------------------------------------------------------------- */
 .create-channel-popup-inner::-webkit-scrollbar {
 	width: 8px; /* Adjust the width as desired */
 }
-
 .create-channel-popup-inner::-webkit-scrollbar-track {
 	background-color: #f1f1f1; /* Adjust the background color as desired */
 	border-radius: 4px; /* Adjust the border radius as desired */
 }
-
 .create-channel-popup-inner::-webkit-scrollbar-thumb {
 	background-color: #888; /* Adjust the thumb color as desired */
 	border-radius: 4px; /* Adjust the border radius as desired */
 }
-
 .create-channel-popup-inner::-webkit-scrollbar-thumb:hover {
 	background-color: #555; /* Adjust the thumb color on hover as desired */
 }
+/* Add scrollbar styles ---------------------------------------------------------------------------------------------- */
 
 .close-button-container {
 	position: absolute;
 	right: 0;
 }
 
-.create-channel-form {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
+/* .create-channel-form { */
+	/* display: flex; */
+	/* flex-direction: column; */
+/* } */
 
-.form-banner {
-	margin-top: 2%;
-	height:10%;
+.create-channel-title {
+	/* margin-top: 2%; */
 	width:100%;
 	color: #07457E;
 	font-family: "Helvetica", sans-serif;
@@ -63,10 +76,9 @@
 	font-size: 15px;
 	line-height: 20px;
 	letter-spacing: 0.16em;
-	padding: 20px;
 }
 
-.entry1 {
+.form-channel-type {
 	margin-top: 2%;
 	width: 100%;
 	height: 100%;
@@ -76,7 +88,7 @@
 	box-sizing: border-box; /* Add this line to include padding and borders in the specified width and height */
 }
 
-.form-channel-name {
+.create-channel-label {
 	font-family: "Helvetica", sans-serif;
 	color: #07457E;
 	font-style: normal;
@@ -86,7 +98,7 @@
 	letter-spacing: 0.16em;
 }
 
-.inputForm {
+/* .inputForm {
 	background-color: transparent;
 	border: none;
 	border-radius: 10px;
@@ -101,4 +113,4 @@
 
 .input:focus {
 	outline: none;
-  }
+  } */

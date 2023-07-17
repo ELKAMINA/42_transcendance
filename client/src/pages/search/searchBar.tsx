@@ -1,36 +1,56 @@
 import SearchIcon from '@mui/icons-material/Search';
 import "./searchBar.css";
 
-import { FetchAllFriends, FetchSuggestions, selectFriends, selectSuggestions} from '../../redux-features/friendship/friendshipSlice';
-// import { User } from "../../../../server/src/user/types/user-types.user.ts";
+import { FetchAllFriends, selectFriends} from '../../redux-features/friendship/friendshipSlice';
 import { UserDetails } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { useEffect, useState } from 'react';
-import { fetchAllChannelsInDatabase, selectAllChannels } from '../../redux-features/chat/channelsSlice';
+import { fetchAllChannelsInDatabase, fetchPublicChannels, fetchUserPrivateChannels, fetchUserPrivateConvs, selectAllChannels, selectPublicChannels, selectUserPrivateChannels, selectUserPrivateConvs } from '../../redux-features/chat/channelsSlice';
 import { Channel } from '../../types/chat/channelTypes';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { set } from 'date-fns';
 
 function SearchBar({content, setResults }: { content: string; setResults: React.Dispatch<React.SetStateAction<(UserDetails | Channel)[] >> }) {	  
 
 	const [input, setInput] = useState<string>('');
-
+	const [usersAndChannels, setUsersAndChannels] = useState<(Channel | UserDetails)[]>([]);
 	const dispatch = useAppDispatch();
 
-	// useEffect(() => {dispatch(FetchAllFriends())}, [dispatch]); // get the friends
-	// const friends = useAppSelector(selectFriends) as UserDetails[];
+	const currentUserName : string = useAppSelector(selectCurrentUser); // get the current user nickname
+
+	useEffect(() => {dispatch(FetchAllFriends())}, [dispatch]); // get the friends from database
+	const friends = useAppSelector(selectFriends) as UserDetails[];
 	// console.log('friends = ', friends);
-	useEffect(() => {dispatch(FetchSuggestions())}, []); // get the friends
-	const friends = useAppSelector(selectSuggestions) as UserDetails[]
 
-	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []);
+	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []); // get the channels from db
 	let channels = useAppSelector((state) => selectAllChannels (state)) as Channel[];
-	channels = channels.filter(channel => channel.type !== 'private')
-	
-	const usersAndChannels = [...friends, ...channels];
+	channels = channels.filter(channel => channel.name !== 'WelcomeChannel'); // remove 'WelcomeChannel'
+	let filteredChannels : Channel[] = [];
 
-	function fetchData(value:string) {
+	// if the channel is of type 'private'or 'privateConv' and the current user is not a member,
+	// we won't display it.
+	// so I filter all the private channels and privateConv channels of which I am not a member or
+	// a creator.
+	console.log('channels.length = ', channels.length);
+	useEffect(() => {
+		if (channels.length > 1) {
+			filteredChannels = channels.filter((channel) => {
+				if (channel.type === 'privateConv' || channel.type === 'private') {
+					return (
+						channel.members.some(
+							(member) => member?.login === currentUserName
+						) ||
+						channel.createdBy?.login === currentUserName
+					);
+				}
+				return true;
+			});
+			setUsersAndChannels([...friends, ...filteredChannels]); // join friends and channels
+		}
+	}, []);
+	
+	function displayResult(value:string) {
 		const results = usersAndChannels.filter((item) => {
-			// const name = user?.login?.toLowerCase();
-			// return value && user && name && name.includes(value);
 			if ('login' in item) {
 				const name = (item as UserDetails).login?.toLowerCase();
 				return value && name && name.includes(value);
@@ -46,7 +66,7 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 	function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value;
 		setInput(value);
-		fetchData(value);
+		displayResult(value);
 	}
 
 	return (

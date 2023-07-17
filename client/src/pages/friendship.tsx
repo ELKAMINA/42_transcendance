@@ -168,6 +168,7 @@ function Friends () {
   const friends = useAppSelector(selectFriends);
   const blocked = useAppSelector(selectBlockedFriends)
   
+//   console.log("frieeeends ", friends);
   const content = (
     <div>
       {/* <Navbar currentRoute={ currentRoute }/> */}

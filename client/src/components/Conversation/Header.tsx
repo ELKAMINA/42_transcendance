@@ -54,6 +54,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	const dispatch = useAppDispatch();
 	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
 	let channelName : string = 'error';
+	let channelAvatar : string | undefined = 'error';
+
 	const channel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	const isPrivateConv : boolean = channel.members?.length === 1 && channel.type === 'privateConv' ? true : false;
 
@@ -62,13 +64,16 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	// the channel member that is not the current user
 	if (isPrivateConv) {
 		if (channel.members[0].login === currentUser) {
-			channelName = channel.createdBy.login; 
+			channelName = channel.createdBy.login;
+			channelAvatar = channel.createdBy.avatar
 		}
 		else {
 			channelName = channel.members[0].login;
+			channelAvatar = channel.members[0].avatar;
 		}
 	} else {
 		channelName = channel.name;
+		channelAvatar = channel.avatar;
 	}
 
 	const [openBlock, setOpenBlock] = useState<boolean>(false);
@@ -113,10 +118,10 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 							}}
 							variant="dot"
 						>
-							<Button onClick={() => handleProfile(channel.name)}>
+							<Button onClick={() => handleProfile(channelName)}>
 							<Avatar
-								alt={channel.name}
-								src={channel.members?.at(0)?.avatar}
+								alt={channelName}
+								src={channelAvatar}
 								sx={{ bgcolor: '#fcba03' }}
 							/>
 							</Button>

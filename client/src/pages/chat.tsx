@@ -8,30 +8,28 @@ import { Provider } from 'react-redux';
 import { store } from '../app/store';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { useEffect, useState } from "react";
-import { fetchDisplayedChannel, fetchUserChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { Channel } from '../types/chat/channelTypes';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
+import { emptyChannel } from '../data/emptyChannel';
 
 function Chat () {
 	const currentRoute = window.location.pathname;
-	const [selectedChannel, setSelectedChannel] = useState<string>('')
-	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
-	
 	const AppDispatch = useAppDispatch();
-	useEffect(() => {
-		let storedChannel = localStorage.getItem('selectedChannel');
-		if (storedChannel && channels.length > 0) {
-			if (!channels.some(channel => channel.name === storedChannel))
-				typeof channels[0].name === 'string' && (storedChannel = channels[0].name);
-			else 
-				setSelectedChannel(storedChannel);
-			AppDispatch(fetchDisplayedChannel(storedChannel));
-			AppDispatch(fetchUserChannels());
+
+	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
+	const displayedChannel : Channel = useAppSelector(selectDisplayedChannel);
+
+	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
+		if (channels.length === 0) {
+			return 'WelcomeChannel';
+		} else {
+			return displayedChannel.name;
 		}
-	  }, []);
+	})
 	
 	useEffect(() => {
 		if (selectedChannel !== '') {
-			localStorage.setItem('selectedChannel', selectedChannel);
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
 			AppDispatch(fetchUserChannels());
 		}
@@ -40,19 +38,6 @@ function Chat () {
 	function handleSelectChannel (channelName : string) {
 		setSelectedChannel(channelName);
 	}
-
-	// clean up the local storage when the window / tab is closed
-	// useEffect(() => {
-	// 	const clearLocalStorage = () => {
-	// 		localStorage.clear();
-	// 	};
-
-	// 	window.addEventListener('beforeunload', clearLocalStorage);
-
-	// 	return () => {
-	// 		window.removeEventListener('beforeunload', clearLocalStorage);
-	// 	};
-	// }, []);
 
 	return (
 		<Provider store={store}>

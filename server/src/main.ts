@@ -1,11 +1,12 @@
 import * as passport from 'passport';
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import AppModule from './app.module';
+import { ValidationError } from 'class-validator';
 
 // main.ts file = entrypoint for the app's process. The bootstrap method creates the Nest application and initializes it.
 async function bootstrap() {
@@ -15,6 +16,9 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+	  exceptionFactory: (validationErrors: ValidationError[] = []) => {
+		return new BadRequestException(validationErrors);
+	},
     }),
   ); // to allow the pipes for the verification we want to do on our dto and stripe out the fields that we don't need
   app.use(cookieParser());

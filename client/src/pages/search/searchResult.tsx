@@ -1,23 +1,34 @@
 import { Box } from "@mui/material";
 import "./searchResult.css";
-import { useAppDispatch } from "../../utils/redux-hooks";
+import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { useSelector } from "react-redux";
-import { fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectDisplayedChannel } from "../../redux-features/chat/channelsSlice";
+import { fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectDisplayedChannel, selectUserChannels } from "../../redux-features/chat/channelsSlice";
 import { selectFriends, selectSuggestions } from "../../redux-features/friendship/friendshipSlice";
 import { UserDetails } from "../../types/users/userType";
 import { Channel } from "../../types/chat/channelTypes";
 import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 import api from "../../utils/Axios-config/Axios";
+import AskForPassword from "../../components/AskForPassword";
+import { useState } from "react";
+import { emptyChannel } from "../../data/emptyChannel";
 
-export const SearchResult = ({ result }: { result: string }) => {
+type SearchResultProps = {
+	result: string ;
+	getSelectedItem: (item: string) => void;
+}
+
+export const SearchResult = ({ result, getSelectedItem }: SearchResultProps) => {
+
+	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = useState(false);
+
 	const AppDispatch = useAppDispatch();
-	const channels = useSelector(selectAllChannels) as Channel[];
-	const users = useSelector(selectSuggestions) as UserDetails[];
-	const friends = useSelector(selectFriends) as UserDetails[];
-	const currentuser = useSelector(selectCurrentUser);
+	const channels = useAppSelector(selectAllChannels) as Channel[];
+	const userChannels : Channel[] = useSelector(selectUserChannels);
+	const friends = useAppSelector(selectFriends) as UserDetails[];
+	const currentuser = useAppSelector(selectCurrentUser);
 
-	const channel = channels.find(channel => channel.name === result); 
-	const user = users.find(user => user.login === result);
+	const channel = channels.find(channel => channel.name === result); // find result in the list of channels
+	const friend = friends.find(friend => friend.login === result); // find result in the list of friends
 
 	async function createPrivateConv() {
 
@@ -37,8 +48,8 @@ export const SearchResult = ({ result }: { result: string }) => {
 			admins: [createdBy],
 			protected_by_password: false,
 			key: '',
-			members: [user],
-			avatar: user?.avatar,
+			members: [friend],
+			avatar: friend?.avatar,
 			chatHistory: [],
 		})
 		.then ((response) => {
@@ -52,33 +63,41 @@ export const SearchResult = ({ result }: { result: string }) => {
 	}
 
 	function onClick() {
-
-		if (channel) {
-			if (channel.type === 'privateConv' 
-				|| (channel.type === 'private' && (channel.createdBy.login === currentuser || channel.members?.find(member => member.login === currentuser))) 
-				|| channel.type === 'public')
+		if (channel) { // if it is a channel
+			if (channel.key !== '') { // if channel is protected by a password
+				setAlertDialogSlideOpen(true); // open password check dialog slide
+			}
+			else {
 				AppDispatch(fetchDisplayedChannel(result));
-			if (channel.key !== '')
-				console.log('needs password!');
+				// getSelectedItem(result);
+			}
 		}
-
-		else if (user) {
-			// const isFriend = friends.find(friend => friend.login === currentuser); // TODO 
-			const isFriend = 'true';
-			if (isFriend) {
+		else if (friend) { // if selected result is a user
+			if (!userChannels.some(channel => channel.name === friend.login)) { 
 				createPrivateConv();
 			}
-			else
-				console.log('go to user profile page!') // TODO
+			else {
+				AppDispatch(fetchDisplayedChannel(result));
+				// getSelectedItem(result);
+			}
 		}
 	}
 	
+	const PasswordCheckChannel : Channel = channels.find(channel => channel.name === result) || emptyChannel;
 	return (
-		<Box
-			className="search-result"
-			onClick={onClick}
-		>
-		{result}
+		<Box>
+			<Box
+				className="search-result"
+				onClick={onClick}
+			>
+			{result}
+			</Box>
+			<AskForPassword
+				AlertDialogSlideOpen={AlertDialogSlideOpen}
+				setAlertDialogSlideOpen={setAlertDialogSlideOpen}
+				getSelectedItem={getSelectedItem}
+				element={PasswordCheckChannel}
+			/>
 		</Box>
 	);
 };

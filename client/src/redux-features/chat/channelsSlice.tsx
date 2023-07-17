@@ -11,6 +11,13 @@ export interface ChannelSlice {
 	memberedChannels : Channel[],
 	allChannels : Channel[],
 	displayedChannel : Channel,
+	privateChannels : Channel[],
+	publicChannels : Channel[],
+	privateConvs : Channel[],
+	userPrivateChannels : Channel[],
+	userPublicChannels : Channel[],
+	userPrivateConvs : Channel[],
+
 }
 
 const initialState : ChannelSlice = {
@@ -19,6 +26,13 @@ const initialState : ChannelSlice = {
 	memberedChannels : [],
 	allChannels: [],
 	displayedChannel : emptyChannel,
+	privateChannels : [],
+	publicChannels : [],
+	privateConvs : [],
+	userPrivateChannels : [],
+	userPublicChannels : [],
+	userPrivateConvs : [],
+
 };
 
 // this is an array of channels
@@ -60,7 +74,48 @@ export const channelsSlice = createSlice({
 				...state,
 				displayedChannel : action.payload
 			}
-		}
+		},
+
+		updatePrivateChannels: (state, action: PayloadAction<Channel[]>) => {
+			return {
+				...state,
+				privateChannels : action.payload
+			}
+		},
+
+		updatePublicChannels: (state, action: PayloadAction<Channel[]>) => {
+			return {
+				...state,
+				publicChannels : action.payload
+			}
+		},
+
+		updatePrivateConvs: (state, action: PayloadAction<Channel[]>) => {
+			return {
+				...state,
+				privateConvs : action.payload
+			}
+		},
+		updateUserPrivateChannels: (state, action: PayloadAction<Channel[]>) => {
+			return {
+				...state,
+				userPrivateChannels : action.payload
+			}
+		},
+
+		updateUserPublicChannels: (state, action: PayloadAction<Channel[]>) => {
+			return {
+				...state,
+				userPublicChannels : action.payload
+			}
+		},
+
+		updateUserPrivateConvs: (state, action: PayloadAction<Channel[]>) => {
+			return {
+				...state,
+				userPrivateConvs : action.payload
+			}
+		},
 	}
 })
 
@@ -151,7 +206,126 @@ export function fetchDisplayedChannel(name : string) {
 	};
 }
 
-export const {updateUserChannels, updateCreatedChannels, updateMemberedChannels, updateAllChannels, updateDisplayedChannel} = channelsSlice.actions;
+// fetch all the private chan for which the user is a member or a creator
+export function fetchUserPrivateChannels() {
+	return async (dispatch: any, getState: any) => {
+		const requestBody = {
+			login: getState().persistedReducer.auth.nickname,
+	  	};
+	  try {
+			const response = await api.post(
+				"http://localhost:4001/channel/fetchUserPrivateChannels",
+				requestBody
+			);
+			// console.log('getting user private channels from database = ', response.data);
+			dispatch(updateUserPrivateChannels(response.data));
+
+	  } catch (error) {
+			console.log('error while getting user private channels from database', error);
+	  }
+	};
+}
+
+// fetch all the public chan for which the user is a member or a creator
+export function fetchUserPublicChannels() {
+	return async (dispatch: any, getState: any) => {
+		const requestBody = {
+			login: getState().persistedReducer.auth.nickname,
+	  	};
+	  try {
+			const response = await api.post(
+				"http://localhost:4001/channel/fetchUserPublicChannels",
+				requestBody
+			);
+			// console.log('getting user public channels from database = ', response.data);
+			dispatch(updateUserPublicChannels(response.data));
+
+	  } catch (error) {
+			console.log('error while getting user public channels from database', error);
+	  }
+	};
+}
+
+// fetch all the private conv for which the user is a member or a creator
+export function fetchUserPrivateConvs() {
+	return async (dispatch: any, getState: any) => {
+		const requestBody = {
+			login: getState().persistedReducer.auth.nickname,
+	  	};
+	  try {
+			const response = await api.post(
+				"http://localhost:4001/channel/fetchUserPrivateConvs",
+				requestBody
+			);
+			// console.log('getting user private convs from database = ', response.data);
+			dispatch(updateUserPrivateConvs(response.data));
+
+	  } catch (error) {
+			console.log('error while getting user private convs from database', error);
+	  }
+	};
+}
+
+// fetch all the private chan for which the user is a member or a creator
+export function fetchPrivateChannels() {
+	return async (dispatch: any, getState: any) => {
+	  try {
+			const response = await api.post(
+				"http://localhost:4001/channel/fetchPrivateChannels"
+			);
+			// console.log('getting private channels from database = ', response.data);
+			dispatch(updatePrivateChannels(response.data));
+
+	  } catch (error) {
+			console.log('error while getting private channels from database', error);
+	  }
+	};
+}
+
+// fetch all the public chan for which the user is a member or a creator
+export function fetchPublicChannels() {
+	return async (dispatch: any, getState: any) => {
+	  try {
+			const response = await api.post(
+				"http://localhost:4001/channel/fetchPublicChannels"
+			);
+			// console.log('getting public channels from database = ', response.data);
+			dispatch(updatePublicChannels(response.data));
+
+	  } catch (error) {
+			console.log('error while getting public channels from database', error);
+	  }
+	};
+}
+
+// fetch all the private conv for which the user is a member or a creator
+export function fetchPrivateConvs() {
+	return async (dispatch: any, getState: any) => {
+	  try {
+			const response = await api.post(
+				"http://localhost:4001/channel/fetchPrivateConvs"
+			);
+			// console.log('getting private convs from database = ', response.data);
+			dispatch(updatePrivateConvs(response.data));
+
+	  } catch (error) {
+			console.log('error while getting private convs from database', error);
+	  }
+	};
+}
+export const {
+	updateUserChannels, 
+	updateCreatedChannels, 
+	updateMemberedChannels, 
+	updateAllChannels, 
+	updateDisplayedChannel,
+	updateUserPrivateChannels,
+	updateUserPublicChannels,
+	updateUserPrivateConvs,
+	updatePrivateChannels,
+	updatePublicChannels,
+	updatePrivateConvs,
+} = channelsSlice.actions;
 
 export default channelsSlice.reducer
 
@@ -160,3 +334,9 @@ export const selectCreatedChannels = (state: RootState) => state.persistedReduce
 export const selectMemberedChannels = (state: RootState) => state.persistedReducer.channels.memberedChannels
 export const selectAllChannels = (state: RootState) => state.persistedReducer.channels.allChannels
 export const selectDisplayedChannel = (state: RootState) => state.persistedReducer.channels.displayedChannel
+export const selectUserPrivateChannels = (state : RootState) => state.persistedReducer.channels.userPrivateChannels
+export const selectUserPublicChannels = (state : RootState) => state.persistedReducer.channels.userPublicChannels
+export const selectUserPrivateConvs = (state : RootState) => state.persistedReducer.channels.userPrivateConvs
+export const selectPrivateChannels= (state : RootState) => state.persistedReducer.channels.privateChannels
+export const selectPublicChannels = (state : RootState) => state.persistedReducer.channels.publicChannels
+export const selectPrivateConvs = (state : RootState) => state.persistedReducer.channels.privateConvs

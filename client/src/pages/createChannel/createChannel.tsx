@@ -10,15 +10,14 @@ import { ChannelTypeState, resetChannelType } from '../../redux-features/chat/cr
 import { Box, Button, Stack } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
-// import { ChatHistory_1 } from "../../data/chatHistory";
 import api from '../../utils/Axios-config/Axios' 
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
-import { io } from "socket.io-client";
 import { useAppDispatch } from "../../utils/redux-hooks";
 import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
 import { UserDetails } from "../../types/users/userType";
+import { FetchUsersDb } from "../../redux-features/friendship/friendshipSlice";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -45,6 +44,9 @@ function CreateChannel(props : CreateChannelProps) {
 		outgoing: true,
 		channel: newName,
 	}
+
+	// when the search component is mounted the first time, get the list of users
+	React.useEffect(() => {appDispatch(FetchUsersDb())}, [appDispatch]);
 
 	const channelCreation = async () => {
 		
@@ -106,17 +108,17 @@ function CreateChannel(props : CreateChannelProps) {
 	
 	return (props.trigger) ? (
 		<Box className='create-channel-popup'>
-			<Stack spacing={2} className='create-channel-popup-inner'>
+			<Stack spacing={6} className='create-channel-popup-inner' direction={'column'}>
 				<Box className="close-button-container">
 					<IconButton aria-label='close' size='large' onClick={handleCancelFormSubmit}>
 						<DisabledByDefaultIcon fontSize='small' sx={{ color: '#99E100' }} />
 					</IconButton>
 				</Box>
-				<Box>
-					<form className='create-channel-form' onSubmit={handleFormSubmit}>
-						<Stack spacing={2} direction={"column"}>
-							<Box className='form-banner'>
-								<h1>CREATE CHANNEL</h1>
+				<Box sx={{flexGrow: 1,  }}>
+					<form onSubmit={handleFormSubmit}>
+						<Stack spacing={2} direction={"column"} alignItems={'center'}>
+							<Box className='create-channel-title'>
+								<h1>CREATE YOUR CHANNEL</h1>
 								<br></br>
 							</Box>
 							<CreateName />

@@ -127,6 +127,7 @@ export class AuthService {
 
   async signup(dto: AuthDto, res: Response): Promise<object> {
     const pwd = await argon.hash(dto.password);
+    // console.log('dto', dto)
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -207,7 +208,7 @@ export class AuthService {
   }
 
   async logout(userInfo: string) {
-    console.log('userInfo, userInfo', userInfo)
+    // console.log('userInfo, userInfo', userInfo)
     await this.prisma.user.updateMany({
       where: {
         login: userInfo,

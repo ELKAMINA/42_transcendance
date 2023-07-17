@@ -31,28 +31,25 @@ function CreateName() {
 	  
 
 	return (
-	<Box>
-		<Stack alignItems={'center'} direction={'column'} spacing={1}>
-			<label className='form-channel-name' htmlFor='channelName'></label>
-			<TextField
-				type='channelName'
-				label='enter channel name'
-				variant = 'outlined'
-				color = 'success'
-				value = {channelName}
-				onChange={handleChange}
-				required
-				helperText={isTaken === true ? 'this name is taken!' : 'required'}
-				error={isTaken === true}
-				sx={{
-					width: '100%',
-					'& input': {
-						backgroundColor: 'transparent',
-						boxShadow: 'none'
-					}
-				}}
-			/>
-		</Stack>
+	<Box width={'100%'}>
+		<TextField
+			type='channelName'
+			label='enter channel name'
+			variant = 'outlined'
+			color = 'success'
+			value = {channelName}
+			onChange={handleChange}
+			required
+			helperText={isTaken === true ? 'this name is taken!' : 'required'}
+			error={isTaken === true}
+			sx={{
+				width: '100%',
+				'& input': {
+					backgroundColor: 'transparent',
+					boxShadow: 'none'
+				}
+			}}
+		/>
 	</Box>
 	);
 }
