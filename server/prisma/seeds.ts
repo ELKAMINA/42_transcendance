@@ -194,23 +194,6 @@ async function main() {
     },
   });
 
-  const Breakfast_in_Westeros = await prisma.channel.upsert({
-    where: { name: 'Breakfast in Westeros' },
-    update: {},
-    create: {
-      name: 'Breakfast in Westeros',
-	  members: {
-		connect: [
-		  { login: 'arya_stark' },
-		  { login: 'cersei_lannister' },
-		  { login: 'jamie_lannister' },
-		],
-	  },
-      admins: {connect: {login: 'CasperLeFantome'}},
-      type: 'public',
-    },
-  });
-
   // console.log({ post1, post2 });
 }
 
