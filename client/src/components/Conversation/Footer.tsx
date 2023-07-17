@@ -62,16 +62,15 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 			// console.log(`${user} sends a message to ${displayedChannel.name}`)
 			try {
 				UserToCheck = await FetchUserByName(displayedChannel.name)
+				if (((UserToCheck.blockedBy).find((bl: any) => bl.login === user)) || ((UserToCheck.blocked).find((bl: any) => bl.login === user)) )
+				{
+					// console.log("NOOOOOO je peux pas envoyer message ")
+					setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
+					return ;
+				}
 			}
 			catch {
 			}
-
-		}
-		if (((UserToCheck.blockedBy).find((bl: any) => bl.login === user)) || ((UserToCheck.blocked).find((bl: any) => bl.login === user)) )
-		{
-			// console.log("NOOOOOO je peux pas envoyer message ")
-			setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
-			return ;
 		}
 		else {
 			const messageToBeSent = {
