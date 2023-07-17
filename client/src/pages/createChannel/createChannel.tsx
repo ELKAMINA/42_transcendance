@@ -10,12 +10,10 @@ import { ChannelTypeState, resetChannelType } from '../../redux-features/chat/cr
 import { Box, Button, Stack } from "@mui/material";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
-// import { ChatHistory_1 } from "../../data/chatHistory";
 import api from '../../utils/Axios-config/Axios' 
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
-import { io } from "socket.io-client";
 import { useAppDispatch } from "../../utils/redux-hooks";
 import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
 import { UserDetails } from "../../types/users/userType";
