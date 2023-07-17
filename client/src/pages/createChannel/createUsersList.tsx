@@ -60,40 +60,38 @@ export default function MultipleSelectChip() {
 	};
 
 	return (
-		<Box>
-			<Stack direction={'column'} spacing={2} alignItems={'center'}>
-				<FormControl sx={{ m: 1, width: '100%' }}>
-					<InputLabel id="demo-multiple-chip-label">users</InputLabel>
-					<Select
-						labelId="demo-multiple-chip-label"
-						id="demo-multiple-chip"
-						multiple
-						required
-						value={personName}
-						onChange={handleChange}
-						sx={{width: '100%',}}
-						input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-						renderValue={(selected) => (
-							<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-							{selected.map((value) => (
-								<Chip key={value} label={value} />
-							))}
-							</Box>
-						)}
-						MenuProps={MenuProps}
-					>
-						{friends.map((user) => (
-							<MenuItem
-							key={user.login}
-							value={user.login}
-							style={getStyles(user.login, personName, theme)}
-							>
-							{user.login}
-							</MenuItem>
+		<Box width={'100%'}>
+			<FormControl sx={{width: '100%' }}>
+				<InputLabel id="demo-multiple-chip-label">users</InputLabel>
+				<Select
+					labelId="demo-multiple-chip-label"
+					id="demo-multiple-chip"
+					multiple
+					required
+					value={personName}
+					onChange={handleChange}
+					sx={{width: '100%',}}
+					input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+					renderValue={(selected) => (
+						<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+						{selected.map((value) => (
+							<Chip key={value} label={value} />
 						))}
-					</Select>
-				</FormControl>
-			</Stack>
+						</Box>
+					)}
+					MenuProps={MenuProps}
+				>
+					{friends.map((user) => (
+						<MenuItem
+						key={user.login}
+						value={user.login}
+						style={getStyles(user.login, personName, theme)}
+						>
+						{user.login}
+						</MenuItem>
+					))}
+				</Select>
+			</FormControl>
 			{(friends.length === 0) && <Typography variant='body1' sx={{color: 'red'}}> No friends found! </Typography>}
 		</Box>
 	);

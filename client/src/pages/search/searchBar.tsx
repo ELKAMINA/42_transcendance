@@ -31,6 +31,7 @@ function SearchBar({content, setResults }: { content: string; setResults: React.
 	// we won't display it.
 	// so I filter all the private channels and privateConv channels of which I am not a member or
 	// a creator.
+	console.log('channels.length = ', channels.length);
 	useEffect(() => {
 		if (channels.length > 1) {
 			filteredChannels = channels.filter((channel) => {

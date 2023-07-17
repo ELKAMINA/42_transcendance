@@ -108,17 +108,17 @@ function CreateChannel(props : CreateChannelProps) {
 	
 	return (props.trigger) ? (
 		<Box className='create-channel-popup'>
-			<Stack spacing={1} className='create-channel-popup-inner'>
+			<Stack spacing={6} className='create-channel-popup-inner' direction={'column'}>
 				<Box className="close-button-container">
 					<IconButton aria-label='close' size='large' onClick={handleCancelFormSubmit}>
 						<DisabledByDefaultIcon fontSize='small' sx={{ color: '#99E100' }} />
 					</IconButton>
 				</Box>
-				<Box sx={{ backgroundColor: '#07457E', flexGrow: 1 }}>
-					<form className='create-channel-form' onSubmit={handleFormSubmit}>
-						<Stack spacing={2} direction={"column"}>
+				<Box sx={{flexGrow: 1,  }}>
+					<form onSubmit={handleFormSubmit}>
+						<Stack spacing={2} direction={"column"} alignItems={'center'}>
 							<Box className='create-channel-title'>
-								<h1>CREATE CHANNEL</h1>
+								<h1>CREATE YOUR CHANNEL</h1>
 								<br></br>
 							</Box>
 							<CreateName />
