@@ -26,6 +26,7 @@ import { GetCurrentUserOAuth } from '../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId } from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
 import { User } from '@prisma/client';
+import { Jwt2faAuthGuard } from 'src/guards/jwt-2fa-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -131,8 +132,10 @@ export default class AuthController {
 
   @Public()
   @Post('2fa/authenticate')
+  @UseGuards(Jwt2faAuthGuard)
   @HttpCode(HttpStatus.OK)
   async authenticate(@Req() request, @Body() body, @Res({ passthrough: true }) res: Response) {
+	console.log('la requete ', request)
     let payload = null;
     const validation = this.authService.isTwoFactorAuthenticationCodeValid(
       body.TfaCode,

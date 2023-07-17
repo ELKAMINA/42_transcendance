@@ -104,7 +104,8 @@ export default function Sign(props: Signing){
                 // console.log('userData ', userData);
                 if (userData.faEnabled === true)
                 {
-                    dispatch(setNick(nickname))
+					dispatch(setNick(nickname))
+					dispatch(setSignCredentials({...userData, nickname}))
                     return (navigate('/tfa'))
                 }
 
