@@ -15,6 +15,7 @@ import { FetchUserByName } from '../../utils/global/global';
 import { transformData } from '../../pages/userProfile';
 import Popup from 'reactjs-popup';
 import './Footer.css';
+import { UserModel } from '../../types/users/userType';
 
 // import { FetchUserByName } from '../../redux-features/friendship/friendshipSlice';
 
@@ -53,26 +54,30 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
         setBlockMsg('')
     }, [displayedChannel])
 
-	async function sendMessage() {
-		let UserToCheck: any;
-		let UserToSee: any;
-		if (displayedChannel.type === 'privateConv'){
-			// console.log('To whom we want to speak ', displayedChannel.name);
-			// console.log("the current user is = ", user)
-			// console.log(`${user} sends a message to ${displayedChannel.name}`)
+	async function userIsBlocked() : Promise<boolean> {
+		if (displayedChannel.type === 'privateConv') {
 			try {
-				UserToCheck = await FetchUserByName(displayedChannel.name)
+				const UserToCheck : any = await FetchUserByName(displayedChannel.name)
 				if (((UserToCheck.blockedBy).find((bl: any) => bl.login === user)) || ((UserToCheck.blocked).find((bl: any) => bl.login === user)) )
 				{
 					// console.log("NOOOOOO je peux pas envoyer message ")
 					setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
-					return ;
+					return true;
 				}
+				else {
+					return false;
+				}
+			}	catch(error : any) {
+				console.error('error = ', error);
+				return false; // default return statement
 			}
-			catch {
-			}
-		}
-		else {
+		} else {
+			return false;
+		} 	
+	}
+
+	async function sendMessage() {
+		if (await userIsBlocked() === false) {
 			const messageToBeSent = {
 				sentBy: authState.nickname,
 				sentById: authState.nickname,
