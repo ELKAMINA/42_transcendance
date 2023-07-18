@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { UserDetails } from "../../../types/users/userType";
+import { RootState } from "../../../app/store";
 
 const initialState: UserDetails[] = [];
 
@@ -20,5 +21,6 @@ export const channelUserSlice = createSlice({
 })
 
 export const { addChannelUser, deleteChannelUser, resetChannelUser } = channelUserSlice.actions
+export const selectUsersInChannel = (state: RootState) => state.persistedReducer.channelUser
 
 export default channelUserSlice.reducer
