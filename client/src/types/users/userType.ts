@@ -1,35 +1,51 @@
+import { Channel } from "../chat/channelTypes";
+import { ChatMessage } from "../chat/messageType";
+import { FriendRequest } from "../friendRequest";
+import { Match } from "../match";
+
+export enum Status {
+	Online,
+	Offline,
+	Playing,
+}
+
 export type UserDetails = {
 	login: string;
 	email: string;
 	displayName: string;
 	avatar: string;
 };
-// 
+
 export type UserModel = {
-	createdAt: Date,
-	updatedAt: Date,
-	user_id: string,
-	login: string,
-	email?: string,
-	// hash: ,
-	// rtHash: ,
-	// fA: ,
-	faEnabled: boolean,
-	avatar: string,
-	status: string,
-	friends: UserModel[],
-	friendOf: UserModel[],
-	totalFriends: number,
-	// FriendRequestSent: ,
-	// FriendRequestReceived: ,
-	blocked: UserModel[],
-	blockedBy: UserModel[],
-	totalBlockedFriends: number,
-	totalMatches: number,
-	totalWins: number,
-	totalloss:  number,
-	level: number,
-	rank: number, 
-	// p1: ,
-	// p2: ,
-}
+	createdAt: Date;
+	updatedAt: Date;
+	user_id: string;
+	login: string;
+	email: string | null;
+	hash: string | null;
+	rtHash: string | null;
+	fA: string | null;
+	faEnabled: boolean | null;
+	avatar: string | null;
+	status: Status | null;
+	friends: UserModel[];
+	friendOf: UserModel[];
+	totalFriends: number | null;
+	FriendRequestSent: FriendRequest[];
+	FriendRequestReceived: FriendRequest[];
+	blocked: UserModel[];
+	blockedBy: UserModel[];
+	totalBlockedFriends: number | null;
+	totalMatches: number | null;
+	totalWins: number | null;
+	totalloss: number | null;
+	level: number | null;
+	rank: number | null;
+	p1: Match[];
+	p2: Match[];
+	FriendSuggestions: string[];
+	channels: Channel[];
+	createdChannels: Channel[];
+	adminChannels: Channel[];
+	messagesSent: ChatMessage[];
+  }

@@ -118,4 +118,12 @@ export class channelController {
   ): Promise<Channel> {
     return this.ChannelService.updateAdmins(requestBody);
   }
+
+  @Post('/updateMembers')
+  @Public() // TODO - remove public
+  updateMembers(
+    @Body() requestBody: { channelName: { name: string }; members: User[] },
+  ): Promise<Channel> {
+    return this.ChannelService.updateMembers(requestBody);
+  }
 }

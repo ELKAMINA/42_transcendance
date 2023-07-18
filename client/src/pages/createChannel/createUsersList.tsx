@@ -10,7 +10,6 @@ import Chip from '@mui/material/Chip';
 import { Stack, Typography } from '@mui/material';
 import { UserDetails } from '../../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { selectFriends } from '../../redux-features/friendship/friendshipSlice';
 
 
 const ITEM_HEIGHT = 48;
@@ -33,14 +32,19 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
   };
 }
 
-export default function MultipleSelectChip() {
+export type MultipleSelectChipProps = {
+	userList : UserDetails[],
+	setUpdatedMembers? : (members : UserDetails[]) => void,
+}
+
+export default function MultipleSelectChip({userList, setUpdatedMembers} : MultipleSelectChipProps) {
 
 	const theme = useTheme();
 	const [personName, setPersonName] = React.useState<string[]>([]);
 
 	const dispatch = useAppDispatch();
 
-	let friends = useAppSelector(selectFriends) as UserDetails[];
+	// let userList = useAppSelector(selectuserList) as UserDetails[];
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
@@ -52,11 +56,14 @@ export default function MultipleSelectChip() {
 			typeof value === 'string' ? value.split(',') : value,
 		);
 		
-		const newUsers: UserDetails[] = friends.filter((friend) => value.includes(friend.login));
+		const newUsers: UserDetails[] = userList.filter((user) => value.includes(user.login));
 		dispatch({
 			type: "channelUser/addChannelUser",
 			payload: newUsers,
 		})
+
+		if (setUpdatedMembers)
+			setUpdatedMembers(newUsers);
 	};
 
 	return (
@@ -81,7 +88,7 @@ export default function MultipleSelectChip() {
 					)}
 					MenuProps={MenuProps}
 				>
-					{friends.map((user) => (
+					{userList.map((user) => (
 						<MenuItem
 						key={user.login}
 						value={user.login}
@@ -92,7 +99,7 @@ export default function MultipleSelectChip() {
 					))}
 				</Select>
 			</FormControl>
-			{(friends.length === 0) && <Typography variant='body1' sx={{color: 'red'}}> No friends found! </Typography>}
+			{(userList.length === 0) && <Typography variant='body1' sx={{color: 'red'}}> No userList found! </Typography>}
 		</Box>
 	);
 }
