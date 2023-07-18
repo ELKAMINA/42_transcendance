@@ -51,10 +51,6 @@ function SideBar({handleSelectItem} : SideBarProps) {
 
 	return (
 	<Box className='sideBar'>
-		{/* <Stack className='search-bar-container'> */}
-			{/* <SearchBar content="Look for user, channel..." setResults={setResults} /> */}
-			{/* <SearchResultsList results={results} getSelectedItem={getSelectedItem}/> */}
-		{/* </Stack> */}
 		<SearchBarHighlights />
 		<Divider variant='middle' flexItem  sx={{bgcolor: '#dde5ed'}}/>
 		<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} spacing={4}>
