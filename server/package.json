@@ -78,6 +78,7 @@
     "@types/passport-local": "^1.0.35",
     "@types/qrcode": "^1.5.0",
     "@types/supertest": "^2.0.11",
+	
     "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard-with-typescript": "^34.0.1",

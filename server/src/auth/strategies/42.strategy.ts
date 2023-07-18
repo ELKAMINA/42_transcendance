@@ -53,6 +53,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         login: userDet.login,
         email: userDet.email,
         avatar: userDet.picture,
+		faEnabled: false,
       },
     });
     return cb(null, newUser);

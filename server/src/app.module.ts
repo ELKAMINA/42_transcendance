@@ -36,7 +36,6 @@ import { FriendshipService } from './friendship/friendship.service';
     PassportModule.register({}),
     FriendshipModule,
     GlobalModule,
-     // j'ai enlevé session:true
   ],
   controllers: [GlobalController],
   providers: [
@@ -49,11 +48,11 @@ import { FriendshipService } from './friendship/friendship.service';
 	ChannelService,
     JwtService,
 	ChatGateway,
-  ProfileGateway, 
+  	ProfileGateway, 
 	ChatService,
-  HomeService,
+  	HomeService,
 	GlobalService,
-  FriendshipService,
+  	FriendshipService,
   ],
 })
 export default class AppModule {}

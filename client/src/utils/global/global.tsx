@@ -1,6 +1,7 @@
 import api from "../Axios-config/Axios";
 import { transformData } from "../../pages/userProfile";
 import { UserDetails } from "../../types/users/userType";
+import { UserPrisma } from "../../data/userList";
 
 function replacer(key: string, value: any) {
 	if (typeof value === 'object' && value !== null) {
@@ -10,7 +11,7 @@ function replacer(key: string, value: any) {
 	return value;
   }
 
-export async function FetchUserByName(name: string ): Promise<Object> {
+export async function FetchUserByName(name: string ): Promise<UserPrisma> {
 	const result = await api
 		.get('http://localhost:4001/user/userprofile', {
 			params: {
