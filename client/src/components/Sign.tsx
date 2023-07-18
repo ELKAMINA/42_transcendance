@@ -71,20 +71,6 @@ export default function Sign(props: Signing){
     
     };
 
-    // const handleSubmitTfaCode = async () => {
-
-    //     await axios
-    //         .post("http://localhost:4001/auth/2fa/authenticate", {tfaCode, nickname})
-    //         .then((data) => {
-    //             console.log('je sors de la requete ', data)
-    //             // dispatch(setTokens({...res.data}));
-    //             navigate('/welcome')
-    //             // dispatch(getTfaInput(false))
-
-    //         })
-    //         .catch((e) => {console.log("error ", e)});
-    // }
-
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         try {
