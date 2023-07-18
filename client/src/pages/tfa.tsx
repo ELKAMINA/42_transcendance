@@ -17,13 +17,13 @@ function Tfa () {
 
     const handleSubmit = async () => {
         try {
-			await api.post('http://localhost:4001/auth/2fa/authenticate', {TfaCode, nickname})
-			.then((res) => {
-        console.log('respooonse ', res.data)
-				dispatch(setSignCredentials({...res.data, nickname}))
-				navigate('/welcome')
-			})
-			.catch((e)=> {console.log('Error from 2fa authentication', e)})		  
+          // console.log(`Le tfa code is : ${TfaCode} and the nickname is : ${nickname}`)
+          await api.post('http://localhost:4001/auth/2fa/authenticate', {TfaCode, nickname})
+          .then((res) => {
+            dispatch(setSignCredentials({...res.data, nickname}))
+            navigate('/welcome')
+          })
+          .catch((e)=> {navigate('/sign')})		  
         }
         catch{
           console.log('this is shit')

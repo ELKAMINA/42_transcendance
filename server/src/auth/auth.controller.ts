@@ -111,11 +111,12 @@ export default class AuthController {
 
 //   @Public()
   @Post('2fa/turn-on')
-  async turnOnTwoFactorAuthentication(@Req() request, @Body() body) {
+  async turnOnTwoFactorAuthentication(@Body() body, @Res({passthrough: true}) res: Response) {
     // console.log('le body ', body)
     this.authService.isTwoFactorAuthenticationCodeValid(
       body.TfaCode,
       body.actualUser.login,
+      res,
     );
     this.authService.turnOnTwoFactorAuthentication(body.actualUser.user_id);
   }
@@ -125,16 +126,22 @@ export default class AuthController {
   @HttpCode(HttpStatus.OK)
   async authenticate(@Req() request, @Body() body, @Res({ passthrough: true }) res: Response) {
     let payload = null;
-    const validation = this.authService.isTwoFactorAuthenticationCodeValid(
-      body.TfaCode,
-      body.nickname,
-    );
-    if (validation){
-		// console.log("validation OK")
-      	payload = await	this.authService.loginWith2fa(body.nickname, res)
+    // console.log('le body ', body)
+    try{
+      const validation = await this.authService.isTwoFactorAuthenticationCodeValid(
+        body.TfaCode,
+        body.nickname,
+        res,
+      );
+      if (validation){
+        // console.log("validation OK", validation)
+        payload = await	this.authService.loginWith2fa(body.nickname, res)
+        return payload;
+      }
     }
-    return payload;
-      // return this.authService.loginWith2fa(body.nickname, res) 
+    catch{
+      console.log("validation Ko")
+    }
   }
 
   @Public()

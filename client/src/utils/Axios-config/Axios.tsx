@@ -4,6 +4,7 @@ import { store } from '../../app/store';
 // import {setTokens } from '../features/auth/authSlice';
 import { setOnlyTokens } from '../../redux-features/auth/authSlice';
 const api = axios.create({
+    withCredentials: true
 //   baseURL: 'http://localhost:4001',
 });
 

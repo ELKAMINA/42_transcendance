@@ -111,7 +111,7 @@ export class AuthService {
 
   async setCookie(data: object, res: Response) {
     const serializeData = JSON.stringify(data);
-    console.log("serialized data for cookie ", serializeData)
+    // console.log("serialized data for cookie ", serializeData)
     res.cookie('Authcookie', '', { expires: new Date(0) });
     res.cookie('Authcookie', serializeData, {
       httpOnly: false,
@@ -285,18 +285,14 @@ export class AuthService {
     });
   }
 
-  async isTwoFactorAuthenticationCodeValid(TfaCode: string, user: string) {
+  async isTwoFactorAuthenticationCodeValid(TfaCode: string, user: string, res: Response) {
     // verify the authentication code with the user's secret
-    try {
       const us = await this.userServ.searchUser(user);
       const verif = await authenticator.check(TfaCode, us.fA)
       if (!verif) {
         throw new UnauthorizedException('Wrong authentication code');
       }
-    } catch (e: any) {
-      console.log ('isTwoFactorAuthenticationCodeValid ERROR = ', e)
-      // console.log(e);
-    }
+      return verif;
   }
 
   // The very first thing is to create a secret key unique for every user
