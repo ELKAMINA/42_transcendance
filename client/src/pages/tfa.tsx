@@ -12,16 +12,15 @@ import axios from 'axios';
 function Tfa () {
     const dispatch = useAppDispatch();
     const nickname = useAppSelector(selectCurrentUser)
-	const access_token = useAppSelector(selectCurrentAccessToken)
     const navigate = useNavigate()
     let [TfaCode, setTfaCode] = React.useState('')
-    const [tfaAuthenticate] = useTfaAuthenticateMutation();
 
     const handleSubmit = async () => {
         try {
 			await api.post('http://localhost:4001/auth/2fa/authenticate', {TfaCode, nickname})
 			.then((res) => {
-				dispatch(setTokens({...res.data}))
+        console.log('respooonse ', res.data)
+				dispatch(setSignCredentials({...res.data, nickname}))
 				navigate('/welcome')
 			})
 			.catch((e)=> {console.log('Error from 2fa authentication', e)})		  

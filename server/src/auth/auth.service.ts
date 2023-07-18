@@ -166,8 +166,10 @@ export class AuthService {
         },
       });
       // console.log('le user Vincent ', us);
-      if (us && (await argon.verify(us.hash, dto.password)) == false) {
-        throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
+      if (dto.type === 'notTfa'){
+        if (us && (await argon.verify(us.hash, dto.password)) == false) {
+          throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
+        }
       }
       if (us.avatar !== dto.avatar && dto.avatar !== ''){
         await this.prisma.user.update({
@@ -179,7 +181,6 @@ export class AuthService {
           }
         });
       }
-	  if (!us.faEnabled){
 		  const tokens = await this.signTokens(us.user_id, us.login);
 		  await this.updateRtHash(us.user_id, tokens.refresh_token);
 		  this.setCookie(
@@ -191,11 +192,7 @@ export class AuthService {
 		  res,
 		  );
 		  return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
-	  }
-	  else {
-		return { faEnabled: us.faEnabled, avatar: us.avatar }
-	  }
-    } catch (e: any) {
+	  } catch (e: any) {
       if (e.code === 'P2025') {
         throw new HttpException('No user found', HttpStatus.FORBIDDEN);
       }
@@ -348,26 +345,7 @@ export class AuthService {
    {
     try {
       const usr = await this.userServ.searchUser(user);
-      const payload = {
-        login: usr.login,
-        faEnabled: usr.faEnabled,
-        authTFA: true,
-      };
-      const tokens = await this.signTokens(usr.login, usr.user_id);
-      await this.updateRtHash(usr.user_id, tokens.refresh_token);
-      this.setCookie(
-        {
-          nickname: usr.login,
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token,
-        },
-        res,
-      );
-      return {
-        nickname: payload.login,
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-      };
+      return this.signin({nickname: usr.login, password: usr.hash, avatar: usr.avatar, type: 'tfa'}, res)
     }
   catch(e){
     console.log('TFA EROOOOR ', e)
