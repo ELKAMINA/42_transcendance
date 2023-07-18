@@ -266,7 +266,8 @@ export class AuthService {
 		return res.redirect('http://localhost:3000/welcome')
 	}
 	else{
-		res.redirect('http://localhost:3000/tfa')
+    const url = `http://localhost:3000/tfa?param1=${user.login}`
+		res.redirect(url)
 	}
   }
 
