@@ -15,6 +15,7 @@ import api from '../utils/Axios-config/Axios.tsx';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks.tsx';
 import { fetchUserChannels } from '../redux-features/chat/channelsSlice.tsx';
 import { selectCurrentUser } from '../redux-features/auth/authSlice.tsx';
+import SearchBarHighlights from '../components/SearchBarHighlight.tsx';
 
 type handleSelectItemFunction = (pwd: string) => void;
 
@@ -50,10 +51,11 @@ function SideBar({handleSelectItem} : SideBarProps) {
 
 	return (
 	<Box className='sideBar'>
-		<Stack className='search-bar-container'>
-			<SearchBar content="Look for user, channel..." setResults={setResults} />
-			<SearchResultsList results={results} getSelectedItem={getSelectedItem}/>
-		</Stack>
+		{/* <Stack className='search-bar-container'> */}
+			{/* <SearchBar content="Look for user, channel..." setResults={setResults} /> */}
+			{/* <SearchResultsList results={results} getSelectedItem={getSelectedItem}/> */}
+		{/* </Stack> */}
+		<SearchBarHighlights />
 		<Divider variant='middle' flexItem  sx={{bgcolor: '#dde5ed'}}/>
 		<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} spacing={4}>
 			<Box className='createChannelButtonWrapper'>
