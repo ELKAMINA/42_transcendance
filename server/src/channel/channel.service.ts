@@ -207,10 +207,10 @@ export class ChannelService {
 
 
 
-	async getUserPrivateChannels(requestBody: {}): Promise<object> {
+	async getUserPrivateChannels(requestBody: string): Promise<object> {
 		try {
 			const user = await this.prisma.user.findUnique({
-				where: requestBody,
+				where: {login: requestBody},
 				// the include option means that when fetching the user information, 
 				// the response will include the 'channels' and 
 				// 'createdChannels' fields of the user in 
@@ -253,10 +253,10 @@ export class ChannelService {
 	}
 
 
-	async getUserPublicChannels(requestBody: {}): Promise<object> {
+	async getUserPublicChannels(requestBody: string): Promise<object> {
 		try {
 			const user = await this.prisma.user.findUnique({
-				where: requestBody,
+				where: {login: requestBody},
 				// the include option means that when fetching the user information, 
 				// the response will include the 'channels' and 
 				// 'createdChannels' fields of the user in 
@@ -299,10 +299,10 @@ export class ChannelService {
 	}
 
 
-	async getUserPrivateConvs(requestBody: {}): Promise<object> {
+	async getUserPrivateConvs(requestBody: string): Promise<object> {
 		try {
 			const user = await this.prisma.user.findUnique({
-				where: requestBody,
+				where: {login: requestBody},
 				// the include option means that when fetching the user information, 
 				// the response will include the 'channels' and 
 				// 'createdChannels' fields of the user in 
