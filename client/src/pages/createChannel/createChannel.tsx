@@ -14,10 +14,10 @@ import api from '../../utils/Axios-config/Axios'
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
-import { useAppDispatch } from "../../utils/redux-hooks";
+import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
 import { UserDetails } from "../../types/users/userType";
-import { FetchUsersDb } from "../../redux-features/friendship/friendshipSlice";
+import { FetchUsersDb, selectFriends } from "../../redux-features/friendship/friendshipSlice";
 
 interface CreateChannelProps {
 	trigger: boolean;
@@ -31,6 +31,7 @@ function CreateChannel(props : CreateChannelProps) {
 	const channelUsersList = useSelector((state : RootState) => state.persistedReducer.channelUser);
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 	const currentUser = useSelector((state : RootState) => state.persistedReducer.auth);
+	const userFriends = useAppSelector(selectFriends) as UserDetails[];
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
 
@@ -122,7 +123,7 @@ function CreateChannel(props : CreateChannelProps) {
 								<br></br>
 							</Box>
 							<CreateName />
-							<CreateUsersList />
+							<CreateUsersList userList={userFriends}/>
 							<CreateType />
 							<Box>
 								<Button
