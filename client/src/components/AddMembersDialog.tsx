@@ -31,9 +31,15 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 	const friends = useAppSelector(selectFriends) as UserDetails[];
 	// console.log('friends = ', friends);
 
-	const filteredFriends : UserDetails[] = friends.filter(friend => !selectedChannel.members.includes(friend));
-	// console.log('filteredFriends = ', filteredFriends);
-
+	const filteredFriends: UserDetails[] = friends.filter(friend => {
+		const isFriendIncluded = !selectedChannel.members.some(member => member.login === friend.login);
+		// console.log('Friend:', friend);
+		// console.log('Is Friend included:', isFriendIncluded);
+		return isFriendIncluded;
+	});
+		  
+	// console.log('Filtered Friends:', filteredFriends);
+	  
 	async function updateMembers() : Promise<void> {
 		// console.log('setUpdatedMembers = ', setUpdatedMembers);
 		await api
