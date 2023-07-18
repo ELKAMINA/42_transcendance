@@ -10,6 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 
 import "./Navbar.css";
 import api from '../utils/Axios-config/Axios';
@@ -87,6 +88,10 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
         navigate('/friendship')
     }
 
+    const play = () => {
+        navigate('/matchmaking')
+      }
+
     useEffect(() => {
         dispatch(FetchActualUser())
         return () => {
@@ -108,8 +113,11 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
                 <PersonAddIcon fontSize="large" onClick={friendship}/>
             </div>
             <img src="" alt=""/>
-            <div className = 'navbar__header__input'>
+            <div className = 'navbar__header__options'>
                 <TelegramIcon onClick={chat}/>
+            </div>
+            <div className = 'navbar__header__options'>
+                <SportsEsportsIcon onClick={play}/>
             </div>
         </div>
 

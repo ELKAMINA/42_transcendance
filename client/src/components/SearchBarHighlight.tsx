@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import parse from 'autosuggest-highlight/parse';
@@ -11,7 +12,6 @@ import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { fetchAllChannelsInDatabase, selectAllChannels } from '../redux-features/chat/channelsSlice';
 import { Channel } from '../types/chat/channelTypes';
 import { InputAdornment } from '@mui/material';
-import SearchIcon from "@material-ui/icons/Search";
 import { alpha, styled } from '@mui/material/styles';
 
 
