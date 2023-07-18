@@ -66,6 +66,7 @@ model User {
   // //*** Where the user is admin ***//
   adminChannels         Channel[]       @relation("ChannelAdmin")
   messagesSent          Message[]       @relation("MessageSender")
+  queue                 Queue[]         @relation("Matchmaking")
 }
 
 model Channel {
@@ -132,4 +133,11 @@ model GlobalInformation {
   id           String @id @unique @default(uuid())
   pid          String @unique @default("1")
   totalPlayers Int?
+}
+
+model Queue {
+  id      BigInt   @id @default(autoincrement())
+  addedAt DateTime @default(now())
+  userId  String   @unique
+  user    User     @relation("Matchmaking", fields: [userId], references: [login])
 }
