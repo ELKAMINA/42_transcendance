@@ -10,9 +10,9 @@ import { FetchAllFriends, selectFriends } from '../redux-features/friendship/fri
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { fetchAllChannelsInDatabase, selectAllChannels } from '../redux-features/chat/channelsSlice';
 import { Channel } from '../types/chat/channelTypes';
-import { InputAdornment } from '@mui/material';
-import SearchIcon from "@material-ui/icons/Search";
-import { alpha, styled } from '@mui/material/styles';
+// import { InputAdornment } from '@mui/material';
+// import SearchIcon from "@material-ui/icons/Search";
+import { styled } from '@mui/material/styles';
 
 
 const CssTextField = styled(TextField)({
