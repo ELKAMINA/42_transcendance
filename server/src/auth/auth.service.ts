@@ -111,6 +111,7 @@ export class AuthService {
 
   async setCookie(data: object, res: Response) {
     const serializeData = JSON.stringify(data);
+    console.log("serialized data for cookie ", serializeData)
     res.cookie('Authcookie', '', { expires: new Date(0) });
     res.cookie('Authcookie', serializeData, {
       httpOnly: false,
@@ -352,7 +353,7 @@ export class AuthService {
         faEnabled: usr.faEnabled,
         authTFA: true,
       };
-      const tokens = await this.signTokens2FA(payload);
+      const tokens = await this.signTokens(usr.login, usr.user_id);
       await this.updateRtHash(usr.user_id, tokens.refresh_token);
       this.setCookie(
         {

@@ -14,7 +14,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import "./Navbar.css";
 import api from '../utils/Axios-config/Axios';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
-import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, setAvatar} from '../redux-features/auth/authSlice';
+import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, setAvatar, logOut} from '../redux-features/auth/authSlice';
 import { useLogOutMutation } from '../app/api/authApiSlice';
 import {FetchActualUser, selectActualUser} from '../redux-features/friendship/friendshipSlice';
 
@@ -56,11 +56,12 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
 		})
     }
 
-    const logOut = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    const loggingOut = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       event.preventDefault();
       await logout({nickname, access_token, refresh_token});
       if (Cookies.get('Authcookie') !== undefined)
         Cookies.remove('Authcookie');
+      dispatch(logOut(nickname))
       navigate("/sign");
     }
 
@@ -144,9 +145,9 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
             >
                 <MenuItem onClick={getMyProfile}>Profile</MenuItem>
                 <MenuItem component="a" href="/" onClick={handleSubmit}>Settings</MenuItem>
-                <MenuItem component="a" href="/" onClick={logOut}>Logout</MenuItem>
+                <MenuItem component="a" href="/" onClick={loggingOut}>Logout</MenuItem>
             </Menu>            
-            <IconButton component="a" href="/" onClick={logOut}>
+            <IconButton component="a" href="/" onClick={loggingOut}>
                 <LogoutIcon fontSize='medium'/>
             </IconButton>  
         </div>

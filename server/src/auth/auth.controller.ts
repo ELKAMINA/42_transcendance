@@ -146,7 +146,7 @@ export default class AuthController {
 
   @Public()
   @Post('update-cookie')
-  updateCookie(@Body() newCookie, @Res() res: Response) {
+  updateCookie(@Body() newCookie, @Res({ passthrough: true }) res: Response) {
     // console.log('new cookie ', newCookie);
     this.authService.setCookie(newCookie, res);
   }

@@ -8,9 +8,9 @@ const api = axios.create({
 });
 
 api.interceptors.request.use( (config) => {
-	// if (store.getState().persistedReducer.auth.access_token){
-	// }
-	config.headers['Authorization'] = `Bearer ${store.getState().persistedReducer.auth.access_token}`;
+	if (store.getState().persistedReducer.auth.access_token){
+        config.headers['Authorization'] = `Bearer ${store.getState().persistedReducer.auth.access_token}`;
+	}
 	return config;
 })
 
