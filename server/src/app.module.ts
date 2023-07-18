@@ -23,6 +23,7 @@ import { GlobalModule } from './global/global.module';
 import { ProfileGateway } from './profile/home.gateway';
 import { HomeService } from './profile/home.service';
 import { FriendshipService } from './friendship/friendship.service';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { FriendshipService } from './friendship/friendship.service';
     PassportModule.register({}),
     FriendshipModule,
     GlobalModule,
+    GameModule,
      // j'ai enlevé session:true
   ],
   controllers: [GlobalController],
