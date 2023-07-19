@@ -16,13 +16,13 @@ export type Channel = {
 
 }
 
-
 export type ChannelModel = {
 	name: string;
+	avatar: string | undefined;
 	channelId: number;
 	members: UserModel[];
-	createdBy: UserModel | null;
-	createdById: string | null;
+	createdBy: UserModel;
+	createdById: string;
 	admins: UserModel[];
 	createdAt: Date;
 	updatedAt: Date;
