@@ -33,16 +33,9 @@ function Game () {
 			socket.connect(); // Will use 'handleConnection' from nestjs/game
 			socket.on('connect', () => {
 				console.log('I\'m connected');
-				socket.emit("changeStatus", nickName);
-				socket.on("statusChanged", (data) => {
-					dispatch(getActualUser(data));
-					console.log(data);
-					socket.emit("joinRoom", nickName);
-					socket.on("roomJoined", (newRoom) => {
-						console.log('new room id', newRoom);
-					})
-				});
+
 			});
+
 		}
 		return () => {
 			if (socket) {
@@ -50,6 +43,18 @@ function Game () {
 			}
 		}
 	}, [])
+
+	useEffect(() => {
+		socket.emit("changeStatus", nickName);
+		socket.on("statusChanged", (data) => {
+			dispatch(getActualUser(data));
+			console.log(data);
+			socket.emit("joinRoom", nickName);
+		});
+		socket.on("roomJoined", (newRoom) => {
+			console.log('new room id', newRoom);
+		})
+	}, [nickName])
 
 	return (
 		<Provider store={store}>
