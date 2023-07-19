@@ -86,8 +86,8 @@ model Channel {
 
 model Message {
 	id          Int      @id @default(autoincrement())
-	sentBy      User     @relation("MessageSender", fields: [sentById], references: [login])
-	sentById    String
+	sentBy      User?     @relation("MessageSender", fields: [sentById], references: [login], onDelete: SetNull) // when the corresponding user is deleted, set to null
+	sentById    String?
 	message     String
 	sentAt      DateTime @default(now())
 	img         String?
