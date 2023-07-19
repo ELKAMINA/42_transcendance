@@ -19,7 +19,7 @@ export class channelController {
   @Post('/creation')
   @Public() // TODO - remove public
   createChannel(@Body() dto: ChannelDto): Promise<object> {
-	console.log('dto = ', dto);
+	// console.log('dto = ', dto);
     return this.ChannelService.createChannel(dto);
   }
 
