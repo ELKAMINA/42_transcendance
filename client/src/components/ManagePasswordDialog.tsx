@@ -10,7 +10,7 @@ import { useTheme } from '@mui/material/styles';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import api from '../utils/Axios-config/Axios';
-import { Channel } from '../types/chat/channelTypes';
+import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import PasswordField from './PasswordField';
 import { FormHelperText, Stack } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -22,7 +22,7 @@ export default function ManagePasswordDialog({openDialog, setOpenDialog} : {open
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-	const selectedChannel : Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	const AppDispatch = useAppDispatch();
 	const [updatedPassword, setUpdatedPassword] = useState<string>('');
 

@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import { UserByLogin, UserModel } from '../types/users/userType';
 import api from '../utils/Axios-config/Axios';
-import { Channel } from '../types/chat/channelTypes';
+import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import MultipleSelectChip from '../pages/createChannel/createUsersList';
 import { selectFriends } from '../redux-features/friendship/friendshipSlice';
 
@@ -19,7 +19,7 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-	const selectedChannel : Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	const [updatedMembers, setUpdatedMembers] = React.useState<UserByLogin[]>([]);
 	const AppDispatch = useAppDispatch();
 

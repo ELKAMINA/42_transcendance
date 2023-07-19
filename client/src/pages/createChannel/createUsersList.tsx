@@ -44,8 +44,6 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 
 	const dispatch = useAppDispatch();
 
-	// let userList = useAppSelector(selectuserList) as UserByLogin[];
-
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
 		// value is the current value of the the select input
@@ -69,7 +67,7 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 	return (
 		<Box width={'100%'}>
 			<FormControl sx={{width: '100%' }}>
-				<InputLabel id="demo-multiple-chip-label">users</InputLabel>
+				<InputLabel id="demo-multiple-chip-label">users *</InputLabel>
 				<Select
 					labelId="demo-multiple-chip-label"
 					id="demo-multiple-chip"

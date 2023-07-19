@@ -12,7 +12,7 @@ import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LockIcon from '@mui/icons-material/Lock';
 import { fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { Channel } from '../types/chat/channelTypes';
+import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
 import ConfirmationDialog from './ConfirmationDialog';
 import AlertDialogSlide from './AlertDialogSlide';
@@ -35,7 +35,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const AppDispatch = useAppDispatch();
 	const channels = useAppSelector((state : RootState) => selectUserChannels(state)) as Channel[];
 	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
-	const selectedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
+	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 
 	React.useEffect(() => { 
 		AppDispatch(fetchUserChannels());

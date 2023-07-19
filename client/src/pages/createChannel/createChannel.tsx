@@ -28,10 +28,16 @@ interface CreateChannelProps {
 function CreateChannel(props : CreateChannelProps) {
 	
 	const newName = useSelector((state: RootState) => state.persistedReducer.channelName);
-	const channelUsersList = useSelector((state : RootState) => state.persistedReducer.channelUser);
+	const channelUsersList : UserByLogin[] = useSelector((state : RootState) => state.persistedReducer.channelUser);
+	useEffect(() => {
+		console.log('channelUsersList = ', channelUsersList);
+	}, [channelUsersList])
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 	const currentUser = useSelector((state : RootState) => state.persistedReducer.auth);
 	const userFriends = useAppSelector(selectFriends) as UserByLogin[];
+	// console.log('userFriends = ', userFriends);
+	const simplifiedFriends: UserByLogin[] = userFriends.map(({ login }) => ({ login }));
+	// console.log('simplifiedFriends = ', simplifiedFriends);
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
 
@@ -39,7 +45,7 @@ function CreateChannel(props : CreateChannelProps) {
 	React.useEffect(() => {appDispatch(FetchUsersDb())}, [appDispatch]);
 
 	const channelCreation = async () => {
-		
+		// console.log('channelUsersList = ', channelUsersList);
 		const createdBy : UserByLogin = {
 			login : currentUser.nickname,
 		};
@@ -66,19 +72,14 @@ function CreateChannel(props : CreateChannelProps) {
 		})
 		.catch ((error) => {
 			console.log('error = ', error);
+			dispatch(resetChannelName());
+			dispatch(resetChannelType());
+			dispatch(resetChannelUser());
 		})
 	}
 
 	function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault(); // Prevents the default form submission behavior
-
-		// console.log('login = ', newName)
-		// console.log('type = ', channelType.type)
-		// console.log('owner = ', authState.nickname)
-		// console.log('protected_by_pwd = ', channelType.protected_by_password)
-		// console.log('password = ', channelType.key)
-		// console.log('userList = ', channelUsersList)
-		// console.log('avatar = ', authState.avatar)
 
 		// Submit the form data
 		channelCreation();
@@ -98,7 +99,7 @@ function CreateChannel(props : CreateChannelProps) {
 			<Stack spacing={6} className='create-channel-popup-inner' direction={'column'}>
 				<Box className="close-button-container">
 					<IconButton aria-label='close' size='large' onClick={handleCancelFormSubmit}>
-						<DisabledByDefaultIcon fontSize='small' sx={{ color: '#99E100' }} />
+						<DisabledByDefaultIcon fontSize='medium' sx={{ color: '#99E100' }} />
 					</IconButton>
 				</Box>
 				<Box sx={{flexGrow: 1,  }}>
@@ -109,7 +110,7 @@ function CreateChannel(props : CreateChannelProps) {
 								<br></br>
 							</Box>
 							<CreateName />
-							<CreateUsersList userList={userFriends}/>
+							<CreateUsersList userList={simplifiedFriends}/>
 							<CreateType />
 							<Box>
 								<Button

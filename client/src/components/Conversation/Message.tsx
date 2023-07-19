@@ -3,7 +3,7 @@ import { DocMsg, InfoMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from 
 import { ChatMessage } from '../../types/chat/messageType'
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
-import { Channel } from '../../types/chat/channelTypes';
+import { Channel, ChannelModel } from '../../types/chat/channelTypes';
 import areDifferentDays from '../../utils/areDifferentDays';
 import React, { useEffect } from 'react';
 
@@ -26,7 +26,7 @@ function renderSwitchComponent(el : ChatMessage, index: number) {
 
 const Message = ({ messages }: { messages : ChatMessage[] }) => {
 
-	const selectedChannel : Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	// console.log('selected channel in messages = ', selectedChannel);
 	// console.log('chat history = ', selectedChannel.chatHistory);
 

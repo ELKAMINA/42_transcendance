@@ -9,7 +9,7 @@ import { store } from '../app/store';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { useEffect, useState } from "react";
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
-import { Channel } from '../types/chat/channelTypes';
+import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { emptyChannel } from '../data/emptyChannel';
 
@@ -18,7 +18,7 @@ function Chat () {
 	const AppDispatch = useAppDispatch();
 
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
-	const displayedChannel : Channel = useAppSelector(selectDisplayedChannel);
+	const displayedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0) {

@@ -1,22 +1,22 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import { channelList } from "../../data/channelList";
-import { Channel } from "../../types/chat/channelTypes";
+import { ChannelModel } from "../../types/chat/channelTypes";
 import { RootState } from "../../app/store";
 import api from "../../utils/Axios-config/Axios";
 import { emptyChannel } from "../../data/emptyChannel";
 
 export interface ChannelSlice {
-	userChannels : Channel[],
-	createdChannels : Channel[],
-	memberedChannels : Channel[],
-	allChannels : Channel[],
-	displayedChannel : Channel,
-	privateChannels : Channel[],
-	publicChannels : Channel[],
-	privateConvs : Channel[],
-	userPrivateChannels : Channel[],
-	userPublicChannels : Channel[],
-	userPrivateConvs : Channel[],
+	userChannels : ChannelModel[],
+	createdChannels : ChannelModel[],
+	memberedChannels : ChannelModel[],
+	allChannels : ChannelModel[],
+	displayedChannel : ChannelModel,
+	privateChannels : ChannelModel[],
+	publicChannels : ChannelModel[],
+	privateConvs : ChannelModel[],
+	userPrivateChannels : ChannelModel[],
+	userPublicChannels : ChannelModel[],
+	userPrivateConvs : ChannelModel[],
 
 }
 
@@ -41,76 +41,76 @@ export const channelsSlice = createSlice({
 	initialState,
 	reducers: {
 
-		updateUserChannels: (state, action: PayloadAction<Channel[]>) => {
+		updateUserChannels: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				userChannels: [...action.payload]
 			}
 		},
 		  
-		updateCreatedChannels: (state, action : PayloadAction<Channel[]>) => {
+		updateCreatedChannels: (state, action : PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				createdChannels: [...action.payload]
 			}
 		},
 
-		updateMemberedChannels: (state, action : PayloadAction<Channel[]>) => {
+		updateMemberedChannels: (state, action : PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				memberedChannels: [...action.payload]
 			}
 		},
 
-		updateAllChannels: (state, action: PayloadAction<Channel[]>) => {
+		updateAllChannels: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				allChannels: [...action.payload]
 			}
 		},
 
-		updateDisplayedChannel: (state, action: PayloadAction<Channel>) => {
+		updateDisplayedChannel: (state, action: PayloadAction<ChannelModel>) => {
 			return {
 				...state,
 				displayedChannel : action.payload
 			}
 		},
 
-		updatePrivateChannels: (state, action: PayloadAction<Channel[]>) => {
+		updatePrivateChannels: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				privateChannels : action.payload
 			}
 		},
 
-		updatePublicChannels: (state, action: PayloadAction<Channel[]>) => {
+		updatePublicChannels: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				publicChannels : action.payload
 			}
 		},
 
-		updatePrivateConvs: (state, action: PayloadAction<Channel[]>) => {
+		updatePrivateConvs: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				privateConvs : action.payload
 			}
 		},
-		updateUserPrivateChannels: (state, action: PayloadAction<Channel[]>) => {
+		updateUserPrivateChannels: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				userPrivateChannels : action.payload
 			}
 		},
 
-		updateUserPublicChannels: (state, action: PayloadAction<Channel[]>) => {
+		updateUserPublicChannels: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				userPublicChannels : action.payload
 			}
 		},
 
-		updateUserPrivateConvs: (state, action: PayloadAction<Channel[]>) => {
+		updateUserPrivateConvs: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
 				...state,
 				userPrivateConvs : action.payload
