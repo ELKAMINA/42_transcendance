@@ -16,8 +16,8 @@
 /* Channel creation window */
 .create-channel-popup-inner {
 	position: relative;
-	width: 40%;
-	height: 80%;
+	width: auto;
+	height: auto;
 	padding: 0;
 	padding: 2%;
 	background-color: rgb(255, 255, 255);
