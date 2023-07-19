@@ -24,9 +24,12 @@ function Game () {
 	const currentRoute = window.location.pathname;
 	const dispatch = useAppDispatch();
 	const nickName = useAppSelector(selectCurrentUser);
+	// dispatch(FetchActualUser());
+	const user = useAppSelector(selectActualUser);
+	console.log(' user ', user)
 
-	dispatch(FetchActualUser())
-	let user = useAppSelector(selectActualUser)
+	// dispatch(FetchActualUser())
+	// console.log('le user ', user)
 
 	useEffect(() => {
 		if (user.status !== 'Playing'){
@@ -35,7 +38,13 @@ function Game () {
 				console.log('I\'m connected');
 
 			});
-
+			socket.emit("changeStatus", nickName);
+			socket.on("statusChanged", (data) => {
+				socket.emit("joinRoom", nickName);
+			});
+			socket.on("roomJoined", (newRoom) => {
+				console.log('new room id', newRoom);
+			})
 		}
 		return () => {
 			if (socket) {
@@ -43,18 +52,6 @@ function Game () {
 			}
 		}
 	}, [])
-
-	useEffect(() => {
-		socket.emit("changeStatus", nickName);
-		socket.on("statusChanged", (data) => {
-			dispatch(getActualUser(data));
-			console.log(data);
-			socket.emit("joinRoom", nickName);
-		});
-		socket.on("roomJoined", (newRoom) => {
-			console.log('new room id', newRoom);
-		})
-	}, [nickName])
 
 	return (
 		<Provider store={store}>

@@ -32,7 +32,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleChangeStatus(client: Socket, payload: string): Promise<string> {
 	  let user = await this.userService.searchUser(payload);
 	   user =  await this.userService.updateData(user.login, { status: 'Playing'});
-	  this.server.emit("statusChanged", user);
+	  this.server.to(client.id).emit("statusChanged", user);
     return;
   }
 
@@ -63,7 +63,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		room.players.push(payload)
 	}
 	client.join(room.id)
-	this.server.emit("roomJoined", room.id);
+	this.server.to(client.id).emit("roomJoined", room.id);
 	console.log("creation de rooms : games ", this.games)
 
 	return;
@@ -79,7 +79,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleDisconnect(client: Socket) {
 	console.log('Disconnection Client Id', client.id);
 	const user = this.friendshipGateway.getUserInfoFromSocket(client.handshake.headers.cookie)
-	this.games.filter((el) => el.id === user.login)
+	this.games = this.games.filter((el) => el.id !== user.login)
 	console.log("A la deconnexion : games ", this.games)
   }
 
