@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import { Stack, Typography } from '@mui/material';
-import { UserDetails } from '../../types/users/userType';
+import { UserByLogin } from '../../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 
 
@@ -33,8 +33,8 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 }
 
 export type MultipleSelectChipProps = {
-	userList : UserDetails[],
-	setUpdatedMembers? : (members : UserDetails[]) => void,
+	userList : UserByLogin[],
+	setUpdatedMembers? : (members : UserByLogin[]) => void,
 }
 
 export default function MultipleSelectChip({userList, setUpdatedMembers} : MultipleSelectChipProps) {
@@ -44,7 +44,7 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 
 	const dispatch = useAppDispatch();
 
-	// let userList = useAppSelector(selectuserList) as UserDetails[];
+	// let userList = useAppSelector(selectuserList) as UserByLogin[];
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment
@@ -56,7 +56,7 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 			typeof value === 'string' ? value.split(',') : value,
 		);
 		
-		const newUsers: UserDetails[] = userList.filter((user) => value.includes(user.login));
+		const newUsers: UserByLogin[] = userList.filter((user) => value.includes(user.login));
 		dispatch({
 			type: "channelUser/addChannelUser",
 			payload: newUsers,

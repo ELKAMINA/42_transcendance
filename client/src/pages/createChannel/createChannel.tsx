@@ -16,7 +16,7 @@ import { resetChannelUser } from "../../redux-features/chat/createChannel/channe
 import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
-import { UserDetails } from "../../types/users/userType";
+import { UserByLogin, UserModel } from "../../types/users/userType";
 import { FetchUsersDb, selectFriends } from "../../redux-features/friendship/friendshipSlice";
 
 interface CreateChannelProps {
@@ -31,31 +31,17 @@ function CreateChannel(props : CreateChannelProps) {
 	const channelUsersList = useSelector((state : RootState) => state.persistedReducer.channelUser);
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 	const currentUser = useSelector((state : RootState) => state.persistedReducer.auth);
-	const userFriends = useAppSelector(selectFriends) as UserDetails[];
+	const userFriends = useAppSelector(selectFriends) as UserByLogin[];
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
-
-	const dummyMessage = {
-		sentBy: 'casper',
-		sentTo: 'bugs bunny',
-		message: 'quoi dneuf docteur',
-		sentAt: new Date(),
-		img: bugsBunny,
-		incoming: false,
-		outgoing: true,
-		channel: newName,
-	}
 
 	// when the search component is mounted the first time, get the list of users
 	React.useEffect(() => {appDispatch(FetchUsersDb())}, [appDispatch]);
 
 	const channelCreation = async () => {
 		
-		const createdBy : UserDetails = {
-			login : currentUser.nickname, 
-			displayName : currentUser.nickname, 
-			email: 'dumdum@dum.dum', 
-			avatar : ''
+		const createdBy : UserByLogin = {
+			login : currentUser.nickname,
 		};
 
 		await api
@@ -69,7 +55,7 @@ function CreateChannel(props : CreateChannelProps) {
 			key: channelType.key,
 			members: channelUsersList,
 			avatar: currentUser.avatar,
-			chatHistory: [dummyMessage],
+			chatHistory: [],
 		})
 		.then ((response) => {
 			// console.log('this channel has been added to the database = ', response);

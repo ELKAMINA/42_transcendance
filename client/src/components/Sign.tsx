@@ -16,7 +16,7 @@ import { setSignCredentials, setTokens, setAvatar, selectTfaInput, getTfaInput, 
 import { useSignupMutation, useSigninMutation} from '../app/api/authApiSlice';
 import { FetchActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
 import { FetchUserByName } from '../utils/global/global';
-import { User, UserPrisma } from '../data/userList';
+import { UserModel } from '../types/users/userType';
 
 
 interface Signing {
@@ -89,7 +89,7 @@ export default function Sign(props: Signing){
             }
             else
             {
-				const user: UserPrisma = await FetchUserByName(nickname)
+				const user: UserModel = await FetchUserByName(nickname)
                 if (user.faEnabled)
                 {
                     dispatch(setNick(nickname))

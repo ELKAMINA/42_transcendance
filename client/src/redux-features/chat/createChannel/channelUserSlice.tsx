@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { UserDetails } from "../../../types/users/userType";
+import { UserByLogin } from "../../../types/users/userType";
 import { RootState } from "../../../app/store";
 
-const initialState: UserDetails[] = [];
+const initialState: UserByLogin[] = [];
 
 // this is the list of users in a channel
 export const channelUserSlice = createSlice({
@@ -10,7 +10,7 @@ export const channelUserSlice = createSlice({
 	initialState,
 	reducers: {
 		addChannelUser: (state, action) => {
-			// action.payload is an array of UserDetails
+			// action.payload is an array of UserByLogin
 			state.push(...action.payload);
 		},
 		deleteChannelUser: (state, action) => {

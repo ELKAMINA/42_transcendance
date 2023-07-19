@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Message } from "@prisma/client";
 import { IsNotEmpty, IsString, IsInt, IsOptional, ValidateIf } from "class-validator";
-import { UserDetails } from "src/user/types";
+import { UserByLogin } from "src/user/types";
 
 export class ChannelDto {
 	@IsString()
@@ -20,7 +20,7 @@ export class ChannelDto {
 
 	@IsNotEmpty()
 	@ApiProperty()
-	createdBy: UserDetails;
+	createdBy: UserByLogin;
 
 	@ApiProperty()
 	protected_by_password: boolean;
@@ -35,12 +35,12 @@ export class ChannelDto {
 	// @IsNotEmpty()
 	@ApiProperty()
 	@IsOptional()
-	members: UserDetails[];
+	members: UserByLogin[];
 
 	// @IsNotEmpty()
 	@ApiProperty()
 	@IsOptional()
-	admins: UserDetails[];
+	admins: UserByLogin[];
 
 	@IsString()
 	@ApiProperty()

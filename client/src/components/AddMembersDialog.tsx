@@ -9,7 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
-import { UserDetails } from '../types/users/userType';
+import { UserByLogin, UserModel } from '../types/users/userType';
 import api from '../utils/Axios-config/Axios';
 import { Channel } from '../types/chat/channelTypes';
 import MultipleSelectChip from '../pages/createChannel/createUsersList';
@@ -20,18 +20,18 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	const [updatedMembers, setUpdatedMembers] = React.useState<UserDetails[]>([]);
+	const [updatedMembers, setUpdatedMembers] = React.useState<UserByLogin[]>([]);
 	const AppDispatch = useAppDispatch();
 
-	useEffect(() => {
-		console.log('selectedChannel.members = ', selectedChannel.members);
-	}, [selectedChannel]);
+	// useEffect(() => {
+	// 	console.log('selectedChannel.members = ', selectedChannel.members);
+	// }, [selectedChannel]);
 
 
-	const friends = useAppSelector(selectFriends) as UserDetails[];
+	const friends = useAppSelector(selectFriends) as UserModel[];
 	// console.log('friends = ', friends);
 
-	const filteredFriends: UserDetails[] = friends.filter(friend => {
+	const filteredFriends: UserModel[] = friends.filter(friend => {
 		const isFriendIncluded = !selectedChannel.members.some(member => member.login === friend.login);
 		// console.log('Friend:', friend);
 		// console.log('Is Friend included:', isFriendIncluded);
@@ -81,5 +81,5 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 			</DialogActions>
 			</Dialog>
 		</div>
-		);
+	);
 }

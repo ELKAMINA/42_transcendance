@@ -5,7 +5,6 @@ import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 
 import React, { useEffect, useState } from 'react'
-import { UserDetails } from '../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllFriends, selectFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
@@ -13,6 +12,7 @@ import { fetchAllChannelsInDatabase, selectAllChannels } from '../redux-features
 import { Channel } from '../types/chat/channelTypes';
 import { InputAdornment } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
+import { UserModel } from '../types/users/userType';
 
 
 const CssTextField = styled(TextField)({
@@ -44,13 +44,13 @@ const CssTextField = styled(TextField)({
 
 export default function SearchBarHighlights() {
 
-	const [usersAndChannels, setUsersAndChannels] = useState<(Channel | UserDetails)[]>([]);
+	const [usersAndChannels, setUsersAndChannels] = useState<(Channel | UserModel)[]>([]);
 	const dispatch = useAppDispatch();
 
 	const currentUserName : string = useAppSelector(selectCurrentUser); // get the current user nickname
 
 	useEffect(() => {dispatch(FetchAllFriends())}, [dispatch]); // get the friends from database
-	const friends = useAppSelector(selectFriends) as UserDetails[];
+	const friends = useAppSelector(selectFriends) as UserModel[];
 	// console.log('friends = ', friends);
 
 	useEffect(() => {dispatch(fetchAllChannelsInDatabase())}, []); // get the channels from db

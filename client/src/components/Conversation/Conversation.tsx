@@ -33,6 +33,8 @@
 		
 		
 		useEffect(() => {
+			if (selectedChannel.name === 'WelcomeChannel') // if roomId is 'WelcomeChannel'
+				return ; // exit the function immediatly
 			socketRef.current = socketIOClient("http://localhost:4002", {
 				query: {roomId}
 			})
