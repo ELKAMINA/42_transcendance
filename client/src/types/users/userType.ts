@@ -14,7 +14,6 @@ export enum Status {
 // unecessary amount of data
 export type UserByLogin = {
 	login: string;
-	avatar?: string;
 };
 
 // this type should be used for any user retrieved
