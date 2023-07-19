@@ -22,8 +22,8 @@ export class UserService {
 			blockedBy: true,
 			friendOf:true,
 			friends: true,
-      FriendRequestReceived: true,
-      FriendRequestSent: true,
+			FriendRequestReceived: true,
+			FriendRequestSent: true,
 		}
       });
       return user;
@@ -126,4 +126,22 @@ export class UserService {
       return error;
     } // PrismaClientKnownRequestEr
     }
+
+	async updateData(nickName: string, dataToUpdate: any) {
+		const user = await this.prisma.user.update({
+			where: {
+				login: nickName,
+			},
+			data: dataToUpdate,
+			include:{
+				blocked: true,
+				blockedBy: true,
+				friendOf:true,
+				friends: true,
+				FriendRequestReceived: true,
+				FriendRequestSent: true,
+			}
+		})
+		return user;
+	}
   }

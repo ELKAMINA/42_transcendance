@@ -60,6 +60,8 @@ export const friendshipSlice = createSlice({
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
 export const { updateAllSuggestions, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem, getActualUser, getAllUsersInDb} = friendshipSlice.actions
+
+
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
 export const selectFriends = (state: RootState) => state.persistedReducer.friendship.friends
 export const selectFrRequests = (state: RootState) => state.persistedReducer.friendship.friendRequests

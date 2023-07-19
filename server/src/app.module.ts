@@ -24,6 +24,7 @@ import { ProfileGateway } from './profile/home.gateway';
 import { HomeService } from './profile/home.service';
 import { FriendshipService } from './friendship/friendship.service';
 import { GameModule } from './game/game.module';
+import { GameService } from './game/game.service';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { GameModule } from './game/game.module';
     PassportModule.register({}),
     FriendshipModule,
     GlobalModule,
+	GameModule,
   ],
   controllers: [GlobalController],
   providers: [
@@ -54,6 +56,7 @@ import { GameModule } from './game/game.module';
     HomeService,
     GlobalService,
     FriendshipService,
+	GameService
   ],
 })
 export default class AppModule {}

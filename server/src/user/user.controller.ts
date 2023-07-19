@@ -29,4 +29,7 @@ export class UserController {
     return this.userService.getActualUser(body);
   }
 
+  updateData(nickName: string, dataToUpdate: any) {
+	return this.userService.updateData(nickName, dataToUpdate);
+  }
 }

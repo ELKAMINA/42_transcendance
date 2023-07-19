@@ -9,14 +9,14 @@ import {
 } from 'class-validator';
 import { UserDetails } from 'src/user/types';
 
-export class MatchDto {
+export class gameDto {
   @IsNotEmpty()
-  @IsInt()
-  id: number;
+  @IsString()
+  id: string;
 
   @IsNotEmpty()
   @IsDate()
-  createdDate: Date;
+  createdDate: number;
 
   @IsNotEmpty()
   @IsInt()
@@ -34,7 +34,14 @@ export class MatchDto {
   @IsBoolean()
   power: boolean;
 
+  @IsBoolean()
+  isFull: boolean;
+
   @IsArray()
   @ArrayMaxSize(2)
-  players: UserDetails[];
+  players: string[];
+
+  @IsArray()
+  @ArrayMaxSize(2)
+  scorePlayers: number[];
 }
