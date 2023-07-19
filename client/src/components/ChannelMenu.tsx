@@ -11,6 +11,7 @@ import { Box, IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ManageAdminDialog from './ManageAdminDialog';
 import AddMembersDialog from './AddMembersDialog';
+import ManagePasswordDialog from './ManagePasswordDialog';
 
 export default function ChannelMenu() {
 	const [open, setOpen] = React.useState<boolean>(false);
@@ -116,9 +117,9 @@ export default function ChannelMenu() {
 								aria-labelledby="composition-button"
 								onKeyDown={handleListKeyDown}
 							>
-								<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admin</MenuItem>
+								<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>
 								<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>
-								<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>manage password</MenuItem>
+								<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>add / manage password</MenuItem>
 								<MenuItem onClick={(event) => handleClose(event, 'leaveChannel')}>leave channel</MenuItem>
 							</MenuList>
 						</ClickAwayListener>
@@ -130,7 +131,7 @@ export default function ChannelMenu() {
 		</Stack>
 			<ManageAdminDialog openDialog={openAdminDialog} setOpenDialog={setOpenAdminDialog}/>
 			<AddMembersDialog openDialog={openAddMembers} setOpenDialog={setOpenAddMembers}/>
-			{/* <ManagePasswordDialog openDialog={openManagePassword} setOpenDialog={setOpenManagePassword}/> */}
+			<ManagePasswordDialog openDialog={openManagePassword} setOpenDialog={setOpenManagePassword}/>
 			{/* <LeaveChannelDialog openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/> */}
 		</React.Fragment>
 
