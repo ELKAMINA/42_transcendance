@@ -79,7 +79,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleDisconnect(client: Socket) {
 	console.log('Disconnection Client Id', client.id);
 	const user = this.friendshipGateway.getUserInfoFromSocket(client.handshake.headers.cookie)
-	this.games = this.games.filter((el) => el.id !== user.login)
+	this.games = this.games.filter((el) => el.id === user.login)
 	console.log("A la deconnexion : games ", this.games)
   }
 
