@@ -12,6 +12,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ManageAdminDialog from './ManageAdminDialog';
 import AddMembersDialog from './AddMembersDialog';
 import ManagePasswordDialog from './ManagePasswordDialog';
+import { useAppSelector } from '../utils/redux-hooks';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
+import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { ChannelModel } from '../types/chat/channelTypes';
 
 export default function ChannelMenu() {
 	const [open, setOpen] = React.useState<boolean>(false);
@@ -19,6 +23,11 @@ export default function ChannelMenu() {
 	const [openAddMembers, setOpenAddMembers] = React.useState<boolean>(false);
 	const [openManagePassword, setOpenManagePassword] = React.useState<boolean>(false);
 	const [openLeaveChannel, setOpenLeaveChannel] = React.useState<boolean>(false);
+
+	// check if user is owner of the selected channel
+	const currentUser : string = useAppSelector(selectCurrentUser);
+	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
+	const isOwner : boolean = currentUser === selectedChannel.createdById ? true : false;
 
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -54,7 +63,7 @@ export default function ChannelMenu() {
 				break;
 			}
 			default :
-				console.log('default!')
+				return ;
 		}
 	};
 	  
@@ -117,9 +126,9 @@ export default function ChannelMenu() {
 								aria-labelledby="composition-button"
 								onKeyDown={handleListKeyDown}
 							>
-								<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>
-								<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>
-								<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>add / manage password</MenuItem>
+								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
+								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>}
+								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>add / manage password</MenuItem>}
 								<MenuItem onClick={(event) => handleClose(event, 'leaveChannel')}>leave channel</MenuItem>
 							</MenuList>
 						</ClickAwayListener>
