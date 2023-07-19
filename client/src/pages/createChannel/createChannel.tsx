@@ -29,15 +29,10 @@ function CreateChannel(props : CreateChannelProps) {
 	
 	const newName = useSelector((state: RootState) => state.persistedReducer.channelName);
 	const channelUsersList : UserByLogin[] = useSelector((state : RootState) => state.persistedReducer.channelUser);
-	useEffect(() => {
-		console.log('channelUsersList = ', channelUsersList);
-	}, [channelUsersList])
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 	const currentUser = useSelector((state : RootState) => state.persistedReducer.auth);
 	const userFriends = useAppSelector(selectFriends) as UserByLogin[];
-	// console.log('userFriends = ', userFriends);
-	const simplifiedFriends: UserByLogin[] = userFriends.map(({ login }) => ({ login }));
-	// console.log('simplifiedFriends = ', simplifiedFriends);
+	const simplifiedFriends: UserByLogin[] = userFriends.map(({ login }) => ({ login })); // converting UserModel to UserByLogin to keep only login property
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
 
