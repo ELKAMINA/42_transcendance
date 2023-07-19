@@ -10,12 +10,16 @@ import Stack from '@mui/material/Stack';
 import { Box, IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ManageAdminDialog from './ManageAdminDialog';
+import AddMembersDialog from './AddMembersDialog';
 
 export default function ChannelMenu() {
 	const [open, setOpen] = React.useState<boolean>(false);
-	const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+	const [openAdminDialog, setOpenAdminDialog] = React.useState<boolean>(false);
+	const [openAddMembers, setOpenAddMembers] = React.useState<boolean>(false);
+	const [openManagePassword, setOpenManagePassword] = React.useState<boolean>(false);
+	const [openLeaveChannel, setOpenLeaveChannel] = React.useState<boolean>(false);
+
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
-	const isAdmin : boolean = false;
 
 	const handleToggle = () => {
 		setOpen((prevOpen) => !prevOpen);
@@ -30,11 +34,26 @@ export default function ChannelMenu() {
 		}
 	  
 		setOpen(false);
-	  
-		if (actionSelected) {
-			// console.log('Action selected:', actionSelected);
-			setOpenDialog(true);
-			// console.log("openDialog = ", openDialog);
+
+		switch (actionSelected) {
+			case 'manageAdmin' : {
+				setOpenAdminDialog(true);
+				break;
+			}
+			case 'addMembers' : {
+				setOpenAddMembers(true);
+				break;
+			}
+			case 'managePassword' : {
+				setOpenManagePassword(true);
+				break;
+			}
+			case 'leaveChannel' : {
+				setOpenLeaveChannel(true);
+				break;
+			}
+			default :
+				console.log('default!')
 		}
 	};
 	  
@@ -109,7 +128,10 @@ export default function ChannelMenu() {
 			</Popper>
 		</div>
 		</Stack>
-			<ManageAdminDialog openDialog={openDialog} setOpenDialog={setOpenDialog}/>	
+			<ManageAdminDialog openDialog={openAdminDialog} setOpenDialog={setOpenAdminDialog}/>
+			<AddMembersDialog openDialog={openAddMembers} setOpenDialog={setOpenAddMembers}/>
+			{/* <ManagePasswordDialog openDialog={openManagePassword} setOpenDialog={setOpenManagePassword}/> */}
+			{/* <LeaveChannelDialog openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/> */}
 		</React.Fragment>
 
 	);

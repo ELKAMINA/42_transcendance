@@ -25,6 +25,8 @@ import { FtOauthGuard } from '../guards/42-oauth.guard';
 import { GetCurrentUserOAuth } from '../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId } from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
+import { User } from '@prisma/client';
+import { Jwt2faAuthGuard } from 'src/guards/jwt-2fa-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -86,64 +88,72 @@ export default class AuthController {
   @Public()
   @Get('42/redirect')
   @UseGuards(FtOauthGuard)
-  @Redirect('http://localhost:3000/welcome')
+//   @Redirect('http://localhost:3000/welcome')
   async oAuthRedirect(
     @GetCurrentUserOAuth() userInfo: OauthPayload,
     @Res({ passthrough: true }) res: Response,
     /* The passthrough: true make possible to use tha library-specific &&& the built-in concepts to manipulate the responses we define : Ref = https://docs.nestjs.com/controllers */
   ) {
-    const infos = await this.authService.findUser(userInfo);
-    this.authService.setCookie(
-      {
-        nickname: infos.user,
-        accessToken: infos.accessToken,
-        refreshToken: infos.refreshToken,
-		    avatar: infos.avatar,
-      },
-      res,
-    );
-    return infos;
+    await this.authService.findUser(userInfo, res);
   }
   /* ******************** */
 
   /* 2FA Strategy */
-  @Public()
+//   @Public()
   @Post('2fa/generate')
-  async register(@Res() response: Response, @Req() request) {
+  async register(@Res() response: Response, @Body() body: User) {
+    // console.log('la request ', body)
     const qrCode = await this.authService.generateTwoFactorAuthenticationSecret(
-      request.user,
+      body,
     );
     return response.json(qrCode);
   }
 
-  @Public()
+//   @Public()
   @Post('2fa/turn-on')
-  async turnOnTwoFactorAuthentication(@Req() request, @Body() body) {
+  async turnOnTwoFactorAuthentication(@Body() body, @Res({passthrough: true}) res: Response) {
+    // console.log('le body ', body)
     this.authService.isTwoFactorAuthenticationCodeValid(
       body.TfaCode,
-      request.user,
+      body.actualUser.login,
+      res,
     );
-    this.authService.turnOnTwoFactorAuthentication(request.user.sub);
+    this.authService.turnOnTwoFactorAuthentication(body.actualUser.user_id);
   }
 
   @Public()
   @Post('2fa/authenticate')
-  // @Redirect('http://localhost:3000/welcome')
-  @HttpCode(200)
-  async authenticate(@Req() request, @Body() body, @Res() res) {
-    // console.log('2 normalement je rentre ci ', body)
-    const validation = await this.authService.isTwoFactorAuthenticationCodeValid(
-      body.tfaCode,
-      body.nickname,
-    );
-    // console.log('validation ', validation)
-    const payload = this.authService.loginWith2fa(body.nickname, res)
-    return payload;
+  @HttpCode(HttpStatus.OK)
+  async authenticate(@Req() request, @Body() body, @Res({ passthrough: true }) res: Response) {
+    let payload = null;
+    // console.log('le body ', body)
+    try{
+      const validation = await this.authService.isTwoFactorAuthenticationCodeValid(
+        body.TfaCode,
+        body.nickname,
+        res,
+      );
+      if (validation){
+        // console.log("validation OK", validation)
+        payload = await	this.authService.loginWith2fa(body.nickname, res)
+        return payload;
+      }
+    }
+    catch{
+      console.log("validation Ko")
+    }
+  }
+
+  @Public()
+  @Post('2fa/cancel')
+  @HttpCode(HttpStatus.OK)
+  async cancelTfa(@Body() body) {
+    this.authService.cancelTfa(body.nickname)
   }
 
   @Public()
   @Post('update-cookie')
-  updateCookie(@Body() newCookie, @Res() res: Response) {
+  updateCookie(@Body() newCookie, @Res({ passthrough: true }) res: Response) {
     // console.log('new cookie ', newCookie);
     this.authService.setCookie(newCookie, res);
   }

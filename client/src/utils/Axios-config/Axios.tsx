@@ -4,12 +4,15 @@ import { store } from '../../app/store';
 // import {setTokens } from '../features/auth/authSlice';
 import { setOnlyTokens } from '../../redux-features/auth/authSlice';
 const api = axios.create({
+    withCredentials: true
 //   baseURL: 'http://localhost:4001',
 });
 
 api.interceptors.request.use( (config) => {
-    config.headers['Authorization'] = `Bearer ${store.getState().persistedReducer.auth.access_token}`;
-    return config;
+	if (store.getState().persistedReducer.auth.access_token){
+        config.headers['Authorization'] = `Bearer ${store.getState().persistedReducer.auth.access_token}`;
+	}
+	return config;
 })
 
 
@@ -20,11 +23,6 @@ api.interceptors.response.use((response) => {
     if (error.response && error.response.status === 401) {
         let res: any = await updateToken();
         if (res.data.access_token) {
-            // console.log("la response data ", res.data)
-            // console.log('old AT ', store.getState().persistedReducer.auth.access_token)
-            // console.log('old RT ', store.getState().persistedReducer.auth.refresh_token)
-            // console.log('new AT ', res.data.access_token)
-            // console.log('new RT ', res.data.refresh_token)
             store.dispatch(setOnlyTokens(res.data));
             const data = {
                 nickname: store.getState().persistedReducer.auth.nickname,

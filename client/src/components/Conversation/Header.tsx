@@ -2,14 +2,12 @@ import styled from '@emotion/styled';
 import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button } from '@mui/material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import BlockUser from './BlockUser';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
+import { selectDisplayedChannel, } from '../../redux-features/chat/channelsSlice';
 import { Channel } from '../../types/chat/channelTypes';
 import { emptyChannel } from '../../data/emptyChannel';
-import { UserDetails } from '../../types/users/userType';
 import ChannelMenu from '../ChannelMenu';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/Axios-config/Axios';
@@ -51,7 +49,6 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   
   function Header({ socketRef }: HeaderProps) {
 	const navigate = useNavigate();
-	const dispatch = useAppDispatch();
 	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
 	let channelName : string = 'error';
 	let channelAvatar : string | undefined = 'error';
@@ -99,13 +96,12 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	}
 	return (
 		<Box 
-		p={2}
-		sx={{
-			// height: 100,
-			width: '100%',
-			backgroundColor: '#F8FAFF',
-			boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)'
-		}}
+			p={2}
+			sx={{
+				width: '100%',
+				backgroundColor: '#F8FAFF',
+				boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)',
+			}}
 		>
 			<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} sx={{width: '100%', height: '100%',}}>
 				<Stack direction={'row'} spacing={2}>

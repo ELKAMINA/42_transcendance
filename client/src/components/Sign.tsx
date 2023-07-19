@@ -14,6 +14,9 @@ import './Sign.css';
 import logoft from "../img/42 white.png";
 import { setSignCredentials, setTokens, setAvatar, selectTfaInput, getTfaInput, setNick } from '../redux-features/auth/authSlice';
 import { useSignupMutation, useSigninMutation} from '../app/api/authApiSlice';
+import { FetchActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
+import { FetchUserByName } from '../utils/global/global';
+import { User, UserPrisma } from '../data/userList';
 
 
 interface Signing {
@@ -35,7 +38,8 @@ export default function Sign(props: Signing){
     const [signup] = useSignupMutation(); // isLoading : Frequently Used Query Hook Return Values => When true, indicates that the query is currently loading for the first time, and has no data yet. This will be true for the first request fired off, but not for subsequent requests.
     const dispatch = useAppDispatch()
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
+
     React.useEffect(() => {
         if (userRef && userRef.current)
             userRef.current.focus()
@@ -67,20 +71,6 @@ export default function Sign(props: Signing){
     
     };
 
-    // const handleSubmitTfaCode = async () => {
-
-    //     await axios
-    //         .post("http://localhost:4001/auth/2fa/authenticate", {tfaCode, nickname})
-    //         .then((data) => {
-    //             console.log('je sors de la requete ', data)
-    //             // dispatch(setTokens({...res.data}));
-    //             navigate('/welcome')
-    //             // dispatch(getTfaInput(false))
-
-    //         })
-    //         .catch((e) => {console.log("error ", e)});
-    // }
-
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         try {
@@ -94,24 +84,20 @@ export default function Sign(props: Signing){
             }
             if (props.type === "Sign up")
             {
-                userData = await signup({ nickname, password, avatar }).unwrap() // unwrap extracts the payload of a fulfilled action or to throw either the error
+                userData = await signup({ nickname, password, avatar, type: 'notTfa' }).unwrap() // unwrap extracts the payload of a fulfilled action or to throw either the error
                 // console.log(userData)
             }
             else
             {
-                userData = await signin({ nickname, password, avatar }).unwrap()
-                // console.log('userData ', userData);
-                // if (userData.faEnabled === true)
-                // {
-                //     console.log('1 -- normalement je rentre ici')
-                //     dispatch(setNick(nickname))
-                //     navigate('/tfa')
-                //     console.log('???????????')
-                //     // dispatch(getTfaInput(true))
-                //     return 
-                // }
-                // console.log('!!!!!!')
-
+				const user: UserPrisma = await FetchUserByName(nickname)
+                if (user.faEnabled)
+                {
+                    dispatch(setNick(nickname))
+                    return (navigate('/tfa'))
+                }
+                else {
+                    userData = await signin({ nickname, password, avatar, type: 'notTfa' }).unwrap()
+                }
             }
             dispatch(setSignCredentials({...userData, nickname}))
             navigate('/welcome')

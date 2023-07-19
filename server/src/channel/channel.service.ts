@@ -423,4 +423,51 @@ export class ChannelService {
 			throw error;
 		}
 	}
+
+	async updateMembers(requestBody: { channelName: { name: string }, members: User[] }): Promise<Channel> {
+		try {
+			const { channelName, members } = requestBody;
+	
+			// Find the channel by name
+			const channel = await this.prisma.channel.findUnique({
+				where: {
+					name: channelName.name,
+				},
+				include: {
+					members: true, // Include the current members of the channel
+				},
+			});
+	
+			if (!channel) {
+				throw new Error(`Channel with name '${channelName.name}' not found.`);
+			}
+	
+			// Extract the current member IDs from the retrieved channel
+			const existingMemberIds = channel.members.map((member) => member.user_id);
+	
+			// Extract the new member IDs from the request
+			const newMemberIds = members.map((member) => member.user_id);
+	
+			// Combine the existing and new member IDs
+			const allMemberIds = [...existingMemberIds, ...newMemberIds];
+	
+			// Update the channel's members with the combined array
+			const updatedChannel = await this.prisma.channel.update({
+				where: {
+					channelId: channel.channelId,
+				},
+				data: {
+					members: {
+						connect: allMemberIds.map((user_id) => ({ user_id })),
+					},
+				},
+			});
+	
+			console.log('[MEMBERS] updatedChannel = ', updatedChannel);
+			return updatedChannel;
+		} catch (error) {
+			throw error;
+		}
+	}
+	
 }

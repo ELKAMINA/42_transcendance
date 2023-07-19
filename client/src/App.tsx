@@ -5,6 +5,7 @@ import Tfa from './pages/tfa';
 import Chat from "./pages/chat";
 import HomePage  from "./pages/home";
 import Layout from './components/Layout';
+import MatchMaking from './pages/matchmaking';
 import { Route, Routes } from "react-router-dom";
 import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
@@ -30,22 +31,22 @@ const App = () => {
     }
     dispatch(setTokens({...credentials }))
   }
-
-
   return (
     <div className="app">
       <Routes>
-        <Route path="/" element= {<Layout/>}>
+        {/* <Route path="/" element= {<Layout/>}> */}
+          <Route path="/" element={<AuthContainer />}/>
           <Route path="/sign" element={<AuthContainer />}/>
+          <Route path="/tfa" element={<Tfa />}/>
           <Route element={<RequireAuth />}>
             <Route path="/welcome" element={<HomePage />}/>
             <Route path="/chat" element={<Chat />}/>
             <Route path="/friendship" element={<FriendshipContainer />}/>
             <Route path="/userprofile" element={<UserProfile />}/>
             <Route path="/settings" element={<SettingsContainer />}/>
-            <Route path="/tfa" element={<Tfa />}/>
+            <Route path="/matchmaking" element={<MatchMaking />}/>
           </Route>
-        </Route>
+        {/* </Route> */}
       </Routes>
     </div>
     )

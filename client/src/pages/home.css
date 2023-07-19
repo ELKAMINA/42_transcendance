@@ -6,21 +6,7 @@
     justify-content: space-between;
 }
 
-.home__header  {
-    width: 100vw;
+.welcome{
+    color: rgba(0, 130, 160, 0.89);
 }
 
-.home__middle {
-    color: yellow;
-
-}
-
-p {
-    color: yellowgreen;
-}
-
-/* .qrcode{
-    font-size: large;
-    height: 50px;
-    justify-content: center;
-} */
