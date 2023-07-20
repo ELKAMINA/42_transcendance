@@ -132,11 +132,13 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					<IconButton>
 						<SportsEsportsIcon />
 					</IconButton>
-					<IconButton
-						onClick={() => {setOpenBlock(true)}}
-					>
-						<RemoveCircleIcon />
-					</IconButton>
+					{isPrivateConv && 
+						<IconButton
+							onClick={() => {setOpenBlock(true)}}
+						>
+							<RemoveCircleIcon />
+						</IconButton>
+					}
 					{!isPrivateConv && <Divider orientation="vertical" flexItem/>}
 					{!isPrivateConv && <ChannelMenu />}
 				</Stack>
