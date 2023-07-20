@@ -7,7 +7,7 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ManageAdminDialog from './ManageAdminDialog';
 import AddMembersDialog from './AddMembersDialog';
@@ -101,16 +101,19 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 
 		<Stack direction="row" spacing={2}>
 		<div>
-			<IconButton
-				ref={anchorRef}
-				id="composition-button"
-				aria-controls={open ? 'composition-menu' : undefined}
-				aria-expanded={open ? 'true' : undefined}
-				aria-haspopup="true"
-				onClick={handleToggle}
-			>
-				<ExpandMoreIcon />
-			</IconButton>
+			<Tooltip title='channel menu'>
+				<IconButton
+					ref={anchorRef}
+					id="composition-button"
+					aria-controls={open ? 'composition-menu' : undefined}
+					aria-expanded={open ? 'true' : undefined}
+					aria-haspopup="true"
+					onClick={handleToggle}
+					sx={{color: '#07457E'}}
+				>
+					<ExpandMoreIcon />
+				</IconButton>
+			</Tooltip>
 			<Popper
 				open={open}
 				anchorEl={anchorRef.current}
