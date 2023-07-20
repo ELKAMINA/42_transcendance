@@ -14,6 +14,8 @@ import api from '../../utils/Axios-config/Axios';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { Socket } from 'socket.io-client';
 import AdminMenu from '../AdminMenu';
+import GiveOwnerShipDialog from '../GiveOwnerShipDialog';
+import GiveOwnership from '../GiveOwnership';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -58,6 +60,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	const isPrivateConv : boolean = channel.members?.length === 1 && channel.type === 'privateConv' ? true : false;
 
 	const isAdmin : boolean = channel.members.some(member => member.login === currentUser) || currentUser === channel.createdById;
+	const isOwner : boolean = currentUser === channel.createdById;
 
 	// if the conversation is private, 
 	// the name of the channel should be the name of 
@@ -145,6 +148,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 							<Divider orientation="vertical" flexItem />
 							<ChannelMenu socketRef={socketRef}/>
 							{isAdmin && <AdminMenu socketRef={socketRef}/>}
+							{isOwner && <GiveOwnership />}
 						</Stack>
 					}
 				</Stack>
