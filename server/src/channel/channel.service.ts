@@ -118,8 +118,8 @@ export class ChannelService {
 
 		if (!user) {
 			throw new NotFoundException('User not found');
-		  }
-
+		}
+		
 		const output = [...user.channels, ...user.createdChannels];
 		return output;
 	}
@@ -423,10 +423,9 @@ export class ChannelService {
 		}
 	}
 
-	async updateMembers(requestBody: { channelName: { name: string }, members: User[] }): Promise<Channel> {
+	async addMembers(requestBody: { channelName: { name: string }, members: User[] }): Promise<Channel> {
 		try {
 			const { channelName, members } = requestBody;
-	
 			// Find the channel by name
 			const channel = await this.prisma.channel.findUnique({
 				where: {
@@ -462,7 +461,43 @@ export class ChannelService {
 				},
 			});
 	
-			console.log('[MEMBERS] updatedChannel = ', updatedChannel);
+			// console.log('[MEMBERS] updatedChannel = ', updatedChannel);
+			return updatedChannel;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async replaceMembers(requestBody: { channelName: { name: string }, members: User[] }): Promise<Channel> {
+		try {
+			const { channelName, members } = requestBody;
+			// Find the channel by name
+			const channel = await this.prisma.channel.findUnique({
+				where: {
+					name: channelName.name,
+				},
+			});
+	
+			if (!channel) {
+				throw new Error(`Channel with name '${channelName.name}' not found.`);
+			}
+		
+			// Extract the new member IDs from the request
+			const newMemberIds = members.map((member) => member.user_id);
+	
+			// Update the channel's members with the combined array
+			const updatedChannel = await this.prisma.channel.update({
+				where: {
+					channelId: channel.channelId,
+				},
+				data: {
+					members: {
+						set: newMemberIds.map((user_id) => ({ user_id })),
+					},
+				},
+			});
+	
+			// console.log('[MEMBERS] updatedChannel = ', updatedChannel);
 			return updatedChannel;
 		} catch (error) {
 			throw error;
