@@ -14,6 +14,7 @@ import { fetchUserChannels } from '../redux-features/chat/channelsSlice.tsx';
 import { selectCurrentUser } from '../redux-features/auth/authSlice.tsx';
 import SearchBarHighlights from '../components/SearchBarHighlight.tsx';
 import { UserByLogin } from '../types/users/userType.ts';
+import SearchBarContainer from '../components/SearchBarContainer.tsx';
 
 type handleSelectItemFunction = (pwd: string) => void;
 
@@ -49,7 +50,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 
 	return (
 	<Box className='sideBar'>
-		<SearchBarHighlights />
+		<SearchBarContainer getSelectedItem={getSelectedItem} />
 		<Divider variant='middle' flexItem  sx={{bgcolor: '#dde5ed'}}/>
 		<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} spacing={4}>
 			<Box className='createChannelButtonWrapper'>
