@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from '../../app/store';
 import  api  from '../../utils/Axios-config/Axios';
-import { UserPrisma } from "../../data/userList";
 
 export interface GameState {
     totalMatchesPlayed: number,
@@ -14,7 +13,7 @@ export interface GameState {
     MatchesLost: [],
     allMatches: [],
     MatchesWon: [],
-    user: UserPrisma | null,
+    opponent: string,
 }
 
 const initialState: GameState = {
@@ -27,7 +26,7 @@ const initialState: GameState = {
     MatchesLost: [],
     allMatches: [],
     MatchesWon: [],
-    user: null,
+    opponent: "",
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
 export const gameSlice = createSlice({
@@ -64,14 +63,14 @@ export const gameSlice = createSlice({
         updateMatchesWon: (state, action: PayloadAction<[]>) => {
             state.MatchesWon = action.payload;
         },
-        getUserInfos: (state, action: PayloadAction<UserPrisma>) => {
-            state.user = action.payload;
+        updateOpponent: (state, action: PayloadAction<string>) => {
+            state.opponent = action.payload;
         },
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-export const { updateTotalMatchesPlayed, updateTotalMatchesLost,updateTotalMatchesWon,updateTotalPlayers, updateLevel,updateRank,updateAllMatches,updateMatchesLost,updateMatchesWon } = gameSlice.actions
+export const { updateTotalMatchesPlayed, updateTotalMatchesLost,updateTotalMatchesWon,updateTotalPlayers, updateLevel,updateRank,updateAllMatches,updateMatchesLost,updateMatchesWon, updateOpponent } = gameSlice.actions
 export const selectTotalMatchesPlayed: any = (state: RootState) => state.persistedReducer.game.totalMatchesPlayed
 export const selectTotalMatchesLost = (state: RootState) => state.persistedReducer.game.totalMatchesLost
 export const selectTotalMatchesWon = (state: RootState) => state.persistedReducer.game.totalMatchesWon
@@ -82,6 +81,7 @@ export const selectLevel = (state: RootState) => state.persistedReducer.game.lev
 export const selectAllMatches = (state: RootState) => state.persistedReducer.game.allMatches
 export const selectMatchesWon = (state: RootState) => state.persistedReducer.game.MatchesWon
 export const selectMatchesLost = (state: RootState) => state.persistedReducer.game.MatchesLost
+export const selectOpponent = (state: RootState) => state.persistedReducer.game.opponent
 
 export function FetchTotalPlayers() {
     return async (dispatch:any, getState: any) => {

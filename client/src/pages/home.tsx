@@ -26,7 +26,7 @@ function HomePage() {
   const currentRoute = window.location.pathname;
 
   const play = () => {
-    navigate('/game')
+    navigate('/matchmaking')
   }
 
   const content = (

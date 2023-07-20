@@ -28,6 +28,16 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	 // ARRAY OF EVERY GAME IN PROGRESS OR IN WAITING OF AN OPPONENT
 	private games: Array<gameDto> = new Array<gameDto>();
 
+
+  async handleConnection(
+	@ConnectedSocket() client: Socket,
+    @Res() response: Response,
+    ...args: Socket[]
+  ) {
+  }
+
+/* Match making events */
+
   @SubscribeMessage('changeStatus')
   async handleChangeStatus(client: Socket, payload: string): Promise<string> {
 	  let user = await this.userService.searchUser(payload);
@@ -39,9 +49,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('joinRoom')
   async handlejoinRoom(client: Socket, payload: string): Promise<void> {
 	let room : gameDto | undefined = this.games.find((element) => element["players"].length === 1);
-	console.log("ROOOOOM ", room)
 	if (this.games.length  === 0 || room === undefined) {
-		console.log (' je creee une nouvelle room ')
 		room = {
 			id: payload,
 			createdDate: Date.now(),
@@ -51,16 +59,23 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			power: false,
 			isFull: false,
 			players: new Array<string>(),
+			playerOneId: client.id,
+			playerTwoId: '0',
 			scorePlayers: new Array<number>(),
 		}
 		room.players.push(payload);
 		room.scorePlayers.push(0);
 		room.scorePlayers.push(0);
 		this.games.push(room);
+		this.server.to((room.playerOneId)).emit('waitingForOpponent')
 	}
 	else {
 		room.isFull = true;
 		room.players.push(payload)
+		room.playerTwoId = client.id
+		this.server.to(room.playerOneId).emit('gameBegin', {opponent : room.players[1], allRoomInfo: room})
+		this.server.to(room.playerTwoId).emit('gameBegin', {opponent : room.players[0], allRoomInfo: room})
+
 	}
 	client.join(room.id)
 	this.server.to(client.id).emit("roomJoined", room.id);
@@ -69,12 +84,18 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	return;
 }
 
-  async handleConnection(
-	@ConnectedSocket() client: Socket,
-    @Res() response: Response,
-    ...args: Socket[]
-  ) {
-  }
+/* ********** */
+
+
+/* Game events */
+
+// @SubscribeMessage('connectedSocket') // Verifier les id des sockets
+// async handleConnectedSocket(client: Socket): Promise<void> {
+// 	console.log('je me connnecte à partir de Game ', client.id)
+//   return;
+// }
+
+/* ********** */
 
   async handleDisconnect(client: Socket) {
 	console.log('Disconnection Client Id', client.id);

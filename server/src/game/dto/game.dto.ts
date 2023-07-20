@@ -44,4 +44,10 @@ export class gameDto {
   @IsArray()
   @ArrayMaxSize(2)
   scorePlayers: number[];
+
+  @IsString()
+  playerOneId: string
+
+  @IsString()
+  playerTwoId: string
 }
