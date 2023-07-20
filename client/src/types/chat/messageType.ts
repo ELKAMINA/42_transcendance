@@ -1,4 +1,4 @@
-import { UserDetails, UserModel } from "../users/userType"
+import { UserModel } from "../users/userType"
 import { Channel } from "./channelTypes"
 
 export type ChatMessage = {
@@ -6,7 +6,6 @@ export type ChatMessage = {
 	sentBy: string
 	sentById: string
 	senderSocketId: string 
-	// sentTo: UserDetails[]
 	message: string
 	sentAt: Date
 	img?: string;

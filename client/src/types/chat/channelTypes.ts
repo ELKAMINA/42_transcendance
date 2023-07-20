@@ -1,13 +1,13 @@
-import { UserDetails, UserModel } from "../users/userType"
+import { UserByLogin, UserModel } from "../users/userType"
 import { ChatMessage } from "./messageType"
 
 export type Channel = {
 
 	name: string
 	channelId?: number
-	members: UserDetails[],
-	createdBy: UserDetails,
-	admins: UserDetails[],
+	members: UserByLogin[],
+	createdBy: UserByLogin,
+	admins: UserByLogin[],
 	protected_by_password?: boolean
 	type?: string
 	key?: string
@@ -16,13 +16,13 @@ export type Channel = {
 
 }
 
-
 export type ChannelModel = {
 	name: string;
+	avatar: string | undefined;
 	channelId: number;
 	members: UserModel[];
-	createdBy: UserModel | null;
-	createdById: string | null;
+	createdBy: UserModel;
+	createdById: string;
 	admins: UserModel[];
 	createdAt: Date;
 	updatedAt: Date;
@@ -31,5 +31,5 @@ export type ChannelModel = {
 	chatHistory: ChatMessage[];
 }
 
-// a chat is eather a one to one conversation (UserDetails) or a group conversation (Channel)
+// a chat is eather a one to one conversation (UserByLogin) or a group conversation (Channel)
 export type DisplayedChat = Channel

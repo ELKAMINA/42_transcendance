@@ -10,16 +10,15 @@ import { useTheme } from '@mui/material/styles';
 import UserList from './UserList';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
-import { UserDetails } from '../types/users/userType';
 import api from '../utils/Axios-config/Axios';
-import { Channel } from '../types/chat/channelTypes';
+import { Channel, ChannelModel } from '../types/chat/channelTypes';
+import { UserByLogin, UserModel } from '../types/users/userType';
 
 export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-	// const updatedAdmins : UserDetails[] = [];
-	const selectedChannel : Channel = useAppSelector((state) => selectDisplayedChannel(state));
-	const [updatedAdmins, setUpdatedAdmins] = React.useState<UserDetails[]>([]);
+	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
+	const [updatedAdmins, setUpdatedAdmins] = React.useState<UserModel[]>([]);
 	const AppDispatch = useAppDispatch();
 
 	async function updateAdmins() : Promise<void> {

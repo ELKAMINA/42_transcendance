@@ -16,9 +16,9 @@
 /* Channel creation window */
 .create-channel-popup-inner {
 	position: relative;
-	width: 40%;
-	height: 80%;
-	padding: 0;
+	width: auto;
+	height: auto;
+	/* padding: 0; */
 	padding: 2%;
 	background-color: rgb(255, 255, 255);
 	/* background-color: red; */
@@ -57,8 +57,9 @@
 /* Add scrollbar styles ---------------------------------------------------------------------------------------------- */
 
 .close-button-container {
-	position: absolute;
-	right: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 /* .create-channel-form { */

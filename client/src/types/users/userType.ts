@@ -9,13 +9,15 @@ export enum Status {
 	Playing,
 }
 
-export type UserDetails = {
+// this is type specially made for sending a 
+// request to the server without sending an
+// unecessary amount of data
+export type UserByLogin = {
 	login: string;
-	email: string;
-	displayName: string;
-	avatar: string;
 };
 
+// this type should be used for any user retrieved
+// from the database, through the AppSelector()
 export type UserModel = {
 	createdAt: Date;
 	updatedAt: Date;
@@ -26,7 +28,8 @@ export type UserModel = {
 	rtHash: string | null;
 	fA: string | null;
 	faEnabled: boolean | null;
-	avatar: string | null;
+	// avatar: string | null;
+	avatar: string | undefined;
 	status: Status | null;
 	friends: UserModel[];
 	friendOf: UserModel[];

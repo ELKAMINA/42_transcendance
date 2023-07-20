@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 
 import CreateChannel from './createChannel/createChannel.tsx';
-import SearchBar from './search/searchBar.tsx';
-import SearchResultsList from './search/searchResultsList.tsx';
 import ConfirmationDialog from '../components/ConfirmationDialog.tsx';
 import AlignItemsList from '../components/AlignItemsList.tsx';
 import { Box, Button, Stack, Divider } from '@mui/material';
-import { UserDetails } from "../../../server/src/user/types/user-types.user.ts";
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 
 import "./sideBar.css"
@@ -16,6 +13,8 @@ import { useAppDispatch, useAppSelector } from '../utils/redux-hooks.tsx';
 import { fetchUserChannels } from '../redux-features/chat/channelsSlice.tsx';
 import { selectCurrentUser } from '../redux-features/auth/authSlice.tsx';
 import SearchBarHighlights from '../components/SearchBarHighlight.tsx';
+import { UserByLogin } from '../types/users/userType.ts';
+import SearchBarContainer from '../components/SearchBarContainer.tsx';
 
 type handleSelectItemFunction = (pwd: string) => void;
 
@@ -30,7 +29,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 	
 	// the userList for the search bar
-	const [results, setResults] = useState<(UserDetails | Channel)[]>([])
+	const [results, setResults] = useState<(UserByLogin | Channel)[]>([])
 	
 	function getSelectedItem (selectedItem : string) {
 		handleSelectItem(selectedItem)
@@ -51,7 +50,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 
 	return (
 	<Box className='sideBar'>
-		<SearchBarHighlights />
+		<SearchBarContainer getSelectedItem={getSelectedItem} />
 		<Divider variant='middle' flexItem  sx={{bgcolor: '#dde5ed'}}/>
 		<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} spacing={4}>
 			<Box className='createChannelButtonWrapper'>

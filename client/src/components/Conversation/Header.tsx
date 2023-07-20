@@ -6,7 +6,7 @@ import { useState } from 'react';
 import BlockUser from './BlockUser';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel, } from '../../redux-features/chat/channelsSlice';
-import { Channel } from '../../types/chat/channelTypes';
+import { Channel, ChannelModel } from '../../types/chat/channelTypes';
 import { emptyChannel } from '../../data/emptyChannel';
 import ChannelMenu from '../ChannelMenu';
 import { useNavigate } from 'react-router-dom';
@@ -53,7 +53,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	let channelName : string = 'error';
 	let channelAvatar : string | undefined = 'error';
 
-	const channel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
+	const channel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	const isPrivateConv : boolean = channel.members?.length === 1 && channel.type === 'privateConv' ? true : false;
 
 	// if the conversation is private, 
@@ -132,11 +132,13 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					<IconButton>
 						<SportsEsportsIcon />
 					</IconButton>
-					<IconButton
-						onClick={() => {setOpenBlock(true)}}
-					>
-						<RemoveCircleIcon />
-					</IconButton>
+					{isPrivateConv && 
+						<IconButton
+							onClick={() => {setOpenBlock(true)}}
+						>
+							<RemoveCircleIcon />
+						</IconButton>
+					}
 					{!isPrivateConv && <Divider orientation="vertical" flexItem/>}
 					{!isPrivateConv && <ChannelMenu />}
 				</Stack>

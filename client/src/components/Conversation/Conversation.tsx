@@ -6,7 +6,7 @@
 	import { Socket, io } from "socket.io-client"
 	import { ChatMessage } from "../../types/chat/messageType"
 	import socketIOClient from 'socket.io-client';
-	import { Channel } from "../../types/chat/channelTypes"
+	import { Channel, ChannelModel } from "../../types/chat/channelTypes"
 	import { useAppSelector } from "../../utils/redux-hooks"
 	import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
 	import { RootState } from "../../app/store"
@@ -23,7 +23,7 @@
 
 	function Conversation() {
 
-		const selectedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
+		const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 		const isWelcomeChannel = selectedChannel.name === 'WelcomeChannel' ? true : false;
 		const roomId = selectedChannel.name;
 		const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -33,6 +33,8 @@
 		
 		
 		useEffect(() => {
+			if (selectedChannel.name === 'WelcomeChannel') // if roomId is 'WelcomeChannel'
+				return ; // exit the function immediatly
 			socketRef.current = socketIOClient("http://localhost:4002", {
 				query: {roomId}
 			})

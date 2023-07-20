@@ -9,7 +9,7 @@ import { RootState } from '../../app/store';
 import { fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { Channel } from '../../types/chat/channelTypes';
+import { Channel, ChannelModel } from '../../types/chat/channelTypes';
 import { ChatMessage } from '../../types/chat/messageType';
 import { FetchUserByName } from '../../utils/global/global';
 import { transformData } from '../../pages/userProfile';
@@ -44,7 +44,7 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 
 	// record message
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
-	const displayedChannel: Channel = useAppSelector((state) => selectDisplayedChannel(state));
+	const displayedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	function handleChange(e : React.ChangeEvent<HTMLInputElement>) {
 		const input = e.target.value;
 		setValue(input);

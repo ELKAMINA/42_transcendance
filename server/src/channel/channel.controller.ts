@@ -6,7 +6,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 
 import { ChannelService } from 'src/channel/channel.service';
-import { UserDetails } from 'src/user/types';
 import { Channel, User } from '@prisma/client';
 
 @Controller('channel')
@@ -20,6 +19,7 @@ export class channelController {
   @Post('/creation')
   @Public() // TODO - remove public
   createChannel(@Body() dto: ChannelDto): Promise<object> {
+	// console.log('dto = ', dto);
     return this.ChannelService.createChannel(dto);
   }
 
@@ -125,5 +125,13 @@ export class channelController {
     @Body() requestBody: { channelName: { name: string }; members: User[] },
   ): Promise<Channel> {
     return this.ChannelService.updateMembers(requestBody);
+  }
+
+  @Post('/updatePassword')
+  @Public() // TODO - remove public
+  updatePassword(
+    @Body() requestBody: { channelName: { name: string }; key: string },
+  ): Promise<Channel> {
+    return this.ChannelService.updatePassword(requestBody);
   }
 }

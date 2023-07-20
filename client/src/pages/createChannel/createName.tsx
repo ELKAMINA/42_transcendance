@@ -3,14 +3,14 @@ import "./createChannel.css"
 import { Box, Stack, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
-import { Channel } from "../../types/chat/channelTypes";
+import { Channel, ChannelModel } from "../../types/chat/channelTypes";
 import { fetchAllChannelsInDatabase, selectAllChannels } from "../../redux-features/chat/channelsSlice";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 
 function CreateName() {
 	const dispatchSync = useAppDispatch();
 	React.useEffect(() => {dispatchSync(fetchAllChannelsInDatabase())}, []);
-	const channels : Channel[] = useAppSelector(selectAllChannels);
+	const channels : ChannelModel[] = useAppSelector(selectAllChannels);
 	
 	const [channelName, setChannelName] = useState('');
 	const [isTaken, setIsTaken] = useState(false);

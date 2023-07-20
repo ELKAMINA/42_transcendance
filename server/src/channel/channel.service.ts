@@ -1,9 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 import * as argon from 'argon2';
 import { Channel, Prisma, User } from '@prisma/client';
-import { UserDetails } from 'src/user/types';
 
 @Injectable()
 export class ChannelService {
@@ -465,6 +464,40 @@ export class ChannelService {
 			});
 	
 			console.log('[MEMBERS] updatedChannel = ', updatedChannel);
+			return updatedChannel;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async updatePassword(requestBody : {channelName : {name : string}, key : string}) : Promise<Channel> {
+		try 
+		{
+			const { channelName, key } = requestBody;
+			const pwd = key !== '' ? await argon.hash(key) : '';
+		
+			// Find the channel by name
+			const channel = await this.prisma.channel.findUnique({
+				where: {
+					name: channelName.name,
+				},
+			});
+		
+			if (!channel) {
+				throw new Error(`Channel with name '${channelName.name}' not found.`);
+			}
+		
+			// Update the channel's admins with the new array
+			const updatedChannel = await this.prisma.channel.update({
+				where: {
+					channelId: channel.channelId,
+				},
+				data: {
+					key: {
+						set: pwd,
+					},
+				},
+			});
 			return updatedChannel;
 		} catch (error) {
 			throw error;
