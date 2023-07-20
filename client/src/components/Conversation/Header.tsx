@@ -92,8 +92,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 		.catch((e) => {
 			console.log('ERROR from request with params ', e)
 		})
-		
 	}
+	
 	return (
 		<Box 
 			p={2}
@@ -140,7 +140,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 						</IconButton>
 					}
 					{!isPrivateConv && <Divider orientation="vertical" flexItem/>}
-					{!isPrivateConv && <ChannelMenu />}
+					{!isPrivateConv && <ChannelMenu socketRef={socketRef}/>}
 				</Stack>
 			</Stack>
 			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
