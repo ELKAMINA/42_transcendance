@@ -53,11 +53,11 @@ export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openD
 			onClose={handleCancel}
 			aria-labelledby="manage-owner-dialog"
 		>
-		<DialogTitle id="manage-owner-dialog">
+		<DialogTitle id="manage-owner-dialog" sx={{color: '#3b0c2b', fontSize: '1.4em'}}>
 			{"Pass on the burden of power"}
 		</DialogTitle>
 		<DialogContent>
-			<DialogContentText>
+			<DialogContentText sx={{fontSize: '1.2em', color: '#8c005e', padding:'5%'}}>
 				There can be only one owner. 
 				If it's not you, it's someone else.
 				Only you can decide.
