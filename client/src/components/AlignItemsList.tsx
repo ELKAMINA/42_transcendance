@@ -48,11 +48,15 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 		const tmp = channels.findIndex(channel => channel.name === selectedChannel.name);
 		console.log('selectedChannel = ', selectedChannel.name);
 		console.log('tmp = ', tmp);
-		if (tmp && tmp != selectedIndex) // if selectedChannel is in the list AND different from current index
+		console.log('selectedIndex = ', selectedIndex);
+		if (tmp && tmp != selectedIndex) {// if selectedChannel is in the list AND different from current index
+			console.log('chips au vinaigre')
 			setSelectedIndex(tmp); // set index to match selectedChannel
-		else if (!tmp) { // if selectedChannel is not in the list
+		}
+		else if (tmp === -1) { // if selectedChannel is not in the list
 			setSelectedIndex(0);
 			getSelectedItem('WelcomeChannel'); // display welcome channel
+			console.log('schweppes agrume');
 		}
 
 	}, [selectedChannel])
