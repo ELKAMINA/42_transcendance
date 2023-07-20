@@ -8,22 +8,18 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
 import { Box, IconButton, Tooltip } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ManageAdminDialog from './ManageAdminDialog';
-import AddMembersDialog from './AddMembersDialog';
-import ManagePasswordDialog from './ManagePasswordDialog';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useAppSelector } from '../utils/redux-hooks';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { Socket } from 'socket.io-client';
-import LeaveChannelDialog from './LeaveChannelDialog';
 
-export type ChannelMenuProps = {
+export type AdminMenuProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
 }
 
-export default function ChannelMenu({socketRef} : ChannelMenuProps) {
+export default function AdminMenu({socketRef} : AdminMenuProps) {
 	const [open, setOpen] = React.useState<boolean>(false);
 	const [openAdminDialog, setOpenAdminDialog] = React.useState<boolean>(false);
 	const [openAddMembers, setOpenAddMembers] = React.useState<boolean>(false);
@@ -33,8 +29,6 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 	// check if user is owner of the selected channel
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
-	const isOwner : boolean = currentUser === selectedChannel.createdById ? true : false;
-	const isCreator : boolean = currentUser === selectedChannel.createdById ? true : false;
 
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -101,7 +95,7 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 
 		<Stack direction="row" spacing={2}>
 		<div>
-			<Tooltip title='channel menu'>
+			<Tooltip title='admin privileges'>
 				<IconButton
 					ref={anchorRef}
 					id="composition-button"
@@ -109,9 +103,9 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 					aria-expanded={open ? 'true' : undefined}
 					aria-haspopup="true"
 					onClick={handleToggle}
-					sx={{color: '#07457E'}}
+					sx={{color: '#e33100'}}
 				>
-					<ExpandMoreIcon />
+					<AdminPanelSettingsIcon />
 				</IconButton>
 			</Tooltip>
 			<Popper
@@ -138,10 +132,9 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 								aria-labelledby="composition-button"
 								onKeyDown={handleListKeyDown}
 							>
-								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
-								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>}
-								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>add / manage password</MenuItem>}
-								{isCreator === false && <MenuItem onClick={(event) => handleClose(event, 'leaveChannel')}>leave channel</MenuItem>}
+								<MenuItem onClick={(event) => handleClose(event, 'ban member')}>ban member(s)</MenuItem>
+								<MenuItem onClick={(event) => handleClose(event, 'kick member out')}>kick membe(s) out</MenuItem>
+								<MenuItem onClick={(event) => handleClose(event, 'mute member')}>mute member(s)</MenuItem>
 							</MenuList>
 						</ClickAwayListener>
 					</Paper>
@@ -150,10 +143,7 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 			</Popper>
 		</div>
 		</Stack>
-			<ManageAdminDialog openDialog={openAdminDialog} setOpenDialog={setOpenAdminDialog}/>
-			<AddMembersDialog openDialog={openAddMembers} setOpenDialog={setOpenAddMembers}/>
-			<ManagePasswordDialog openDialog={openManagePassword} setOpenDialog={setOpenManagePassword}/>
-			<LeaveChannelDialog socketRef={socketRef} openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/>
+			{/* <ManageAdminDialog openDialog={openAdminDialog} setOpenDialog={setOpenAdminDialog}/> */}
 		</React.Fragment>
 
 	);

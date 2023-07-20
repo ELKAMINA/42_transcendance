@@ -119,12 +119,20 @@ export class channelController {
     return this.ChannelService.updateAdmins(requestBody);
   }
 
-  @Post('/updateMembers')
+  @Post('/addMembers')
   @Public() // TODO - remove public
-  updateMembers(
+  addMembers(
     @Body() requestBody: { channelName: { name: string }; members: User[] },
   ): Promise<Channel> {
-    return this.ChannelService.updateMembers(requestBody);
+    return this.ChannelService.addMembers(requestBody);
+  }
+
+  @Post('/replaceMembers')
+  @Public() // TODO - remove public
+  replaceMembers(
+    @Body() requestBody: { channelName: { name: string }; members: User[] },
+  ): Promise<Channel> {
+    return this.ChannelService.replaceMembers(requestBody);
   }
 
   @Post('/updatePassword')

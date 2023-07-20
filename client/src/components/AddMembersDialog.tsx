@@ -13,6 +13,7 @@ import { UserByLogin, UserModel } from '../types/users/userType';
 import api from '../utils/Axios-config/Axios';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import MultipleSelectChip from '../pages/createChannel/createUsersList';
+import SendIcon from '@mui/icons-material/Send';
 import { selectFriends } from '../redux-features/friendship/friendshipSlice';
 
 export default function AddMembersDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
@@ -40,10 +41,10 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 		  
 	// console.log('Filtered Friends:', filteredFriends);
 	  
-	async function updateMembers() : Promise<void> {
+	async function addMembers() : Promise<void> {
 		// console.log('setUpdatedMembers = ', setUpdatedMembers);
 		await api
-			.post('http://localhost:4001/channel/updateMembers', {
+			.post('http://localhost:4001/channel/addMembers', {
 				channelName : {name : selectedChannel.name},
 				members : updatedMembers,
 			})
@@ -56,7 +57,11 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 	}
 
 	const handleClose = () => {
-		updateMembers();
+		addMembers();
+		setOpenDialog(false);
+	};
+
+	const handleCancel = () => {
 		setOpenDialog(false);
 	};
 
@@ -65,7 +70,7 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 			<Dialog
 				fullScreen={fullScreen}
 				open={openDialog}
-				onClose={handleClose}
+				onClose={handleCancel}
 				aria-labelledby="manage-members-dialog"
 			>
 			<DialogTitle id="manage-members-dialog">
@@ -75,8 +80,8 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 				<MultipleSelectChip userList={filteredFriends} setUpdatedMembers={setUpdatedMembers} />
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={handleClose} autoFocus>
-				SUBMIT
+			<Button variant="contained" size='medium' endIcon={<SendIcon />} onClick={handleClose} autoFocus>
+					SUBMIT
 				</Button>
 			</DialogActions>
 			</Dialog>

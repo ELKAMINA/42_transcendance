@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button } from '@mui/material'
+import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button, Tooltip } from '@mui/material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { useState } from 'react';
@@ -13,6 +13,9 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../utils/Axios-config/Axios';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { Socket } from 'socket.io-client';
+import AdminMenu from '../AdminMenu';
+import GiveOwnerShipDialog from '../GiveOwnerShipDialog';
+import GiveOwnership from '../GiveOwnership';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -49,12 +52,15 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   
   function Header({ socketRef }: HeaderProps) {
 	const navigate = useNavigate();
-	const currentUser : string = useAppSelector((state)=> selectCurrentUser(state));
+	const currentUser : string = useAppSelector(selectCurrentUser);
 	let channelName : string = 'error';
 	let channelAvatar : string | undefined = 'error';
 
-	const channel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
+	const channel: ChannelModel = useAppSelector(selectDisplayedChannel) || emptyChannel;
 	const isPrivateConv : boolean = channel.members?.length === 1 && channel.type === 'privateConv' ? true : false;
+
+	const isAdmin : boolean = channel.members.some(member => member.login === currentUser) || currentUser === channel.createdById;
+	const isOwner : boolean = currentUser === channel.createdById;
 
 	// if the conversation is private, 
 	// the name of the channel should be the name of 
@@ -92,8 +98,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 		.catch((e) => {
 			console.log('ERROR from request with params ', e)
 		})
-		
 	}
+	
 	return (
 		<Box 
 			p={2}
@@ -129,18 +135,22 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					</Stack>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} spacing={3}>
-					<IconButton>
+					<IconButton sx={{color: '#07457E'}}>
 						<SportsEsportsIcon />
 					</IconButton>
-					{isPrivateConv && 
-						<IconButton
-							onClick={() => {setOpenBlock(true)}}
-						>
+					{isPrivateConv &&
+						<IconButton onClick={() => {setOpenBlock(true)}}>
 							<RemoveCircleIcon />
 						</IconButton>
 					}
-					{!isPrivateConv && <Divider orientation="vertical" flexItem/>}
-					{!isPrivateConv && <ChannelMenu />}
+					{!isPrivateConv &&
+						<Stack direction={'row'} spacing={2}>
+							<Divider orientation="vertical" flexItem />
+							<ChannelMenu socketRef={socketRef}/>
+							{isAdmin && <AdminMenu socketRef={socketRef}/>}
+							{isOwner && <GiveOwnership />}
+						</Stack>
+					}
 				</Stack>
 			</Stack>
 			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}

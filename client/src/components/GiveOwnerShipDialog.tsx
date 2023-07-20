@@ -14,22 +14,22 @@ import api from '../utils/Axios-config/Axios';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { UserByLogin, UserModel } from '../types/users/userType';
 import SendIcon from '@mui/icons-material/Send';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
+export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
-	const [updatedAdmins, setUpdatedAdmins] = React.useState<UserModel[]>([]);
+	const [updatedOwner, setupdatedOwner] = React.useState<UserModel[]>([]);
 	const AppDispatch = useAppDispatch();
 
-	async function updateAdmins() : Promise<void> {
+	async function updateOwner() : Promise<void> {
 		await api
-			.post('http://localhost:4001/channel/updateAdmins', {
+			.post('http://localhost:4001/channel/updateOwnership', {
 				channelName : {name : selectedChannel.name},
-				admins : updatedAdmins,
+				owner : updatedOwner,
 			})
 			.then((response) => {
-				// console.log("response = ", response)
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})
@@ -37,7 +37,7 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 	}
 
 	const handleClose = () => {
-		updateAdmins();
+		updateOwner();
 		setOpenDialog(false);
 	};
 
@@ -51,20 +51,24 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 			fullScreen={fullScreen}
 			open={openDialog}
 			onClose={handleCancel}
-			aria-labelledby="manage-admin-dialog"
+			aria-labelledby="manage-owner-dialog"
 		>
-		<DialogTitle id="manage-admin-dialog">
-			{"Manage who has admin rights"}
+		<DialogTitle id="manage-owner-dialog" sx={{color: '#3b0c2b', fontSize: '1.4em'}}>
+			{"Pass on the burden of power"}
 		</DialogTitle>
 		<DialogContent>
-			<DialogContentText>
-				Here you can decide who has administrator privileges.
-				An administrator can kick out, ban or mute another
-				member of the channel, except the owner. 
+			<DialogContentText sx={{fontSize: '1.2em', color: '#8c005e', padding:'5%'}}>
+				There can be only one owner. 
+				If it's not you, it's someone else.
+				Only you can decide.
+				Choose wisely.
 			</DialogContentText>
-			<UserList updatedAdmins={updatedAdmins} setUpdatedAdmins={setUpdatedAdmins}/>
+			<UserList updatedAdmins={updatedOwner} setUpdatedAdmins={setupdatedOwner}/>
 		</DialogContent>
 		<DialogActions>
+			<Button variant="outlined" size='medium' startIcon={<DeleteIcon />} onClick={handleCancel} autoFocus>
+				CANCEL
+			</Button>
 			<Button variant="contained" size='medium' endIcon={<SendIcon />} onClick={handleClose} autoFocus>
 				SUBMIT
 			</Button>
