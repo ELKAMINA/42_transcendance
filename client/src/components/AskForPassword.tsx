@@ -26,19 +26,21 @@ function AskForPassword({element, AlertDialogSlideOpen, setAlertDialogSlideOpen,
 	const [isPasswordCorrect, setIsPasswordCorrect] = React.useState<boolean>(false); 
 
 	async function checkPassword(pwd : string) {
-		if (element.key) {
-			try {
-				await api
-					.post('http://localhost:4001/channel/checkPwd', {pwd : pwd, obj : {name : element.name}})
-					.then((response) => {
-						setIsPasswordCorrect(response.data)
-					})
-					.catch((error) => console.log('caught error while checking password : ', error));
-			} catch (error) {
-				console.error('Error occurred while verifying password:', error);
+		if (element) {
+			if (element.key) {
+				try {
+					await api
+						.post('http://localhost:4001/channel/checkPwd', {pwd : pwd, obj : {name : element.name}})
+						.then((response) => {
+							setIsPasswordCorrect(response.data)
+						})
+						.catch((error) => console.log('caught error while checking password : ', error));
+				} catch (error) {
+					console.error('Error occurred while verifying password:', error);
+				}
+			} else {
+				console.log("Something went wrong... no need for password here!")
 			}
-		} else {
-			console.log("Something went wrong... no need for password here!")
 		}
 	}
 
