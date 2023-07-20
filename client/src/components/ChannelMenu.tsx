@@ -16,8 +16,14 @@ import { useAppSelector } from '../utils/redux-hooks';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import { ChannelModel } from '../types/chat/channelTypes';
+import { Socket } from 'socket.io-client';
+import LeaveChannelDialog from './LeaveChannelDialog';
 
-export default function ChannelMenu() {
+export type ChannelMenuProps = {
+	socketRef: React.MutableRefObject<Socket | undefined>;
+}
+
+export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 	const [open, setOpen] = React.useState<boolean>(false);
 	const [openAdminDialog, setOpenAdminDialog] = React.useState<boolean>(false);
 	const [openAddMembers, setOpenAddMembers] = React.useState<boolean>(false);
@@ -28,6 +34,7 @@ export default function ChannelMenu() {
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
 	const isOwner : boolean = currentUser === selectedChannel.createdById ? true : false;
+	const isCreator : boolean = currentUser === selectedChannel.createdById ? true : false;
 
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -87,6 +94,8 @@ export default function ChannelMenu() {
 		prevOpen.current = open;
 	}, [open]);
 
+
+
 	return (
 		<React.Fragment>
 
@@ -129,7 +138,7 @@ export default function ChannelMenu() {
 								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
 								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>}
 								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>add / manage password</MenuItem>}
-								<MenuItem onClick={(event) => handleClose(event, 'leaveChannel')}>leave channel</MenuItem>
+								{isCreator === false && <MenuItem onClick={(event) => handleClose(event, 'leaveChannel')}>leave channel</MenuItem>}
 							</MenuList>
 						</ClickAwayListener>
 					</Paper>
@@ -141,7 +150,7 @@ export default function ChannelMenu() {
 			<ManageAdminDialog openDialog={openAdminDialog} setOpenDialog={setOpenAdminDialog}/>
 			<AddMembersDialog openDialog={openAddMembers} setOpenDialog={setOpenAddMembers}/>
 			<ManagePasswordDialog openDialog={openManagePassword} setOpenDialog={setOpenManagePassword}/>
-			{/* <LeaveChannelDialog openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/> */}
+			<LeaveChannelDialog socketRef={socketRef} openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/>
 		</React.Fragment>
 
 	);
