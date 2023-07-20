@@ -13,6 +13,7 @@ import { UserByLogin, UserModel } from '../types/users/userType';
 import api from '../utils/Axios-config/Axios';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import MultipleSelectChip from '../pages/createChannel/createUsersList';
+import SendIcon from '@mui/icons-material/Send';
 import { selectFriends } from '../redux-features/friendship/friendshipSlice';
 
 export default function AddMembersDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
@@ -60,12 +61,16 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 		setOpenDialog(false);
 	};
 
+	const handleCancel = () => {
+		setOpenDialog(false);
+	};
+
   	return (
 		<div>
 			<Dialog
 				fullScreen={fullScreen}
 				open={openDialog}
-				onClose={handleClose}
+				onClose={handleCancel}
 				aria-labelledby="manage-members-dialog"
 			>
 			<DialogTitle id="manage-members-dialog">
@@ -75,8 +80,8 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 				<MultipleSelectChip userList={filteredFriends} setUpdatedMembers={setUpdatedMembers} />
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={handleClose} autoFocus>
-				SUBMIT
+			<Button variant="contained" size='medium' endIcon={<SendIcon />} onClick={handleClose} autoFocus>
+					SUBMIT
 				</Button>
 			</DialogActions>
 			</Dialog>
