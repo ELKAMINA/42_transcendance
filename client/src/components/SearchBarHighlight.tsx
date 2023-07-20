@@ -26,20 +26,26 @@ const CssTextField = styled(TextField)({
 	  borderBottomColor: 'red',
 	},
 	'& .MuiOutlinedInput-root': {
-	  '& fieldset': {
-		borderWidth: '2px',
-		borderColor: 'white',
-		backgroundColor: '#032B50',
-	  },
-	  '&:hover fieldset': {
-		borderWidth: '2px',
-		borderColor: '#99E100',
-	  },
-	  '&.Mui-focused fieldset': {
-		borderWidth: '2px',
-		borderColor: 'white',
-	  },
+		backgroundColor: '#032B50', // this target the background of the 'outlined input' element
+
+		'& fieldset': {
+			borderWidth: '2px',
+			borderColor: 'white',
+		},
+		'&:hover fieldset': {
+			borderWidth: '2px',
+			borderColor: '#99E100',
+		},
+		'&.Mui-focused fieldset': {
+			borderWidth: '2px',
+			borderColor: 'white',
+		},
 	},
+	'& .MuiInputBase-input': { // This targets the input text
+		color: 'white',
+		backgroundColor: '#032B50',
+	},
+
 });
 
 export default function SearchBarHighlights() {
