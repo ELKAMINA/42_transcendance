@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Statistics from './Skeleton';
 import { Rank, Wins, Loss, TotalMatches, Level} from './Scores';
-import { UserPrisma } from '../../../data/userList';
 import MatchHistory from '../Events/Skeleton';
 
 

@@ -12,9 +12,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 
 import './chat.css'
+import './game.css'
 import Navbar from '../components/NavBar'; 
 import { transformData } from './userProfile';
-import { UserPrisma } from '../data/userList';
 import { FetchUserByName } from '../utils/global/global';
 import { updateOpponent, selectOpponent } from '../redux-features/game/gameSlice'
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
@@ -74,6 +74,7 @@ function Matchmaking () {
 			})
 		}
 		return () => {
+			dispatch(updateOpponent(""))
 
 		}
 	}, [])
@@ -138,6 +139,13 @@ function Matchmaking () {
 	)
 }
 
+type BallType = {
+	x: number;
+	y: number;
+	dx: number;
+	dy: number;
+  };
+
 function Pong () {
 	const currentRoute = window.location.pathname;
 	const dispatch = useAppDispatch();
@@ -146,10 +154,72 @@ function Pong () {
 	const location = useLocation();
 
 	const roomInfo = location.state;
-	
+	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const [paddleY, setPaddleY] = useState<number>(200);
+	const [ball, setBall] = useState<BallType>({ x: 10, y: 10, dx: 2, dy: 2 });
+  
+	const draw = (ctx: CanvasRenderingContext2D, frameCount: number) => {
+	  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	  ctx.fillStyle = '#000000';
+	  ctx.fillRect(50, paddleY, 20, 80);
+	  ctx.fillRect(50, paddleY, 20, 80);
+	  ctx.beginPath();
+	  ctx.arc(ball.x, ball.y, 10, 0, 2*Math.PI);
+	  ctx.fill();
+	};
+  
+	const update = () => {
+	  setBall(ball => ({
+		x: ball.x + ball.dx,
+		y: ball.y + ball.dy,
+		dx: (ball.x + ball.dx > 800 || ball.x + ball.dx < 0) ? -ball.dx : ball.dx,
+		dy: (ball.y + ball.dy > 400 || ball.y + ball.dy < 0) ? -ball.dy : ball.dy
+	  }));
+	  if (ball.x <= 70 && ball.x >= 50 && ball.y >= paddleY && ball.y <= paddleY + 80) {
+		setBall(ball => ({ ...ball, dx: -ball.dx }));
+	  }
+	};
+
+	const mouseDown = (e: any) => {
+		console.log('jai bougé la souris ', e)
+	}
+  
+	useEffect(() => {
+	  const canvas = canvasRef.current;
+	  if (!canvas){
+		return;
+	  }
+	  const context = canvas?.getContext('2d');
+	  if (!context){
+		return ;
+	  }
+	  canvas.addEventListener('mousedown', mouseDown)
+	//   let frameCount = 0;
+	//   let animationFrameId: number;
+  
+	//   const render = () => {
+	// 	frameCount++;
+	// 	if(context) {
+	// 	  draw(context, frameCount);
+	// 	}
+	// 	update();
+	// 	animationFrameId = window.requestAnimationFrame(render);
+	//   };
+	//   render();
+  
+	  return () => {
+		// window.cancelAnimationFrame(animationFrameId);
+	  };
+	}, []);
+  
+	// const movePaddle = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+	//   const newPaddleY = event.clientY - 40;
+	//   setPaddleY(newPaddleY);
+	// };
+  
 	useEffect(() => {
 		// socket.emit('connectedSocket', {})
-
+		
 		return () => {
 			if (socket) {
 				socket.disconnect();
@@ -157,10 +227,22 @@ function Pong () {
 			}
 		}
 	}, [])
-
+	
 	return (
 		<>
 			<Navbar currentRoute={currentRoute} />
+			<Box>
+				<Box sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					// justifyContent: 'space-around',
+					margin: '70px',
+				}}>
+					<canvas className="canvas" ref={canvasRef} width="1000" height="600"  />
+				</Box>
+			</Box>
+			{/* onMouseMove={movePaddle} */}
 
 		</>
 	)
