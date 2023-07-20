@@ -46,9 +46,9 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 
 		// set index accordingly to most resent selectedChannel update
 		const tmp = channels.findIndex(channel => channel.name === selectedChannel.name);
-		console.log('selectedChannel = ', selectedChannel.name);
-		console.log('tmp = ', tmp);
-		console.log('selectedIndex = ', selectedIndex);
+		// console.log('selectedChannel = ', selectedChannel.name);
+		// console.log('tmp = ', tmp);
+		// console.log('selectedIndex = ', selectedIndex);
 		if (tmp && tmp != selectedIndex) {// if selectedChannel is in the list AND different from current index
 			console.log('chips au vinaigre')
 			setSelectedIndex(tmp); // set index to match selectedChannel
