@@ -13,6 +13,7 @@ import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from
 import api from '../utils/Axios-config/Axios';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { UserByLogin, UserModel } from '../types/users/userType';
+import SendIcon from '@mui/icons-material/Send';
 
 export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
@@ -40,12 +41,16 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 		setOpenDialog(false);
 	};
 
+	const handleCancel = () => {
+		setOpenDialog(false);
+	};
+
   return (
 	<div>
 		<Dialog
 			fullScreen={fullScreen}
 			open={openDialog}
-			onClose={handleClose}
+			onClose={handleCancel}
 			aria-labelledby="manage-admin-dialog"
 		>
 		<DialogTitle id="manage-admin-dialog">
@@ -60,8 +65,8 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 			<UserList updatedAdmins={updatedAdmins} setUpdatedAdmins={setUpdatedAdmins}/>
 		</DialogContent>
 		<DialogActions>
-			<Button onClick={handleClose} autoFocus>
-			SUBMIT
+			<Button variant="contained" size='medium' endIcon={<SendIcon />} onClick={handleClose} autoFocus>
+				SUBMIT
 			</Button>
 		</DialogActions>
 		</Dialog>
