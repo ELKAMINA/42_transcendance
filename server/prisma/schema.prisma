@@ -67,6 +67,8 @@ model User {
 	createdChannels       Channel[]       @relation("ChannelCreator")
 	// //*** Where the user is admin ***//
 	adminChannels         Channel[]       @relation("ChannelAdmin")
+	bannedFromChannels    Channel[]       @relation("ChannelBanned")
+	MutedInChannels       Channel[]       @relation("ChannelMuted")
 	messagesSent          Message[]       @relation("MessageSender")
 }
 
@@ -76,7 +78,9 @@ model Channel {
 	members     User[]    @relation("Membership")
 	createdBy   User?     @relation("ChannelCreator", fields: [createdById], references: [login], onDelete: SetNull) // When the corresponding user is deleted, set to null
 	createdById String?
-	admins      User[]    @relation("ChannelAdmin")
+	admins      User[]	@relation("ChannelAdmin")
+	banned      User[]	@relation("ChannelBanned")
+	muted		User[]	@relation("ChannelMuted")
 	createdAt   DateTime  @default(now())
 	updatedAt   DateTime  @updatedAt
 	type        String
