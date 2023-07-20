@@ -44,9 +44,9 @@ function SideBar({handleSelectItem} : SideBarProps) {
 			.catch((error) => console.log('error while deleting channel', error));
 	}
 
-	function handleClick() {
-		deleteAllChannels()
-	}
+	// function handleClick() {
+		// deleteAllChannels()
+	// }
 
 	return (
 	<Box className='sideBar'>
@@ -74,7 +74,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 				</Button>
 				<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
 			</Box>
-			<Box>
+			{/* <Box>
 				<ConfirmationDialog
 					title = 'delete all'
 					id = 'delete-channels'
@@ -83,7 +83,7 @@ function SideBar({handleSelectItem} : SideBarProps) {
 					handleConfirm={handleClick}
 					dialogTitle='Delete all channels from database?'
 				/>
-			</Box>
+			</Box> */}
 		</Stack>
 		<Stack className='alignItemsListContainer'>
 			<AlignItemsList getSelectedItem={getSelectedItem} />
