@@ -40,10 +40,10 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 		  
 	// console.log('Filtered Friends:', filteredFriends);
 	  
-	async function updateMembers() : Promise<void> {
+	async function addMembers() : Promise<void> {
 		// console.log('setUpdatedMembers = ', setUpdatedMembers);
 		await api
-			.post('http://localhost:4001/channel/updateMembers', {
+			.post('http://localhost:4001/channel/addMembers', {
 				channelName : {name : selectedChannel.name},
 				members : updatedMembers,
 			})
@@ -56,7 +56,7 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 	}
 
 	const handleClose = () => {
-		updateMembers();
+		addMembers();
 		setOpenDialog(false);
 	};
 
