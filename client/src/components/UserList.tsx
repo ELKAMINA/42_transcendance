@@ -24,8 +24,9 @@ export default function UserList({setUpdatedAdmins} : UserListProps) {
 	const adminIndexes: number[] = channelAdmins.map((admin) =>
 		channelMembers.findIndex((member) => member.login === admin.login)
 	);
+	
+	const [checked, setChecked] = React.useState<number[]>(adminIndexes.filter(index => index !== -1));
 
-	const [checked, setChecked] = React.useState<number[]>(adminIndexes[0] === -1 ? [0] : adminIndexes);
 
 	const handleToggle = (value: number) => () => {
 		
