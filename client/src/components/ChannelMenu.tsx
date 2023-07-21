@@ -37,7 +37,7 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
 	const isOwner : boolean = currentUser === selectedChannel.ownedById ? true : false;
-	const isCreator : boolean = currentUser === selectedChannel.createdById ? true : false;
+	const isAdmin : boolean = selectedChannel.admins.some(admin => admin.login === currentUser)
 
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -145,8 +145,8 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 								aria-labelledby="composition-button"
 								onKeyDown={handleListKeyDown}
 							>
-								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
-								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>}
+								{isAdmin &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
+								{isAdmin &&	<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>}
 								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>add / manage password</MenuItem>}
 								{<MenuItem onClick={(event) => handleClose(event, 'channelInfo')}>info about channel</MenuItem>}
 								{isOwner === false && <MenuItem onClick={(event) => handleClose(event, 'leaveChannel')}>leave channel</MenuItem>}
