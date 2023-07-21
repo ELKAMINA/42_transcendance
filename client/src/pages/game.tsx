@@ -177,6 +177,8 @@ function Pong () {
 	  if (!ctx){
 		return ;
 	  }
+	  // clear the canvas before every re-render
+	  ctx.current?.clearRect(0,0, canvas.width, canvas.height)
 	  canvas.addEventListener('mousedown', mouseDown)
 	//   let frameCount = 0;
 	//   let animationFrameId: number;
