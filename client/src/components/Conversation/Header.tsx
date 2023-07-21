@@ -59,8 +59,9 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	const channel: ChannelModel = useAppSelector(selectDisplayedChannel) || emptyChannel;
 	const isPrivateConv : boolean = channel.members?.length === 1 && channel.type === 'privateConv' ? true : false;
 
-	const isAdmin : boolean = channel.members.some(member => member.login === currentUser) || currentUser === channel.createdById;
-	const isOwner : boolean = currentUser === channel.createdById;
+	const isAdmin : boolean = channel.members.some(member => member.login === currentUser) || currentUser === channel.ownedById;
+	const isOwner : boolean = currentUser === channel.ownedById;
+	console.log('ownedBy = ', channel.ownedById);
 
 	// if the conversation is private, 
 	// the name of the channel should be the name of 
