@@ -6,6 +6,7 @@ import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice'
 import { Channel, ChannelModel } from '../../types/chat/channelTypes';
 import areDifferentDays from '../../utils/areDifferentDays';
 import React, { useEffect } from 'react';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 function renderSwitchComponent(el : ChatMessage, index: number) {
 	switch (el.subtype) {
@@ -26,7 +27,8 @@ function renderSwitchComponent(el : ChatMessage, index: number) {
 
 const Message = ({ messages }: { messages : ChatMessage[] }) => {
 
-	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
+	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
+
 	// console.log('selected channel in messages = ', selectedChannel);
 	// console.log('chat history = ', selectedChannel.chatHistory);
 

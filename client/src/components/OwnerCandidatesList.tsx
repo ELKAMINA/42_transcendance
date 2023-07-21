@@ -11,39 +11,39 @@ import { useAppSelector } from '../utils/redux-hooks';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
-type UserListProps = {
-	usersSet : UserModel[], // a list of users amongs which you make your selection
-	initialUsers : UserModel[], // a lits of users initially selected
-	setUpdatedUsers : (admins : UserModel[]) => void, // a function to update the selected users
+type OwnerCandidatesListProps = {
+	setUpdatedOwner : (owner : UserModel | null) => void,
 }
 
-export default function UserList({usersSet, initialUsers, setUpdatedUsers} : UserListProps) {
-	const userIndexes: number[] = initialUsers.map((admin) =>
-		usersSet.findIndex((user) => user.login === admin.login)
-	);
-	
-	const [checked, setChecked] = React.useState<number[]>(userIndexes.filter(index => index !== -1));
+export default function OwnerCandidatesList({setUpdatedOwner} : OwnerCandidatesListProps) {
+	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
+	const channelMembers : UserModel[] = selectedChannel.members;
 
+	const ownerIndex : number = channelMembers.findIndex(member => selectedChannel.ownedById === member.login);
+
+	const [checked, setChecked] = React.useState<number>(ownerIndex);
 
 	const handleToggle = (value: number) => () => {
 		
-		const currentIndex = checked.indexOf(value);
-		const newChecked = [...checked];
-	
-		if (currentIndex === -1) {
-			newChecked.push(value);
-		} else {
-			newChecked.splice(currentIndex, 1);
-	    }
+		const currentIndex = value;
+		let newChecked = checked;
+
+		if (currentIndex === checked) {
+			// If the clicked checkbox is already checked, uncheck it by setting newChecked to -1
+			newChecked = -1;
+		  } else {
+			// If the clicked checkbox is not checked, check it by setting newChecked to its value
+			newChecked = value;
+		  }
 
     	setChecked(newChecked);
-		const updatedUsers: UserModel[] = [...newChecked.map((index) => usersSet[index])];
-		setUpdatedUsers(updatedUsers);
+		const updatedOwner: UserModel | null = newChecked !== -1 ? channelMembers[newChecked] : null;
+		setUpdatedOwner(updatedOwner);
   	};
 
   return (
     <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-      {usersSet.map((el, value) => {
+      {channelMembers.map((el, value) => {
         const labelId = `checkbox-list-secondary-label-${value}`;
         return (
           <ListItem
@@ -52,7 +52,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers} : Use
               <Checkbox
                 edge="end"
                 onChange={handleToggle(value)}
-                checked={checked.indexOf(value) !== -1}
+                checked={value === checked}
                 inputProps={{ 'aria-labelledby': labelId }}
               />
             }

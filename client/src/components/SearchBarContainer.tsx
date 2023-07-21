@@ -81,7 +81,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 			admins: [createdBy],
 			protected_by_password: false,
 			key: '',
-			members: [friend],
+			members: [friend, createdBy],
 			avatar: friend?.avatar,
 			chatHistory: [],
 		})

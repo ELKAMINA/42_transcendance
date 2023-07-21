@@ -119,6 +119,31 @@ export class channelController {
     return this.ChannelService.updateAdmins(requestBody);
   }
 
+  @Post('/updateBanned')
+  @Public() // TODO - remove public
+  updateBanned(
+    @Body() requestBody: { channelName: { name: string }; banned: User[] },
+  ): Promise<Channel> {
+    return this.ChannelService.updateBanned(requestBody);
+  }
+
+
+  @Post('/updateMuted')
+  @Public() // TODO - remove public
+  updateMuted(
+    @Body() requestBody: { channelName: { name: string }; muted: User[] },
+  ): Promise<Channel> {
+    return this.ChannelService.updateMuted(requestBody);
+  }
+
+  @Post('/updateOwner')
+  @Public() // TODO - remove public
+  updateOwner(
+    @Body() requestBody: { channelName: { name: string }; owner: User },
+  ): Promise<Channel> {
+    return this.ChannelService.updateOwner(requestBody);
+  }
+
   @Post('/addMembers')
   @Public() // TODO - remove public
   addMembers(

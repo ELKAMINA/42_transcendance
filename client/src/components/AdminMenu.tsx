@@ -14,6 +14,8 @@ import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { Socket } from 'socket.io-client';
+import ManageBannedDialog from './ManageBannedDialog';
+import ManageMutedDialog from './ManageMutedDialog';
 
 export type AdminMenuProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
@@ -21,10 +23,9 @@ export type AdminMenuProps = {
 
 export default function AdminMenu({socketRef} : AdminMenuProps) {
 	const [open, setOpen] = React.useState<boolean>(false);
-	const [openAdminDialog, setOpenAdminDialog] = React.useState<boolean>(false);
-	const [openAddMembers, setOpenAddMembers] = React.useState<boolean>(false);
-	const [openManagePassword, setOpenManagePassword] = React.useState<boolean>(false);
-	const [openLeaveChannel, setOpenLeaveChannel] = React.useState<boolean>(false);
+	const [openBannedDialog, setOpenBannedDialog] = React.useState<boolean>(false);
+	const [openMutedDialog, setOpenMutedDialog] = React.useState<boolean>(false);
+	const [openKickMemberDialog, setOpenKickMemberDialog] = React.useState<boolean>(false);
 
 	// check if user is owner of the selected channel
 	const currentUser : string = useAppSelector(selectCurrentUser);
@@ -47,20 +48,16 @@ export default function AdminMenu({socketRef} : AdminMenuProps) {
 		setOpen(false);
 
 		switch (actionSelected) {
-			case 'manageAdmin' : {
-				setOpenAdminDialog(true);
+			case 'ban member' : {
+				setOpenBannedDialog(true);
 				break;
 			}
-			case 'addMembers' : {
-				setOpenAddMembers(true);
+			case 'mute member' : {
+				setOpenMutedDialog(true);
 				break;
 			}
-			case 'managePassword' : {
-				setOpenManagePassword(true);
-				break;
-			}
-			case 'leaveChannel' : {
-				setOpenLeaveChannel(true);
+			case 'kick' : {
+				setOpenKickMemberDialog(true);
 				break;
 			}
 			default :
@@ -133,7 +130,7 @@ export default function AdminMenu({socketRef} : AdminMenuProps) {
 								onKeyDown={handleListKeyDown}
 							>
 								<MenuItem onClick={(event) => handleClose(event, 'ban member')}>ban member(s)</MenuItem>
-								<MenuItem onClick={(event) => handleClose(event, 'kick member out')}>kick membe(s) out</MenuItem>
+								<MenuItem onClick={(event) => handleClose(event, 'kick')}>kick membe(s) out</MenuItem>
 								<MenuItem onClick={(event) => handleClose(event, 'mute member')}>mute member(s)</MenuItem>
 							</MenuList>
 						</ClickAwayListener>
@@ -143,7 +140,9 @@ export default function AdminMenu({socketRef} : AdminMenuProps) {
 			</Popper>
 		</div>
 		</Stack>
-			{/* <ManageAdminDialog openDialog={openAdminDialog} setOpenDialog={setOpenAdminDialog}/> */}
+			<ManageBannedDialog openDialog={openBannedDialog} setOpenDialog={setOpenBannedDialog}/>
+			<ManageMutedDialog openDialog={openMutedDialog} setOpenDialog={setOpenMutedDialog}/>
+
 		</React.Fragment>
 
 	);

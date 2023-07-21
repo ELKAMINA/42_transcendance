@@ -1,19 +1,12 @@
-import React, { useState } from 'react';
-
+import { useState } from 'react';
 import CreateChannel from './createChannel/createChannel.tsx';
-import ConfirmationDialog from '../components/ConfirmationDialog.tsx';
 import AlignItemsList from '../components/AlignItemsList.tsx';
-import { Box, Button, Stack, Divider } from '@mui/material';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
-
+import { Box, Button, Stack, } from '@mui/material';
 import "./sideBar.css"
-import { Channel } from '../types/chat/channelTypes.ts';
 import api from '../utils/Axios-config/Axios.tsx';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks.tsx';
 import { fetchUserChannels } from '../redux-features/chat/channelsSlice.tsx';
 import { selectCurrentUser } from '../redux-features/auth/authSlice.tsx';
-import SearchBarHighlights from '../components/SearchBarHighlight.tsx';
-import { UserByLogin } from '../types/users/userType.ts';
 import SearchBarContainer from '../components/SearchBarContainer.tsx';
 
 type handleSelectItemFunction = (pwd: string) => void;
@@ -24,41 +17,27 @@ interface SideBarProps {
 
 function SideBar({handleSelectItem} : SideBarProps) {
 	const AppDispatch = useAppDispatch();
-	const nickname = useAppSelector(selectCurrentUser) as string
+	const nickname : string = useAppSelector(selectCurrentUser)
 	// button that opens the create channel window
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
-	
-	// the userList for the search bar
-	const [results, setResults] = useState<(UserByLogin | Channel)[]>([])
-	
+
 	function getSelectedItem (selectedItem : string) {
 		handleSelectItem(selectedItem)
 	}
 
-	async function deleteAllChannels() {
-		await api
-			.post('http://localhost:4001/channel/deleteAllChannels', {createdBy: nickname})
-			.then((response) => {
-				AppDispatch(fetchUserChannels());
-			})
-			.catch((error) => console.log('error while deleting channel', error));
-	}
-
-	// function handleClick() {
-		// deleteAllChannels()
-	// }
-
 	return (
 	<Box className='sideBar'>
 		<SearchBarContainer getSelectedItem={getSelectedItem} />
-		<Divider variant='middle' flexItem  sx={{bgcolor: '#dde5ed'}}/>
+		{/* <Divider variant='middle' flexItem  sx={{bgcolor: '#dde5ed'}}/> */}
 		<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} spacing={4}>
-			<Box className='createChannelButtonWrapper'>
+			<Box >
 				<Button
 					onClick={() => setButtonPopup(true)}
 					variant='contained'
-					// size='large'
 					sx={{
+						margin:'8%',
+						marginLeft: '0%',
+						padding: '3%',
 						width: '15vw',
 						color: '#07457E',
 						backgroundColor: '#99E100',
@@ -74,16 +53,6 @@ function SideBar({handleSelectItem} : SideBarProps) {
 				</Button>
 				<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
 			</Box>
-			{/* <Box>
-				<ConfirmationDialog
-					title = 'delete all'
-					id = 'delete-channels'
-					options = { ['Yes, I want to delete all the channels I created.'] }
-					icon={<ClearAllIcon sx={{ color: 'white' }} fontSize="medium" />}
-					handleConfirm={handleClick}
-					dialogTitle='Delete all channels from database?'
-				/>
-			</Box> */}
 		</Stack>
 		<Stack className='alignItemsListContainer'>
 			<AlignItemsList getSelectedItem={getSelectedItem} />
