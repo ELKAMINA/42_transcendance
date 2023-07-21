@@ -25,7 +25,7 @@ export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openD
 
 	async function updateOwner() : Promise<void> {
 		await api
-			.post('http://localhost:4001/channel/updateOwnership', {
+			.post('http://localhost:4001/channel/updateOwner', {
 				channelName : {name : selectedChannel.name},
 				owner : updatedOwner,
 			})
