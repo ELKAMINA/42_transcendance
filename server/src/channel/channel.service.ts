@@ -31,6 +31,9 @@ export class ChannelService {
 					createdBy: {
 						connect: {login: dto.createdBy.login}
 					},
+					ownedBy: {
+						connect: {login: dto.createdBy.login}
+					},
 					type: dto.type,
 					key: pwd,
 				} as Prisma.ChannelCreateInput,
@@ -101,7 +104,10 @@ export class ChannelService {
 					include: {
 						members: true,
 						admins: true,
+						banned: true,
+						muted: true,
 						createdBy: true,
+						ownedBy: true,
 						chatHistory: true,
 					}
 				},
@@ -109,7 +115,10 @@ export class ChannelService {
 					include: {
 						members: true,
 						admins: true,
+						banned: true,
+						muted: true,
 						createdBy: true,
+						ownedBy: true,
 						chatHistory: true,
 					}
 				},
@@ -133,7 +142,10 @@ export class ChannelService {
 					include: {
 						members: true,
 						admins: true,
+						banned: true,
+						muted: true,
 						createdBy: true,
+						ownedBy: true,
 						chatHistory: true,
 					}
 				},
@@ -156,7 +168,10 @@ export class ChannelService {
 					include: {
 						members: true,
 						admins: true,
+						banned: true,
+						muted: true,
 						createdBy: true,
+						ownedBy: true,
 						chatHistory: true,
 					}
 				},
@@ -177,7 +192,10 @@ export class ChannelService {
 			include: {
 				members: true,
 				admins: true,
+				banned: true,
+				muted: true,
 				createdBy: true,
+				ownedBy: true,
 				chatHistory: true,
 			  }
 		});
@@ -191,7 +209,10 @@ export class ChannelService {
 			include: {
 				members: true,
 				admins: true,
+				banned: true,
+				muted: true,
 				createdBy: true,
+				ownedBy: true,
 				chatHistory: true,
 			}
 		});
@@ -222,7 +243,10 @@ export class ChannelService {
 						include: {
 							members: true,
 							admins: true,
+							banned: true,
+							muted: true,
 							createdBy: true,
+							ownedBy: true,
 							chatHistory: true,
 						}
 					},
@@ -232,8 +256,11 @@ export class ChannelService {
 						},
 						include: {
 							members: true,
+							banned: true,
+							muted: true,
 							admins: true,
 							createdBy: true,
+							ownedBy: true,
 							chatHistory: true,
 						}
 					},
@@ -268,7 +295,10 @@ export class ChannelService {
 						include: {
 							members: true,
 							admins: true,
+							banned: true,
+							muted: true,
 							createdBy: true,
+							ownedBy: true,
 							chatHistory: true,
 						}
 					},
@@ -278,8 +308,10 @@ export class ChannelService {
 						},
 						include: {
 							members: true,
+							banned: true,
 							admins: true,
 							createdBy: true,
+							ownedBy: true,
 							chatHistory: true,
 						}
 					},
@@ -314,7 +346,10 @@ export class ChannelService {
 						include: {
 							members: true,
 							admins: true,
+							banned: true,
+							muted: true,
 							createdBy: true,
+							ownedBy: true,
 							chatHistory: true,
 						}
 					},
@@ -325,7 +360,10 @@ export class ChannelService {
 						include: {
 							members: true,
 							admins: true,
+							banned: true,
+							muted: true,
 							createdBy: true,
+							ownedBy: true,
 							chatHistory: true,
 						}
 					},
@@ -416,7 +454,40 @@ export class ChannelService {
 					},
 				},
 			});
-			// console.log('updatedChannel = ',updatedChannel);
+			// console.log('updatedChannel = ', updatedChannel);
+			return updatedChannel;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async updateOwner(requestBody : {channelName : {name : string}, owner : User}) : Promise<Channel> {
+		console.log('requestBody', requestBody);
+		try 
+		{
+			const { channelName, owner } = requestBody;
+		
+			// Find the channel by name
+			const channel = await this.prisma.channel.findUnique({
+				where: {
+					name: channelName.name,
+				},
+			});
+		
+			if (!channel) {
+				throw new Error(`Channel with name '${channelName.name}' not found.`);
+			}
+		
+			// Update the channel's owner
+			const updatedChannel = await this.prisma.channel.update({
+				where: {
+					channelId: channel.channelId,
+				},
+				data: {
+					ownedById: owner.login 
+				},
+			});
+			// console.log('updatedChannel = ', updatedChannel);
 			return updatedChannel;
 		} catch (error) {
 			throw error;
