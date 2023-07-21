@@ -57,11 +57,10 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	let channelAvatar : string | undefined = 'error';
 
 	const channel: ChannelModel = useAppSelector(selectDisplayedChannel) || emptyChannel;
-	const isPrivateConv : boolean = channel.members?.length === 1 && channel.type === 'privateConv' ? true : false;
+	const isPrivateConv : boolean = channel.members?.length === 2 && channel.type === 'privateConv' ? true : false;
 
 	const isAdmin : boolean = channel.members.some(member => member.login === currentUser) || currentUser === channel.ownedById;
 	const isOwner : boolean = currentUser === channel.ownedById;
-	console.log('ownedBy = ', channel.ownedById);
 
 	// if the conversation is private, 
 	// the name of the channel should be the name of 
@@ -140,11 +139,13 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 						<SportsEsportsIcon />
 					</IconButton>
 					{isPrivateConv &&
-						<IconButton onClick={() => {setOpenBlock(true)}}>
-							<RemoveCircleIcon />
-						</IconButton>
+						<Tooltip title='block user'>
+							<IconButton sx={{color: '#4DC8BC'}} onClick={() => {setOpenBlock(true)}}>
+								<RemoveCircleIcon />
+							</IconButton>
+						</Tooltip>
 					}
-					{!isPrivateConv &&
+					{isPrivateConv === false &&
 						<Stack direction={'row'} spacing={2}>
 							<Divider orientation="vertical" flexItem />
 							<ChannelMenu socketRef={socketRef}/>
