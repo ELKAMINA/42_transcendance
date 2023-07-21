@@ -54,10 +54,10 @@ function Game () {
 		if (user.status !== 'Playing'){
 			socket.connect(); // Will use 'handleConnection' from nestjs/game
 			socket.on('connect', () => {
-				console.log('I\'m connected');
+				console.log('I\'m connected, id is = ', socket.id);
 				socket.emit("changeStatus", nickName);
 			});
-			socket.on("statusChanged", (data) => {
+			socket.on("statusChanged", () => {
 				dispatch(FetchActualUser());
 				socket.emit("joinRoom", nickName);
 			});
@@ -67,18 +67,28 @@ function Game () {
 			socket.on("roomJoined", (newRoom) => {
 				console.log('new room id', newRoom);
 			})
+			console.log('jarrive jusque la ')
+
 			socket.on("gameBegin", (roomInfo) => {
 				dispatch(updateOpponent(roomInfo.opponent))
 				setTimeout(()=> {
 					setStarting(true)
+					socket.on('forceDisconnection', () => {
+						navigate("/welcome");
+					})
 					// navigate('/pong', { state: {roomInfo}})
 				}, 5000)
+			})
+			socket.on('forceDisconnection', () => {
+				navigate("/welcome");
 			})
 		}
 		return () => {
 			dispatch(updateOpponent(""))
-			if (socket)
+			if (socket){
+				console.log('I\'m getting disconnected, id is = ', socket.id);
 				socket.disconnect()
+			}
 
 		}
 	}, [])
