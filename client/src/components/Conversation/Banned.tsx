@@ -29,16 +29,17 @@ function Banned() {
 				height={'100%'} 
 				maxHeight={'100vh'}
 				width={'auto'}
+				spacing={0}
+				flexGrow={1}
 			>
 				<GifViewer pathToGif='/assets/RUB.gif' />
 				<Box
 					sx={{
 						width: '100%',
 						backgroundColor : '#e8d6be',
-						height : '100%',
+						height : '55%',
 						color : 'red',
 						fontSize : '4em',
-						position : 'end',
 						display: 'flex', // Add display: 'flex' to use flexbox layout
 						alignItems: 'center', // Center content vertically
 						justifyContent: 'center', // Center content horizontally
@@ -48,7 +49,6 @@ function Banned() {
 				</Box>
 			</Stack>
 		</ThemeProvider>
-
 	)
 }
 
