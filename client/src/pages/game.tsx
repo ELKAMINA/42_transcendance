@@ -120,33 +120,45 @@ function Pong () {
 	const nickName = useAppSelector(selectCurrentUser);
 	const user = useAppSelector(selectActualUser);
 	const location = useLocation();
+	
 
 	const roomInfo = location.state;
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const ctx = useRef<CanvasRenderingContext2D | null>(null);
+
+		/*Why useRef : unlike state updates, changes to a ref's .current property do not trigger a re-render of the component. This makes it useful for values that need to persist across renders but changes in these values should not cause an update to the component's output*/
 	const [paddleY, setPaddleY] = useState<number>(200);
 	const [ball, setBall] = useState<BallType>({ x: 10, y: 10, dx: 2, dy: 2 });
   
-	const draw = (ctx: CanvasRenderingContext2D, frameCount: number) => {
-	  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	  ctx.fillStyle = '#000000';
-	  ctx.fillRect(50, paddleY, 20, 80);
-	  ctx.fillRect(50, paddleY, 20, 80);
-	  ctx.beginPath();
-	  ctx.arc(ball.x, ball.y, 10, 0, 2*Math.PI);
-	  ctx.fill();
-	};
+	/* Drawing functions  */
+	const drawRect = (ctx:CanvasRenderingContext2D, x: number,y: number, w: number, h: number, color: string) => {
+		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		ctx.fillStyle = color;
+		ctx?.fillRect(x, y, w, h); 
+	}
+
+	const drawCircle = (ctx: CanvasRenderingContext2D,x: number,y: number, r: number, color: string) => {
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.arc(x, y, r, 0, Math.PI*2, false); // x = X position for the ball, y = Y position for the ball, r = radius, 0= start angle &&  Match.PI*2 = End Angle (correspond à 360 degres, false = to say that we want the ball to be drawn in the clockwise direction )
+		ctx.closePath()
+		ctx.fill(); 
+	}
+
+	const drawText = (ctx:CanvasRenderingContext2D, text: string, x: number,y: number, color: string) => {
+		ctx.fillStyle = color;
+		ctx.font = "75px fantasy"
+		ctx.fillText(text, x, y); 
+	}
+
+	const drawNet = (ctx:CanvasRenderingContext2D, text: string, x: number,y: number, color: string) => {
+		ctx.fillStyle = color;
+		ctx.font = "75px fantasy"
+		ctx.fillText(text, x, y); 
+	}
+
+	/* ***  */
   
-	const update = () => {
-	  setBall(ball => ({
-		x: ball.x + ball.dx,
-		y: ball.y + ball.dy,
-		dx: (ball.x + ball.dx > 800 || ball.x + ball.dx < 0) ? -ball.dx : ball.dx,
-		dy: (ball.y + ball.dy > 400 || ball.y + ball.dy < 0) ? -ball.dy : ball.dy
-	  }));
-	  if (ball.x <= 70 && ball.x >= 50 && ball.y >= paddleY && ball.y <= paddleY + 80) {
-		setBall(ball => ({ ...ball, dx: -ball.dx }));
-	  }
-	};
 
 	const mouseDown = (e: any) => {
 		console.log('jai bougé la souris ', e)
@@ -161,8 +173,8 @@ function Pong () {
 	  if (!canvas){
 		return;
 	  }
-	  const context = canvas?.getContext('2d');
-	  if (!context){
+	  ctx.current = canvas.getContext('2d');
+	  if (!ctx){
 		return ;
 	  }
 	  canvas.addEventListener('mousedown', mouseDown)
@@ -184,13 +196,8 @@ function Pong () {
 	  };
 	}, []);
   
-	// const movePaddle = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-	//   const newPaddleY = event.clientY - 40;
-	//   setPaddleY(newPaddleY);
-	// };
   
 	useEffect(() => {
-		// socket.emit('connectedSocket', {})
 		
 		return () => {
 			if (socket) {
@@ -203,7 +210,6 @@ function Pong () {
 	
 	return (
 		<>
-			{/* <Navbar currentRoute={currentRoute} /> */}
 			<Box>
 				<Box sx={{
 					display: 'flex',
