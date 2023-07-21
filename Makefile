@@ -69,7 +69,7 @@ down:
 
 # REMOVE STOPPED CONTAINERS
 rm:
-	docker compose --file $(DOCKER_COMPOSE_FILE) rm ---force --stop
+	docker compose --file $(DOCKER_COMPOSE_FILE) rm --force --stop
 
 # LIST CONTAINERS
 ps:

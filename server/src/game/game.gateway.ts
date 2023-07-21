@@ -67,7 +67,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		room.scorePlayers.push(0);
 		room.scorePlayers.push(0);
 		this.games.push(room);
-		this.server.to((room.playerOneId)).emit('waitingForOpponent')
+		// this.server.to((room.playerOneId)).emit('waitingForOpponent')
 	}
 	else {
 		room.isFull = true;
@@ -100,6 +100,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleDisconnect(client: Socket) {
 	console.log('Disconnection Client Id', client.id);
 	const user = this.friendshipGateway.getUserInfoFromSocket(client.handshake.headers.cookie)
+	// const game = this.games.find(user.login);
+	// console.log(game);
+	// const opponent = game.
 	this.games = this.games.filter((el) => el.id === user.login)
 	console.log("A la deconnexion : games ", this.games)
   }
