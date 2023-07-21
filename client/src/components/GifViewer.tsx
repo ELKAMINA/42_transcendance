@@ -10,7 +10,7 @@ export default function GifViewer({pathToGif, description} : GifViewerProps) {
 			<CardMedia
 				component="img"
 				alt="GIF"
-				height="300"
+				height="500"
 				image={pathToGif}
 			/>
 			{description && 
