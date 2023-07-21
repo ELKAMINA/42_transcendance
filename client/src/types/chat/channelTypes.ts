@@ -7,7 +7,10 @@ export type Channel = {
 	channelId?: number
 	members: UserByLogin[],
 	createdBy: UserByLogin,
+	ownedBy: UserByLogin,
 	admins: UserByLogin[],
+	banned?: UserByLogin[],
+	muted?: UserByLogin[],
 	protected_by_password?: boolean
 	type?: string
 	key?: string
@@ -23,7 +26,11 @@ export type ChannelModel = {
 	members: UserModel[];
 	createdBy: UserModel;
 	createdById: string;
+	ownedBy: UserModel;
+	ownedById: string;
 	admins: UserModel[];
+	banned: UserModel[];
+	muted: UserModel[];
 	createdAt: Date;
 	updatedAt: Date;
 	type: string;
