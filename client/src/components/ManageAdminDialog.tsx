@@ -45,31 +45,35 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 		setOpenDialog(false);
 	};
 
-  return (
-	<div>
-		<Dialog
-			fullScreen={fullScreen}
-			open={openDialog}
-			onClose={handleCancel}
-			aria-labelledby="manage-admin-dialog"
-		>
-		<DialogTitle id="manage-admin-dialog">
-			{"Manage who has admin rights"}
-		</DialogTitle>
-		<DialogContent>
-			<DialogContentText>
-				Here you can decide who has administrator privileges.
-				An administrator can kick out, ban or mute another
-				member of the channel, except the owner. 
-			</DialogContentText>
-			<UserList updatedAdmins={updatedAdmins} setUpdatedAdmins={setUpdatedAdmins}/>
-		</DialogContent>
-		<DialogActions>
-			<Button variant="contained" size='medium' endIcon={<SendIcon />} onClick={handleClose} autoFocus>
-				SUBMIT
-			</Button>
-		</DialogActions>
-		</Dialog>
-	</div>
-	);
+	// filter the owner from available options because the owner cannot be destituted from its admin status
+	const channelMembersOptions = selectedChannel.members.filter(member => member.login != selectedChannel.ownedById)
+	const channelAdminsOptions = selectedChannel.admins.filter(admin => admin.login != selectedChannel.ownedById)
+
+  	return (
+		<div>
+			<Dialog
+				fullScreen={fullScreen}
+				open={openDialog}
+				onClose={handleCancel}
+				aria-labelledby="manage-admin-dialog"
+			>
+			<DialogTitle id="manage-admin-dialog">
+				{"Manage who has admin rights"}
+			</DialogTitle>
+			<DialogContent>
+				<DialogContentText>
+					Here you can decide who has administrator privileges.
+					An administrator can kick, ban or mute another
+					member of the channel, except the other admins. 
+				</DialogContentText>
+				<UserList usersSet={channelMembersOptions} initialUsers={channelAdminsOptions} setUpdatedUsers={setUpdatedAdmins}/>
+			</DialogContent>
+			<DialogActions>
+				<Button variant="contained" size='medium' endIcon={<SendIcon />} onClick={handleClose} autoFocus>
+					SUBMIT
+				</Button>
+			</DialogActions>
+			</Dialog>
+		</div>
+		);
 }
