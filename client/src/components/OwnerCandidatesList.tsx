@@ -27,10 +27,6 @@ export default function OwnerCandidatesList({setUpdatedOwner} : OwnerCandidatesL
 		
 		const currentIndex = value;
 		let newChecked = checked;
-		
-		console.log('value = ', value);
-		console.log('newChecked = ', newChecked);
-		console.log('currentIndex = ', currentIndex);
 
 		if (currentIndex === checked) {
 			// If the clicked checkbox is already checked, uncheck it by setting newChecked to -1
