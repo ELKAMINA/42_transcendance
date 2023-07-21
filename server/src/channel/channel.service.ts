@@ -111,17 +111,17 @@ export class ChannelService {
 						chatHistory: true,
 					}
 				},
-				createdChannels: {
-					include: {
-						members: true,
-						admins: true,
-						banned: true,
-						muted: true,
-						createdBy: true,
-						ownedBy: true,
-						chatHistory: true,
-					}
-				},
+				// createdChannels: {
+				// 	include: {
+				// 		members: true,
+				// 		admins: true,
+				// 		banned: true,
+				// 		muted: true,
+				// 		createdBy: true,
+				// 		ownedBy: true,
+				// 		chatHistory: true,
+				// 	}
+				// },
 			}
 		});
 
@@ -129,7 +129,7 @@ export class ChannelService {
 			throw new NotFoundException('User not found');
 		}
 		
-		const output = [...user.channels, ...user.createdChannels];
+		const output = [...user.channels]/*, ...user.createdChannels];*/
 		return output;
 	}
 
@@ -250,20 +250,20 @@ export class ChannelService {
 							chatHistory: true,
 						}
 					},
-					createdChannels: {
-						where: {
-							type: 'private' // Filter channels by type 'private'
-						},
-						include: {
-							members: true,
-							banned: true,
-							muted: true,
-							admins: true,
-							createdBy: true,
-							ownedBy: true,
-							chatHistory: true,
-						}
-					},
+					// createdChannels: {
+					// 	where: {
+					// 		type: 'private' // Filter channels by type 'private'
+					// 	},
+					// 	include: {
+					// 		members: true,
+					// 		banned: true,
+					// 		muted: true,
+					// 		admins: true,
+					// 		createdBy: true,
+					// 		ownedBy: true,
+					// 		chatHistory: true,
+					// 	}
+					// },
 				}
 			});
 	
@@ -271,7 +271,7 @@ export class ChannelService {
 				throw new NotFoundException('User not found');
 			}
 	
-			const output = [...user.channels, ...user.createdChannels];
+			const output = [...user.channels]/*, ...user.createdChannels];*/
 			return output;
 		} catch (error : any) {
 			console.log('error = ', error);
@@ -302,19 +302,19 @@ export class ChannelService {
 							chatHistory: true,
 						}
 					},
-					createdChannels: {
-						where: {
-							type: 'public' // Filter channels by type 'public'
-						},
-						include: {
-							members: true,
-							banned: true,
-							admins: true,
-							createdBy: true,
-							ownedBy: true,
-							chatHistory: true,
-						}
-					},
+					// createdChannels: {
+					// 	where: {
+					// 		type: 'public' // Filter channels by type 'public'
+					// 	},
+					// 	include: {
+					// 		members: true,
+					// 		banned: true,
+					// 		admins: true,
+					// 		createdBy: true,
+					// 		ownedBy: true,
+					// 		chatHistory: true,
+					// 	}
+					// },
 				}
 			});
 	
@@ -322,7 +322,7 @@ export class ChannelService {
 				throw new NotFoundException('User not found');
 			}
 	
-			const output = [...user.channels, ...user.createdChannels];
+			const output = [...user.channels]/*, ...user.createdChannels];*/
 			return output;
 		} catch (error : any) {
 			console.log('error = ', error);
@@ -353,20 +353,20 @@ export class ChannelService {
 							chatHistory: true,
 						}
 					},
-					createdChannels: {
-						where: {
-							type: 'privateConv' // Filter channels by type 'privateConv'
-						},
-						include: {
-							members: true,
-							admins: true,
-							banned: true,
-							muted: true,
-							createdBy: true,
-							ownedBy: true,
-							chatHistory: true,
-						}
-					},
+					// createdChannels: {
+					// 	where: {
+					// 		type: 'privateConv' // Filter channels by type 'privateConv'
+					// 	},
+					// 	include: {
+					// 		members: true,
+					// 		admins: true,
+					// 		banned: true,
+					// 		muted: true,
+					// 		createdBy: true,
+					// 		ownedBy: true,
+					// 		chatHistory: true,
+					// 	}
+					// },
 				}
 			});
 	
@@ -374,7 +374,7 @@ export class ChannelService {
 				throw new NotFoundException('User not found');
 			}
 	
-			const output = [...user.channels, ...user.createdChannels];
+			const output = [...user.channels]/*, ...user.createdChannels];*/
 			return output;
 		} catch (error) {
 			console.log('error : ', error);
@@ -434,6 +434,9 @@ export class ChannelService {
 				where: {
 					name: channelName.name,
 				},
+				include : {
+					createdBy: true,
+				}
 			});
 		
 			if (!channel) {
@@ -441,7 +444,8 @@ export class ChannelService {
 			}
 
 			// Convert admins array into an array of UserWhereUniqueInput objects
-		    const adminIds = admins.map((admin) => ({ user_id: admin.user_id }));
+		    let adminIds = admins.map((admin) => ({ user_id: admin.user_id }));
+			adminIds.push({user_id : channel.createdBy.user_id});
 		
 			// Update the channel's admins with the new array
 			const updatedChannel = await this.prisma.channel.update({
@@ -455,6 +459,82 @@ export class ChannelService {
 				},
 			});
 			// console.log('updatedChannel = ', updatedChannel);
+			return updatedChannel;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async updateBanned(requestBody : {channelName : {name : string}, banned : User[]}) : Promise<Channel> {
+		// console.log('requestBody', requestBody);
+		try 
+		{
+			const { channelName, banned } = requestBody;
+		
+			// Find the channel by name
+			const channel = await this.prisma.channel.findUnique({
+				where: {
+					name: channelName.name,
+				},
+			});
+		
+			if (!channel) {
+				throw new Error(`Channel with name '${channelName.name}' not found.`);
+			}
+
+			// Convert admins array into an array of UserWhereUniqueInput objects
+		    const bannedIds = banned.map((admin) => ({ user_id: admin.user_id }));
+		
+			// Update the channel's admins with the new array
+			const updatedChannel = await this.prisma.channel.update({
+				where: {
+					channelId: channel.channelId,
+				},
+				data: {
+					banned: {
+						set: bannedIds,
+					},
+				},
+			});
+			console.log('updatedChannel = ', updatedChannel);
+			return updatedChannel;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async updateMuted(requestBody : {channelName : {name : string}, muted : User[]}) : Promise<Channel> {
+		// console.log('requestBody', requestBody);
+		try 
+		{
+			const { channelName, muted } = requestBody;
+		
+			// Find the channel by name
+			const channel = await this.prisma.channel.findUnique({
+				where: {
+					name: channelName.name,
+				},
+			});
+		
+			if (!channel) {
+				throw new Error(`Channel with name '${channelName.name}' not found.`);
+			}
+
+			// Convert muted array into an array of UserWhereUniqueInput objects
+		    const mutedIds = muted.map((muted) => ({ user_id: muted.user_id }));
+		
+			// Update the channel's muted with the new array
+			const updatedChannel = await this.prisma.channel.update({
+				where: {
+					channelId: channel.channelId,
+				},
+				data: {
+					muted: {
+						set: mutedIds,
+					},
+				},
+			});
+			console.log('updatedChannel = ', updatedChannel);
 			return updatedChannel;
 		} catch (error) {
 			throw error;
@@ -484,7 +564,12 @@ export class ChannelService {
 					channelId: channel.channelId,
 				},
 				data: {
-					ownedById: owner.login
+					ownedById: owner.login,
+					admins: {
+						connect: {
+						  login: owner.login,
+						},
+					},
 				},
 			});
 			// console.log('updatedChannel = ', updatedChannel.ownedById);
