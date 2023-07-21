@@ -83,6 +83,10 @@ function Game () {
 				navigate("/welcome");
 			})
 		}
+		else {
+			console.log('I tried to cheat and took a shorcut to a game');
+			navigate("/welcome");
+		}
 		return () => {
 			dispatch(updateOpponent(""))
 			if (socket){
@@ -193,6 +197,7 @@ function Pong () {
 				socket.disconnect();
 				dispatch(updateOpponent(""))
 			}
+
 		}
 	}, [])
 	
