@@ -462,7 +462,7 @@ export class ChannelService {
 	}
 
 	async updateOwner(requestBody : {channelName : {name : string}, owner : User}) : Promise<Channel> {
-		console.log('requestBody', requestBody);
+		// console.log('requestBody', requestBody.owner.login);
 		try 
 		{
 			const { channelName, owner } = requestBody;
@@ -484,10 +484,10 @@ export class ChannelService {
 					channelId: channel.channelId,
 				},
 				data: {
-					ownedById: owner.login 
+					ownedById: owner.login
 				},
 			});
-			// console.log('updatedChannel = ', updatedChannel);
+			// console.log('updatedChannel = ', updatedChannel.ownedById);
 			return updatedChannel;
 		} catch (error) {
 			throw error;
