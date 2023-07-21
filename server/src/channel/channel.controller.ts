@@ -119,6 +119,14 @@ export class channelController {
     return this.ChannelService.updateAdmins(requestBody);
   }
 
+  @Post('/updateOwner')
+  @Public() // TODO - remove public
+  updateOwner(
+    @Body() requestBody: { channelName: { name: string }; owner: User },
+  ): Promise<Channel> {
+    return this.ChannelService.updateOwner(requestBody);
+  }
+
   @Post('/addMembers')
   @Public() // TODO - remove public
   addMembers(
