@@ -15,16 +15,18 @@ import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { UserByLogin, UserModel } from '../types/users/userType';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
+import OwnerCandidatesList from './OwnerCandidatesList';
 
 export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
-	const [updatedOwner, setupdatedOwner] = React.useState<UserModel[]>([]);
+	const [updatedOwner, setupdatedOwner] = React.useState<UserModel | null>(null);
 	const AppDispatch = useAppDispatch();
 
 	async function updateOwner() : Promise<void> {
-		await api
+		if (updatedOwner) {
+			await api
 			.post('http://localhost:4001/channel/updateOwner', {
 				channelName : {name : selectedChannel.name},
 				owner : updatedOwner,
@@ -34,6 +36,7 @@ export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openD
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})
 			.catch((error) => console.log('error while updating admins : ', error))
+		}
 	}
 
 	const handleClose = () => {
@@ -63,7 +66,7 @@ export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openD
 				Only you can decide.
 				Choose wisely.
 			</DialogContentText>
-			<UserList updatedAdmins={updatedOwner} setUpdatedAdmins={setupdatedOwner}/>
+			<OwnerCandidatesList setUpdatedOwner={setupdatedOwner}/>
 		</DialogContent>
 		<DialogActions>
 			<Button variant="outlined" size='medium' startIcon={<DeleteIcon />} onClick={handleCancel} autoFocus>
