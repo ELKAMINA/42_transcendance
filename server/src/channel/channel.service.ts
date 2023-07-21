@@ -504,7 +504,6 @@ export class ChannelService {
 	}
 
 	async updateMuted(requestBody : {channelName : {name : string}, muted : User[]}) : Promise<Channel> {
-		// console.log('requestBody', requestBody);
 		try 
 		{
 			const { channelName, muted } = requestBody;
