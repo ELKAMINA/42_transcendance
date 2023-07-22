@@ -3,6 +3,8 @@ import Grid from '@mui/material/Grid'; // Grid version 1
 import { Typography } from '@mui/material';
 import { useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useAppSelector } from '../utils/redux-hooks';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
 
 
 interface Myprops {
@@ -22,6 +24,8 @@ const halfGridStyle = {
   };
 
 export function Matchmaking (props: Myprops) {
+	const user = useAppSelector(selectCurrentUser);
+	console.log(`Le user est ${user }, le nick = ${props.nickname} et l'opponent est = ${props.opp}`)
 	useEffect(() => {
 
 		return () => {

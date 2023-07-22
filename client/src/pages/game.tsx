@@ -27,7 +27,8 @@ import {
     selectActualUser,
 } from "../redux-features/friendship/friendshipSlice";
 import { useNavigate } from "react-router-dom";
-
+import Player from "../classes/Player";
+import { gameInfo } from "../data/gameInfo";
 export const socket = io("http://localhost:4010", {
     withCredentials: true,
     transports: ["websocket"],
@@ -46,12 +47,30 @@ const waitingGridStyle = {
     color: "#005A9C",
 };
 
+
+
 function Game() {
     const currentRoute = window.location.pathname;
     const dispatch = useAppDispatch();
     const [startingGame, setStarting] = useState(false);
     const nickName = useAppSelector(selectCurrentUser);
     const user = useAppSelector(selectActualUser);
+	const [gInfo, setGameInfo ] = useState<gameInfo >({
+			opponent: "",
+			allRoomInfo: {
+				id: "",
+				createdDate: 0,
+				totalSet: 0,
+				totalPoint: 0,
+				mapName: "",
+				power: false,
+				isFull: false,
+				players: [],
+				scorePlayers: [],
+				playerOneId: "",
+				playerTwoId: "",
+			}
+	})
     const navigate = useNavigate();
 
     // Function to clear complete cache data
@@ -86,6 +105,12 @@ function Game() {
 
             socket.on("gameBegin", (roomInfo) => {
                 dispatch(updateOpponent(roomInfo.opponent));
+				setGameInfo(prevState => ({
+					...prevState,
+						opponent: roomInfo.opponent,
+						allRoomInfo: roomInfo.allRoomInfo,
+					})
+				)
                 setTimeout(() => {
                     setStarting(true);
                     socket.on("forceDisconnection", () => {
@@ -118,7 +143,7 @@ function Game() {
             {startingGame === false && (
                 <Matchmaking opp={opp} nickname={nickName} />
             )}
-            {startingGame === true && <Pong />}
+            {startingGame === true && <Pong  infos={gInfo}/>}
         </>
     );
 }
@@ -130,7 +155,11 @@ type BallType = {
     dy: number;
 };
 
-function Pong() {
+interface PongProps {
+	infos: gameInfo;
+  }
+
+const Pong: React.FC<PongProps>  = ({infos}) => {
     const currentRoute = window.location.pathname;
     const dispatch = useAppDispatch();
     const nickName = useAppSelector(selectCurrentUser);
@@ -140,7 +169,9 @@ function Pong() {
     const roomInfo = location.state;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const canvas = useRef<CanvasRenderingContext2D | null>(null);
-
+	// console.log("les infos ", infos)
+	// const player1 = useRef<Player>(new Player());
+	// console.log(" toute la room ", props)
     /*Why useRef : unlike state updates, changes to a ref's .current property do not trigger a re-render of the component. This makes it useful for values that need to persist across renders but changes in these values should not cause an update to the component's output*/
     const [paddleY, setPaddleY] = useState<number>(200);
     const [ball, setBall] = useState<BallType>({ x: 10, y: 10, dx: 2, dy: 2 });
@@ -155,7 +186,7 @@ function Pong() {
         h: number,
         color: string
     ) => {
-        console.log("Call of drawRect");
+        // console.log("Call of drawRect");
         ctx.clearRect(x, y, w, h);
         ctx.fillStyle = color;
         ctx.fillRect(x, y, w, h);
@@ -207,7 +238,7 @@ function Pong() {
     /* ***  */
 
     const mouseDown = (e: any) => {
-        console.log("jai bougé la souris ", e);
+        // console.log("jai bougé la souris ", e);
     };
 
     useEffect(() => {
@@ -222,7 +253,7 @@ function Pong() {
             return;
         }
         const ctx = canvas.current;
-        console.log("test");
+        // console.log("test");
 
         const updateGame = () => {
 			console.log( ` width is ${cs.width} and the height is : ${cs.height}`)
