@@ -169,6 +169,8 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
     const roomInfo = location.state;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const canvas = useRef<CanvasRenderingContext2D | null>(null);
+	const player1 = useRef<Player>(new Player([infos.allRoomInfo.playerOneId, infos.allRoomInfo.players[0]], [10, 10], 100))
+	const player2 = useRef<Player>(new Player([infos.allRoomInfo.playerTwoId, infos.allRoomInfo.players[1]], [50, 10], 100))
 	// console.log("les infos ", infos)
 	// const player1 = useRef<Player>(new Player());
 	// console.log(" toute la room ", props)
@@ -237,9 +239,26 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
 
     /* ***  */
 
-    const mouseDown = (e: any) => {
-        // console.log("jai bougé la souris ", e);
-    };
+    // const mouseDown = (e: any) => {
+    //     console.log("jai bougé la souris ", e);
+    // };
+
+	const keyPressed = (e: any) => {
+		console.log(`Key ${e.key} was pressed`)
+		if (e.key === "w") {
+			console.log("Up required");
+			if (socket.id === player1.current.getUserInfo().at(0))
+				player1.current.setPaddleColor("red");
+			else {
+				player2.current.setPaddleColor("red");
+			}
+			socket.emit("changeColor");
+		}
+		else if (e.key === "s") {
+			console.log("Down required");
+			socket.emit("moveDown");
+		}
+	}
 
     useEffect(() => {
         socket.connect(); // Will use 'handleConnection' from nestjs/game
@@ -250,11 +269,11 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
         }
         canvas.current = cs.getContext("2d");
         if (!canvas.current) {
-            return;
+			return;
         }
         const ctx = canvas.current;
         // console.log("test");
-
+		
         const updateGame = () => {
 			console.log( ` width is ${cs.width} and the height is : ${cs.height}`)
 			ctx.clearRect(0, 0, cs.width, cs.height);
@@ -265,12 +284,14 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
 			drawRect(ctx, 0, (3 * cs.height / 6) - (paddleHeight / 2), paddleWidth, paddleHeight, '#FFFFFF')
 			drawRect(ctx, (cs.width - 0 - paddleWidth), (3 * cs.height / 6) - (paddleHeight / 2), paddleWidth, paddleHeight, '#FFFFFF')
         };
-
-
+		
+		
         intervalId = setInterval(updateGame, 1000 / 50);
-
+		
         // clear the canvas before every re-render
-        cs.addEventListener("mousedown", mouseDown);
+        // cs.addEventListener("mousedown", mouseDown);
+		cs.addEventListener('keydown', keyPressed);
+		cs.focus();
 
         return () => {};
     }, []);
@@ -293,7 +314,6 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        // justifyContent: 'space-around',
                         margin: "70px",
                     }}
                 >
@@ -302,6 +322,7 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
                         ref={canvasRef}
                         width="800"
                         height="600"
+						tabIndex={0}
                     />
                 </Box>
             </Box>

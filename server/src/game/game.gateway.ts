@@ -96,6 +96,11 @@ export class GameGateway
 
   /* Game events */
 
+  @SubscribeMessage('changeColor')
+  async handleChangeColor(client: Socket): Promise<void> {
+    console.log('rooms ', client.rooms);
+  }
+
   // @SubscribeMessage('connectedSocket') // Verifier les id des sockets
   // async handleConnectedSocket(client: Socket): Promise<void> {
   // 	console.log('je me connnecte à partir de Game ', client.id)
