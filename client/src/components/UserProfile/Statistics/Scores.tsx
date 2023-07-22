@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import Statistics from './Skeleton';
 import { useAppDispatch, useAppSelector } from '../../../utils/redux-hooks';
 import { selectTotalPlayers, FetchTotalPlayers } from '../../../redux-features/game/gameSlice';
-import { UserPrisma } from '../../../data/userList';
 // import { selectTotalPlayers, FetchTotalPlayers, FetchTotalMatchesWon, FetchTotalMatchesLost, FetchTotalPoints } from '../../../redux-features/game/gameSlice';
 
 interface Myprops {

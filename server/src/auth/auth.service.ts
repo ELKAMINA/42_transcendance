@@ -132,6 +132,7 @@ export class AuthService {
           login: dto.nickname,
           hash: pwd,
           avatar: dto.avatar,
+          status: 'Online',
         },
       });
       const tokens = await this.signTokens(user.user_id, user.login);
@@ -166,34 +167,42 @@ export class AuthService {
           login: dto.nickname,
         },
       });
+      if (us) {
+        await this.prisma.user.update({
+          where: {
+            login: dto.nickname,
+          },
+          data: { status: 'Online' },
+        });
+      }
       // console.log('le user Vincent ', us);
-      if (dto.type === 'notTfa'){
+      if (dto.type === 'notTfa') {
         if (us && (await argon.verify(us.hash, dto.password)) == false) {
           throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
         }
       }
-      if (us.avatar !== dto.avatar && dto.avatar !== ''){
+      if (us.avatar !== dto.avatar && dto.avatar !== '') {
         await this.prisma.user.update({
           where: {
             login: dto.nickname,
           },
           data: {
             avatar: dto.avatar,
-          }
+          },
         });
       }
-		  const tokens = await this.signTokens(us.user_id, us.login);
-		  await this.updateRtHash(us.user_id, tokens.refresh_token);
-		  this.setCookie(
-		  {
-			  nickname: us.login,
-			  accessToken: tokens.access_token,
-			  refreshToken: tokens.refresh_token,
-		  },
-		  res,
-		  );
-		  return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
-	  } catch (e: any) {
+      const tokens = await this.signTokens(us.user_id, us.login);
+      await this.updateRtHash(us.user_id, tokens.refresh_token);
+      this.setCookie(
+        {
+          nickname: us.login,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        },
+        res,
+      );
+      return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
+    } catch (e: any) {
       if (e.code === 'P2025') {
         throw new HttpException('No user found', HttpStatus.FORBIDDEN);
       }
@@ -212,6 +221,7 @@ export class AuthService {
       },
       data: {
         rtHash: null,
+        status: 'Offline',
       },
     });
   }
@@ -252,24 +262,23 @@ export class AuthService {
 
   async findUser(userInfo: OauthPayload, res: Response) {
     const user = await this.userServ.searchUser(userInfo.login);
-	if (!user.faEnabled) {
-		const tokens = await this.signTokens(user.user_id, user.login);
-		this.updateRtHash(user.user_id, tokens.refresh_token);
-		this.setCookie(
-		{
-			nickname: user.login,
-			accessToken: tokens.access_token,
-			refreshToken: tokens.refresh_token,
-			avatar: user.avatar,
-		},
-		res,
-		);
-		return res.redirect('http://localhost:3000/welcome')
-	}
-	else{
-    const url = `http://localhost:3000/tfa?param1=${user.login}`
-		res.redirect(url)
-	}
+    if (!user.faEnabled) {
+      const tokens = await this.signTokens(user.user_id, user.login);
+      this.updateRtHash(user.user_id, tokens.refresh_token);
+      this.setCookie(
+        {
+          nickname: user.login,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          avatar: user.avatar,
+        },
+        res,
+      );
+      return res.redirect('http://localhost:3000/welcome');
+    } else {
+      const url = `http://localhost:3000/tfa?param1=${user.login}`;
+      res.redirect(url);
+    }
   }
 
   // 2FA Authentication **********************************************************************
@@ -287,14 +296,18 @@ export class AuthService {
     });
   }
 
-  async isTwoFactorAuthenticationCodeValid(TfaCode: string, user: string, res: Response) {
+  async isTwoFactorAuthenticationCodeValid(
+    TfaCode: string,
+    user: string,
+    res: Response,
+  ) {
     // verify the authentication code with the user's secret
-      const us = await this.userServ.searchUser(user);
-      const verif = await authenticator.check(TfaCode, us.fA)
-      if (!verif) {
-        throw new UnauthorizedException('Wrong authentication code');
-      }
-      return verif;
+    const us = await this.userServ.searchUser(user);
+    const verif = await authenticator.check(TfaCode, us.fA);
+    if (!verif) {
+      throw new UnauthorizedException('Wrong authentication code');
+    }
+    return verif;
   }
 
   // The very first thing is to create a secret key unique for every user
@@ -339,27 +352,32 @@ export class AuthService {
   }
 
   // ****** Authentication 2FA ******************
-  async loginWith2fa(user: string, res: Response): Promise<object>
-   {
+  async loginWith2fa(user: string, res: Response): Promise<object> {
     try {
       const usr = await this.userServ.searchUser(user);
-      return this.signin({nickname: usr.login, password: usr.hash, avatar: usr.avatar, type: 'tfa'}, res)
+      return this.signin(
+        {
+          nickname: usr.login,
+          password: usr.hash,
+          avatar: usr.avatar,
+          type: 'tfa',
+        },
+        res,
+      );
+    } catch (e) {
+      console.log('TFA EROOOOR ', e);
     }
-  catch(e){
-    console.log('TFA EROOOOR ', e)
+  }
+
+  async cancelTfa(nickname: string) {
+    await this.prisma.user.update({
+      where: {
+        login: nickname,
+      },
+      data: {
+        fA: '',
+        faEnabled: false,
+      },
+    });
   }
 }
-
-async cancelTfa(nickname: string) {
-  await this.prisma.user.update({
-    where : {
-      login: nickname,
-    },
-    data: {
-      fA: '',
-      faEnabled: false,
-    }
-  })
-}
-
-} 

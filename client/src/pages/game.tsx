@@ -1,169 +1,334 @@
-import clsx from 'clsx';
-import { store } from '../app/store';
-import { io } from 'socket.io-client';
-import { Provider } from 'react-redux';
-import Grid from '@mui/material/Grid'; // Grid version 1
-import { Box, Stack, Typography } from '@mui/material';
-import { styled } from '@mui/system';
-import { useEffect, useRef, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import CircularProgress from '@mui/material/CircularProgress';
+import clsx from "clsx";
+import { store } from "../app/store";
+import { io } from "socket.io-client";
+import { Provider } from "react-redux";
+import Grid from "@mui/material/Grid"; // Grid version 1
+import { Box, Stack, Typography } from "@mui/material";
+import { styled } from "@mui/system";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
 
-
-
-import './chat.css'
-import Navbar from '../components/NavBar'; 
-import { transformData } from './userProfile';
-import { UserPrisma } from '../data/userList';
-import { FetchUserByName } from '../utils/global/global';
-import { updateOpponent, selectOpponent } from '../redux-features/game/gameSlice'
-import { selectCurrentUser } from '../redux-features/auth/authSlice';
-import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
-import { FetchActualUser, getActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
-import { useNavigate } from 'react-router-dom';
-
-export const socket = io('http://localhost:4010', {
-  withCredentials: true,
-  transports: ['websocket'],
-  upgrade: false,
-  autoConnect: false,
+import "./chat.css";
+import "./game.css";
+import Navbar from "../components/NavBar";
+import { Matchmaking } from "../components/MatchMaking";
+import { transformData } from "./userProfile";
+import { FetchUserByName } from "../utils/global/global";
+import {
+    updateOpponent,
+    selectOpponent,
+} from "../redux-features/game/gameSlice";
+import { selectCurrentUser } from "../redux-features/auth/authSlice";
+import { useAppSelector, useAppDispatch } from "../utils/redux-hooks";
+import {
+    FetchActualUser,
+    getActualUser,
+    selectActualUser,
+} from "../redux-features/friendship/friendshipSlice";
+import { useNavigate } from "react-router-dom";
+import Player from "../classes/Player";
+import { gameInfo } from "../data/gameInfo";
+export const socket = io("http://localhost:4010", {
+    withCredentials: true,
+    transports: ["websocket"],
+    upgrade: false,
+    autoConnect: false,
 });
 
 const halfGridStyle = {
-	height: '100vh',
-	background: 'rgba(255, 255, 255, 0.5)',
-  };
-  
-  const waitingGridStyle = {
-	height: '100vh',
-	backgroundColor: '#AFDBF5',
-	color: '#005A9C'
-  };
+    height: "100vh",
+    background: "rgba(255, 255, 255, 0.5)",
+};
 
-function Matchmaking () {
-	const currentRoute = window.location.pathname;
-	const dispatch = useAppDispatch();
-	const [startingGame, setStarting] = useState(false)
-	const nickName = useAppSelector(selectCurrentUser);
-	const user = useAppSelector(selectActualUser);
-	const navigate = useNavigate()
+const waitingGridStyle = {
+    height: "100vh",
+    backgroundColor: "#AFDBF5",
+    color: "#005A9C",
+};
 
-	
-	useEffect(() => {
-		if (user.status !== 'Playing'){
-			socket.connect(); // Will use 'handleConnection' from nestjs/game
-			socket.on('connect', () => {
-				console.log('I\'m connected');
-				socket.emit("changeStatus", nickName);
-			});
-			socket.on("statusChanged", (data) => {
-				dispatch(FetchActualUser());
-				socket.emit("joinRoom", nickName);
-			});
-			socket.on("waitingForOpponent", () => {
-				setStarting(false)
-			})
-			socket.on("roomJoined", (newRoom) => {
-				console.log('new room id', newRoom);
-			})
-			socket.on("gameBegin", (roomInfo) => {
-				dispatch(updateOpponent(roomInfo.opponent))
-				setTimeout(()=> {
-					navigate('/pong', { state: {roomInfo}})
-				}, 5000)
-			})
-		}
-		return () => {
 
-		}
-	}, [])
 
-	const opp = useAppSelector(selectOpponent)
-	return (
-		<>
-			<Navbar currentRoute={currentRoute} />
-			<Grid container spacing={1} alignItems="center">
-				{opp && 
-				(<>
-					<Grid container sx={{
-						backgroundImage: `url(${process.env.PUBLIC_URL + '/thisone.avif'})`,
-						backgroundPosition: 'center',
-						backgroundSize: 'cover',
-						backgroundRepeat: 'no-repeat',
-						imageRendering: 'auto',
-						height: '95vh',
-						width: '100wh',
-						zIndex: 0,
-					}}>
-						<Grid item style={halfGridStyle} xs={6} sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-							justifyContent: 'center',
-						}}>
-							<Typography variant="h3" sx={{
-								color: 'white',
-								fontSize: "50px",
-								textTransform: 'uppercase',
-
-							}}>{nickName}</Typography>
-						</Grid>
-						{/* <Typography variant="h3" noWrap>VS</Typography> */}
-						<Grid item style={halfGridStyle} xs={6} sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-							justifyContent: 'center',
-						}}>
-							<Typography variant="h3" noWrap sx={{
-								color: 'white',
-								fontSize: "50px",
-								textTransform: 'uppercase',
-							}}>{opp}</Typography>
-						</Grid>
-					</Grid>
-				</>)
-				}
-				{!opp && <Grid item xs={12} style={waitingGridStyle} sx={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}>
-					<Typography variant="h2" noWrap>Waiting for your opponent </Typography>
-					<CircularProgress color="primary"/>
-				</Grid>}
-			</Grid>
-		</>
-	)
-}
-
-function Pong () {
-	const currentRoute = window.location.pathname;
-	const dispatch = useAppDispatch();
-	const nickName = useAppSelector(selectCurrentUser);
-	const user = useAppSelector(selectActualUser);
-	const location = useLocation();
-
-	const roomInfo = location.state;
-	
-	useEffect(() => {
-		// socket.emit('connectedSocket', {})
-
-		return () => {
-			if (socket) {
-				socket.disconnect();
-				dispatch(updateOpponent(""))
+function Game() {
+    const currentRoute = window.location.pathname;
+    const dispatch = useAppDispatch();
+    const [startingGame, setStarting] = useState(false);
+    const nickName = useAppSelector(selectCurrentUser);
+    const user = useAppSelector(selectActualUser);
+	const [gInfo, setGameInfo ] = useState<gameInfo >({
+			opponent: "",
+			allRoomInfo: {
+				id: "",
+				createdDate: 0,
+				totalSet: 0,
+				totalPoint: 0,
+				mapName: "",
+				power: false,
+				isFull: false,
+				players: [],
+				scorePlayers: [],
+				playerOneId: "",
+				playerTwoId: "",
 			}
-		}
-	}, [])
+	})
+    const navigate = useNavigate();
 
-	return (
-		<>
-			<Navbar currentRoute={currentRoute} />
+    // Function to clear complete cache data
+    const clearCacheData = () => {
+        caches.keys().then((names) => {
+            names.forEach((name) => {
+                caches.delete(name);
+            });
+        });
+        console.log("Complete Cache Cleared");
+        window.location.reload();
+    };
 
-		</>
-	)
+    useEffect(() => {
+        if (user.status !== "Playing") {
+            socket.connect(); // Will use 'handleConnection' from nestjs/game
+            socket.on("connect", () => {
+                console.log("I'm connected, id is = ", socket.id);
+                socket.emit("changeStatus", nickName);
+            });
+            socket.on("statusChanged", () => {
+                dispatch(FetchActualUser());
+                socket.emit("joinRoom", nickName);
+            });
+            // socket.on("waitingForOpponent", () => {
+            // 	setStarting(false)
+            // })
+            socket.on("roomJoined", (newRoom) => {
+                console.log("new room id", newRoom);
+            });
+            // console.log("jarrive jusque la ");
+
+            socket.on("gameBegin", (roomInfo) => {
+                dispatch(updateOpponent(roomInfo.opponent));
+				setGameInfo(prevState => ({
+					...prevState,
+						opponent: roomInfo.opponent,
+						allRoomInfo: roomInfo.allRoomInfo,
+					})
+				)
+                setTimeout(() => {
+                    setStarting(true);
+                    socket.on("forceDisconnection", () => {
+                        navigate("/welcome");
+                    });
+                    // navigate('/pong', { state: {roomInfo}})
+                }, 1000);
+            });
+            socket.on("forceDisconnection", () => {
+                navigate("/welcome");
+            });
+        } else {
+            console.log("I tried to cheat and took a shorcut to a game");
+            navigate("/welcome");
+        }
+        return () => {
+            // clearCacheData();
+            dispatch(updateOpponent(""));
+            if (socket) {
+                console.log("I'm getting disconnected, id is = ", socket.id);
+                socket.disconnect();
+            }
+        };
+    }, []);
+
+    const opp = useAppSelector(selectOpponent);
+    return (
+        <>
+            <Navbar currentRoute={currentRoute} />
+            {startingGame === false && (
+                <Matchmaking opp={opp} nickname={nickName} />
+            )}
+            {startingGame === true && <Pong  infos={gInfo}/>}
+        </>
+    );
 }
 
-export {Pong, Matchmaking};
+type BallType = {
+    x: number;
+    y: number;
+    dx: number;
+    dy: number;
+};
+
+interface PongProps {
+	infos: gameInfo;
+  }
+
+const Pong: React.FC<PongProps>  = ({infos}) => {
+    const currentRoute = window.location.pathname;
+    const dispatch = useAppDispatch();
+    const nickName = useAppSelector(selectCurrentUser);
+    const user = useAppSelector(selectActualUser);
+    const location = useLocation();
+
+    const roomInfo = location.state;
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const canvas = useRef<CanvasRenderingContext2D | null>(null);
+	const player1 = useRef<Player>(new Player([infos.allRoomInfo.playerOneId, infos.allRoomInfo.players[0]], [10, 10], 100))
+	const player2 = useRef<Player>(new Player([infos.allRoomInfo.playerTwoId, infos.allRoomInfo.players[1]], [50, 10], 100))
+	// console.log("les infos ", infos)
+	// const player1 = useRef<Player>(new Player());
+	// console.log(" toute la room ", props)
+    /*Why useRef : unlike state updates, changes to a ref's .current property do not trigger a re-render of the component. This makes it useful for values that need to persist across renders but changes in these values should not cause an update to the component's output*/
+    const [paddleY, setPaddleY] = useState<number>(200);
+    const [ball, setBall] = useState<BallType>({ x: 10, y: 10, dx: 2, dy: 2 });
+
+    /* Drawing functions  */
+    // PLAYER PADDLE
+    const drawRect = (
+        ctx: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        color: string
+    ) => {
+        // console.log("Call of drawRect");
+        ctx.clearRect(x, y, w, h);
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, w, h);
+    };
+
+    // BALL
+    const drawCircle = (
+        ctx: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        r: number,
+        color: string
+    ) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2, false); // x = X position for the ball, y = Y position for the ball, r = radius, 0= start angle &&  Match.PI*2 = End Angle (correspond à 360 degres, false = to say that we want the ball to be drawn in the clockwise direction )
+        ctx.closePath();
+        ctx.fill();
+    };
+
+    // SCORE
+    const drawText = (
+        ctx: CanvasRenderingContext2D,
+        text: string,
+        x: number,
+        y: number,
+        color: string
+    ) => {
+        ctx.fillStyle = color;
+        ctx.font = "75px fantasy";
+        ctx.fillText(text, x, y);
+    };
+
+    let intervalId: any;
+
+    // NET
+    const drawNet = (
+        ctx: CanvasRenderingContext2D,
+        text: string,
+        x: number,
+        y: number,
+        color: string
+    ) => {
+        ctx.fillStyle = color;
+        ctx.font = "75px fantasy";
+        ctx.fillText(text, x, y);
+    };
+
+    /* ***  */
+
+    // const mouseDown = (e: any) => {
+    //     console.log("jai bougé la souris ", e);
+    // };
+
+	const keyPressed = (e: any) => {
+		console.log(`Key ${e.key} was pressed`)
+		if (e.key === "w") {
+			console.log("Up required");
+			if (socket.id === player1.current.getUserInfo().at(0))
+				player1.current.setPaddleColor("red");
+			else {
+				player2.current.setPaddleColor("red");
+			}
+			socket.emit("changeColor");
+		}
+		else if (e.key === "s") {
+			console.log("Down required");
+			socket.emit("moveDown");
+		}
+	}
+
+    useEffect(() => {
+        socket.connect(); // Will use 'handleConnection' from nestjs/game
+        socket.on("connect", () => {});
+        const cs = canvasRef.current;
+        if (!cs) {
+            return;
+        }
+        canvas.current = cs.getContext("2d");
+        if (!canvas.current) {
+			return;
+        }
+        const ctx = canvas.current;
+        // console.log("test");
+		
+        const updateGame = () => {
+			console.log( ` width is ${cs.width} and the height is : ${cs.height}`)
+			ctx.clearRect(0, 0, cs.width, cs.height);
+            drawRect(ctx, 0, 0, cs.width, cs.height, '#000000');
+			const paddleWidth = 10;
+			const paddleHeight = 50;
+			// (3 * b.height / 6) - (p.width / 2)
+			drawRect(ctx, 0, (3 * cs.height / 6) - (paddleHeight / 2), paddleWidth, paddleHeight, '#FFFFFF')
+			drawRect(ctx, (cs.width - 0 - paddleWidth), (3 * cs.height / 6) - (paddleHeight / 2), paddleWidth, paddleHeight, '#FFFFFF')
+        };
+		
+		
+        intervalId = setInterval(updateGame, 1000 / 50);
+		
+        // clear the canvas before every re-render
+        // cs.addEventListener("mousedown", mouseDown);
+		cs.addEventListener('keydown', keyPressed);
+		cs.focus();
+
+        return () => {};
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (socket) {
+                clearInterval(intervalId);
+                socket.disconnect();
+                dispatch(updateOpponent(""));
+            }
+        };
+    }, []);
+
+    return (
+        <>
+            <Box>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        margin: "70px",
+                    }}
+                >
+                    <canvas
+                        className="canvas"
+                        ref={canvasRef}
+                        width="800"
+                        height="600"
+						tabIndex={0}
+                    />
+                </Box>
+            </Box>
+            {/* onMouseMove={movePaddle} */}
+        </>
+    );
+}
+
+export default Game;
