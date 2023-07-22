@@ -39,13 +39,20 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
       login: profile._json.login,
     };
     // console.log("je rentre ici 5,5 ??")
-    const lolo = await this.prisma.user.findUnique({
+    let lolo = await this.prisma.user.findUnique({
       where: {
         login: userDet.login,
       },
     });
     if (lolo) {
-      // console.log("Looool is already registered ???", lolo);
+      //   console.log(' maybe je rentre ici ');
+      lolo = await this.prisma.user.update({
+        where: {
+          login: userDet.login,
+        },
+        data: { status: 'Online' },
+      });
+      //   console.log('Looool is already registered ???', lolo);
       return cb(null, lolo);
     }
     const newUser = await this.prisma.user.create({
@@ -53,7 +60,8 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         login: userDet.login,
         email: userDet.email,
         avatar: userDet.picture,
-		faEnabled: false,
+        faEnabled: false,
+        status: 'Online',
       },
     });
     return cb(null, newUser);

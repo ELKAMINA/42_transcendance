@@ -13,10 +13,17 @@ import RequireAuth from './components/RequireAuth';
 import UserProfile from './pages/userProfile';
 import { useAppDispatch, useAppSelector } from './utils/redux-hooks';
 import SettingsContainer from './containers/Settings/Settings';
-import { setTokens, setAvatar } from './redux-features/auth/authSlice';
+import { setTokens, setAvatar, selectCurrentUser, selectCurrentRefreshToken, selectCurrentAccessToken } from './redux-features/auth/authSlice';
 import FriendshipContainer from './containers/Friendship/Friendship';
 import { useEffect } from 'react';
+import { useLogOutMutation } from './app/api/authApiSlice';
 import { FetchActualUser, selectActualUser } from './redux-features/friendship/friendshipSlice';
+
+type cred = {
+	nickname: string;
+	access_token:string;
+	refresh_token:string;
+}
 
 const App = () => {
   const dispatch = useAppDispatch()
@@ -34,7 +41,7 @@ const App = () => {
   return (
     <div className="app">
       <Routes>
-        {/* <Route path="/" element= {<Layout/>}> */}
+        <Route path="/" element= {<Layout/>}>
           <Route path="/" element={<AuthContainer />}/>
           <Route path="/sign" element={<AuthContainer />}/>
           <Route path="/tfa" element={<Tfa />}/>
@@ -47,7 +54,7 @@ const App = () => {
             <Route path="/game" element={<Game />}/>
             {/* <Route path="/pong" element={<Pong />}/> */}
           </Route>
-        {/* </Route> */}
+        </Route>
       </Routes>
     </div>
     )
