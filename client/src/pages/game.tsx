@@ -82,7 +82,7 @@ function Game() {
             socket.on("roomJoined", (newRoom) => {
                 console.log("new room id", newRoom);
             });
-            console.log("jarrive jusque la ");
+            // console.log("jarrive jusque la ");
 
             socket.on("gameBegin", (roomInfo) => {
                 dispatch(updateOpponent(roomInfo.opponent));
@@ -92,7 +92,7 @@ function Game() {
                         navigate("/welcome");
                     });
                     // navigate('/pong', { state: {roomInfo}})
-                }, 5000);
+                }, 1000);
             });
             socket.on("forceDisconnection", () => {
                 navigate("/welcome");
@@ -156,7 +156,7 @@ function Pong() {
         color: string
     ) => {
         console.log("Call of drawRect");
-        ctx.clearRect(0, 0, w, h);
+        ctx.clearRect(x, y, w, h);
         ctx.fillStyle = color;
         ctx.fillRect(x, y, w, h);
     };
@@ -224,17 +224,21 @@ function Pong() {
         const ctx = canvas.current;
         console.log("test");
 
-        const drawGame = () => {
-            drawRect(ctx, 0, 0, 0, 0, "black");
-            console.log("test");
+        const updateGame = () => {
+			console.log( ` width is ${cs.width} and the height is : ${cs.height}`)
+			ctx.clearRect(0, 0, cs.width, cs.height);
+            drawRect(ctx, 0, 0, cs.width, cs.height, '#000000');
+			const paddleWidth = 10;
+			const paddleHeight = 50;
+			// (3 * b.height / 6) - (p.width / 2)
+			drawRect(ctx, 0, (3 * cs.height / 6) - (paddleHeight / 2), paddleWidth, paddleHeight, '#FFFFFF')
+			drawRect(ctx, (cs.width - 0 - paddleWidth), (3 * cs.height / 6) - (paddleHeight / 2), paddleWidth, paddleHeight, '#FFFFFF')
         };
 
-        drawGame();
 
-        // intervalId = setInterval(drawGame, 1000 / 50);
+        intervalId = setInterval(updateGame, 1000 / 50);
 
         // clear the canvas before every re-render
-        canvas.current?.clearRect(0, 0, cs.width, cs.height);
         cs.addEventListener("mousedown", mouseDown);
 
         return () => {};
@@ -265,7 +269,7 @@ function Pong() {
                     <canvas
                         className="canvas"
                         ref={canvasRef}
-                        width="1000"
+                        width="800"
                         height="600"
                     />
                 </Box>
