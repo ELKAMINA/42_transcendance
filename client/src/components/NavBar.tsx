@@ -89,7 +89,7 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
     }
 
     const play = () => {
-        navigate('/matchmaking')
+        navigate('/game')
       }
 
     useEffect(() => {
