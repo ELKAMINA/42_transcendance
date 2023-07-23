@@ -1,0 +1,13 @@
+/* fonts.css */
+@font-face {
+	font-family: 'GaramondPremrPro-BdCapt';
+	src: url('./../../fonts/Garamond\ Premier\ Pro/GaramondPremrPro-BdCapt.otf') format('opentype');
+  }
+  
+  @font-face {
+	font-family: 'GaramondPremrPro-MedDisp';
+	src: url('./../../fonts/Garamond\ Premier\ Pro/GaramondPremrPro-BdCapt.otf') format('opentype');
+  }
+  
+  /* Add more @font-face rules for other Garamond Premier Pro font files */
+  

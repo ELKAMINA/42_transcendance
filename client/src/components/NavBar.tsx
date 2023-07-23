@@ -18,7 +18,8 @@ import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
 import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, setAvatar, logOut} from '../redux-features/auth/authSlice';
 import { useLogOutMutation } from '../app/api/authApiSlice';
 import {FetchActualUser, selectActualUser} from '../redux-features/friendship/friendshipSlice';
-import { fetchDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, updateUserChannels } from '../redux-features/chat/channelsSlice';
+import { emptyChannel } from '../data/emptyChannel';
 
 /* *** Internal imports *** */ 
 interface NavbarProps {
@@ -58,13 +59,11 @@ const Navbar : React.FC<NavbarProps> = ({ currentRoute }) => {
 		})
     }
 
-	useEffect(() => {
-		dispatch(fetchDisplayedChannel('WelcomeChannel')); // reset displayed channel to WelcomeChannel
-	}, [logout]) // means this useEffect will be triggered every time the logout function is called
-
     const loggingOut = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       event.preventDefault();
-      await logout({nickname, access_token, refresh_token});
+		dispatch(fetchDisplayedChannel('WelcomeChannel')); // reset displayed channel to WelcomeChannel
+		dispatch(updateUserChannels([])); // reset user channels
+		await logout({nickname, access_token, refresh_token});
       if (Cookies.get('Authcookie') !== undefined)
         Cookies.remove('Authcookie');
       dispatch(logOut(nickname))

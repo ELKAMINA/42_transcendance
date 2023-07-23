@@ -31,73 +31,81 @@ enum Status {
 // Type modifier in the models are : [] to say that they are many of ... and ? to say that is optional
 
 model User {
-	createdAt             DateTime        @default(now())
-	updatedAt             DateTime        @updatedAt
-	user_id               String          @id @default(uuid())
-	login                 String          @unique
-	email                 String?         @unique
-	hash                  String?
-	rtHash                String?
-	fA                    String?
-	faEnabled             Boolean?
-	avatar                String?
-	status                Status?
-	friends               User[]          @relation("Friendship")
-	friendOf              User[]          @relation("Friendship")
-	totalFriends          Int?            @default(0)
-//   FriendRequestSent     FriendRequest[] @relation("Sender")
-//   FriendRequestReceived FriendRequest[] @relation("Receiver")
-	FriendRequestSent     FriendRequest[] @relation("Sender")
-	FriendRequestReceived FriendRequest[] @relation("Receiver")
-	blocked               User[]          @relation("haters")
-	blockedBy             User[]          @relation("haters")
-	totalBlockedFriends   Int?
-	totalMatches          Int?
-	totalWins             Int?
-	totalloss             Int?
-	level                 Int?
-	rank                  Int?
-	p1                    Match[]         @relation("Player1")
-	p2                    Match[]         @relation("Player2")
-	FriendSuggestions     String[]
+	createdAt				DateTime        @default(now())
+	updatedAt				DateTime        @updatedAt
+	user_id					String          @id @default(uuid())
+	login					String          @unique
+	email					String?         @unique
+	hash					String?
+	rtHash					String?
+	fA						String?
+	faEnabled				Boolean?
+	avatar					String?
+	status					Status?
+	friends					User[]          @relation("Friendship")
+	friendOf				User[]          @relation("Friendship")
+	totalFriends			Int?            @default(0)
+//   FriendRequestSent		FriendRequest[] @relation("Sender")
+//   FriendRequestReceived	FriendRequest[] @relation("Receiver")
+	FriendRequestSent		FriendRequest[] @relation("Sender")
+	FriendRequestReceived	FriendRequest[] @relation("Receiver")
+	blocked					User[]          @relation("haters")
+	blockedBy				User[]          @relation("haters")
+	totalBlockedFriends		Int?
+	totalMatches			Int?
+	totalWins				Int?
+	totalloss				Int?
+	level					Int?
+	rank					Int?
+	p1						Match[]         @relation("Player1")
+	p2						Match[]         @relation("Player2")
+	FriendSuggestions		String[]
 	// // Channel Management
 	// //*** Where the user is member ***//
-	channels              Channel[]       @relation("Membership")
+	channels				Channel[]       @relation("Membership")
 	// //*** Where the user is creator ***//
-	createdChannels       Channel[]       @relation("ChannelCreator")
+	createdChannels			Channel[]       @relation("ChannelCreator")
+		// //*** Where the user is the owner ***//
+	ownedChannels			Channel[]	@relation("ChannelOwner")
 	// //*** Where the user is admin ***//
-	adminChannels         Channel[]       @relation("ChannelAdmin")
-	messagesSent          Message[]       @relation("MessageSender")
+	adminChannels			Channel[]       @relation("ChannelAdmin")
+	bannedFromChannels		Channel[]       @relation("ChannelBanned")
+	MutedInChannels			Channel[]       @relation("ChannelMuted")
+	messagesSent			Message[]       @relation("MessageSender")
 }
 
 model Channel {
-	name        String    @unique
-	channelId   Int       @id @default(autoincrement())
-	members     User[]    @relation("Membership")
-	createdBy   User?     @relation("ChannelCreator", fields: [createdById], references: [login], onDelete: SetNull) // When the corresponding user is deleted, set to null
+	name        String    	@unique
+	channelId   Int       	@id @default(autoincrement())
+	members     User[]    	@relation("Membership")
+	createdBy   User?     	@relation("ChannelCreator", fields: [createdById], references: [login], onDelete: SetNull) // When the corresponding user is deleted, set to null
 	createdById String?
-	admins      User[]    @relation("ChannelAdmin")
-	createdAt   DateTime  @default(now())
-	updatedAt   DateTime  @updatedAt
+	ownedBy		User?		@relation("ChannelOwner", fields: [ownedById], references: [login], onDelete: SetNull) // When the corresponding user is deleted, set to null
+	ownedById	String?
+	admins      User[]		@relation("ChannelAdmin")
+	banned      User[]		@relation("ChannelBanned")
+	muted		User[]		@relation("ChannelMuted")
+	createdAt   DateTime  	@default(now())
+	updatedAt   DateTime  	@updatedAt
 	type        String
 	key         String?
-	chatHistory Message[] @relation("channel/message")
+	chatHistory Message[] 	@relation("channel/message")
 }
 
 model Message {
-	id          Int      @id @default(autoincrement())
-	sentBy      User?     @relation("MessageSender", fields: [sentById], references: [login], onDelete: SetNull) // when the corresponding user is deleted, set to null
-	sentById    String?
-	message     String
-	sentAt      DateTime @default(now())
-	img         String?
-	preview     String?
-	incoming    Boolean
-	outgoing    Boolean
-	subtype     String?
-	reply       String?
-	channel     Channel? @relation("channel/message", fields: [channelById], references: [name], onDelete: SetNull) // when the corresponding channel is deleted, set to null
-	channelById String?
+	id			Int			@id @default(autoincrement())
+	sentBy		User?		@relation("MessageSender", fields: [sentById], references: [login], onDelete: SetNull) // when the corresponding user is deleted, set to null
+	sentById	String?
+	message		String
+	sentAt		DateTime	@default(now())
+	img			String?
+	preview		String?
+	incoming	Boolean
+	outgoing	Boolean
+	subtype		String?
+	reply		String?
+	channel		Channel?	@relation("channel/message", fields: [channelById], references: [name], onDelete: SetNull) // when the corresponding channel is deleted, set to null
+	channelById	String?
 }
 
 model Match {

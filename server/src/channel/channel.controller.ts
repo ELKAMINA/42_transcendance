@@ -119,12 +119,45 @@ export class channelController {
     return this.ChannelService.updateAdmins(requestBody);
   }
 
-  @Post('/updateMembers')
+  @Post('/updateBanned')
   @Public() // TODO - remove public
-  updateMembers(
+  updateBanned(
+    @Body() requestBody: { channelName: { name: string }; banned: User[] },
+  ): Promise<Channel> {
+    return this.ChannelService.updateBanned(requestBody);
+  }
+
+
+  @Post('/updateMuted')
+  @Public() // TODO - remove public
+  updateMuted(
+    @Body() requestBody: { channelName: { name: string }; muted: User[] },
+  ): Promise<Channel> {
+    return this.ChannelService.updateMuted(requestBody);
+  }
+
+  @Post('/updateOwner')
+  @Public() // TODO - remove public
+  updateOwner(
+    @Body() requestBody: { channelName: { name: string }; owner: User },
+  ): Promise<Channel> {
+    return this.ChannelService.updateOwner(requestBody);
+  }
+
+  @Post('/addMembers')
+  @Public() // TODO - remove public
+  addMembers(
     @Body() requestBody: { channelName: { name: string }; members: User[] },
   ): Promise<Channel> {
-    return this.ChannelService.updateMembers(requestBody);
+    return this.ChannelService.addMembers(requestBody);
+  }
+
+  @Post('/replaceMembers')
+  @Public() // TODO - remove public
+  replaceMembers(
+    @Body() requestBody: { channelName: { name: string }; members: User[] },
+  ): Promise<Channel> {
+    return this.ChannelService.replaceMembers(requestBody);
   }
 
   @Post('/updatePassword')

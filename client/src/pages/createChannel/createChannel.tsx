@@ -45,6 +45,8 @@ function CreateChannel(props : CreateChannelProps) {
 			login : currentUser.nickname,
 		};
 
+		const updatedChannelUsersList = [...channelUsersList, createdBy];
+
 		await api
 		.post ('http://localhost:4001/channel/creation', {
 			name: newName,
@@ -54,7 +56,7 @@ function CreateChannel(props : CreateChannelProps) {
 			admins: [createdBy],
 			protected_by_password: channelType.protected_by_password,
 			key: channelType.key,
-			members: channelUsersList,
+			members: updatedChannelUsersList,
 			avatar: currentUser.avatar,
 			chatHistory: [],
 		})

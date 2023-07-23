@@ -7,7 +7,7 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ManageAdminDialog from './ManageAdminDialog';
 import AddMembersDialog from './AddMembersDialog';
@@ -16,18 +16,28 @@ import { useAppSelector } from '../utils/redux-hooks';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import { ChannelModel } from '../types/chat/channelTypes';
+import { Socket } from 'socket.io-client';
+import LeaveChannelDialog from './LeaveChannelDialog';
+import ChannelInfoDialog from './ChannelInfoDialog';
 
-export default function ChannelMenu() {
+export type ChannelMenuProps = {
+	socketRef: React.MutableRefObject<Socket | undefined>;
+}
+
+export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 	const [open, setOpen] = React.useState<boolean>(false);
 	const [openAdminDialog, setOpenAdminDialog] = React.useState<boolean>(false);
 	const [openAddMembers, setOpenAddMembers] = React.useState<boolean>(false);
 	const [openManagePassword, setOpenManagePassword] = React.useState<boolean>(false);
 	const [openLeaveChannel, setOpenLeaveChannel] = React.useState<boolean>(false);
+	const [openChannelInfo, setOpenChannelInfo] = React.useState<boolean>(false);
+
 
 	// check if user is owner of the selected channel
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
-	const isOwner : boolean = currentUser === selectedChannel.createdById ? true : false;
+	const isOwner : boolean = currentUser === selectedChannel.ownedById ? true : false;
+	const isAdmin : boolean = selectedChannel.admins.some(admin => admin.login === currentUser)
 
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -56,6 +66,10 @@ export default function ChannelMenu() {
 			}
 			case 'managePassword' : {
 				setOpenManagePassword(true);
+				break;
+			}
+			case 'channelInfo' : {
+				setOpenChannelInfo(true);
 				break;
 			}
 			case 'leaveChannel' : {
@@ -87,21 +101,26 @@ export default function ChannelMenu() {
 		prevOpen.current = open;
 	}, [open]);
 
+
+
 	return (
 		<React.Fragment>
 
 		<Stack direction="row" spacing={2}>
 		<div>
-			<IconButton
-				ref={anchorRef}
-				id="composition-button"
-				aria-controls={open ? 'composition-menu' : undefined}
-				aria-expanded={open ? 'true' : undefined}
-				aria-haspopup="true"
-				onClick={handleToggle}
-			>
-				<ExpandMoreIcon />
-			</IconButton>
+			<Tooltip title='channel menu'>
+				<IconButton
+					ref={anchorRef}
+					id="composition-button"
+					aria-controls={open ? 'composition-menu' : undefined}
+					aria-expanded={open ? 'true' : undefined}
+					aria-haspopup="true"
+					onClick={handleToggle}
+					sx={{color: '#07457E'}}
+				>
+					<ExpandMoreIcon />
+				</IconButton>
+			</Tooltip>
 			<Popper
 				open={open}
 				anchorEl={anchorRef.current}
@@ -126,10 +145,11 @@ export default function ChannelMenu() {
 								aria-labelledby="composition-button"
 								onKeyDown={handleListKeyDown}
 							>
-								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
-								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>}
+								{isAdmin &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
+								{isAdmin &&	<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>}
 								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>add / manage password</MenuItem>}
-								<MenuItem onClick={(event) => handleClose(event, 'leaveChannel')}>leave channel</MenuItem>
+								{<MenuItem onClick={(event) => handleClose(event, 'channelInfo')}>info about channel</MenuItem>}
+								{isOwner === false && <MenuItem onClick={(event) => handleClose(event, 'leaveChannel')}>leave channel</MenuItem>}
 							</MenuList>
 						</ClickAwayListener>
 					</Paper>
@@ -141,7 +161,8 @@ export default function ChannelMenu() {
 			<ManageAdminDialog openDialog={openAdminDialog} setOpenDialog={setOpenAdminDialog}/>
 			<AddMembersDialog openDialog={openAddMembers} setOpenDialog={setOpenAddMembers}/>
 			<ManagePasswordDialog openDialog={openManagePassword} setOpenDialog={setOpenManagePassword}/>
-			{/* <LeaveChannelDialog openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/> */}
+			<ChannelInfoDialog openDialog={openChannelInfo} setOpenDialog={setOpenChannelInfo}/>
+			<LeaveChannelDialog socketRef={socketRef} openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/>
 		</React.Fragment>
 
 	);

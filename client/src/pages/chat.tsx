@@ -12,6 +12,8 @@ import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selec
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { emptyChannel } from '../data/emptyChannel';
+import { UserModel } from '../types/users/userType';
+import Banned from '../components/Conversation/Banned';
 
 function Chat () {
 	const currentRoute = window.location.pathname;
@@ -19,6 +21,7 @@ function Chat () {
 
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 	const displayedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
+	const currentUser : string = useAppSelector(selectCurrentUser);
 
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0) {
@@ -39,6 +42,8 @@ function Chat () {
 		setSelectedChannel(channelName);
 	}
 
+	const isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list 
+
 	return (
 		<Provider store={store}>
 			<div className='chat-container'>
@@ -46,7 +51,8 @@ function Chat () {
 				<div className='chat-wrapper'>
 				<SideBar handleSelectItem={handleSelectChannel} />
 				<div className='chat'>
-					<Conversation />
+					{isBanned === false && <Conversation />}
+					{isBanned === true && <Banned />}
 				</div>
 				</div>
 			</div>

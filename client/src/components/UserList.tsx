@@ -12,20 +12,18 @@ import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 type UserListProps = {
-	updatedAdmins? : UserModel[],
-	setUpdatedAdmins : (admins : UserModel[]) => void,
+	usersSet : UserModel[], // a list of users amongs which you make your selection
+	initialUsers : UserModel[], // a lits of users initially selected
+	setUpdatedUsers : (admins : UserModel[]) => void, // a function to update the selected users
 }
 
-export default function UserList({setUpdatedAdmins} : UserListProps) {
-	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
-	const channelAdmins : UserModel[] = selectedChannel.admins;
-	const channelMembers : UserModel[] = selectedChannel.members;
-
-	const adminIndexes: number[] = channelAdmins.map((admin) =>
-		channelMembers.findIndex((member) => member.login === admin.login)
+export default function UserList({usersSet, initialUsers, setUpdatedUsers} : UserListProps) {
+	const userIndexes: number[] = initialUsers.map((admin) =>
+		usersSet.findIndex((user) => user.login === admin.login)
 	);
+	
+	const [checked, setChecked] = React.useState<number[]>(userIndexes.filter(index => index !== -1));
 
-	const [checked, setChecked] = React.useState<number[]>(adminIndexes[0] === -1 ? [0] : adminIndexes);
 
 	const handleToggle = (value: number) => () => {
 		
@@ -39,13 +37,13 @@ export default function UserList({setUpdatedAdmins} : UserListProps) {
 	    }
 
     	setChecked(newChecked);
-		const updatedAdmins: UserModel[] = [selectedChannel.createdBy, ...newChecked.map((index) => channelMembers[index])];
-		setUpdatedAdmins(updatedAdmins);
+		const updatedUsers: UserModel[] = [...newChecked.map((index) => usersSet[index])];
+		setUpdatedUsers(updatedUsers);
   	};
 
   return (
     <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-      {channelMembers.map((el, value) => {
+      {usersSet.map((el, value) => {
         const labelId = `checkbox-list-secondary-label-${value}`;
         return (
           <ListItem
