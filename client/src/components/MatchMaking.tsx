@@ -28,7 +28,11 @@ const halfGridStyle = {
 	nickname: string,
 }
 
+<<<<<<< HEAD
 export const Matchmaking : React.FC<PongProps> = ({infos}, props: Myprops)  => {
+=======
+  export const Matchmaking : React.FC<PongProps> = ({infos}, props: Myprops)  => {
+>>>>>>> features/Pong
 	const user = useAppSelector(selectCurrentUser);
 	console.log(`Le user est ${user }, le nick = ${props.nickname} et l'opponent est = ${infos.allRoomInfo.players[0]}`)
 	useEffect(() => {
