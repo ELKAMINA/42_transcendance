@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 import { useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useAppSelector } from '../utils/redux-hooks';
+import { gameInfo } from '../data/gameInfo';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 
 
@@ -23,7 +24,12 @@ const halfGridStyle = {
 	color: '#005A9C'
   };
 
-export function Matchmaking (props: Myprops) {
+  interface PongProps {
+	infos: gameInfo;
+	nickname: string,
+}
+
+  export const Matchmaking : React.FC<PongProps> = ({infos}, props: Myprops)  => {
 	const user = useAppSelector(selectCurrentUser);
 	console.log(`Le user est ${user }, le nick = ${props.nickname} et l'opponent est = ${props.opp}`)
 	useEffect(() => {
@@ -37,7 +43,7 @@ export function Matchmaking (props: Myprops) {
 	return (
 		<>
 			<Grid container spacing={1} alignItems="center">
-				{props.opp && 
+				{infos.opponent && 
 				(<>
 					<Grid container sx={{
 						backgroundImage: `url(${process.env.PUBLIC_URL + '/thisone.avif'})`,
@@ -60,7 +66,7 @@ export function Matchmaking (props: Myprops) {
 								fontSize: "50px",
 								textTransform: 'uppercase',
 
-							}}>{props.nickname}</Typography>
+							}}>{infos.allRoomInfo.players[0]}</Typography>
 						</Grid>
 						{/* <Typography variant="h3" noWrap>VS</Typography> */}
 						<Grid item style={halfGridStyle} xs={6} sx={{
@@ -73,12 +79,12 @@ export function Matchmaking (props: Myprops) {
 								color: 'white',
 								fontSize: "50px",
 								textTransform: 'uppercase',
-							}}>{props.opp}</Typography>
+							}}>{infos.allRoomInfo.players[1]}</Typography>
 						</Grid>
 					</Grid>
 				</>)
 				}
-				{!props.opp && <Grid item xs={12} style={waitingGridStyle} sx={{
+				{!infos.opponent && <Grid item xs={12} style={waitingGridStyle} sx={{
 					display: 'flex',
 					flexDirection: 'column',
 					alignItems: 'center',

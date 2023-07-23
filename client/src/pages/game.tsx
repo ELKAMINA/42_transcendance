@@ -141,7 +141,7 @@ function Game() {
         <>
             <Navbar currentRoute={currentRoute} />
             {startingGame === false && (
-                <Matchmaking opp={opp} nickname={nickName} />
+                <Matchmaking infos= {gInfo} nickname={nickName} />
             )}
             {startingGame === true && <Pong  infos={gInfo}/>}
         </>
