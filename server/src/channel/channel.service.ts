@@ -534,7 +534,8 @@ export class ChannelService {
 					},
 				},
 			});
-			console.log('updatedChannel = ', updatedChannel);
+
+			// console.log('updatedChannel = ', updatedChannel);
 			return updatedChannel;
 		} catch (error) {
 			throw error;
