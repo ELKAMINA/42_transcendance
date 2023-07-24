@@ -20,6 +20,7 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	const [updatedMuted, setUpdatedMuted] = React.useState<UserModel[]>([]);
+	// const [usersToUmute, setUsersToUmute] = React.useState<UserModel[]>([]);
 	const AppDispatch = useAppDispatch();
 
 	async function updateMuted() : Promise<void> {
@@ -44,6 +45,10 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 	const handleCancel = () => {
 		setOpenDialog(false);
 	};
+
+	React.useEffect(() => {
+
+	})
 
 	const membersOptions: UserModel[] = selectedChannel.members.filter((member: UserModel) => {
 		// Check if the member is not in the admins array
@@ -73,7 +78,7 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 					A muted member cannot talk in the channel.
 					But he is still a member.
 				</DialogContentText>
-				<UserList usersSet={membersOptions} initialUsers={selectedChannel.muted} setUpdatedUsers={setUpdatedMuted}/>
+				<UserList usersSet={membersOptions} initialUsers={selectedChannel.muted} setUpdatedUsers={setUpdatedMuted} setTimer={true}/>
 			</DialogContent>
 			<DialogActions>
 				<Button variant="contained" size='medium' endIcon={<SendIcon />} onClick={handleClose} autoFocus>
