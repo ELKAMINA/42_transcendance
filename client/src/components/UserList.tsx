@@ -7,9 +7,8 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Checkbox from '@mui/material/Checkbox';
 import Avatar from '@mui/material/Avatar';
 import { UserModel } from '../types/users/userType';
-import ResponsiveTimePickers from './ResponsiveTimePicker';
 import ResponsiveTimePicker from './ResponsiveTimePicker';
-import { Box, Button, FormControlLabel, Stack, Tooltip } from '@mui/material';
+import { Stack, Tooltip } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 
@@ -17,9 +16,10 @@ type UserListProps = {
 	usersSet : UserModel[], // a list of users amongs which you make your selection
 	initialUsers : UserModel[], // a lits of users initially selected
 	setUpdatedUsers : (admins : UserModel[]) => void, // a function to update the selected users
+	setTimer? : boolean; // a boolean to specify if you want the user to be able to set a timer. Set on false by default.
 }
 
-export default function UserList({usersSet, initialUsers, setUpdatedUsers} : UserListProps) {
+export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTimer=false} : UserListProps) {
 	const userIndexes: number[] = initialUsers.map((admin) =>
 		usersSet.findIndex((user) => user.login === admin.login)
 	);
@@ -71,7 +71,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers} : Use
 			return (
 				<ListItem key={value} secondaryAction={
 						<Stack direction="row" spacing={1}>
-							{isChecked && (
+							{isChecked && setTimer && (
 								<Stack direction={'row'}>
 									{isTimeChecked === true && 
 										<ResponsiveTimePicker 
