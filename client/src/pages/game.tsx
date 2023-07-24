@@ -28,7 +28,10 @@ import {
 } from "../redux-features/friendship/friendshipSlice";
 import { useNavigate } from "react-router-dom";
 import Player from "../classes/Player";
+import Ball from "../classes/Ball";
 import { gameInfo } from "../data/gameInfo";
+import { ConstructionOutlined } from "@mui/icons-material";
+import { Console } from "console";
 export const socket = io("http://localhost:4010", {
     withCredentials: true,
     transports: ["websocket"],
@@ -47,30 +50,28 @@ const waitingGridStyle = {
     color: "#005A9C",
 };
 
-
-
 function Game() {
     const currentRoute = window.location.pathname;
     const dispatch = useAppDispatch();
     const [startingGame, setStarting] = useState(false);
     const nickName = useAppSelector(selectCurrentUser);
     const user = useAppSelector(selectActualUser);
-	const [gInfo, setGameInfo ] = useState<gameInfo >({
-			opponent: "",
-			allRoomInfo: {
-				id: "",
-				createdDate: 0,
-				totalSet: 0,
-				totalPoint: 0,
-				mapName: "",
-				power: false,
-				isFull: false,
-				players: [],
-				scorePlayers: [],
-				playerOneId: "",
-				playerTwoId: "",
-			}
-	})
+    const [gInfo, setGameInfo] = useState<gameInfo>({
+        opponent: "",
+        allRoomInfo: {
+            id: "",
+            createdDate: 0,
+            totalSet: 0,
+            totalPoint: 0,
+            mapName: "",
+            power: false,
+            isFull: false,
+            players: [],
+            scorePlayers: [],
+            playerOneId: "",
+            playerTwoId: "",
+        },
+    });
     const navigate = useNavigate();
 
     // Function to clear complete cache data
@@ -105,12 +106,11 @@ function Game() {
 
             socket.on("gameBegin", (roomInfo) => {
                 dispatch(updateOpponent(roomInfo.opponent));
-				setGameInfo(prevState => ({
-					...prevState,
-						opponent: roomInfo.opponent,
-						allRoomInfo: roomInfo.allRoomInfo,
-					})
-				)
+                setGameInfo((prevState) => ({
+                    ...prevState,
+                    opponent: roomInfo.opponent,
+                    allRoomInfo: roomInfo.allRoomInfo,
+                }));
                 setTimeout(() => {
                     setStarting(true);
                     socket.on("forceDisconnection", () => {
@@ -141,9 +141,9 @@ function Game() {
         <>
             <Navbar currentRoute={currentRoute} />
             {startingGame === false && (
-                <Matchmaking infos= {gInfo} nickname={nickName} />
+                <Matchmaking infos={gInfo} nickname={nickName} />
             )}
-            {startingGame === true && <Pong  infos={gInfo}/>}
+            {startingGame === true && <Pong infos={gInfo} />}
         </>
     );
 }
@@ -156,10 +156,10 @@ type BallType = {
 };
 
 interface PongProps {
-	infos: gameInfo;
-  }
+    infos: gameInfo;
+}
 
-const Pong: React.FC<PongProps>  = ({infos}) => {
+const Pong: React.FC<PongProps> = ({ infos }) => {
     const currentRoute = window.location.pathname;
     const dispatch = useAppDispatch();
     const nickName = useAppSelector(selectCurrentUser);
@@ -169,14 +169,48 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
     const roomInfo = location.state;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const canvas = useRef<CanvasRenderingContext2D | null>(null);
-	const player1 = useRef<Player>(new Player([infos.allRoomInfo.playerOneId, infos.allRoomInfo.players[0]], [10, 10], 100))
-	const player2 = useRef<Player>(new Player([infos.allRoomInfo.playerTwoId, infos.allRoomInfo.players[1]], [50, 10], 100))
-	// console.log("les infos ", infos)
-	// const player1 = useRef<Player>(new Player());
-	// console.log(" toute la room ", props)
+    const [canvasWidth, canvasHeight] = [800, 600];
+
+    const player1 = useRef<Player>(
+        new Player(
+            [infos.allRoomInfo.playerOneId, infos.allRoomInfo.players[0]],
+            [0, 0],
+            10
+        )
+    );
+    const player2 = useRef<Player>(
+        new Player(
+            [infos.allRoomInfo.playerTwoId, infos.allRoomInfo.players[1]],
+            [0, 0],
+            10
+        )
+    );
+
+    const ball = useRef<Ball>(new Ball([0, 0], 5));
+
+    player1.current.setPaddlePosition([
+        10,
+        (3 * canvasHeight) / 6 - player1.current.getPaddleDimension()[1] / 2,
+    ]);
+    player2.current.setPaddlePosition([
+        canvasWidth - 10 - player2.current.getPaddleDimension()[0],
+        (3 * canvasHeight) / 6 - player2.current.getPaddleDimension()[1] / 2,
+    ]);
+    ball.current.setPosition([canvasWidth / 2, canvasHeight / 2]);
+    // console.log("les infos ", infos)
+    // const player1 = useRef<Player>(new Player());
+    // console.log(" toute la room ", props)
     /*Why useRef : unlike state updates, changes to a ref's .current property do not trigger a re-render of the component. This makes it useful for values that need to persist across renders but changes in these values should not cause an update to the component's output*/
-    const [paddleY, setPaddleY] = useState<number>(200);
-    const [ball, setBall] = useState<BallType>({ x: 10, y: 10, dx: 2, dy: 2 });
+    // const [paddleY, setPaddleY] = useState<number>(200);
+    // const [ball, setBall] = useState<BallType>({ x: 10, y: 10, dx: 2, dy: 2 });
+
+    const getPlayerId = (socketId: string) => {
+        if (socketId === infos.allRoomInfo.playerOneId) {
+            return player1.current;
+        } else {
+            return player2.current;
+        }
+    };
 
     /* Drawing functions  */
     // PLAYER PADDLE
@@ -188,7 +222,7 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
         h: number,
         color: string
     ) => {
-        // console.log("Call of drawRect");
+        // console.log("Call of drawRect", x, y, w, h, color);
         ctx.clearRect(x, y, w, h);
         ctx.fillStyle = color;
         ctx.fillRect(x, y, w, h);
@@ -237,28 +271,98 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
         ctx.fillText(text, x, y);
     };
 
-    /* ***  */
+    const keyPressed = (e: any) => {
+        console.log(`Key ${e.key} was pressed`);
+        const player = getPlayerId(socket.id);
 
-    // const mouseDown = (e: any) => {
-    //     console.log("jai bougé la souris ", e);
-    // };
+        let direction = 1;
+        if (e.key === "w") {
+            direction = -direction;
+        }
+        let newPosY =
+            player.getPaddlePosition()[1] + player.getPaddleSpeed() * direction;
+        if (newPosY <= 0) {
+            newPosY = 0;
+        } else if (newPosY >= canvasHeight - player.getPaddleDimension()[1]) {
+            newPosY = canvasHeight - player.getPaddleDimension()[1];
+        }
+        if (e.key === "w" || e.key === "s") {
+            socket.emit("requestMovePaddle", newPosY);
+        }
+    };
 
-	const keyPressed = (e: any) => {
-		console.log(`Key ${e.key} was pressed`)
-		if (e.key === "w") {
-			console.log("Up required");
-			if (socket.id === player1.current.getUserInfo().at(0))
-				player1.current.setPaddleColor("red");
-			else {
-				player2.current.setPaddleColor("red");
-			}
-			socket.emit("changeColor");
-		}
-		else if (e.key === "s") {
-			console.log("Down required");
-			socket.emit("moveDown");
-		}
-	}
+    const updateBall = () => {
+        const [ballX, ballY] = ball.current.getPosition();
+        let [velX, velY] = ball.current.getVelocity();
+        ball.current.setPosition([ballX + velX, ballY + velY]);
+        if (
+            ball.current.getPositionY() - ball.current.getRadius() <= 0 ||
+            ball.current.getPositionY() + ball.current.getRadius() >=
+                canvasHeight
+        ) {
+            ball.current.setVelocityY(-ball.current.getVelocityY());
+        }
+        if (socket.id === infos.allRoomInfo.playerOneId) {
+            socket.emit("requestMoveBall", ball.current.getVelocity());
+        }
+        socket.on("requestMoveBall", (value) => {
+            ball.current.setVelocity(value);
+        });
+    };
+
+    const update = () => {
+        socket.on("updateMovePaddle", (data) => {
+            console.log(`Player ${data.player} must be updated`);
+            const player = getPlayerId(socket.id);
+            player.setPaddlePosition([
+                player.getPaddlePosition()[0],
+                data.value,
+            ]);
+        });
+        updateBall();
+    };
+
+    const render = (cs: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+        console.log(` width is ${cs.width} and the height is : ${cs.height}`);
+        // CLEAR THE WHOLE CANVAS
+        ctx.clearRect(0, 0, cs.width, cs.height);
+
+        // DRAW THE BOARD IN BLACK COLOR
+        drawRect(ctx, 0, 0, cs.width, cs.height, "#000000");
+
+        // PLAYER 1 PADDLE
+        console.log(
+            `Player 1 has x: ${player1.current
+                .getPaddlePosition()
+                .at(0)} and y: ${player1.current.getPaddlePosition().at(1)}`
+        );
+        const [p1X, p1Y] = player1.current.getPaddlePosition();
+        const [p1W, p1H] = player1.current.getPaddleDimension();
+
+        // PLAYER 2 PADDLE
+        console.log(
+            `Player 2 has x: ${player2.current
+                .getPaddlePosition()
+                .at(0)} and y: ${player2.current.getPaddlePosition().at(1)}`
+        );
+        const [p2X, p2Y] = player2.current.getPaddlePosition();
+        const [p2W, p2H] = player2.current.getPaddleDimension();
+
+        // BALL
+        const [bX, bY] = ball.current.getPosition();
+        console.log("Ball", bX, bY);
+
+        // DRAW OBJECT
+        drawRect(ctx, p1X, p1Y, p1W, p1H, player1.current.getPaddleColor());
+        drawRect(ctx, p2X, p2Y, p2W, p2H, player2.current.getPaddleColor());
+        drawCircle(
+            ctx,
+            bX,
+            bY,
+            ball.current.getRadius(),
+            ball.current.getColor()
+        );
+    };
 
     useEffect(() => {
         socket.connect(); // Will use 'handleConnection' from nestjs/game
@@ -269,30 +373,16 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
         }
         canvas.current = cs.getContext("2d");
         if (!canvas.current) {
-			return;
+            return;
         }
         const ctx = canvas.current;
-        // console.log("test");
-		
-        const updateGame = () => {
-			console.log( ` width is ${cs.width} and the height is : ${cs.height}`)
-			ctx.clearRect(0, 0, cs.width, cs.height);
-            drawRect(ctx, 0, 0, cs.width, cs.height, '#000000');
-			const paddleWidth = 10;
-			const paddleHeight = 50;
-			// (3 * b.height / 6) - (p.width / 2)
-			drawRect(ctx, 0, (3 * cs.height / 6) - (paddleHeight / 2), paddleWidth, paddleHeight, '#FFFFFF')
-			drawRect(ctx, (cs.width - 0 - paddleWidth), (3 * cs.height / 6) - (paddleHeight / 2), paddleWidth, paddleHeight, '#FFFFFF')
+        const theGame = () => {
+            update();
+            render(cs, ctx);
         };
-		
-		
-        intervalId = setInterval(updateGame, 1000 / 50);
-		
-        // clear the canvas before every re-render
-        // cs.addEventListener("mousedown", mouseDown);
-		cs.addEventListener('keydown', keyPressed);
-		cs.focus();
-
+        cs.addEventListener("keydown", keyPressed);
+        cs.focus();
+        intervalId = setInterval(theGame, 1000 / 60);
         return () => {};
     }, []);
 
@@ -320,15 +410,15 @@ const Pong: React.FC<PongProps>  = ({infos}) => {
                     <canvas
                         className="canvas"
                         ref={canvasRef}
-                        width="800"
-                        height="600"
-						tabIndex={0}
+                        width={canvasWidth}
+                        height={canvasHeight}
+                        tabIndex={0}
                     />
                 </Box>
             </Box>
             {/* onMouseMove={movePaddle} */}
         </>
     );
-}
+};
 
 export default Game;

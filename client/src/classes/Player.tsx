@@ -11,11 +11,11 @@ class Player {
         position: Array<number>,
         paddleSpeed: number
     ) {
-        this.userInfo = [...userInfo];
-        this.paddlePosition = [...position];
+        this.userInfo = userInfo;
+        this.paddlePosition = position;
         this.score = 0;
         this.paddleSpeed = paddleSpeed;
-        this.paddleColor = "#FFFFFFF";
+        this.paddleColor = "#FFFFFF";
         this.paddleDimension = [10, 50];
     }
 

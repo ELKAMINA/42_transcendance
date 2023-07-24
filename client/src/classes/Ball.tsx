@@ -2,13 +2,15 @@ class Ball {
     private position: Array<number>;
     private speed: number;
     private radius: number;
+    private velocity: Array<number>;
     private isVisible: boolean;
     private color: string;
 
     constructor(position: Array<number>, speed: number) {
         this.position = [...position];
         this.speed = speed;
-        this.radius = 0;
+        this.radius = 10;
+        this.velocity = [2, 2];
         this.isVisible = true;
         this.color = "#FFFFFF";
     }
@@ -18,12 +20,32 @@ class Ball {
         return this.position;
     }
 
+    getPositionX(): number {
+        return this.position[0];
+    }
+
+    getPositionY(): number {
+        return this.position[1];
+    }
+
     getSpeed(): number {
         return this.speed;
     }
 
     getRadius(): number {
         return this.radius;
+    }
+
+    getVelocity(): Array<number> {
+        return this.velocity;
+    }
+
+    getVelocityX(): number {
+        return this.velocity[0];
+    }
+
+    getVelocityY(): number {
+        return this.velocity[1];
     }
 
     getIsVisible(): boolean {
@@ -36,7 +58,15 @@ class Ball {
 
     /*** SETTER ***/
     setPosition(newValue: Array<number>) {
-        this.position = [...newValue];
+        this.position = newValue;
+    }
+
+    setPositionX(newValue: number) {
+        this.position[0] = newValue;
+    }
+
+    setPositionY(newValue: number) {
+        this.position[1] = newValue;
     }
 
     setSpeed(newValue: number) {
@@ -45,6 +75,18 @@ class Ball {
 
     setRadius(newValue: number) {
         this.radius = newValue;
+    }
+
+    setVelocity(newValue: Array<number>) {
+        this.velocity = newValue;
+    }
+
+    setVelocityX(newValue: number) {
+        this.velocity[0] = newValue;
+    }
+
+    setVelocityY(newValue: number) {
+        this.velocity[1] = newValue;
     }
 
     setIsVisible(newValue: boolean) {

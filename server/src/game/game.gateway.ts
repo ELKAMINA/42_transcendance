@@ -95,10 +95,26 @@ export class GameGateway
   /* ********** */
 
   /* Game events */
-
-  @SubscribeMessage('changeColor')
-  async handleChangeColor(client: Socket): Promise<void> {
+  @SubscribeMessage('requestMovePaddle')
+  async handleRequestMovePaddle(client: Socket, value: number): Promise<void> {
     console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    console.log(`socket id ${socketId} in the room ${roomName}`);
+    const room = this.games.find((el) => el.id === roomName);
+    const player =
+      room.playerOneId === socketId ? room.playerOneId : room.playerTwoId;
+    this.server.to(roomName).emit('updateMovePaddle', { player, value });
+  }
+
+  @SubscribeMessage('requestMoveBall')
+  async handleRequestMoveBall(
+    client: Socket,
+    value: Array<number>,
+  ): Promise<void> {
+    console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updateMoveBall', value);
   }
 
   // @SubscribeMessage('connectedSocket') // Verifier les id des sockets
