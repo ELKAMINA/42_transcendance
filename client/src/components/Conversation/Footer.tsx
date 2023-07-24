@@ -6,9 +6,9 @@ import SendIcon from '@mui/icons-material/Send';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
-import { useAppSelector } from '../../utils/redux-hooks';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
 import { ChatMessage } from '../../types/chat/messageType';
 import { FetchUserByName } from '../../utils/global/global';
@@ -40,6 +40,7 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 	const [blockMsg, setBlockMsg] = React.useState('')
 	const [value, setValue] = useState("");
 	const [isMuted, setIsMuted] = useState<boolean>(false);
+	const appDispatch = useAppDispatch();
 
 	// record message
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
@@ -67,7 +68,7 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 					return false;
 				}
 			}	catch(error : any) {
-				console.error('error = ', error);
+				console.error('error while checking if user is blocked = ', error);
 				return false; // default return statement
 			}
 		} else {
@@ -75,19 +76,37 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		} 	
 	}
 
-	function isUserMuted() : boolean {
-		if (selectedChannel.muted.some(muted => muted.login === currentUser))
-			return true;
-		return false;
+	async function userIsMuted() : Promise<boolean> {
+		if (selectedChannel.type !== 'PrivateConv') {
+			try {
+				// get most recent selectedChannel version from db
+				await appDispatch(fetchDisplayedChannel(selectedChannel.name));
+				// check its muted property array to see if currentUser is in it
+				if (selectedChannel.muted.some(muted => muted.login === currentUser))
+					return true;
+				else
+					return false;
+			}
+			catch (error : any) {
+				console.log('error while checking if user is muted = ', error);
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	useEffect(() => {
-		setIsMuted(isUserMuted());
-	}, [])
+		(async () => {
+		  const mutedStatus = await userIsMuted();
+		  setIsMuted(mutedStatus);
+		  console.log('is muted ? ', mutedStatus);
+		})();
+	}, []);
 
 
 	async function sendMessage() {
-		if (await userIsBlocked() === false) {
+		if (await userIsBlocked() === false && isMuted === false) {
 			const messageToBeSent = {
 				sentBy: authState.nickname,
 				sentById: authState.nickname,
@@ -152,12 +171,12 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 					height: 48, width: 48, backgroundColor: '#07457E', borderRadius: 1.5
 				}}>
 					<Stack sx={{height:'100%', width:'100%',}} alignItems={'center'} justifyContent={'center'}>
-						{isMuted === true && 
+						{isMuted === false && 
 							<IconButton onClick={handleClick}>
 								<SendIcon fontSize="medium" sx={{color: 'white'}}/>
 							</IconButton>
 						}
-						{isMuted === false && <MicOffIcon fontSize='medium' sx={{color: 'red'}}/>}
+						{isMuted === true && <MicOffIcon fontSize='medium' sx={{color: 'red'}}/>}
 					</Stack>
 				</Box>
 			</Stack>
