@@ -6,16 +6,15 @@ import SendIcon from '@mui/icons-material/Send';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../../redux-features/chat/channelsSlice';
+import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
-import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { Channel, ChannelModel } from '../../types/chat/channelTypes';
+import { useAppSelector } from '../../utils/redux-hooks';
+import { ChannelModel } from '../../types/chat/channelTypes';
 import { ChatMessage } from '../../types/chat/messageType';
 import { FetchUserByName } from '../../utils/global/global';
-import { transformData } from '../../pages/userProfile';
-import Popup from 'reactjs-popup';
+import MicOffIcon from '@mui/icons-material/MicOff';
+
 import './Footer.css';
-import { UserModel } from '../../types/users/userType';
 
 // import { FetchUserByName } from '../../redux-features/friendship/friendshipSlice';
 
@@ -36,15 +35,16 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 
 
 const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
-	const user = useAppSelector(selectCurrentUser)
+	const currentUser = useAppSelector(selectCurrentUser)
 	const blockRef = React.useRef<HTMLInputElement>(null)
 	const [blockMsg, setBlockMsg] = React.useState('')
-	const dispatch = useAppDispatch()
 	const [value, setValue] = useState("");
+	const [isMuted, setIsMuted] = useState<boolean>(false);
 
 	// record message
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
-	const displayedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
+	const selectedChannel: ChannelModel = useAppSelector(selectDisplayedChannel);
+
 	function handleChange(e : React.ChangeEvent<HTMLInputElement>) {
 		const input = e.target.value;
 		setValue(input);
@@ -52,15 +52,14 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 
 	React.useEffect(() => {
         setBlockMsg('')
-    }, [displayedChannel])
+    }, [selectedChannel])
 
 	async function userIsBlocked() : Promise<boolean> {
-		if (displayedChannel.type === 'privateConv') {
+		if (selectedChannel.type === 'privateConv') {
 			try {
-				const UserToCheck : any = await FetchUserByName(displayedChannel.name)
-				if (((UserToCheck.blockedBy).find((bl: any) => bl.login === user)) || ((UserToCheck.blocked).find((bl: any) => bl.login === user)) )
+				const UserToCheck : any = await FetchUserByName(selectedChannel.name)
+				if (((UserToCheck.blockedBy).find((bl: any) => bl.login === currentUser)) || ((UserToCheck.blocked).find((bl: any) => bl.login === currentUser)) )
 				{
-					// console.log("NOOOOOO je peux pas envoyer message ")
 					setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
 					return true;
 				}
@@ -76,6 +75,17 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		} 	
 	}
 
+	function isUserMuted() : boolean {
+		if (selectedChannel.muted.some(muted => muted.login === currentUser))
+			return true;
+		return false;
+	}
+
+	useEffect(() => {
+		setIsMuted(isUserMuted());
+	}, [])
+
+
 	async function sendMessage() {
 		if (await userIsBlocked() === false) {
 			const messageToBeSent = {
@@ -86,8 +96,8 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 				sentAt: new Date(),
 				incoming: true,
 				outgoing: false,
-				channel: displayedChannel.name,
-				channelById: displayedChannel.name,
+				channel: selectedChannel.name,
+				channelById: selectedChannel.name,
 			}
 			send(messageToBeSent);
 		}
@@ -101,7 +111,7 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		}
 	}
 
-	// console.log('displayedChannel : ', displayedChannel);
+	// console.log('selectedChannel : ', selectedChannel);
 	function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
 		sendMessage();
 		setValue('');
@@ -142,9 +152,12 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 					height: 48, width: 48, backgroundColor: '#07457E', borderRadius: 1.5
 				}}>
 					<Stack sx={{height:'100%', width:'100%',}} alignItems={'center'} justifyContent={'center'}>
-						<IconButton onClick={handleClick}>
-							<SendIcon fontSize="medium" sx={{color: 'white'}}/>
-						</IconButton>
+						{isMuted === true && 
+							<IconButton onClick={handleClick}>
+								<SendIcon fontSize="medium" sx={{color: 'white'}}/>
+							</IconButton>
+						}
+						{isMuted === false && <MicOffIcon fontSize='medium' sx={{color: 'red'}}/>}
 					</Stack>
 				</Box>
 			</Stack>
