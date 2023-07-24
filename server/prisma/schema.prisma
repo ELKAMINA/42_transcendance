@@ -71,6 +71,7 @@ model User {
 	adminChannels			Channel[]       @relation("ChannelAdmin")
 	bannedFromChannels		Channel[]       @relation("ChannelBanned")
 	MutedInChannels			Channel[]       @relation("ChannelMuted")
+  	MutedExpiry    			DateTime?		
 	messagesSent			Message[]       @relation("MessageSender")
 }
 
