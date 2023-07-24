@@ -243,6 +243,12 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         ctx.fill();
     };
 
+    const drawNet = (ctx: CanvasRenderingContext2D) => {
+        for (let i = 0; i <= canvasHeight; i += 20) {
+            drawRect(ctx, canvasWidth / 2, i, 5, 10, "#FFFFFF");
+        }
+    };
+
     // SCORE
     const drawText = (
         ctx: CanvasRenderingContext2D,
@@ -258,21 +264,8 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
 
     let intervalId: any;
 
-    // NET
-    const drawNet = (
-        ctx: CanvasRenderingContext2D,
-        text: string,
-        x: number,
-        y: number,
-        color: string
-    ) => {
-        ctx.fillStyle = color;
-        ctx.font = "75px fantasy";
-        ctx.fillText(text, x, y);
-    };
-
     const keyPressed = (e: any) => {
-        console.log(`Key ${e.key} was pressed`);
+        // console.log(`Key ${e.key} was pressed`);
         const player = getPlayerId(socket.id);
 
         let direction = 1;
@@ -291,7 +284,29 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         }
     };
 
-    const updateBall = () => {
+    const resetBall = async () => {
+        const [ballX, ballY] = ball.current.getPosition();
+        if (
+            ballX > 0 + ball.current.getRadius() &&
+            ballX < canvasWidth - ball.current.getRadius()
+        ) {
+            // console.log("In playing");
+            return;
+        }
+        // console.warn("Someone has scored", `BallX: ${ballX}`);
+
+        const newBallPos = [canvasWidth / 2, canvasHeight / 2];
+        if (socket.id === infos.allRoomInfo.playerOneId) {
+            socket.emit("requestResetPositionBall", newBallPos);
+        }
+        socket.on("updatePositionBall", (value) => {
+            ball.current.setPosition(value);
+        });
+        ball.current.setVelocityX(-ball.current.getVelocityX());
+        updateScore(ballX);
+    };
+
+    const updateBall = async () => {
         const [ballX, ballY] = ball.current.getPosition();
         let [velX, velY] = ball.current.getVelocity();
         ball.current.setPosition([ballX + velX, ballY + velY]);
@@ -305,52 +320,95 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         if (socket.id === infos.allRoomInfo.playerOneId) {
             socket.emit("requestMoveBall", ball.current.getVelocity());
         }
-        socket.on("requestMoveBall", (value) => {
+        socket.on("updateMoveBall", (value) => {
             ball.current.setVelocity(value);
         });
     };
 
-    const update = () => {
+    const updateScore = async (ballX: number) => {
+        // console.warn("Update Score", `BallX: ${ballX}`);
+        let scoredPlayerId = "";
+        if (ballX <= 0 + ball.current.getRadius()) {
+            scoredPlayerId = infos.allRoomInfo.playerTwoId;
+            // console.warn("Player TWO has scored");
+        } else if (ballX >= canvasWidth - ball.current.getRadius()) {
+            scoredPlayerId = infos.allRoomInfo.playerOneId;
+            // console.warn("Player ONE has scored");
+        }
+        if (socket.id === infos.allRoomInfo.playerOneId) {
+            // console.error("Player 1 emit an update of score");
+            socket.emit("requestPlayerScore", scoredPlayerId);
+        }
+        socket.on("updatePlayerScore", (value) => {
+            player1.current.setScore(value[0]);
+            player2.current.setScore(value[1]);
+        });
+    };
+
+    const update = async () => {
         socket.on("updateMovePaddle", (data) => {
-            console.log(`Player ${data.player} must be updated`);
-            const player = getPlayerId(socket.id);
+            // console.log(`Player ${data.player} must be updated`);
+            const player = getPlayerId(data.player);
             player.setPaddlePosition([
                 player.getPaddlePosition()[0],
                 data.value,
             ]);
         });
+        resetBall();
         updateBall();
     };
 
-    const render = (cs: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
-        console.log(` width is ${cs.width} and the height is : ${cs.height}`);
+    const render = async (
+        cs: HTMLCanvasElement,
+        ctx: CanvasRenderingContext2D
+    ) => {
+        // console.log(` width is ${cs.width} and the height is : ${cs.height}`);
         // CLEAR THE WHOLE CANVAS
         ctx.clearRect(0, 0, cs.width, cs.height);
 
         // DRAW THE BOARD IN BLACK COLOR
         drawRect(ctx, 0, 0, cs.width, cs.height, "#000000");
 
-        // PLAYER 1 PADDLE
-        console.log(
-            `Player 1 has x: ${player1.current
-                .getPaddlePosition()
-                .at(0)} and y: ${player1.current.getPaddlePosition().at(1)}`
+        // DRAW THE NET
+        drawNet(ctx);
+
+        // DRAW THE SCORE
+        drawText(
+            ctx,
+            player1.current.getScore().toString(),
+            (1 * canvasWidth) / 4,
+            (1 * canvasHeight) / 6,
+            "#FFFFFF"
         );
+        drawText(
+            ctx,
+            player2.current.getScore().toString(),
+            (3 * canvasWidth) / 4,
+            (1 * canvasHeight) / 6,
+            "#FFFFFF"
+        );
+
+        // PLAYER 1 PADDLE
+        // console.log(
+        //     `Player 1 has x: ${player1.current
+        //         .getPaddlePosition()
+        //         .at(0)} and y: ${player1.current.getPaddlePosition().at(1)}`
+        // );
         const [p1X, p1Y] = player1.current.getPaddlePosition();
         const [p1W, p1H] = player1.current.getPaddleDimension();
 
         // PLAYER 2 PADDLE
-        console.log(
-            `Player 2 has x: ${player2.current
-                .getPaddlePosition()
-                .at(0)} and y: ${player2.current.getPaddlePosition().at(1)}`
-        );
+        // console.log(
+        //     `Player 2 has x: ${player2.current
+        //         .getPaddlePosition()
+        //         .at(0)} and y: ${player2.current.getPaddlePosition().at(1)}`
+        // );
         const [p2X, p2Y] = player2.current.getPaddlePosition();
         const [p2W, p2H] = player2.current.getPaddleDimension();
 
         // BALL
         const [bX, bY] = ball.current.getPosition();
-        console.log("Ball", bX, bY);
+        // console.log("Ball", bX, bY);
 
         // DRAW OBJECT
         drawRect(ctx, p1X, p1Y, p1W, p1H, player1.current.getPaddleColor());
@@ -383,13 +441,12 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         cs.addEventListener("keydown", keyPressed);
         cs.focus();
         intervalId = setInterval(theGame, 1000 / 60);
-        return () => {};
-    }, []);
-
-    useEffect(() => {
+        // intervalId = requestAnimationFrame(theGame);
+        theGame();
         return () => {
             if (socket) {
                 clearInterval(intervalId);
+                // cancelAnimationFrame(intervalId);
                 socket.disconnect();
                 dispatch(updateOpponent(""));
             }

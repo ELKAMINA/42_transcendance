@@ -97,9 +97,9 @@ export class GameGateway
   /* Game events */
   @SubscribeMessage('requestMovePaddle')
   async handleRequestMovePaddle(client: Socket, value: number): Promise<void> {
-    console.log('rooms ', client.rooms);
+    // console.log('rooms ', client.rooms);
     const [socketId, roomName] = [...client.rooms];
-    console.log(`socket id ${socketId} in the room ${roomName}`);
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
     const room = this.games.find((el) => el.id === roomName);
     const player =
       room.playerOneId === socketId ? room.playerOneId : room.playerTwoId;
@@ -111,10 +111,33 @@ export class GameGateway
     client: Socket,
     value: Array<number>,
   ): Promise<void> {
-    console.log('rooms ', client.rooms);
+    // console.log('rooms ', client.rooms);
     const [socketId, roomName] = [...client.rooms];
-    console.log(`socket id ${socketId} in the room ${roomName}`);
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
     this.server.to(roomName).emit('updateMoveBall', value);
+  }
+
+  @SubscribeMessage('requestResetPositionBall')
+  async handleRequestResetPositionBall(
+    client: Socket,
+    value: Array<number>,
+  ): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePositionBall', value);
+  }
+
+  @SubscribeMessage('requestPlayerScore')
+  async handleRequestPlayerScore(client: Socket, value: string): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    const room = this.games.find((el) => el.id === roomName);
+    if (value === socketId) {
+      room.scorePlayers[0] += 1;
+    } else room.scorePlayers[1] += 1;
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
   }
 
   // @SubscribeMessage('connectedSocket') // Verifier les id des sockets

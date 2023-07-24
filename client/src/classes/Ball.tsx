@@ -10,7 +10,7 @@ class Ball {
         this.position = [...position];
         this.speed = speed;
         this.radius = 10;
-        this.velocity = [2, 2];
+        this.velocity = [10, 10];
         this.isVisible = true;
         this.color = "#FFFFFF";
     }

@@ -49,6 +49,10 @@ class Player {
         this.paddlePosition = [...newValue];
     }
 
+    // setScore() {
+    //     this.score += 1;
+    // }
+
     setScore(newValue: number) {
         this.score = newValue;
     }
