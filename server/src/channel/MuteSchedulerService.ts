@@ -10,7 +10,7 @@ export class MuteSchedulerService {
 
 	@Cron('0 * * * * *') // This cron expression runs the task every minute
 	async handleUnmuteTask() {
-		this.logger.debug('Running automatic unmute task...');
+		// this.logger.debug('Running automatic unmute task...');
 
 		// Get the current timestamp
 		const currentTimestamp = new Date();
