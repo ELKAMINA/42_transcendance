@@ -13,7 +13,7 @@ import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
 import { FriendshipModule } from './friendship/friendship.module';
 import { FriendshipGateway } from './friendship/friendship.gateway';
-import channelModule from './channel/channel.module';
+import channelModule, { MuteSchedulerModule } from './channel/channel.module';
 import { ChannelService } from './channel/channel.service';
 import { ChatGateway } from './chat/gateway/chat.gateway';
 import { ChatService } from './chat/chat.service';
@@ -25,12 +25,14 @@ import { HomeService } from './profile/home.service';
 import { FriendshipService } from './friendship/friendship.service';
 import { GameModule } from './game/game.module';
 import { GameService } from './game/game.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // To make the config Module global to all the app
     }),
+	ScheduleModule.forRoot(),
     AuthModule,
     UserModule,
     channelModule,
@@ -49,6 +51,7 @@ import { GameService } from './game/game.service';
     AuthService,
     UserService,
     ChannelService,
+	MuteSchedulerModule,
     JwtService,
     ChatGateway,
     ProfileGateway,
