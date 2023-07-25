@@ -5,6 +5,10 @@ class Player {
     private paddleSpeed: number;
     private paddleColor: string;
     private paddleDimension: Array<number>; // [width, height]
+    private paddleTop: number;
+    private paddleBottom: number;
+    private paddleLeft: number;
+    private paddleRight: number;
 
     constructor(
         userInfo: Array<string>,
@@ -17,6 +21,10 @@ class Player {
         this.paddleSpeed = paddleSpeed;
         this.paddleColor = "#FFFFFF";
         this.paddleDimension = [10, 50];
+        this.paddleTop = position[1]; // Y CORRDINATE
+        this.paddleBottom = 50; // HEIGHT OF THE PADDLE
+        this.paddleLeft = position[0]; // X CORRDINATE
+        this.paddleRight = 10; // WIDTH OF THE PADDLE
     }
 
     /*** GETTER ***/
@@ -26,6 +34,14 @@ class Player {
 
     getPaddlePosition(): Array<number> {
         return this.paddlePosition;
+    }
+
+    getPaddlePositionX(): number {
+        return this.paddlePosition[0];
+    }
+
+    getPaddlePositionY(): number {
+        return this.paddlePosition[1];
     }
 
     getScore(): number {
@@ -42,6 +58,30 @@ class Player {
 
     getPaddleDimension(): Array<number> {
         return this.paddleDimension;
+    }
+
+    getPaddleDimensionX(): number {
+        return this.paddleDimension[0];
+    }
+
+    getPaddleDimensionY(): number {
+        return this.paddleDimension[1];
+    }
+
+    getPaddleTop(): number {
+        return this.paddleTop;
+    }
+
+    getPaddleBottom(): number {
+        return this.paddleBottom;
+    }
+
+    getPaddleLeft(): number {
+        return this.paddleLeft;
+    }
+
+    getPaddleRight(): number {
+        return this.paddleRight;
     }
 
     /*** SETTER ***/
@@ -63,6 +103,22 @@ class Player {
 
     setPaddleColor(newValue: string) {
         this.paddleColor = newValue;
+    }
+
+    setPaddleTop(newValue: number) {
+        this.paddleTop = newValue;
+    }
+
+    setPaddleBottom(newValue: number) {
+        this.paddleBottom = newValue;
+    }
+
+    setPaddleLeft(newValue: number) {
+        this.paddleLeft = newValue;
+    }
+
+    setPaddleRight(newValue: number) {
+        this.paddleRight = newValue;
     }
 }
 

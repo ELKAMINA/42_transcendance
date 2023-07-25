@@ -1,18 +1,26 @@
 class Ball {
-    private position: Array<number>;
+    private position: Array<number>; // [posX, posY]
     private speed: number;
     private radius: number;
     private velocity: Array<number>;
     private isVisible: boolean;
     private color: string;
+    private ballTop: number;
+    private ballBottom: number;
+    private ballLeft: number;
+    private ballRight: number;
 
     constructor(position: Array<number>, speed: number) {
         this.position = [...position];
         this.speed = speed;
         this.radius = 10;
-        this.velocity = [10, 10];
+        this.velocity = [1, 1];
         this.isVisible = true;
         this.color = "#FFFFFF";
+        this.ballTop = this.position[1] - this.radius;
+        this.ballBottom = this.position[1] + this.radius;
+        this.ballLeft = this.position[0] - this.radius;
+        this.ballRight = this.position[0] + this.radius;
     }
 
     /*** GETTER ***/
@@ -56,6 +64,22 @@ class Ball {
         return this.color;
     }
 
+    getBallTop(): number {
+        return this.ballTop;
+    }
+
+    getBallBottom(): number {
+        return this.ballBottom;
+    }
+
+    getBallLeft(): number {
+        return this.ballLeft;
+    }
+
+    getBallRight(): number {
+        return this.ballRight;
+    }
+
     /*** SETTER ***/
     setPosition(newValue: Array<number>) {
         this.position = newValue;
@@ -95,6 +119,22 @@ class Ball {
 
     setColor(newValue: string) {
         this.color = newValue;
+    }
+
+    setBallTop(newValue: number) {
+        this.ballTop = newValue;
+    }
+
+    setBallBottom(newValue: number) {
+        this.ballBottom = newValue;
+    }
+
+    setBallLeft(newValue: number) {
+        this.ballLeft = newValue;
+    }
+
+    setBallRight(newValue: number) {
+        this.ballRight = newValue;
     }
 }
 export default Ball;
