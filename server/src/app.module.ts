@@ -13,7 +13,7 @@ import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
 import { FriendshipModule } from './friendship/friendship.module';
 import { FriendshipGateway } from './friendship/friendship.gateway';
-import channelModule, { MuteSchedulerModule } from './channel/channel.module';
+import channelModule, { BannedSchedulerModule, MuteSchedulerModule } from './channel/channel.module';
 import { ChannelService } from './channel/channel.service';
 import { ChatGateway } from './chat/gateway/chat.gateway';
 import { ChatService } from './chat/chat.service';
@@ -52,6 +52,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UserService,
     ChannelService,
 	MuteSchedulerModule,
+	BannedSchedulerModule,
     JwtService,
     ChatGateway,
     ProfileGateway,
