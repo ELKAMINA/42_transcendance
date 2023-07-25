@@ -26,6 +26,8 @@
     "dayjs": "^1.11.9",
     "eslint-import-resolver-typescript": "^3.5.5",
     "js-cookie": "^3.0.5",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "qrcode.react": "^3.1.0",
