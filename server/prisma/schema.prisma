@@ -66,10 +66,11 @@ model User {
 	// //*** Where the user is creator ***//
 	createdChannels			Channel[]       @relation("ChannelCreator")
 		// //*** Where the user is the owner ***//
-	ownedChannels			Channel[]	@relation("ChannelOwner")
+	ownedChannels			Channel[]		@relation("ChannelOwner")
 	// //*** Where the user is admin ***//
 	adminChannels			Channel[]       @relation("ChannelAdmin")
 	bannedFromChannels		Channel[]       @relation("ChannelBanned")
+	BannedExpiry			DateTime?
 	MutedInChannels			Channel[]       @relation("ChannelMuted")
   	MutedExpiry    			DateTime?		
 	messagesSent			Message[]       @relation("MessageSender")
