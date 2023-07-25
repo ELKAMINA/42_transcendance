@@ -16,7 +16,7 @@ import formatTimeToISO from '../utils/formatTimeToISO';
 
 export type UserWithTime = {
 	user: UserModel;
-	MutedExpiry: string | null;
+	ExpiryTime: string | null;
 }
 
 type UserListProps = {
@@ -83,14 +83,14 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 		if (existingUserIndex !== -1) {
 			setUsersTime(prevUsersTime => {
 				const updatedUsersTime = [...prevUsersTime];
-				updatedUsersTime[existingUserIndex].MutedExpiry = formattedTime;
+				updatedUsersTime[existingUserIndex].ExpiryTime = formattedTime;
 				return updatedUsersTime;
 			});
 		} else {
 			// If the user is not present in usersTime, add a new entry
 			setUsersTime(prevUsersTime => [
 				...prevUsersTime,
-				{ user: user, MutedExpiry: formattedTime }
+				{ user: user, ExpiryTime: formattedTime }
 			]);
 		}
 	}
