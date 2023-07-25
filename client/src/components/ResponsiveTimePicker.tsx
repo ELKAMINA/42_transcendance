@@ -31,8 +31,8 @@ export default function ResponsiveTimePicker({handleSelectedTime, label} : Respo
 		<LocalizationProvider dateAdapter={AdapterDayjs}>
 			<Box sx={{backgroundColor: 'transparent', marginLeft: '30%', marginRight: '3%'}}>
 				<TimePicker
-					defaultValue={dayjs('2022-04-17T15:30')}
-					onChange={handleChange}
+					defaultValue={'select time'}
+					onAccept={handleChange}
 					label={label}
 					viewRenderers={{
 						hours: renderTimeViewClock,
