@@ -44,10 +44,6 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 		setUpdatedMutedWithTime(updatedMutedWithNullTime);
 	}
 
-	// React.useEffect(() => {
-	// 	console.log('updatedMutedWithTime', updatedMutedWithTime);
-	// }, [updatedMutedWithTime])
-
 	async function updateMuted() : Promise<void> {
 		setMutedWithTime();
 		await api
