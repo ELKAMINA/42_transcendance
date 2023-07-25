@@ -289,52 +289,66 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
 
         const newBallPos = [canvasWidth / 2, canvasHeight / 2];
         if (socket.id === infos.allRoomInfo.playerOneId) {
-            socket.emit("requestResetPositionBall", newBallPos);
+            socket.emit("requestResetPositionBall", {positions:newBallPos, canBeCollided: true});
         }
         socket.on("updatePositionBall", (value) => {
-            ball.current.setPosition(value);
+            ball.current.setPosition(value.positions);
+			ball.current.setCanBeCollided(value.canBeCollided);
         });
         ball.current.setVelocityX(-ball.current.getVelocityX());
         updateScore(ballX);
     };
 
-    const updateBall = async () => {
-        const [ballX, ballY] = ball.current.getPosition();
+	const borderCollision = async () => {
+		const [ballX, ballY] = ball.current.getPosition();
         let [velX, velY] = ball.current.getVelocity();
-        ball.current.setPosition([ballX + velX, ballY + velY]);
+		let newPosX = ballX + velX;
+		let newPosY = ballY + velY;
         // CHECK IF THE BALL COLLIDES WITH THE TOP OR THE BOTTOM OF THE CANVAS
-        if (
-            ball.current.getPositionY() - ball.current.getRadius() <= 0 ||
-            ball.current.getPositionY() + ball.current.getRadius() >=
+		if (
+            newPosY - ball.current.getRadius() <= 0 ||
+            newPosY + ball.current.getRadius() >=
                 canvasHeight
         ) {
-            ball.current.setVelocityY(-ball.current.getVelocityY());
-        }
-        // CHECK IF THE BALL COLLIDES WITH ONE OF THE PADDLE
-        let player;
-        if (ball.current.getPositionX() < canvasWidth / 2) {
-            console.error("Side player 1");
-            player = player1;
-        } else {
-            console.error("Side player 2");
-            player = player2;
-        }
-        if (collision(player.current)) {
-            console.warn("Collision detected");
-            ballRepositioning(player.current);
+            velY = -velY;
         }
         // EMIT THE BALL MOVEMENT
         if (socket.id === infos.allRoomInfo.playerOneId) {
-            socket.emit("requestMoveBall", ball.current.getVelocity());
+            socket.emit("requestMoveBall", {positions: [newPosX, newPosY], velocity:[velX, velY]} );
         }
-
         // UPDATE THE BALL VELOCITY
         socket.on("updateMoveBall", (value) => {
-            ball.current.setVelocity(value);
+			// console.log(" BORDER COLLISION ")
+			ball.current.setPosition(value.positions);
+            ball.current.setVelocity(value.velocity);
         });
+		// console.warn(" BALLE =  ", ball.current.getPosition())
+        // CHECK IF THE BALL COLLIDES WITH ONE OF THE PADDLE
+	}
+
+    const updateBall = async () => {
+		await borderCollision()
+
+		// for(let i = 0; i < 1000; i++){}
+        let player;
+        if (ball.current.getPositionX() < canvasWidth / 2) {
+            // console.error("Side player 1");
+            player = player1;
+        } else {
+            // console.error("Side player 2");
+            player = player2;
+        }
+		// console.warn(" JOUEUR = ", player.current.getPaddlePosition())
+        if ((collision(player.current))) {
+            // console.warn("Collision detected");
+            ballRepositioning(player.current);
+        } else if (ball.current.getPositionX() > (1 * canvasWidth / 4) && 
+		ball.current.getPositionX() < (3 * canvasWidth / 4)) {
+			ball.current.setCanBeCollided(true);
+		}
     };
 
-    const collision = (player: Player) => {
+    const collision =  (player: Player) => {
         // PLAYER SHAPES
         player.setPaddleTop(player.getPaddlePositionY());
         player.setPaddleBottom(
@@ -344,23 +358,12 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         player.setPaddleRight(
             player.getPaddlePositionX() + player.getPaddleDimensionX()
         );
-        // console.warn("player position", player.getPaddlePosition());
-        // console.warn(
-        //     "player top",
-        //     player.getPaddleTop(),
-        //     "player bottom",
-        //     player.getPaddleBottom(),
-        //     "player left",
-        //     player.getPaddleLeft(),
-        //     "player right",
-        //     player.getPaddleRight()
-        // );
         // BALL SHAPES
         const radius = ball.current.getRadius();
         ball.current.setBallTop(ball.current.getPositionY() - radius);
         ball.current.setBallBottom(ball.current.getPositionY() + radius);
         ball.current.setBallLeft(ball.current.getPositionX() - radius);
-        ball.current.setBallRight(ball.current.getPositionY() + radius);
+        ball.current.setBallRight(ball.current.getPositionX() + radius);
 
         return (
             // return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
@@ -388,11 +391,26 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
 
         const angleRadian = (Math.PI / 4) * collidePoint;
         const direction =
-            ball.current.getPositionY() < canvasWidth / 2 ? 1 : -1;
-        const velocityX =
+            ball.current.getPositionX() < canvasWidth / 2 ? 1 : -1;
+        const velX =
             Math.cos(angleRadian) * direction * ball.current.getSpeed();
-        const velocityY = Math.sin(angleRadian) * ball.current.getSpeed();
-        ball.current.setVelocity([velocityX, velocityY]);
+        const velY = Math.sin(angleRadian) * ball.current.getSpeed();
+		if (ball.current.getCanBeCollided() === false) {
+			// console.log("Ball can not collide anymore woth a player paddle");
+			return ;
+		}
+		// EMIT THE BALL MOVEMENT
+		if (socket.id === infos.allRoomInfo.playerOneId) {
+			socket.emit("requestAfterPaddleCollision", {positions: ball.current.getPosition(), velocity:[velX, velY], canBeCollided: false} );
+		}
+		// UPDATE THE BALL VELOCITY
+		socket.on("updateAfterPaddleCollision", (value) => {
+			// console.log("PADDLE COLLISION ", value)
+			ball.current.setPosition(value.positions);
+			ball.current.setVelocity(value.velocity);
+			ball.current.setCanBeCollided(value.canBeCollided);
+		});
+
     };
 
     const updateScore = async (ballX: number) => {
@@ -424,15 +442,14 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
                 data.value,
             ]);
         });
-        resetBall();
         updateBall();
+        resetBall();
     };
 
     const render = async (
         cs: HTMLCanvasElement,
         ctx: CanvasRenderingContext2D
     ) => {
-        // console.log(` width is ${cs.width} and the height is : ${cs.height}`);
         // CLEAR THE WHOLE CANVAS
         ctx.clearRect(0, 0, cs.width, cs.height);
 
@@ -459,20 +476,10 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         );
 
         // PLAYER 1 PADDLE
-        // console.log(
-        //     `Player 1 has x: ${player1.current
-        //         .getPaddlePosition()
-        //         .at(0)} and y: ${player1.current.getPaddlePosition().at(1)}`
-        // );
         const [p1X, p1Y] = player1.current.getPaddlePosition();
         const [p1W, p1H] = player1.current.getPaddleDimension();
 
         // PLAYER 2 PADDLE
-        // console.log(
-        //     `Player 2 has x: ${player2.current
-        //         .getPaddlePosition()
-        //         .at(0)} and y: ${player2.current.getPaddlePosition().at(1)}`
-        // );
         const [p2X, p2Y] = player2.current.getPaddlePosition();
         const [p2W, p2H] = player2.current.getPaddleDimension();
 
@@ -492,6 +499,14 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         );
     };
 
+
+	const mousedown = (e: MouseEvent) => {
+		// console.log(" e ", e)
+		console.log(`JOUEUR : Top =  ${player2.current.getPaddleTop()} \n Right = ${player2.current.getPaddleRight()} \n Left = ${player2.current.getPaddleLeft()} \n Bottom = ${player2.current.getPaddleBottom()}`)
+		console.log(`BALLE  : Top =  ${ball.current.getBallTop()} \n Right = ${ball.current.getBallRight()} \n Left = ${ball.current.getBallLeft()} \n Bottom = ${ball.current.getBallBottom()}`)
+		console.log("Ball collision status:", ball.current.getCanBeCollided());
+	}
+
     useEffect(() => {
         socket.connect(); // Will use 'handleConnection' from nestjs/game
         socket.on("connect", () => {});
@@ -503,20 +518,20 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         if (!canvas.current) {
             return;
         }
+		let intervalId = 0;
         const ctx = canvas.current;
         const theGame = () => {
-            update();
+			update();
             render(cs, ctx);
+			intervalId = requestAnimationFrame(theGame);
         };
+		theGame();
         cs.addEventListener("keydown", keyPressed);
         cs.focus();
-        intervalId = setInterval(theGame, 1000 / 60);
-        // intervalId = requestAnimationFrame(theGame);
-        theGame();
+		cs.addEventListener("mousedown", mousedown);
         return () => {
             if (socket) {
-                clearInterval(intervalId);
-                // cancelAnimationFrame(intervalId);
+                cancelAnimationFrame(intervalId);
                 socket.disconnect();
                 dispatch(updateOpponent(""));
             }

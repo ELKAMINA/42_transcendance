@@ -46,8 +46,11 @@ export class gameDto {
   scorePlayers: number[];
 
   @IsString()
-  playerOneId: string
+  playerOneId: string;
 
   @IsString()
-  playerTwoId: string
+  playerTwoId: string;
+
+  @IsBoolean()
+  collided: boolean;
 }

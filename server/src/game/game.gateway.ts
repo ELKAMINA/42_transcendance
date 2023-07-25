@@ -67,6 +67,7 @@ export class GameGateway
         players: new Array<string>(),
         playerOneId: client.id,
         playerTwoId: '0',
+        collided: true,
         scorePlayers: new Array<number>(),
       };
       room.players.push(payload);
@@ -109,7 +110,7 @@ export class GameGateway
   @SubscribeMessage('requestMoveBall')
   async handleRequestMoveBall(
     client: Socket,
-    value: Array<number>,
+    value: { positions: Array<number>; velocity: Array<number> },
   ): Promise<void> {
     // console.log('rooms ', client.rooms);
     const [socketId, roomName] = [...client.rooms];
@@ -117,10 +118,25 @@ export class GameGateway
     this.server.to(roomName).emit('updateMoveBall', value);
   }
 
+  @SubscribeMessage('requestAfterPaddleCollision')
+  async handlerequestAfterPaddleCollisionl(
+    client: Socket,
+    value: {
+      positions: Array<number>;
+      velocity: Array<number>;
+      canBeCollided: boolean;
+    },
+  ): Promise<void> {
+    // console.log('value ', value);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updateAfterPaddleCollision', value);
+  }
+
   @SubscribeMessage('requestResetPositionBall')
   async handleRequestResetPositionBall(
     client: Socket,
-    value: Array<number>,
+    value: { positions: Array<number>; canBeCollided: boolean },
   ): Promise<void> {
     // console.log('rooms ', client.rooms);
     const [socketId, roomName] = [...client.rooms];
