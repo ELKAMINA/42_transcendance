@@ -589,7 +589,17 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         const theGame = () => {
             update();
             render(cs, ctx);
-            intervalId = requestAnimationFrame(theGame);
+            if (
+                player1.current.getScore() >= infos.allRoomInfo.totalPoint ||
+                player2.current.getScore() >= infos.allRoomInfo.totalPoint
+            ) {
+                resetBall();
+                resetPlayer();
+                cancelAnimationFrame(intervalId);
+                intervalId = 0;
+            } else {
+                intervalId = requestAnimationFrame(theGame);
+            }
         };
         theGame();
         cs.addEventListener("keydown", keyPressed);
@@ -597,7 +607,9 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         cs.addEventListener("mousedown", mousedown);
         return () => {
             if (socket) {
-                cancelAnimationFrame(intervalId);
+                if (intervalId) {
+                    cancelAnimationFrame(intervalId);
+                }
                 socket.disconnect();
                 dispatch(updateOpponent(""));
             }

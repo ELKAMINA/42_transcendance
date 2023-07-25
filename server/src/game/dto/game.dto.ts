@@ -20,11 +20,11 @@ export class gameDto {
 
   @IsNotEmpty()
   @IsInt()
-  totalSet: Number;
+  totalSet: number;
 
   @IsNotEmpty()
   @IsInt()
-  totalPoint: Number;
+  totalPoint: number;
 
   @IsNotEmpty()
   @IsString()
