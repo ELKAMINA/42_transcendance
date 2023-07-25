@@ -100,7 +100,7 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		(async () => {
 		  const mutedStatus = await userIsMuted();
 		  setIsMuted(mutedStatus);
-		  console.log('is muted ? ', mutedStatus);
+		//   console.log('is muted ? ', mutedStatus);
 		})();
 	}, []);
 
