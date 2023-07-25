@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 import Player from "../classes/Player";
 import Ball from "../classes/Ball";
 import { gameInfo } from "../data/gameInfo";
-import { ConstructionOutlined } from "@mui/icons-material";
+import { ConstructionOutlined, PlaceRounded } from "@mui/icons-material";
 import { Console } from "console";
 export const socket = io("http://localhost:4010", {
     withCredentials: true,
@@ -148,13 +148,6 @@ function Game() {
     );
 }
 
-type BallType = {
-    x: number;
-    y: number;
-    dx: number;
-    dy: number;
-};
-
 interface PongProps {
     infos: gameInfo;
 }
@@ -202,7 +195,6 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
     // console.log(" toute la room ", props)
     /*Why useRef : unlike state updates, changes to a ref's .current property do not trigger a re-render of the component. This makes it useful for values that need to persist across renders but changes in these values should not cause an update to the component's output*/
     // const [paddleY, setPaddleY] = useState<number>(200);
-    // const [ball, setBall] = useState<BallType>({ x: 10, y: 10, dx: 2, dy: 2 });
 
     const getPlayerId = (socketId: string) => {
         if (socketId === infos.allRoomInfo.playerOneId) {
@@ -310,6 +302,7 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         const [ballX, ballY] = ball.current.getPosition();
         let [velX, velY] = ball.current.getVelocity();
         ball.current.setPosition([ballX + velX, ballY + velY]);
+        // CHECK IF THE BALL COLLIDES WITH THE TOP OR THE BOTTOM OF THE CANVAS
         if (
             ball.current.getPositionY() - ball.current.getRadius() <= 0 ||
             ball.current.getPositionY() + ball.current.getRadius() >=
@@ -317,12 +310,89 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
         ) {
             ball.current.setVelocityY(-ball.current.getVelocityY());
         }
+        // CHECK IF THE BALL COLLIDES WITH ONE OF THE PADDLE
+        let player;
+        if (ball.current.getPositionX() < canvasWidth / 2) {
+            console.error("Side player 1");
+            player = player1;
+        } else {
+            console.error("Side player 2");
+            player = player2;
+        }
+        if (collision(player.current)) {
+            console.warn("Collision detected");
+            ballRepositioning(player.current);
+        }
+        // EMIT THE BALL MOVEMENT
         if (socket.id === infos.allRoomInfo.playerOneId) {
             socket.emit("requestMoveBall", ball.current.getVelocity());
         }
+
+        // UPDATE THE BALL VELOCITY
         socket.on("updateMoveBall", (value) => {
             ball.current.setVelocity(value);
         });
+    };
+
+    const collision = (player: Player) => {
+        // PLAYER SHAPES
+        player.setPaddleTop(player.getPaddlePositionY());
+        player.setPaddleBottom(
+            player.getPaddlePositionY() + player.getPaddleDimensionY()
+        );
+        player.setPaddleLeft(player.getPaddlePositionX());
+        player.setPaddleRight(
+            player.getPaddlePositionX() + player.getPaddleDimensionX()
+        );
+        // console.warn("player position", player.getPaddlePosition());
+        // console.warn(
+        //     "player top",
+        //     player.getPaddleTop(),
+        //     "player bottom",
+        //     player.getPaddleBottom(),
+        //     "player left",
+        //     player.getPaddleLeft(),
+        //     "player right",
+        //     player.getPaddleRight()
+        // );
+        // BALL SHAPES
+        const radius = ball.current.getRadius();
+        ball.current.setBallTop(ball.current.getPositionY() - radius);
+        ball.current.setBallBottom(ball.current.getPositionY() + radius);
+        ball.current.setBallLeft(ball.current.getPositionX() - radius);
+        ball.current.setBallRight(ball.current.getPositionY() + radius);
+
+        return (
+            // return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
+            player.getPaddleTop() < ball.current.getBallBottom() &&
+            player.getPaddleBottom() > ball.current.getBallTop() &&
+            player.getPaddleLeft() < ball.current.getBallRight() &&
+            player.getPaddleRight() > ball.current.getBallLeft()
+        );
+    };
+
+    const ballRepositioning = (player: Player) => {
+        let collidePoint;
+        // GET THE COLLIDE POINT ACCORDING TO THE ORIGIN OF THE PADDLE
+        // 0 --> HEIGHT OF THE PADDLE
+        collidePoint =
+            ball.current.getPositionY() -
+            (player.getPaddlePositionY() + player.getPaddleDimensionY() / 2);
+        // VIRTUAL ORIGIN
+        // GET THE COLLIDE POINT ACCORDING TO THE VIRTUAL ORIGIN OF THE PADDLE WHICH
+        // IS THE HEIGHT OF THE PADDLE / 2
+        // collidePoint = collidePoint - player.getPaddleDimensionY() / 2;
+        // NORMALIZE THE COLLIDE POINT BETWEEN [-1 --> 0] and [0 --> 1]
+        // THIS VALUE WILL BE USED FOR THE COSINUS AND SINUS CALCULATION
+        collidePoint = collidePoint / player.getPaddleDimensionY() / 2;
+
+        const angleRadian = (Math.PI / 4) * collidePoint;
+        const direction =
+            ball.current.getPositionY() < canvasWidth / 2 ? 1 : -1;
+        const velocityX =
+            Math.cos(angleRadian) * direction * ball.current.getSpeed();
+        const velocityY = Math.sin(angleRadian) * ball.current.getSpeed();
+        ball.current.setVelocity([velocityX, velocityY]);
     };
 
     const updateScore = async (ballX: number) => {
