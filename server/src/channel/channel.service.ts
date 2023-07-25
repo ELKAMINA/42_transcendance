@@ -469,27 +469,29 @@ export class ChannelService {
 		}
 	}
 
-	async updateBanned(requestBody : {channelName : {name : string}, banned : User[]}) : Promise<Channel> {
-		// console.log('requestBody', requestBody);
+	async updateBanned(requestBody : {channelName : {name : string}, banned : UserWithTime[]}) : Promise<Channel> {
 		try 
 		{
 			const { channelName, banned } = requestBody;
-		
+
 			// Find the channel by name
 			const channel = await this.prisma.channel.findUnique({
 				where: {
 					name: channelName.name,
 				},
+				include : {
+					banned : true,
+				}
 			});
 		
 			if (!channel) {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
+			
+			console.log('banned = ', banned[0].user.user_id);
+		    const bannedIds = banned.map((banned) => ({ user_id: banned.user.user_id }));
 
-			// Convert admins array into an array of UserWhereUniqueInput objects
-		    const bannedIds = banned.map((admin) => ({ user_id: admin.user_id }));
-		
-			// Update the channel's admins with the new array
+			// Update the channel's banned with the new array
 			const updatedChannel = await this.prisma.channel.update({
 				where: {
 					channelId: channel.channelId,
@@ -500,7 +502,22 @@ export class ChannelService {
 					},
 				},
 			});
-			console.log('updatedChannel = ', updatedChannel);
+
+			// Update the User model for each banned user with the BannedExpiry
+			for (const bannedUser of banned) {
+				const user = await this.prisma.user.update({
+					where: {
+						user_id: bannedUser.user.user_id,
+					},
+					data: {
+						BannedExpiry: bannedUser.ExpiryTime ? bannedUser.ExpiryTime : null,
+					},
+				});
+				console.log(`Updated BannedExpiry for user with ID '${user.user_id}'`);
+				console.log('user updated = ', user.BannedExpiry);
+			}
+
+			// console.log('updatedChannel = ', updatedChannel);
 			return updatedChannel;
 		} catch (error) {
 			throw error;
@@ -547,11 +564,11 @@ export class ChannelService {
 						user_id: mutedUser.user.user_id,
 					},
 					data: {
-						MutedExpiry: mutedUser.MutedExpiry ? mutedUser.MutedExpiry : null,
+						MutedExpiry: mutedUser.ExpiryTime ? mutedUser.ExpiryTime : null,
 					},
 				});
-				console.log(`Updated MutedExpiry for user with ID '${user.user_id}'`);
-				console.log('user updated = ', user.MutedExpiry);
+				// console.log(`Updated MutedExpiry for user with ID '${user.user_id}'`);
+				// console.log('user updated = ', user.MutedExpiry);
 			}
 
 			// console.log('updatedChannel = ', updatedChannel);
