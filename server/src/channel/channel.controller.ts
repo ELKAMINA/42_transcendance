@@ -8,6 +8,13 @@ import { ChannelDto } from './dto/channelPayload.dto';
 import { ChannelService } from 'src/channel/channel.service';
 import { Channel, User } from '@prisma/client';
 
+type DateTime = Date;
+
+export type UserWithTime = {
+    user: User;
+    MutedExpiry: string | null;
+};
+
 @Controller('channel')
 @ApiTags('channel')
 export class channelController {
@@ -131,7 +138,7 @@ export class channelController {
   @Post('/updateMuted')
   @Public() // TODO - remove public
   updateMuted(
-    @Body() requestBody: { channelName: { name: string }; muted: User[] },
+    @Body() requestBody: { channelName: { name: string }; muted: UserWithTime[] },
   ): Promise<Channel> {
     return this.ChannelService.updateMuted(requestBody);
   }
