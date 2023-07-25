@@ -34,7 +34,7 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 		
 			// If the user is not found in updatedMutedWithTime, add it with time set to null
 			if (existingUserIndex === -1) {
-				return { user: user, MutedExpiry: null };
+				return { user: user, ExpiryTime: null };
 			}
 		
 			// If the user is found, return the existing entry
@@ -83,29 +83,6 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 		return !isAdmin && !isOwnedBy;
 	});
 
-	// React.useEffect(() => {
-	// 	// for all the users in updatedMuted with no time associated,
-	// 	// add them to the updatedMutedWithTime with a time set to null
-	// 	const updatedMutedWithNullTime = updatedMuted.map(user => {
-	// 	  // Check if the user already exists in updatedMutedWithTime
-	// 	  const existingUserIndex = updatedMutedWithTime.findIndex(
-	// 		userTime => userTime.user.login === user.login
-	// 	  );
-	  
-	// 	  // If the user is not found in updatedMutedWithTime, add it with time set to null
-	// 	  if (existingUserIndex === -1) {
-	// 		return { user: user, time: null };
-	// 	  }
-	  
-	// 	  // If the user is found, return the existing entry
-	// 	  return updatedMutedWithTime[existingUserIndex];
-	// 	});
-	  
-	// 	// Update the updatedMutedWithTime state
-	// 	setUpdatedMutedWithTime(updatedMutedWithNullTime);
-	// 	console.log('updatedMutedWithTime', updatedMutedWithTime);
-	// }, [updatedMuted]);
-
   	return (
 		<div>
 			<Dialog
@@ -113,6 +90,8 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 				open={openDialog}
 				onClose={handleCancel}
 				aria-labelledby="manage-muted-dialog"
+				maxWidth="sm" // Set the maxWidth to "md" for medium width
+
 			>
 			<DialogTitle id="manage-muted-dialog">
 				{"Manage who is muted in the channel"}
@@ -122,6 +101,9 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 					Here you can decide who is muted in the channel.
 					A muted member cannot talk in the channel.
 					But he is still a member.
+					If you set a timer, the user will be muted until 
+					[time set by the timer].
+					If you don't, he will be muted until manually un-banned.
 				</DialogContentText>
 				<UserList 
 					usersSet={membersOptions} 
