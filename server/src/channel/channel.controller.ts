@@ -12,7 +12,7 @@ type DateTime = Date;
 
 export type UserWithTime = {
     user: User;
-    MutedExpiry: string | null;
+    ExpiryTime: string | null;
 };
 
 @Controller('channel')
@@ -129,7 +129,7 @@ export class channelController {
   @Post('/updateBanned')
   @Public() // TODO - remove public
   updateBanned(
-    @Body() requestBody: { channelName: { name: string }; banned: User[] },
+    @Body() requestBody: { channelName: { name: string }; banned: UserWithTime[] },
   ): Promise<Channel> {
     return this.ChannelService.updateBanned(requestBody);
   }
