@@ -20,7 +20,7 @@ class Player {
         this.score = 0;
         this.paddleSpeed = paddleSpeed;
         this.paddleColor = "#FFFFFF";
-        this.paddleDimension = [10, 50];
+        this.paddleDimension = [10, 100];
         this.paddleTop = position[1]; // Y CORRDINATE
         this.paddleBottom = 50; // HEIGHT OF THE PADDLE
         this.paddleLeft = position[0]; // X CORRDINATE

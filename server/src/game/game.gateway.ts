@@ -144,6 +144,17 @@ export class GameGateway
     this.server.to(roomName).emit('updatePositionBall', value);
   }
 
+  @SubscribeMessage('requestResetPositionPlayer')
+  async handleRequestResetPositionPlayer(
+    client: Socket,
+    value: { player1Position: Array<number>; player2Position: Array<number> },
+  ): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePositionPlayer', value);
+  }
+
   @SubscribeMessage('requestPlayerScore')
   async handleRequestPlayerScore(client: Socket, value: string): Promise<void> {
     // console.log('rooms ', client.rooms);
