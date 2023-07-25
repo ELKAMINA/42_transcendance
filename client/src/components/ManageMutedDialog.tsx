@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import UserList from './UserList';
+import UserList, { UserWithTime } from './UserList';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import api from '../utils/Axios-config/Axios';
@@ -20,14 +20,40 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	const [updatedMuted, setUpdatedMuted] = React.useState<UserModel[]>([]);
-	// const [usersToUmute, setUsersToUmute] = React.useState<UserModel[]>([]);
+	const [updatedMutedWithTime, setUpdatedMutedWithTime] = React.useState<UserWithTime[]>([]);
 	const AppDispatch = useAppDispatch();
 
+	function setMutedWithTime() {
+		// for all the users in updatedMuted with no time associated,
+		// add them to the updatedMutedWithTime with a time set to null
+		const updatedMutedWithNullTime = updatedMuted.map(user => {
+			// Check if the user already exists in updatedMutedWithTime
+			const existingUserIndex = updatedMutedWithTime.findIndex(
+			  userTime => userTime.user.login === user.login
+			);
+		
+			// If the user is not found in updatedMutedWithTime, add it with time set to null
+			if (existingUserIndex === -1) {
+				return { user: user, MutedExpiry: null };
+			}
+		
+			// If the user is found, return the existing entry
+			return updatedMutedWithTime[existingUserIndex];
+		});
+		// Update the updatedMutedWithTime state
+		setUpdatedMutedWithTime(updatedMutedWithNullTime);
+	}
+
+	// React.useEffect(() => {
+	// 	console.log('updatedMutedWithTime', updatedMutedWithTime);
+	// }, [updatedMutedWithTime])
+
 	async function updateMuted() : Promise<void> {
+		setMutedWithTime();
 		await api
 			.post('http://localhost:4001/channel/updateMuted', {
 				channelName : {name : selectedChannel.name},
-				muted : updatedMuted,
+				muted : updatedMutedWithTime,
 			})
 			.then((response) => {
 				// console.log("response = ", response)
@@ -61,6 +87,29 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 		return !isAdmin && !isOwnedBy;
 	});
 
+	// React.useEffect(() => {
+	// 	// for all the users in updatedMuted with no time associated,
+	// 	// add them to the updatedMutedWithTime with a time set to null
+	// 	const updatedMutedWithNullTime = updatedMuted.map(user => {
+	// 	  // Check if the user already exists in updatedMutedWithTime
+	// 	  const existingUserIndex = updatedMutedWithTime.findIndex(
+	// 		userTime => userTime.user.login === user.login
+	// 	  );
+	  
+	// 	  // If the user is not found in updatedMutedWithTime, add it with time set to null
+	// 	  if (existingUserIndex === -1) {
+	// 		return { user: user, time: null };
+	// 	  }
+	  
+	// 	  // If the user is found, return the existing entry
+	// 	  return updatedMutedWithTime[existingUserIndex];
+	// 	});
+	  
+	// 	// Update the updatedMutedWithTime state
+	// 	setUpdatedMutedWithTime(updatedMutedWithNullTime);
+	// 	console.log('updatedMutedWithTime', updatedMutedWithTime);
+	// }, [updatedMuted]);
+
   	return (
 		<div>
 			<Dialog
@@ -78,7 +127,13 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 					A muted member cannot talk in the channel.
 					But he is still a member.
 				</DialogContentText>
-				<UserList usersSet={membersOptions} initialUsers={selectedChannel.muted} setUpdatedUsers={setUpdatedMuted} setTimer={true}/>
+				<UserList 
+					usersSet={membersOptions} 
+					initialUsers={selectedChannel.muted} 
+					setUpdatedUsers={setUpdatedMuted} 
+					setTimer={true}
+					setUpdatedUsersWithTime={setUpdatedMutedWithTime}
+				/>
 			</DialogContent>
 			<DialogActions>
 				<Button variant="contained" size='medium' endIcon={<SendIcon />} onClick={handleClose} autoFocus>
