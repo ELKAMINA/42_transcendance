@@ -3,6 +3,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 import * as argon from 'argon2';
 import { Channel, Prisma, User } from '@prisma/client';
+import { UserWithTime } from './channel.controller';
+import dayjs from 'dayjs';
+
 
 @Injectable()
 export class ChannelService {
@@ -504,25 +507,27 @@ export class ChannelService {
 		}
 	}
 
-	async updateMuted(requestBody : {channelName : {name : string}, muted : User[]}) : Promise<Channel> {
+	async updateMuted(requestBody : {channelName : {name : string}, muted : UserWithTime[]}, ) : Promise<Channel> {
 		try 
 		{
 			const { channelName, muted } = requestBody;
-		
+
 			// Find the channel by name
 			const channel = await this.prisma.channel.findUnique({
 				where: {
 					name: channelName.name,
 				},
+				include : {
+					muted : true,
+				}
 			});
 		
 			if (!channel) {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
+			
+		    const mutedIds = muted.map((muted) => ({ user_id: muted.user.user_id }));
 
-			// Convert muted array into an array of UserWhereUniqueInput objects
-		    const mutedIds = muted.map((muted) => ({ user_id: muted.user_id }));
-		
 			// Update the channel's muted with the new array
 			const updatedChannel = await this.prisma.channel.update({
 				where: {
@@ -534,6 +539,20 @@ export class ChannelService {
 					},
 				},
 			});
+
+			// Update the User model for each muted user with the MutedExpiry
+			for (const mutedUser of muted) {
+				const user = await this.prisma.user.update({
+					where: {
+						user_id: mutedUser.user.user_id,
+					},
+					data: {
+						MutedExpiry: mutedUser.MutedExpiry ? mutedUser.MutedExpiry : null,
+					},
+				});
+				console.log(`Updated MutedExpiry for user with ID '${user.user_id}'`);
+				console.log('user updated = ', user.MutedExpiry);
+			}
 
 			// console.log('updatedChannel = ', updatedChannel);
 			return updatedChannel;
