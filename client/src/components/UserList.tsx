@@ -11,15 +11,23 @@ import ResponsiveTimePicker from './ResponsiveTimePicker';
 import { Stack, Tooltip } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import dayjs from 'dayjs';
+import formatTimeToISO from '../utils/formatTimeToISO';
+
+export type UserWithTime = {
+	user: UserModel;
+	MutedExpiry: string | null;
+}
 
 type UserListProps = {
 	usersSet : UserModel[], // a list of users amongs which you make your selection
 	initialUsers : UserModel[], // a lits of users initially selected
-	setUpdatedUsers : (admins : UserModel[]) => void, // a function to update the selected users
+	setUpdatedUsers : (users : UserModel[]) => void, // a function to update the selected users
 	setTimer? : boolean; // a boolean to specify if you want the user to be able to set a timer. Set on false by default.
+	setUpdatedUsersWithTime? : (usersAndTime : UserWithTime[]) => void,
 }
 
-export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTimer=false} : UserListProps) {
+export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTimer=false, setUpdatedUsersWithTime} : UserListProps) {
 	const userIndexes: number[] = initialUsers.map((admin) =>
 		usersSet.findIndex((user) => user.login === admin.login)
 	);
@@ -27,6 +35,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 	const [checked, setChecked] = React.useState<number[]>(userIndexes.filter(index => index !== -1));
 	const [timeChecked, setTimeChecked] = React.useState<number[]>([-1]);
 
+	// get the checked users
 	const handleToggle = (value: number) => () => {
 		
 		const currentIndex = checked.indexOf(value);
@@ -43,6 +52,8 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 		setUpdatedUsers(updatedUsers);
   	};
 
+	// get users with 'set timer' checked
+	const usersTimeChecked = React.useRef<UserModel[]>([]);
 	const handleTimeToggle = (value: number) => () => {
 		const currentIndex = timeChecked.indexOf(value);
 		const newChecked = [...timeChecked];
@@ -54,13 +65,53 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 	    }
 
     	setTimeChecked(newChecked);
+		usersTimeChecked.current = newChecked.map((index) => usersSet[index]).filter(Boolean);
 	}
 
+	// get the user and time associated
+	const [usersTime, setUsersTime] = React.useState<UserWithTime[]>([]);
 	function handleSelectedTime(user : UserModel, time : string) {
-		console.log('user = ', user);
-		console.log('selected time = ', time);
+		const timeZone = 'Europe/Paris';
+		const formattedTime = formatTimeToISO(time, timeZone);
+
+		// Check if the user already has an associated time in the usersTime array
+		const existingUserIndex = usersTime.findIndex(
+			userTime => userTime.user.login === user.login
+		);
+
+		// If the user is present in usersTime, update the associated time
+		if (existingUserIndex !== -1) {
+			setUsersTime(prevUsersTime => {
+				const updatedUsersTime = [...prevUsersTime];
+				updatedUsersTime[existingUserIndex].MutedExpiry = formattedTime;
+				return updatedUsersTime;
+			});
+		} else {
+			// If the user is not present in usersTime, add a new entry
+			setUsersTime(prevUsersTime => [
+				...prevUsersTime,
+				{ user: user, MutedExpiry: formattedTime }
+			]);
+		}
 	}
 
+	// Effect to remove user/time objects if user.login is not in usersTimeChecked
+	React.useEffect(() => {
+		setUsersTime(prevUsersTime => {
+			// Filter the usersTime array to keep only the matching user.login
+			const filteredUsersTime = prevUsersTime.filter(userTime =>
+				usersTimeChecked.current.some(checkedUser => checkedUser.login === userTime.user.login)
+			);
+			return filteredUsersTime;
+		});
+	}, [usersTimeChecked.current]);
+
+	React.useEffect(() => {
+		// console.log('usersTime = ', usersTime);
+		if (setUpdatedUsersWithTime)
+			setUpdatedUsersWithTime(usersTime);
+	}, [usersTime])
+	
 	return (
 		<List dense sx={{ width: '100%', bgcolor: 'background.paper' }}>
 		{usersSet.map((el, value) => {
