@@ -448,8 +448,8 @@ export class ChannelService {
 			}
 
 			// Convert admins array into an array of UserWhereUniqueInput objects
-		    let adminIds = admins.map((admin) => ({ user_id: admin.user_id }));
-			adminIds.push({user_id : channel.createdBy.user_id});
+		    let adminIds = admins.map((admin) => ({ login: admin.login }));
+			adminIds.push({login : channel.createdBy.login});
 		
 			// Update the channel's admins with the new array
 			const updatedChannel = await this.prisma.channel.update({
@@ -488,8 +488,8 @@ export class ChannelService {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
 			
-			console.log('banned = ', banned[0].user.user_id);
-		    const bannedIds = banned.map((banned) => ({ user_id: banned.user.user_id }));
+			// console.log('banned = ', banned[0].login);
+		    const bannedIds = banned.map((banned) => ({ login: banned.login }));
 
 			// Update the channel's banned with the new array
 			const updatedChannel = await this.prisma.channel.update({
@@ -507,13 +507,13 @@ export class ChannelService {
 			for (const bannedUser of banned) {
 				const user = await this.prisma.user.update({
 					where: {
-						user_id: bannedUser.user.user_id,
+						login: bannedUser.login,
 					},
 					data: {
 						BannedExpiry: bannedUser.ExpiryTime ? bannedUser.ExpiryTime : null,
 					},
 				});
-				console.log(`Updated BannedExpiry for user with ID '${user.user_id}'`);
+				console.log(`Updated BannedExpiry for user with ID '${user.login}'`);
 				console.log('user updated = ', user.BannedExpiry);
 			}
 
@@ -528,6 +528,7 @@ export class ChannelService {
 		try 
 		{
 			const { channelName, muted } = requestBody;
+			console.log('muted = ', muted);
 
 			// Find the channel by name
 			const channel = await this.prisma.channel.findUnique({
@@ -543,7 +544,7 @@ export class ChannelService {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
 			
-		    const mutedIds = muted.map((muted) => ({ user_id: muted.user.user_id }));
+		    const mutedIds = muted.map((muted) => ({ login: muted.login }));
 
 			// Update the channel's muted with the new array
 			const updatedChannel = await this.prisma.channel.update({
@@ -561,14 +562,14 @@ export class ChannelService {
 			for (const mutedUser of muted) {
 				const user = await this.prisma.user.update({
 					where: {
-						user_id: mutedUser.user.user_id,
+						login: mutedUser.login,
 					},
 					data: {
 						MutedExpiry: mutedUser.ExpiryTime ? mutedUser.ExpiryTime : null,
 					},
 				});
-				// console.log(`Updated MutedExpiry for user with ID '${user.user_id}'`);
-				// console.log('user updated = ', user.MutedExpiry);
+				console.log(`Updated MutedExpiry for user with ID '${user.login}'`);
+				console.log('user updated = ', user.MutedExpiry);
 			}
 
 			// console.log('updatedChannel = ', updatedChannel);
@@ -634,13 +635,16 @@ export class ChannelService {
 			}
 	
 			// Extract the current member IDs from the retrieved channel
-			const existingMemberIds = channel.members.map((member) => member.user_id);
+			const existingMemberIds = channel.members.map((member) => member.login);
+			console.log('existingMemberIds = ', existingMemberIds);
 	
 			// Extract the new member IDs from the request
-			const newMemberIds = members.map((member) => member.user_id);
+			const newMemberIds = members.map((member) => member.login);
+			console.log('newMemberIds = ', newMemberIds);
 	
 			// Combine the existing and new member IDs
 			const allMemberIds = [...existingMemberIds, ...newMemberIds];
+			console.log('allMemberIds = ', allMemberIds);
 	
 			// Update the channel's members with the combined array
 			const updatedChannel = await this.prisma.channel.update({
@@ -649,7 +653,7 @@ export class ChannelService {
 				},
 				data: {
 					members: {
-						connect: allMemberIds.map((user_id) => ({ user_id })),
+						connect: allMemberIds.map((login) => ({ login })),
 					},
 				},
 			});
@@ -676,7 +680,7 @@ export class ChannelService {
 			}
 		
 			// Extract the new member IDs from the request
-			const newMemberIds = members.map((member) => member.user_id);
+			const newMemberIds = members.map((member) => member.login);
 	
 			// Update the channel's members with the combined array
 			const updatedChannel = await this.prisma.channel.update({
@@ -685,7 +689,7 @@ export class ChannelService {
 				},
 				data: {
 					members: {
-						set: newMemberIds.map((user_id) => ({ user_id })),
+						set: newMemberIds.map((login) => ({ login })),
 					},
 				},
 			});
