@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllFriends, selectFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
-import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { UserByLogin, UserModel } from '../types/users/userType';
 import { Box } from "@mui/material";
@@ -12,6 +12,7 @@ import AskForPassword from "./AskForPassword";
 import { emptyChannel } from "../data/emptyChannel";
 import { useSelector } from "react-redux";
 import api from "../utils/Axios-config/Axios";
+import EnterChannelConfirmationDialog from "./EnterChannelConfirmationDialog";
 
 export type SearchBarContainerProps = {
 	getSelectedItem: (item: string) => void;
@@ -29,7 +30,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	useEffect(() => {
 		AppDispatch(FetchAllFriends())
 		AppDispatch(fetchAllChannelsInDatabase())
-	}, [AppDispatch]); // get the friends and channels from database
+	}, []); // get the friends and channels from database
 
 	const friends = useAppSelector(selectFriends) as UserModel[];
 	let channels = useAppSelector((state) => selectAllChannels(state)) as Channel[];
@@ -95,18 +96,29 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 		})
 	}
 
+	const [openConfirmationDialog, setOpenConfirmationDialog] = useState<boolean>(false);
+	const [pickedChannel, setPickedChannel] = useState<Channel>();
+	const [isConfirmed, setIsConfirmed] = useState<boolean>();
+
+
 	// Event handler to log the selected option
 	const handleOptionSelect = (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
 		if (value) {
-		
 			setSelectedOption(value);
 			if ('name' in value ) { // if it is a channel
-				if (value.key !== '') { // if channel is protected by a password
-					setAlertDialogSlideOpen(true); // open password check dialog slide
-				}
-				else {
-					AppDispatch(fetchDisplayedChannel(value.name));
-					// getSelectedItem(value.name);
+				// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
+				setPickedChannel(value);
+				// open EnterChannelConfirmationDialog
+				setOpenConfirmationDialog(true);
+				if (isConfirmed) { // if the user do want to enter the channel
+					if (value.key !== '') { // if channel is protected by a password
+						setAlertDialogSlideOpen(true); // open password check dialog slide
+					}
+					else {
+						AppDispatch(fetchDisplayedChannel(value.name));
+						// add channel to the list of userChannels
+						// getSelectedItem(value.name);
+					}
 				}
 			}
 			else if ('login' in value) { // if selected value is a user
@@ -131,6 +143,14 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 					setAlertDialogSlideOpen={setAlertDialogSlideOpen}
 					getSelectedItem={getSelectedItem}
 					element={selectedOption}
+				/>
+			}
+			{ openConfirmationDialog &&
+				<EnterChannelConfirmationDialog 
+					openDialog={openConfirmationDialog}
+					setOpenDialog={setOpenConfirmationDialog}
+					selectedChannel={pickedChannel}
+					setIsConfirmed = {setIsConfirmed}
 				/>
 			}
 		</Box>
