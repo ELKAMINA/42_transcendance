@@ -16,6 +16,7 @@ import { ChannelModel } from '../types/chat/channelTypes';
 import { Socket } from 'socket.io-client';
 import ManageBannedDialog from './ManageBannedDialog';
 import ManageMutedDialog from './ManageMutedDialog';
+import KickMember from './KickMember';
 
 export type AdminMenuProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
@@ -142,7 +143,7 @@ export default function AdminMenu({socketRef} : AdminMenuProps) {
 		</Stack>
 			<ManageBannedDialog openDialog={openBannedDialog} setOpenDialog={setOpenBannedDialog}/>
 			<ManageMutedDialog openDialog={openMutedDialog} setOpenDialog={setOpenMutedDialog}/>
-
+			<KickMember socketRef={socketRef} openDialog={openKickMemberDialog} setOpenDialog={setOpenKickMemberDialog}/>
 		</React.Fragment>
 
 	);
