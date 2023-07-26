@@ -30,27 +30,27 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 		const updatedBannedWithNullTime = updatedBanned.map(user => {
 			// Check if the user already exists in updatedBannedWithTime
 			const existingUserIndex = updatedBannedWithTime.findIndex(
-			  userTime => userTime.user.login === user.login
+			  userTime => userTime.login === user.login
 			);
 		
 			// If the user is not found in updatedBannedWithTime, add it with time set to null
 			if (existingUserIndex === -1) {
-				return { user: user, ExpiryTime: null };
+				return { login: user.login, ExpiryTime: null };
 			}
 		
 			// If the user is found, return the existing entry
 			return updatedBannedWithTime[existingUserIndex];
 		});
-		// Update the updatedBannedWithTime state
-		setUpdatedBannedWithTime(updatedBannedWithNullTime);
+
+		// send data to backend
+		updateBanned(updatedBannedWithNullTime);
 	}
 
-	async function updateBanned() : Promise<void> {
-		setBannedWithTime();
+	async function updateBanned(readyToBeSendBanned : UserWithTime[]) : Promise<void> {
 		await api
 			.post('http://localhost:4001/channel/updateBanned', {
 				channelName : {name : selectedChannel.name},
-				banned : updatedBannedWithTime,
+				banned : readyToBeSendBanned,
 			})
 			.then((response) => {
 				// console.log("response = ", response)
@@ -61,7 +61,7 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 	}
 
 	const handleClose = () => {
-		updateBanned();
+		setBannedWithTime();
 		setOpenDialog(false);
 	};
 
