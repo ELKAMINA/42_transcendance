@@ -11,7 +11,7 @@ import { Channel, User } from '@prisma/client';
 type DateTime = Date;
 
 export type UserWithTime = {
-    user: User;
+    login: string;
     ExpiryTime: string | null;
 };
 
