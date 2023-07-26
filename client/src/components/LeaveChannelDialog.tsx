@@ -35,7 +35,7 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const AppDispatch = useAppDispatch();
 	
-	async function addMembers() : Promise<void> {
+	async function updateMembers() : Promise<void> {
 		const updatedMembers = selectedChannel.members.filter((member) => member.login != currentUser)
 		// console.log('updatedMembers = ', updatedMembers);
 
@@ -72,7 +72,7 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 	}
 
 	function handleSubmit() {
-		addMembers();
+		updateMembers();
 		setOpenDialog(false);
 	}
 
