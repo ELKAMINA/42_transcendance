@@ -30,9 +30,10 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 
 
 	const friends = useAppSelector(selectFriends) as UserModel[];
-	// console.log('friends = ', friends);
+	const simplifiedFriends: UserByLogin[] = friends.map(({ login }) => ({ login })); // converting UserModel to UserByLogin to keep only login property
+	// console.log('simplifiedFriends = ', simplifiedFriends);
 
-	const filteredFriends: UserModel[] = friends.filter(friend => {
+	const filteredFriends: UserByLogin[] = simplifiedFriends.filter(friend => {
 		const isFriendIncluded = !selectedChannel.members.some(member => member.login === friend.login);
 		// console.log('Friend:', friend);
 		// console.log('Is Friend included:', isFriendIncluded);
@@ -42,11 +43,11 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 	// console.log('Filtered Friends:', filteredFriends);
 	  
 	async function addMembers() : Promise<void> {
-		// console.log('setUpdatedMembers = ', setUpdatedMembers);
+		// console.log('updatedMembers = ', updatedMembers);
 		await api
 			.post('http://localhost:4001/channel/addMembers', {
 				channelName : {name : selectedChannel.name},
-				members : updatedMembers,
+				members : updatedMembers, // list of new members to add 
 			})
 			.then((response) => {
 				// console.log("response = ", response)
