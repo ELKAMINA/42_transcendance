@@ -30,35 +30,35 @@ export default function PasswordField({ handlePwd,  passwordFieldId, isPwdCorrec
 		handlePwd(value);
 	}
 
-  return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap'}}>
-        <FormControl error={!isPwdCorrect} sx={{ width: '100%' }} variant="outlined" color={isPwdCorrect? 'success' : 'warning'}>
-          	<InputLabel htmlFor={passwordFieldId}>password</InputLabel>
-          	<OutlinedInput
-				onChange={handleChange}
-            	id={passwordFieldId}
-            	type={showPassword ? 'text' : 'password'}
-            	endAdornment={
-				<InputAdornment position="end">
-					<IconButton
-					aria-label="toggle password visibility"
-					onClick={handleClickShowPassword}
-					onMouseDown={handleMouseDownPassword}
-					edge="end"
-					>
-						{showPassword ? <VisibilityOff /> : <Visibility />}
-					</IconButton>
-				</InputAdornment>
-				}
-				label="Password"
-				sx={{
-					'& input': {
-						backgroundColor: 'transparent',
-						boxShadow: 'none',
-					},
-				}}
-			/>
-        </FormControl>
-    </Box>
-  );
+	return (
+		<Box sx={{ display: 'flex', flexWrap: 'wrap'}}>
+			<FormControl error={!isPwdCorrect} sx={{ width: '100%' }} variant="outlined" color={isPwdCorrect? 'success' : 'warning'}>
+				<InputLabel htmlFor={passwordFieldId}>password</InputLabel>
+				<OutlinedInput
+					onChange={handleChange}
+					id={passwordFieldId}
+					type={showPassword ? 'text' : 'password'}
+					endAdornment={
+					<InputAdornment position="end">
+						<IconButton
+						aria-label="toggle password visibility"
+						onClick={handleClickShowPassword}
+						onMouseDown={handleMouseDownPassword}
+						edge="end"
+						>
+							{showPassword ? <VisibilityOff /> : <Visibility />}
+						</IconButton>
+					</InputAdornment>
+					}
+					label="Password"
+					sx={{
+						'& input': {
+							backgroundColor: 'transparent',
+							boxShadow: 'none',
+						},
+					}}
+				/>
+			</FormControl>
+		</Box>
+	);
 }
