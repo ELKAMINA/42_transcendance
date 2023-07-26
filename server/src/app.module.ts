@@ -38,7 +38,7 @@ import { GameService } from './game/game.service';
     PassportModule.register({}),
     FriendshipModule,
     GlobalModule,
-	GameModule,
+    GameModule,
   ],
   controllers: [GlobalController],
   providers: [
@@ -56,7 +56,7 @@ import { GameService } from './game/game.service';
     HomeService,
     GlobalService,
     FriendshipService,
-	GameService
+    GameService,
   ],
 })
 export default class AppModule {}

@@ -60,7 +60,7 @@ function Game() {
         opponent: "",
         allRoomInfo: {
             id: "",
-            createdDate: 0,
+            createdDate: new Date(),
             totalSet: 0,
             totalPoint: 0,
             mapName: "",
@@ -597,6 +597,9 @@ const Pong: React.FC<PongProps> = ({ infos }) => {
                 resetPlayer();
                 cancelAnimationFrame(intervalId);
                 intervalId = 0;
+                if (socket.id === infos.allRoomInfo.playerOneId) {
+                    socket.emit("requestEndOfGame");
+                }
             } else {
                 intervalId = requestAnimationFrame(theGame);
             }

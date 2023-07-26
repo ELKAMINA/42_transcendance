@@ -20,6 +20,7 @@ import { gameDto } from './dto/game.dto';
 import { UserService } from 'src/user/user.service';
 import { UserDetails } from 'src/user/types';
 import { FriendshipGateway } from 'src/friendship/friendship.gateway';
+import { GameService } from './game.service';
 
 @WebSocketGateway(4010, { cors: '*' })
 @Injectable()
@@ -29,6 +30,7 @@ export class GameGateway
   constructor(
     private userService: UserService,
     private friendshipGateway: FriendshipGateway,
+    private gameService: GameService,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -58,9 +60,9 @@ export class GameGateway
     if (this.games.length === 0 || room === undefined) {
       room = {
         id: payload,
-        createdDate: Date.now(),
+        createdDate: new Date(),
         totalSet: 1,
-        totalPoint: 2,
+        totalPoint: 1,
         mapName: 'Default',
         power: false,
         isFull: false,
@@ -165,6 +167,17 @@ export class GameGateway
     } else room.scorePlayers[1] += 1;
     // console.log(`socket id ${socketId} in the room ${roomName}`);
     this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
+  }
+
+  @SubscribeMessage('requestEndOfGame')
+  async handleRequestEndOfGame(client: Socket, value: string): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    const room = this.games.find((el) => el.id === roomName);
+    console.log(' Score at the end of the game : ', room.scorePlayers);
+    this.gameService.matchCreation(room);
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    // this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
   }
 
   // @SubscribeMessage('connectedSocket') // Verifier les id des sockets

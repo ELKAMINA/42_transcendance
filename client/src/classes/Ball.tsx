@@ -9,20 +9,20 @@ class Ball {
     private ballBottom: number;
     private ballLeft: number;
     private ballRight: number;
-	private canBeCollided: boolean;
+    private canBeCollided: boolean;
 
     constructor(position: Array<number>, speed: number) {
         this.position = [...position];
         this.speed = speed;
         this.radius = 10;
-        this.velocity = [4, 0];
+        this.velocity = [4, 4];
         this.isVisible = true;
         this.color = "#FFFFFF";
         this.ballTop = this.position[1] - this.radius;
         this.ballBottom = this.position[1] + this.radius;
         this.ballLeft = this.position[0] - this.radius;
         this.ballRight = this.position[0] + this.radius;
-		this.canBeCollided = true;
+        this.canBeCollided = true;
     }
 
     /*** GETTER ***/
@@ -143,7 +143,7 @@ class Ball {
         this.ballRight = newValue;
     }
 
-	setCanBeCollided(newValue: boolean) {
+    setCanBeCollided(newValue: boolean) {
         this.canBeCollided = newValue;
     }
 }

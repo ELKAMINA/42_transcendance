@@ -16,7 +16,7 @@ export class gameDto {
 
   @IsNotEmpty()
   @IsDate()
-  createdDate: number;
+  createdDate: Date;
 
   @IsNotEmpty()
   @IsInt()

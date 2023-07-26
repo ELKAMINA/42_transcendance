@@ -2,7 +2,7 @@ export interface gameInfo {
     opponent: string;
     allRoomInfo: {
         id: string;
-        createdDate: number;
+        createdDate: Date;
         totalSet: number;
         totalPoint: number;
         mapName: string;
