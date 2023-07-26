@@ -29,27 +29,29 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 		const updatedMutedWithNullTime = updatedMuted.map(user => {
 			// Check if the user already exists in updatedMutedWithTime
 			const existingUserIndex = updatedMutedWithTime.findIndex(
-			  userTime => userTime.user.login === user.login
+				userTime => userTime.login === user.login
 			);
-		
+
 			// If the user is not found in updatedMutedWithTime, add it with time set to null
 			if (existingUserIndex === -1) {
-				return { user: user, ExpiryTime: null };
+				return { login: user.login, ExpiryTime: null };
 			}
 		
 			// If the user is found, return the existing entry
 			return updatedMutedWithTime[existingUserIndex];
 		});
-		// Update the updatedMutedWithTime state
-		setUpdatedMutedWithTime(updatedMutedWithNullTime);
+		
+		// console.log('updatedMutedWithNullTime = ', updatedMutedWithNullTime);
+		
+		// send request to be the backend
+		updateMuted(updatedMutedWithNullTime);
 	}
 
-	async function updateMuted() : Promise<void> {
-		setMutedWithTime();
+	async function updateMuted(readyToBeSendMuted : UserWithTime[]) : Promise<void> {
 		await api
 			.post('http://localhost:4001/channel/updateMuted', {
 				channelName : {name : selectedChannel.name},
-				muted : updatedMutedWithTime,
+				muted : readyToBeSendMuted,
 			})
 			.then((response) => {
 				// console.log("response = ", response)
@@ -60,7 +62,7 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 	}
 
 	const handleClose = () => {
-		updateMuted();
+		setMutedWithTime();
 		setOpenDialog(false);
 	};
 
