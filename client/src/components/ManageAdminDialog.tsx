@@ -11,22 +11,24 @@ import UserList from './UserList';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import api from '../utils/Axios-config/Axios';
-import { Channel, ChannelModel } from '../types/chat/channelTypes';
-import { UserByLogin, UserModel } from '../types/users/userType';
+import { ChannelModel } from '../types/chat/channelTypes';
+import { UserByLogin } from '../types/users/userType';
 import SendIcon from '@mui/icons-material/Send';
 
 export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
-	const [updatedAdmins, setUpdatedAdmins] = React.useState<UserModel[]>([]);
+	const [updatedAdmins, setUpdatedAdmins] = React.useState<UserByLogin[]>([]);
 	const AppDispatch = useAppDispatch();
 
 	async function updateAdmins() : Promise<void> {
+		// just send users as UserByLogin object to prevent 'avatar linked payload too large' error 
+		const simplifiedAdmins: UserByLogin[] = updatedAdmins.map(({ login }) => ({ login })); // converting UserModel to UserByLogin to keep only login property
 		await api
 			.post('http://localhost:4001/channel/updateAdmins', {
 				channelName : {name : selectedChannel.name},
-				admins : updatedAdmins,
+				admins : simplifiedAdmins,
 			})
 			.then((response) => {
 				// console.log("response = ", response)
