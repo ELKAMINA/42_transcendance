@@ -42,6 +42,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	// so I filter all the private channels and privateConv channels of which I am not a member or
 	// a creator.
 	useEffect(() => {
+
 		if (channels.length > 0) {
 			filteredChannels = channels.filter((channel) => {
 				if (channel.type === 'privateConv' || channel.type === 'private') {
@@ -62,7 +63,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 
 			setUsersAndChannels([...filteredFriends, ...filteredChannels]); // join friends and channels
 		}
-	}, []);
+	}, [channels]);
 
 	// State to hold the selected option
 	const [selectedOption, setSelectedOption] = useState<Channel | UserModel | null >(null);
@@ -99,7 +100,6 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	const [openConfirmationDialog, setOpenConfirmationDialog] = useState<boolean>(false);
 	const [pickedChannel, setPickedChannel] = useState<Channel>();
 	const [isConfirmed, setIsConfirmed] = useState<boolean>();
-
 
 	// Event handler to log the selected option
 	const handleOptionSelect = (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
