@@ -29,22 +29,17 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 
-	// console.log('selected channel in messages = ', selectedChannel);
-	// console.log('chat history = ', selectedChannel.chatHistory);
-
-	if (!selectedChannel) {
-		return null; // If selectedChannel is null, don't render anything
-	}
-
-	if (!selectedChannel.chatHistory) {
+	if (!selectedChannel || !selectedChannel.chatHistory) {
 		return (
-		<Box p={3} >
-			<Typography variant='h2' gutterBottom sx={{color: '#07457E'}}>No messages yet!</Typography>
+		<Box p={3}>
+			<Typography variant="h2" gutterBottom sx={{ color: '#07457E' }}>
+			{selectedChannel ? 'No messages yet!' : 'Selected channel not found!'}
+			</Typography>
 		</Box>
-		)
+		);
 	}
 
-	const chat : ChatMessage[] = [...selectedChannel.chatHistory, ...messages];
+	const chat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
 
 	return (	
 		<Box p={3}>
