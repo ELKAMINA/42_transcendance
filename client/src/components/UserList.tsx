@@ -11,11 +11,10 @@ import ResponsiveTimePicker from './ResponsiveTimePicker';
 import { Stack, Tooltip } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import dayjs from 'dayjs';
 import formatTimeToISO from '../utils/formatTimeToISO';
 
 export type UserWithTime = {
-	user: UserModel;
+	login: string;
 	ExpiryTime: string | null;
 }
 
@@ -49,6 +48,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 
     	setChecked(newChecked);
 		const updatedUsers: UserModel[] = [...newChecked.map((index) => usersSet[index])];
+		// console.log('updatedUsers = ', updatedUsers);
 		setUpdatedUsers(updatedUsers);
   	};
 
@@ -76,7 +76,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 
 		// Check if the user already has an associated time in the usersTime array
 		const existingUserIndex = usersTime.findIndex(
-			userTime => userTime.user.login === user.login
+			userTime => userTime.login === user.login
 		);
 
 		// If the user is present in usersTime, update the associated time
@@ -90,7 +90,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 			// If the user is not present in usersTime, add a new entry
 			setUsersTime(prevUsersTime => [
 				...prevUsersTime,
-				{ user: user, ExpiryTime: formattedTime }
+				{ login: user.login, ExpiryTime: formattedTime }
 			]);
 		}
 	}
@@ -100,7 +100,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 		setUsersTime(prevUsersTime => {
 			// Filter the usersTime array to keep only the matching user.login
 			const filteredUsersTime = prevUsersTime.filter(userTime =>
-				usersTimeChecked.current.some(checkedUser => checkedUser.login === userTime.user.login)
+				usersTimeChecked.current.some(checkedUser => checkedUser.login === userTime.login)
 			);
 			return filteredUsersTime;
 		});
