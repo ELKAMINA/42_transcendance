@@ -50,4 +50,23 @@ export class GameService {
       },
     });
   }
+
+  async getLeaderBoard() {
+    const leaderBoard = await this.prisma.user.findMany({
+      orderBy: {
+        level: 'desc',
+        login: 'asc',
+      },
+      select: {
+        avatar: true,
+        login: true,
+        totalMatches: true,
+        totalWins: true,
+        totalloss: true,
+        level: true,
+      },
+    });
+    console.log('leaderboard ', leaderBoard);
+    return leaderBoard;
+  }
 }

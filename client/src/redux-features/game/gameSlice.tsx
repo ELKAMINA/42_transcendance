@@ -1,19 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { RootState } from '../../app/store';
-import  api  from '../../utils/Axios-config/Axios';
+import { RootState } from "../../app/store";
+import api from "../../utils/Axios-config/Axios";
+import { UserLeaderBoard } from "../../types/users/userType";
 
 export interface GameState {
-    totalMatchesPlayed: number,
-    totalMatchesLost: number,
-    totalMatchesWon: number,
-    totalPlayers: number,
-    level: number,
-    rank: number,
-    MatchesLost: [],
-    allMatches: [],
-    MatchesWon: [],
-    opponent: string,
+    totalMatchesPlayed: number;
+    totalMatchesLost: number;
+    totalMatchesWon: number;
+    totalPlayers: number;
+    level: number;
+    rank: number;
+    MatchesLost: [];
+    allMatches: [];
+    MatchesWon: [];
+    opponent: string;
+    leaderboard: UserLeaderBoard[];
 }
 
 const initialState: GameState = {
@@ -27,15 +29,17 @@ const initialState: GameState = {
     allMatches: [],
     MatchesWon: [],
     opponent: "",
-}
+    leaderboard: [],
+};
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
 export const gameSlice = createSlice({
-    name: 'game',
+    name: "game",
     initialState,
-    reducers: { // function that has for first param the actual state, and the 2nd param, the action that we want to apply to this state. Hence, the reducer will reduce this 2 params in one final state
+    reducers: {
+        // function that has for first param the actual state, and the 2nd param, the action that we want to apply to this state. Hence, the reducer will reduce this 2 params in one final state
         updateTotalMatchesPlayed: (state, action: PayloadAction<number>) => {
             state.totalMatchesPlayed = action.payload;
-        }, 
+        },
         updateTotalMatchesLost: (state, action: PayloadAction<number>) => {
             state.totalMatchesLost = action.payload;
         },
@@ -66,52 +70,78 @@ export const gameSlice = createSlice({
         updateOpponent: (state, action: PayloadAction<string>) => {
             state.opponent = action.payload;
         },
+        updateLeaderBoard: (
+            state,
+            action: PayloadAction<UserLeaderBoard[]>
+        ) => {
+            state.leaderboard = action.payload;
+        },
     },
-})
+});
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-export const { updateTotalMatchesPlayed, updateTotalMatchesLost,updateTotalMatchesWon,updateTotalPlayers, updateLevel,updateRank,updateAllMatches,updateMatchesLost,updateMatchesWon, updateOpponent } = gameSlice.actions
-export const selectTotalMatchesPlayed: any = (state: RootState) => state.persistedReducer.game.totalMatchesPlayed
-export const selectTotalMatchesLost = (state: RootState) => state.persistedReducer.game.totalMatchesLost
-export const selectTotalMatchesWon = (state: RootState) => state.persistedReducer.game.totalMatchesWon
+export const {
+    updateTotalMatchesPlayed,
+    updateTotalMatchesLost,
+    updateTotalMatchesWon,
+    updateTotalPlayers,
+    updateLevel,
+    updateRank,
+    updateAllMatches,
+    updateMatchesLost,
+    updateMatchesWon,
+    updateOpponent,
+    updateLeaderBoard,
+} = gameSlice.actions;
+export const selectTotalMatchesPlayed: any = (state: RootState) =>
+    state.persistedReducer.game.totalMatchesPlayed;
+export const selectTotalMatchesLost = (state: RootState) =>
+    state.persistedReducer.game.totalMatchesLost;
+export const selectTotalMatchesWon = (state: RootState) =>
+    state.persistedReducer.game.totalMatchesWon;
 // export const selectTotalPoints = (state: RootState) => state.persistedReducer.game.totalPoints
-export const selectTotalPlayers = (state: RootState) => state.persistedReducer.game.totalPlayers
-export const selectRank = (state: RootState) => state.persistedReducer.game.rank
-export const selectLevel = (state: RootState) => state.persistedReducer.game.level
-export const selectAllMatches = (state: RootState) => state.persistedReducer.game.allMatches
-export const selectMatchesWon = (state: RootState) => state.persistedReducer.game.MatchesWon
-export const selectMatchesLost = (state: RootState) => state.persistedReducer.game.MatchesLost
-export const selectOpponent = (state: RootState) => state.persistedReducer.game.opponent
+export const selectTotalPlayers = (state: RootState) =>
+    state.persistedReducer.game.totalPlayers;
+export const selectRank = (state: RootState) =>
+    state.persistedReducer.game.rank;
+export const selectLevel = (state: RootState) =>
+    state.persistedReducer.game.level;
+export const selectAllMatches = (state: RootState) =>
+    state.persistedReducer.game.allMatches;
+export const selectMatchesWon = (state: RootState) =>
+    state.persistedReducer.game.MatchesWon;
+export const selectMatchesLost = (state: RootState) =>
+    state.persistedReducer.game.MatchesLost;
+export const selectOpponent = (state: RootState) =>
+    state.persistedReducer.game.opponent;
+export const selectLeaderBoard = (state: RootState) =>
+    state.persistedReducer.game.leaderboard;
 
 export function FetchTotalPlayers() {
-    return async (dispatch:any, getState: any) => {
+    return async (dispatch: any, getState: any) => {
         await api
-        .get("http://localhost:4001/global/totalPlayers")
-        .then((res) => {
-            // console.log('Total Players ', res.data);
-            dispatch(updateTotalPlayers(res.data))
-        }
-        )
-        .catch((e) => {console.log("error ", e)});
-  }
+            .get("http://localhost:4001/global/totalPlayers")
+            .then((res) => {
+                // console.log('Total Players ', res.data);
+                dispatch(updateTotalPlayers(res.data));
+            })
+            .catch((e) => {
+                console.log("error ", e);
+            });
+    };
 }
 
-// export function FetchPlayerRank() {
-//     return async (dispatch:any, getState: any) => {
-//         await api
-//         .post("http://localhost:4001/game/playerRank")
-//         .then((res) => {
-//             console.log('Total Players ', res.data);
-//             dispatch(updateTotalPlayers(res.data))
-//         }
-//         )
-//         .catch((e) => {console.log("error ", e)});
-//   }
-// }
-
-
-export default gameSlice.reducer
-
-// // dispatch is for communicating with redux and tell him to trigger an action so when we write dispatch(setConnected(true) => we tell redux to call the reducer socket/setConnected with the action.payload = true which changes the state "isConnected to TRUE")
-
-
+export function FetchLeaderBoard() {
+    return async (dispatch: any, getState: any) => {
+        await api
+            .get("http://localhost:4001/game/leaderboard")
+            .then((res) => {
+                dispatch(updateLeaderBoard(res.data));
+                console.log(" response pur le leaderboard ", res.data);
+            })
+            .catch((e) => {
+                console.error("erreur dans la requete Leaderboard ", e);
+            });
+    };
+}
+export default gameSlice.reducer;

@@ -7,12 +7,6 @@ import { AuthGuard } from '@nestjs/passport';
 export class MatchController {
   constructor(private prisma: PrismaService, private user: UserService) {}
 
-  @Get('leaderboard')
-  @UseGuards(AuthGuard('jwt'))
-  getLeaderboard() {
-    return "I'm the leaderboard";
-  }
-
   /*** GET ALL USER FROM THE QUEUE ***/
   @Get('/all')
   getAll() {
