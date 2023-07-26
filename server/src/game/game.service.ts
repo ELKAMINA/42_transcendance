@@ -38,7 +38,6 @@ export class GameService {
       );
       winner = roomInfos.players[1];
     }
-
     const match = await this.prisma.match.create({
       data: {
         createdAt: roomInfos.createdDate,
@@ -49,6 +48,7 @@ export class GameService {
         winnerName: winner,
       },
     });
+    // await this.userService.updateRankOfAllUsers();
   }
 
   async getLeaderBoard() {

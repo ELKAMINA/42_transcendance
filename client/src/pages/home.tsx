@@ -105,7 +105,7 @@ function HomePage() {
                             <LeaderboardRow
                                 key={i}
                                 avatar={element.avatar}
-                                rank={i + 1}
+                                rank={element.rank}
                                 totalMatches={element.totalMatches}
                                 totalWins={element.totalWins}
                                 totalloss={element.totalloss}

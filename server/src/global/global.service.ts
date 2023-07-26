@@ -3,16 +3,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class GlobalService {
-    constructor(
-        private prisma: PrismaService,
-      ) {}
+  constructor(private prisma: PrismaService) {}
 
-      async geTotalPlayer() {
-        const resultat = await this.prisma.globalInformation.findUnique({
-            where: {
-                pid: "1",
-            }
-        })
-        return resultat.totalPlayers;
-      }
+  async geTotalPlayer() {
+    const resultat = await this.prisma.user.count();
+    return resultat;
+  }
 }

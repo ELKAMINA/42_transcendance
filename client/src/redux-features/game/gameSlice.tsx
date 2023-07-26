@@ -16,6 +16,7 @@ export interface GameState {
     MatchesWon: [];
     opponent: string;
     leaderboard: UserLeaderBoard[];
+    // Rank: number;
 }
 
 const initialState: GameState = {
@@ -30,6 +31,7 @@ const initialState: GameState = {
     MatchesWon: [],
     opponent: "",
     leaderboard: [],
+    // rank: 0,
 };
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
 export const gameSlice = createSlice({
@@ -76,6 +78,9 @@ export const gameSlice = createSlice({
         ) => {
             state.leaderboard = action.payload;
         },
+        // updateActualUserRank: (state, action: PayloadAction<number>) => {
+        //     state.rank = action.payload;
+        // },
     },
 });
 

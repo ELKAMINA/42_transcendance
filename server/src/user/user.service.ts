@@ -6,10 +6,14 @@ import { ForbiddenException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { send } from 'process';
 import { UserUpdates } from './types';
+import { GameService } from 'src/game/game.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gameService: GameService,
+  ) {}
 
   async searchUser(nick: string) {
     try {
@@ -158,4 +162,14 @@ export class UserService {
       },
     });
   }
+
+  // async updateRankOfAllUsers() {
+  //   const sortedUsers = await this.gameService.getLeaderBoard();
+  //   sortedUsers.map(async (element: any, index: number) => {
+  //     await this.prisma.user.update({
+  //       where: { login: element.login },
+  //       data: { rank: index + 1 },
+  //     });
+  //   });
+  // }
 }
