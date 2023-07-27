@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import Statistics from "./Skeleton";
 import { Rank, Wins, Loss, TotalMatches, Level } from "./Scores";
 import MatchHistory from "../Events/Skeleton";
+import { UserModel } from "../../../types/users/userType";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -44,7 +45,7 @@ function a11yProps(index: number) {
 }
 
 interface Myprops {
-    interestProfile: Record<string, string>;
+    interestProfile: UserModel;
 }
 
 export default function ProfileInfo(props: Myprops) {
@@ -54,7 +55,19 @@ export default function ProfileInfo(props: Myprops) {
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
-
+    const matches = props.interestProfile.p1
+        .concat(props.interestProfile.p2)
+        .filter(
+            (v, i, a) => a.findIndex((t) => t.match_id === v.match_id) === i
+        )
+        .sort(
+            (a, b) =>
+                Date.parse(b.createdAt.toString()) -
+                Date.parse(a.createdAt.toString())
+        );
+    // console.log("login  ", props.interestProfile.login);
+    console.log("tous lesmatches ", matches);
+    // console.log("les p1 ", props.interestProfile.p1);
     return (
         <Box sx={{ bgcolor: "background.paper", width: "90vw" }}>
             <AppBar position="static">
@@ -97,11 +110,9 @@ export default function ProfileInfo(props: Myprops) {
             </TabPanel>
             <TabPanel value={value} index={1} dir={theme.direction}>
                 {/* remplacer par le tableau de match joués et recuperer les infos */}
-                <MatchHistory name="test" data="haha" />
-                <MatchHistory name="test" data="haha" />
-                <MatchHistory name="test" data="haha" />
-                <MatchHistory name="test" data="haha" />
-                <MatchHistory name="test" data="haha" />
+                {matches.map((e: any) => (
+                    <MatchHistory us={e} />
+                ))}
             </TabPanel>
         </Box>
     );
