@@ -27,6 +27,8 @@ export class UserService {
           friends: true,
           FriendRequestReceived: true,
           FriendRequestSent: true,
+          p1: true,
+          p2: true,
         },
       });
       return user;

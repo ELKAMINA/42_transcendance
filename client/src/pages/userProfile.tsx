@@ -13,6 +13,8 @@ export function transformData(queryParams: URLSearchParams) {
     const obj: Record<string, string> = {};
 
     for (const [key, value] of queryParams.entries()) {
+        console.log(" in transform data ", value);
+        console.log(" in transform data - typeof ", typeof value);
         obj[key] = value;
     }
     return obj;
@@ -26,8 +28,10 @@ const UserProfile = () => {
         myBlockedFriend: false,
         thoseWhoBlockedMe: false,
     });
-    const userToStalk = transformData(new URLSearchParams(location.search));
-    console.log("userTostalk ", userToStalk);
+    // const userToStalk = transformData(new URLSearchParams(location.search));
+    const userToStalk = location.state.data;
+    console.log("user to Stalk ", userToStalk);
+
     const friendship = async () =>
         await api
             .post("http://localhost:4001/friendship/ismyfriend", {
