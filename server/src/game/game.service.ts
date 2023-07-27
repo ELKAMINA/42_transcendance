@@ -48,14 +48,15 @@ export class GameService {
         winnerName: winner,
       },
     });
-    // await this.userService.updateRankOfAllUsers();
+    await this.updateRankOfAllUsers();
   }
 
   async getLeaderBoard() {
     const leaderBoard = await this.prisma.user.findMany({
       orderBy: {
-        level: 'desc',
         // login: 'asc',
+        // level: 'desc',
+        rank: 'asc',
       },
       select: {
         avatar: true,
@@ -64,6 +65,7 @@ export class GameService {
         totalWins: true,
         totalloss: true,
         level: true,
+        rank: true,
       },
     });
     console.log('leaderboard ', leaderBoard);
