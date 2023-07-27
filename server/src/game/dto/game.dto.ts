@@ -16,15 +16,15 @@ export class gameDto {
 
   @IsNotEmpty()
   @IsDate()
-  createdDate: number;
+  createdDate: Date;
 
   @IsNotEmpty()
   @IsInt()
-  totalSet: Number;
+  totalSet: number;
 
   @IsNotEmpty()
   @IsInt()
-  totalPoint: Number;
+  totalPoint: number;
 
   @IsNotEmpty()
   @IsString()
@@ -46,8 +46,11 @@ export class gameDto {
   scorePlayers: number[];
 
   @IsString()
-  playerOneId: string
+  playerOneId: string;
 
   @IsString()
-  playerTwoId: string
+  playerTwoId: string;
+
+  @IsBoolean()
+  collided: boolean;
 }

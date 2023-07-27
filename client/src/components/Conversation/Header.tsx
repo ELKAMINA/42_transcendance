@@ -4,9 +4,9 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { useState } from 'react';
 import BlockUser from './BlockUser';
-import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel, } from '../../redux-features/chat/channelsSlice';
-import { Channel, ChannelModel } from '../../types/chat/channelTypes';
+import { ChannelModel } from '../../types/chat/channelTypes';
 import { emptyChannel } from '../../data/emptyChannel';
 import ChannelMenu from '../ChannelMenu';
 import { useNavigate } from 'react-router-dom';
@@ -14,37 +14,36 @@ import api from '../../utils/Axios-config/Axios';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { Socket } from 'socket.io-client';
 import AdminMenu from '../AdminMenu';
-import GiveOwnerShipDialog from '../GiveOwnerShipDialog';
 import GiveOwnership from '../GiveOwnership';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
-	"& .MuiBadge-badge": {
-	  backgroundColor: "#44b700",
-	  color: "#44b700",
-	  boxShadow: `0 0 0 2px ${"white"}`,
-	  "&::after": {
-		position: "absolute",
-		top: 0,
-		left: 0,
-		width: "100%",
-		height: "100%",
-		borderRadius: "50%",
-		animation: "ripple 1.2s infinite ease-in-out",
-		border: "1px solid currentColor",
-		content: '""',
-	  },
-	},
-	"@keyframes ripple": {
-	  "0%": {
-		transform: "scale(.8)",
-		opacity: 1,
-	  },
-	  "100%": {
-		transform: "scale(2.4)",
-		opacity: 0,
-	  },
-	},
-  }));
+    "& .MuiBadge-badge": {
+        backgroundColor: "#44b700",
+        color: "#44b700",
+        boxShadow: `0 0 0 2px ${"white"}`,
+        "&::after": {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            animation: "ripple 1.2s infinite ease-in-out",
+            border: "1px solid currentColor",
+            content: '""',
+        },
+    },
+    "@keyframes ripple": {
+        "0%": {
+            transform: "scale(.8)",
+            opacity: 1,
+        },
+        "100%": {
+            transform: "scale(2.4)",
+            opacity: 0,
+        },
+    },
+}));
 
   type HeaderProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
@@ -62,24 +61,23 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	const isAdmin : boolean = channel.admins.some(admin => admin.login === currentUser) || currentUser === channel.ownedById;
 	const isOwner : boolean = currentUser === channel.ownedById;
 
-	// if the conversation is private, 
-	// the name of the channel should be the name of 
-	// the channel member that is not the current user
-	if (isPrivateConv) {
-		if (channel.members[0].login === currentUser) {
-			channelName = channel.createdBy.login;
-			channelAvatar = channel.createdBy.avatar
-		}
-		else {
-			channelName = channel.members[0].login;
-			channelAvatar = channel.members[0].avatar;
-		}
-	} else {
-		channelName = channel.name;
-		channelAvatar = channel.avatar;
-	}
+    // if the conversation is private,
+    // the name of the channel should be the name of
+    // the channel member that is not the current user
+    if (isPrivateConv) {
+        if (channel.members[0].login === currentUser) {
+            channelName = channel.createdBy.login;
+            channelAvatar = channel.createdBy.avatar;
+        } else {
+            channelName = channel.members[0].login;
+            channelAvatar = channel.members[0].avatar;
+        }
+    } else {
+        channelName = channel.name;
+        channelAvatar = channel.avatar;
+    }
 
-	const [openBlock, setOpenBlock] = useState<boolean>(false);
+    const [openBlock, setOpenBlock] = useState<boolean>(false);
 
 	const handleCloseBlock = () => {
 		setOpenBlock(false);
@@ -93,8 +91,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					}
 				})
 		.then((res) => {
-			const params = new URLSearchParams(res.data).toString()
-			navigate(`/userprofile?data=${params}`)})
+			navigate(`/userprofile?data`, { state: { data: res.data } });
+		})
 		.catch((e) => {
 			console.log('ERROR from request with params ', e)
 		})
@@ -160,4 +158,4 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 		)
 }
 
-export default Header
+export default Header;

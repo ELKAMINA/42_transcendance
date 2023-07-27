@@ -20,6 +20,7 @@ import { gameDto } from './dto/game.dto';
 import { UserService } from 'src/user/user.service';
 import { UserDetails } from 'src/user/types';
 import { FriendshipGateway } from 'src/friendship/friendship.gateway';
+import { GameService } from './game.service';
 
 @WebSocketGateway(4010, { cors: '*' })
 @Injectable()
@@ -29,6 +30,7 @@ export class GameGateway
   constructor(
     private userService: UserService,
     private friendshipGateway: FriendshipGateway,
+    private gameService: GameService,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -58,15 +60,16 @@ export class GameGateway
     if (this.games.length === 0 || room === undefined) {
       room = {
         id: payload,
-        createdDate: Date.now(),
+        createdDate: new Date(),
         totalSet: 1,
-        totalPoint: 2,
+        totalPoint: 1,
         mapName: 'Default',
         power: false,
         isFull: false,
         players: new Array<string>(),
         playerOneId: client.id,
         playerTwoId: '0',
+        collided: true,
         scorePlayers: new Array<number>(),
       };
       room.players.push(payload);
@@ -95,10 +98,86 @@ export class GameGateway
   /* ********** */
 
   /* Game events */
+  @SubscribeMessage('requestMovePaddle')
+  async handleRequestMovePaddle(client: Socket, value: number): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    const room = this.games.find((el) => el.id === roomName);
+    const player =
+      room.playerOneId === socketId ? room.playerOneId : room.playerTwoId;
+    this.server.to(roomName).emit('updateMovePaddle', { player, value });
+  }
 
-  @SubscribeMessage('changeColor')
-  async handleChangeColor(client: Socket): Promise<void> {
-    console.log('rooms ', client.rooms);
+  @SubscribeMessage('requestMoveBall')
+  async handleRequestMoveBall(
+    client: Socket,
+    value: { positions: Array<number>; velocity: Array<number> },
+  ): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updateMoveBall', value);
+  }
+
+  @SubscribeMessage('requestAfterPaddleCollision')
+  async handlerequestAfterPaddleCollisionl(
+    client: Socket,
+    value: {
+      positions: Array<number>;
+      velocity: Array<number>;
+      canBeCollided: boolean;
+    },
+  ): Promise<void> {
+    // console.log('value ', value);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updateAfterPaddleCollision', value);
+  }
+
+  @SubscribeMessage('requestResetPositionBall')
+  async handleRequestResetPositionBall(
+    client: Socket,
+    value: { positions: Array<number>; canBeCollided: boolean },
+  ): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePositionBall', value);
+  }
+
+  @SubscribeMessage('requestResetPositionPlayer')
+  async handleRequestResetPositionPlayer(
+    client: Socket,
+    value: { player1Position: Array<number>; player2Position: Array<number> },
+  ): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePositionPlayer', value);
+  }
+
+  @SubscribeMessage('requestPlayerScore')
+  async handleRequestPlayerScore(client: Socket, value: string): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    const room = this.games.find((el) => el.id === roomName);
+    if (value === socketId) {
+      room.scorePlayers[0] += 1;
+    } else room.scorePlayers[1] += 1;
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
+  }
+
+  @SubscribeMessage('requestEndOfGame')
+  async handleRequestEndOfGame(client: Socket, value: string): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    const room = this.games.find((el) => el.id === roomName);
+    console.log(' Score at the end of the game : ', room.scorePlayers);
+    this.gameService.matchCreation(room);
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    // this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
   }
 
   // @SubscribeMessage('connectedSocket') // Verifier les id des sockets

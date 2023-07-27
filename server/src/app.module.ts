@@ -40,7 +40,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     PassportModule.register({}),
     FriendshipModule,
     GlobalModule,
-	GameModule,
+    GameModule,
   ],
   controllers: [GlobalController],
   providers: [
@@ -60,7 +60,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     HomeService,
     GlobalService,
     FriendshipService,
-	GameService
+    // GameService,
   ],
 })
 export default class AppModule {}

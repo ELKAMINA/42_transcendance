@@ -31,35 +31,35 @@ enum Status {
 // Type modifier in the models are : [] to say that they are many of ... and ? to say that is optional
 
 model User {
-	createdAt				DateTime        @default(now())
-	updatedAt				DateTime        @updatedAt
-	user_id					String          @id @default(uuid())
-	login					String          @unique
-	email					String?         @unique
-	hash					String?
-	rtHash					String?
-	fA						String?
-	faEnabled				Boolean?
-	avatar					String?
-	status					Status?
-	friends					User[]          @relation("Friendship")
-	friendOf				User[]          @relation("Friendship")
-	totalFriends			Int?            @default(0)
-//   FriendRequestSent		FriendRequest[] @relation("Sender")
-//   FriendRequestReceived	FriendRequest[] @relation("Receiver")
-	FriendRequestSent		FriendRequest[] @relation("Sender")
-	FriendRequestReceived	FriendRequest[] @relation("Receiver")
-	blocked					User[]          @relation("haters")
-	blockedBy				User[]          @relation("haters")
-	totalBlockedFriends		Int?
-	totalMatches			Int?
-	totalWins				Int?
-	totalloss				Int?
-	level					Int?
-	rank					Int?
-	p1						Match[]         @relation("Player1")
-	p2						Match[]         @relation("Player2")
-	FriendSuggestions		String[]
+	createdAt             DateTime        @default(now())
+	updatedAt             DateTime        @updatedAt
+	user_id               String          @id @default(uuid())
+	login                 String          @unique
+	email                 String?         @unique
+	hash                  String?
+	rtHash                String?
+	fA                    String?
+	faEnabled             Boolean?
+	avatar                String?
+	status                Status?
+	friends               User[]          @relation("Friendship")
+	friendOf              User[]          @relation("Friendship")
+	totalFriends          Int?            @default(0)
+//   FriendRequestSent     FriendRequest[] @relation("Sender")
+//   FriendRequestReceived FriendRequest[] @relation("Receiver")
+	FriendRequestSent     FriendRequest[] @relation("Sender")
+	FriendRequestReceived FriendRequest[] @relation("Receiver")
+	blocked               User[]          @relation("haters")
+	blockedBy             User[]          @relation("haters")
+	totalBlockedFriends   Int?			@default(0)
+	totalMatches          Int?			@default(0)
+	totalWins             Int?			@default(0)
+	totalloss             Int?			@default(0)
+	level                 Int?			@default(0)
+	rank                  Int?			@default(0)
+	p1                    Match[]         @relation("Player1")
+	p2                    Match[]         @relation("Player2")
+	FriendSuggestions     String[]
 	// // Channel Management
 	// //*** Where the user is member ***//
 	channels				Channel[]       @relation("Membership")
@@ -113,20 +113,13 @@ model Message {
 model Match {
   match_id       String    @id @default(uuid())
   createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
   player1Id      String
   player1        User      @relation("Player1", fields: [player1Id], references: [login])
   player2Id      String
-  player2        User      @relation("Player2", fields: [player2Id], references: [login])
-  duration       DateTime?
-  p1_rankbfmatch Int // Rank of the winner before match
-  p1_rankafmatch Int // Rank of the winner after match
-  p2_rankbfmatch Int // Rank of the loser before match
-  p2_rankafmatch Int // Rank of the loser after match
-  p1_score       Int?
-  p2_score       Int?
-  winner_score   Int?
-  ago            DateTime?
+  player2        User      	@relation("Player2", fields: [player2Id], references: [login])
+  p1_score       Int		@default(0)
+  p2_score       Int		@default(0)
+  winnerName   	String
 }
 
 model FriendRequest {
@@ -143,5 +136,5 @@ model FriendRequest {
 model GlobalInformation {
   id           String @id @unique @default(uuid())
   pid          String @unique @default("1")
-  totalPlayers Int?
+  totalPlayers Int?	@default(0)
 }
