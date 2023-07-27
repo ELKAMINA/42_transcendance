@@ -14,15 +14,16 @@ async function main() {
     create: {
       login: 'Acliclas',
       hash: await argon.hash('Acliclas'),
-      status:
-        "Offline",
+      status: 'Offline',
       fA: 'cava',
       faEnabled: true,
-      rank: 2,
-      level: 100,
-      totalloss: 20,
-      totalWins: 60,
-      totalMatches: 80,
+      rank: 0,
+      level: 0,
+      totalloss: 0,
+      totalWins: 0,
+      totalMatches: 0,
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU,',
     },
   });
 
@@ -32,15 +33,16 @@ async function main() {
     create: {
       login: 'Fuma',
       hash: await argon.hash('Fumafuma'),
-      status:
-        'Online',
+      status: 'Offline',
       fA: '',
       faEnabled: false,
-      rank: 3,
-      level: 250,
-      totalloss: 80,
-      totalWins: 50,
-      totalMatches: 130,
+      rank: 0,
+      level: 0,
+      totalloss: 0,
+      totalWins: 0,
+      totalMatches: 0,
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU,',
     },
   });
 
@@ -50,14 +52,16 @@ async function main() {
     create: {
       login: 'Naykee',
       hash: await argon.hash('Naykee'),
-      status: 'Playing',
+      status: 'Offline',
       fA: 'salutcava',
       faEnabled: true,
-      rank: 1,
-      level: 950,
-      totalloss: 10,
-      totalWins: 150,
-      totalMatches: 160,
+      rank: 0,
+      level: 0,
+      totalloss: 0,
+      totalWins: 0,
+      totalMatches: 0,
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU,',
     },
   });
 
@@ -67,63 +71,69 @@ async function main() {
     create: {
       login: 'CasperLeFantome',
       hash: await argon.hash('CasperLeFantome'),
-      status: 'Playing',
+      status: 'Offline',
       fA: 'salutcava',
       faEnabled: false,
-      rank: 1,
-      level: 950,
-      totalloss: 10,
-      totalWins: 150,
-      totalMatches: 160,
+      rank: 0,
+      level: 0,
+      totalloss: 0,
+      totalWins: 0,
+      totalMatches: 0,
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU,',
     },
   });
 
   const cersei_lannister = await prisma.user.upsert({
-	where: { login: 'cersei_lannister' },
-	update: {},
-	create: {
-		login: 'cersei_lannister',
-		hash: await argon.hash('cersei_lannister'),
-		status: 'Playing',
-		fA: 'more wine!',
-		faEnabled: false,
-		rank: 1,
-		level: 950,
-		totalloss: 10,
-		totalWins: 150,
-		totalMatches: 160,
-		// friends: {
-			// connect: [ 
-				// {login : 'arya_stark'},
-				// {login : 'jamie_lannister'},
-				// {login : 'jon_snow'},
-			// ]
-		// },
+    where: { login: 'cersei_lannister' },
+    update: {},
+    create: {
+      login: 'cersei_lannister',
+      hash: await argon.hash('cersei_lannister'),
+      status: 'Offline',
+      fA: 'more wine!',
+      faEnabled: false,
+      rank: 0,
+      level: 0,
+      totalloss: 0,
+      totalWins: 0,
+      totalMatches: 0,
+      // friends: {
+      // connect: [
+      // {login : 'arya_stark'},
+      // {login : 'jamie_lannister'},
+      // {login : 'jon_snow'},
+      // ]
+      // },
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU,',
     },
   });
 
   const arya_stark = await prisma.user.upsert({
-	where: { login: 'arya_stark' },
-	update: {},
-	create: {
-		login: 'arya_stark',
-		hash: await argon.hash('arya_stark'),
-		status: 'Playing',
-		fA: 'salutcava',
-		faEnabled: false,
-		rank: 1,
-		level: 950,
-		totalloss: 10,
-		totalWins: 150,
-		totalMatches: 160,
-		// friends: {
-			// connect: [ 
-				// {login : 'cersei_lannister'},
-				// {login : 'jamie_lannister'},
-				// {login : 'jon_snow'},
-			// ]
-		// },
-	},
+    where: { login: 'arya_stark' },
+    update: {},
+    create: {
+      login: 'arya_stark',
+      hash: await argon.hash('arya_stark'),
+      status: 'Offline',
+      fA: 'salutcava',
+      faEnabled: false,
+      rank: 0,
+      level: 0,
+      totalloss: 0,
+      totalWins: 0,
+      totalMatches: 0,
+      // friends: {
+      // connect: [
+      // {login : 'cersei_lannister'},
+      // {login : 'jamie_lannister'},
+      // {login : 'jon_snow'},
+      // ]
+      // },
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU,',
+    },
   });
 
   const jamie_lannister = await prisma.user.upsert({
@@ -132,47 +142,50 @@ async function main() {
     create: {
       login: 'jamie_lannister',
       hash: await argon.hash('jamie_lannister'),
-      status: 'Playing',
+      status: 'Offline',
       fA: 'salutcava',
       faEnabled: false,
-      rank: 1,
-      level: 950,
-      totalloss: 10,
-      totalWins: 150,
-      totalMatches: 160,
-	//   friends: {
-		// connect: [ 
-			// {login : 'cersei_lannister'},
-			// {login : 'arya_stark'},
-			// {login : 'jon_snow'},
-		// ]
-		// },
+      rank: 0,
+      level: 0,
+      totalloss: 0,
+      totalWins: 0,
+      totalMatches: 0,
+      //   friends: {
+      // connect: [
+      // {login : 'cersei_lannister'},
+      // {login : 'arya_stark'},
+      // {login : 'jon_snow'},
+      // ]
+      // },
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU,',
     },
   });
 
   const jon_snow = await prisma.user.upsert({
-	where: { login: 'jon_snow' },
-	update: {},
-	create: {
-		login: 'jon_snow',
-		hash: await argon.hash('jon_snow'),
-		status: 'Playing',
-		fA: 'salutcava',
-		faEnabled: false,
-		rank: 1,
-		level: 950,
-		totalloss: 10,
-		totalWins: 150,
-		totalMatches: 160,
-		// friends: {
-			// connect: [ 
-				// {login : 'cersei_lannister'},
-				// {login : 'arya_stark'},
-				// {login : 'jamie_lannister'},
-			// ]
-		// },
-	},
-		
+    where: { login: 'jon_snow' },
+    update: {},
+    create: {
+      login: 'jon_snow',
+      hash: await argon.hash('jon_snow'),
+      status: 'Offline',
+      fA: 'salutcava',
+      faEnabled: false,
+      rank: 0,
+      level: 0,
+      totalloss: 0,
+      totalWins: 0,
+      totalMatches: 0,
+      // friends: {
+      // connect: [
+      // {login : 'cersei_lannister'},
+      // {login : 'arya_stark'},
+      // {login : 'jamie_lannister'},
+      // ]
+      // },
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU,',
+    },
   });
 
   const globalInfo = await prisma.globalInformation.upsert({
@@ -181,15 +194,15 @@ async function main() {
     create: {
       totalPlayers: 4,
     },
-  })
+  });
 
   const WelcomeChannel = await prisma.channel.upsert({
     where: { name: 'WelcomeChannel' },
     update: {},
     create: {
       name: 'WelcomeChannel',
-      members: {connect: {login: 'CasperLeFantome'}},
-      admins: {connect: {login: 'CasperLeFantome'}},
+      members: { connect: { login: 'CasperLeFantome' } },
+      admins: { connect: { login: 'CasperLeFantome' } },
       type: 'public',
     },
   });

@@ -126,5 +126,5 @@ model FriendRequest {
 model GlobalInformation {
   id           String @id @unique @default(uuid())
   pid          String @unique @default("1")
-  totalPlayers Int?
+  totalPlayers Int?	@default(0)
 }
