@@ -5,7 +5,7 @@ import { GameService } from 'src/game/game.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
-  providers: [UserService, GameService, PrismaService],
+  providers: [UserService, PrismaService],
   controllers: [UserController],
 })
 export default class UserModule {}

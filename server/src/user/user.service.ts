@@ -11,8 +11,7 @@ import { GameService } from 'src/game/game.service';
 @Injectable()
 export class UserService {
   constructor(
-    private prisma: PrismaService,
-    private gameService: GameService,
+    private prisma: PrismaService, // private gameService: GameService,
   ) {}
 
   async searchUser(nick: string) {
@@ -150,26 +149,4 @@ export class UserService {
     });
     return user;
   }
-
-  async updateUserGameStat(player: string, iswinner: boolean, score: number) {
-    const user = await this.prisma.user.update({
-      where: { login: player },
-      data: {
-        totalMatches: { increment: 1 },
-        totalWins: iswinner ? { increment: 1 } : { increment: 0 },
-        totalloss: iswinner ? { increment: 0 } : { increment: 1 },
-        level: { increment: score },
-      },
-    });
-  }
-
-  // async updateRankOfAllUsers() {
-  //   const sortedUsers = await this.gameService.getLeaderBoard();
-  //   sortedUsers.map(async (element: any, index: number) => {
-  //     await this.prisma.user.update({
-  //       where: { login: element.login },
-  //       data: { rank: index + 1 },
-  //     });
-  //   });
-  // }
 }
