@@ -55,14 +55,14 @@ export class GameGateway
   @SubscribeMessage('joinRoom')
   async handlejoinRoom(client: Socket, payload: string): Promise<void> {
     let room: gameDto | undefined = this.games.find(
-      (element) => element['players'].length === 1,
+      (element) => element.players.length === 1,
     );
     if (this.games.length === 0 || room === undefined) {
       room = {
         id: payload,
         createdDate: new Date(),
         totalSet: 1,
-        totalPoint: 1,
+        totalPoint: 6,
         mapName: 'Default',
         power: false,
         isFull: false,
