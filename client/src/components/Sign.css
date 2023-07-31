@@ -1,4 +1,4 @@
-.sign{
+.sign {
     /* background-color: blueviolet; */
     /* display: flex; */
     /* justify-content: flex-end; 
@@ -6,31 +6,31 @@
     /* justify-content: space-around; */
 }
 
-.sign-intro{
+.sign-intro {
     color: aqua;
     text-align: center;
 }
 
-.sign-inputs{
+.sign-inputs {
     /* justify-content: space-around; */
     /* display: flex;
     flex-direction: column; */
     /* justify-content: space-around; */
 }
 
-input{
+.input-sign {
     background: rgb(29, 29, 46);
-    box-shadow: 0 8px 32px 0 rgba(90,90,150,0.56);
+    box-shadow: 0 8px 32px 0 rgba(90, 90, 150, 0.56);
     border-radius: 2rem;
-    height: 2.95rem; 
+    height: 2.95rem;
     width: 100%;
     padding: 1rem;
     border: none;
     outline: none;
-    color:#ece8ef;
+    color: #ece8ef;
     opacity: 0.75;
     font-size: 1rem;
-    font-weight:bolder;
+    font-weight: bolder;
 }
 
 input :focus {
@@ -41,7 +41,6 @@ input :focus {
 .error-message {
     color: red;
     font-size: 9px;
-
 }
 
 /* .custom-file-upload {
@@ -124,6 +123,3 @@ input :focus {
     letter-spacing: 0.05rem;
     opacity: 0.9;
 } */
-
-
-

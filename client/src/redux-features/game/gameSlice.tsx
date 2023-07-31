@@ -16,6 +16,7 @@ export interface GameState {
     MatchesWon: [];
     opponent: string;
     leaderboard: UserLeaderBoard[];
+	onGamePage: number;
     // Rank: number;
 }
 
@@ -31,6 +32,7 @@ const initialState: GameState = {
     MatchesWon: [],
     opponent: "",
     leaderboard: [],
+	onGamePage: 0,
     // rank: 0,
 };
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -78,9 +80,9 @@ export const gameSlice = createSlice({
         ) => {
             state.leaderboard = action.payload;
         },
-        // updateActualUserRank: (state, action: PayloadAction<number>) => {
-        //     state.rank = action.payload;
-        // },
+        updateOnGamePage: (state, action: PayloadAction<number>) => {
+            state.onGamePage = action.payload;
+        },
     },
 });
 
@@ -97,6 +99,7 @@ export const {
     updateMatchesWon,
     updateOpponent,
     updateLeaderBoard,
+	updateOnGamePage,
 } = gameSlice.actions;
 export const selectTotalMatchesPlayed: any = (state: RootState) =>
     state.persistedReducer.game.totalMatchesPlayed;
@@ -121,6 +124,8 @@ export const selectOpponent = (state: RootState) =>
     state.persistedReducer.game.opponent;
 export const selectLeaderBoard = (state: RootState) =>
     state.persistedReducer.game.leaderboard;
+export const selectonGamePage = (state: RootState) =>
+    state.persistedReducer.game.onGamePage;
 
 export function FetchTotalPlayers() {
     return async (dispatch: any, getState: any) => {

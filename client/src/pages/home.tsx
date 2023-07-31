@@ -16,9 +16,8 @@ import LeaderboardRow from "./../components/Leaderboard/Skeleton.tsx";
 import {
     FetchLeaderBoard,
     selectLeaderBoard,
-    updateLeaderBoard,
+	updateOnGamePage
 } from "../redux-features/game/gameSlice.tsx";
-import { UserLeaderBoard } from "../types/users/userType.ts";
 
 // export const HomeSock = io('http://localhost:4001/home');
 
@@ -40,6 +39,7 @@ function HomePage() {
     };
 
     React.useEffect(() => {
+		dispatch(updateOnGamePage(0))
         dispatch(FetchLeaderBoard());
     }, []);
 
