@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common';
 import { FriendshipService } from '../../friendship/friendship.service';
 
 
-@WebSocketGateway(4002, {cors:'*'}) // we want every front and client to be able to connect with our gateway
+@WebSocketGateway(4002, {cors:'http://localhost:3000'}) // we want every front and client to be able to connect with our gateway
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() server : Server;
 
@@ -37,8 +37,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// Handling playing button from channel conversation
 	@SubscribeMessage('RequestPlayingToServer')
 	async RequestPlayingToServer(@ConnectedSocket() socket: Socket, @MessageBody() body: any){
-		// console.log(`rooms dans lesquels le sender ${body.sender} est : `, socket.rooms)
-		this.server.to(body.receiver).emit('RequestPlayingFromServer', body)
+		const [socketId, roomName] = [...socket.rooms]
+		console.log(`rooms dans lesquels le sender ${body.sender}  et le receiver est: ${body.receiver} : `, roomName)
+		const roomId = socket.handshake.query.roomId as string;
+		// console.log("la roomId", roomId);
+		this.server.in(roomName).emit('RequestPlayingFromServer', body)
 	}
 
 	@SubscribeMessage('AnswerPlayingToServer')

@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button, Tooltip } from '@mui/material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BlockUser from './BlockUser';
 import { useAppSelector } from '../../utils/redux-hooks';
 import { selectDisplayedChannel, } from '../../redux-features/chat/channelsSlice';
@@ -57,6 +57,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	let channelAvatar : string | undefined = 'error';
 
 	const channel: ChannelModel = useAppSelector(selectDisplayedChannel) || emptyChannel;
+	console.warn("channel ", channel);
 	const isPrivateConv : boolean = channel.members?.length === 2 && channel.type === 'privateConv' ? true : false;
 
 	const isAdmin : boolean = channel.admins.some(admin => admin.login === currentUser) || currentUser === channel.ownedById;
@@ -66,9 +67,11 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
     // the name of the channel should be the name of
     // the channel member that is not the current user
     if (isPrivateConv) {
-        if (channel.members[0].login === currentUser) {
-            channelName = channel.createdBy.login;
-            channelAvatar = channel.createdBy.avatar;
+		if (channel.members[0].login === currentUser) {
+			// channelName = channel.createdBy.login;
+            // channelAvatar = channel.createdBy.avatar;
+			channelName = channel.members[1].login;
+            channelAvatar = channel.members[1].avatar;
         } else {
             channelName = channel.members[0].login;
             channelAvatar = channel.members[0].avatar;
@@ -79,9 +82,15 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
     }
 
     const [openBlock, setOpenBlock] = useState<boolean>(false);
+	const [openPlay, setOpenPlay] = useState<boolean>(false);
+
 
 	const handleCloseBlock = () => {
 		setOpenBlock(false);
+	}
+
+	const handleClosePlay = () => {
+		setOpenPlay(false);
 	}
 
 	const handleProfile = async (name: string) => {
@@ -105,13 +114,16 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 			sender: currentUser,
 			receiver: channelName
 		})
+		// setOpenPlay(true)
 	}
-	
-	socketRef.current?.off('RequestPlayingFromServer').on('RequestPlayingFromServer', (senderReceiver)=> {
-		if (currentUser === senderReceiver.receiver){
-			setOpenBlock(true)
-		}
+
+	socketRef.current?.on('RequestPlayingFromServer', (senderReceiver) => {
+		console.log("Open is true ", senderReceiver.receiver)
+		setOpenPlay(true)
+		// if (currentUser === senderReceiver.receiver){
+		// }
 	})
+	  
 	return (
 		<Box 
 			p={2}
@@ -168,7 +180,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 				</Stack>
 			</Stack>
 			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
-			{openBlock && <PlayConfirmation open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
+			{openPlay === true && <PlayConfirmation open={openPlay} handleClose={handleClosePlay} socketRef={socketRef} sender={currentUser} receiver={channelName}/>}
 		</Box>
 		)
 }
