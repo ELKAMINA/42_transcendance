@@ -1,14 +1,10 @@
 import Grid from "@mui/material/Grid"; // Grid version 1
 import { Typography } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useAppSelector } from "../../utils/redux-hooks";
 import { gameInfo } from "../../data/gameInfo";
-import { selectCurrentUser } from "../../redux-features/auth/authSlice";
+import Navbar from "../../components/NavBar";
 
-interface Myprops {
-    nickname: string | null;
-}
 
 const halfGridStyle = {
     height: "100vh",
@@ -22,20 +18,28 @@ const waitingGridStyle = {
 };
 
 interface PongProps {
-    infos: gameInfo;
-    nickname: string;
+    room: gameInfo,
 }
 
-// export const Matchmaking: React.FC<PongProps> = ({ infos }) => {
-export const Matchmaking = () => {
+export const Matchmaking: React.FC<PongProps> = ({ room }) => {
+    const currentRoute = window.location.pathname;
+    const [versus, setVersusScreen] = useState(false)
     useEffect(() => {
-        return () => {};
-    }, []);
+        let timerId: any;
+        if (room.isFull === true) {
+            setVersusScreen(true)
+            timerId = setTimeout(() => {
+                setVersusScreen(false);
+            }, 4000);
+        }
+        return () => clearTimeout(timerId);
+    }, [room.isFull]);
 
     return (
         <>
+            <Navbar currentRoute={currentRoute} />
             <Grid container spacing={1} alignItems="center">
-                {false && (
+                {versus === true && (
                     <>
                         <Grid
                             container
@@ -71,7 +75,7 @@ export const Matchmaking = () => {
                                         textTransform: "uppercase",
                                     }}
                                 >
-                                    Joueur 1
+                                    {room.players[0]}
                                 </Typography>
                             </Grid>
                             {/* <Typography variant="h3" noWrap>VS</Typography> */}
@@ -95,13 +99,13 @@ export const Matchmaking = () => {
                                         textTransform: "uppercase",
                                     }}
                                 >
-                                    joueur 2
+                                    {room.players[1]}
                                 </Typography>
                             </Grid>
                         </Grid>
                     </>
                 )}
-                {true && (
+                {!room.isFull && versus === false && (
                     <Grid
                         item
                         xs={12}

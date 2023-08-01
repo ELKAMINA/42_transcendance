@@ -7,9 +7,13 @@ import {
   IsNotEmpty,
   IsString,
 } from 'class-validator';
-import { UserDetails } from 'src/user/types';
 
-export class gameDto {
+export enum GameStatus {
+  WaitingOpponent,
+  Busy,
+  Ended,
+}
+export class GameDto {
   @IsNotEmpty()
   @IsString()
   id: string;
@@ -53,4 +57,18 @@ export class gameDto {
 
   @IsBoolean()
   collided: boolean;
+
+  gameStatus: GameStatus;
+
+  @IsString()
+  boardColor: string;
+
+  @IsString()
+  ballColor: string;
+
+  @IsString()
+  paddleColor: string;
+
+  @IsString()
+  netColor: string;
 }

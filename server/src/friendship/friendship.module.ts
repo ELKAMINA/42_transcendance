@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtModule } from '@nestjs/jwt';
 
 import { UserService } from '../user/user.service';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { FriendshipGateway } from './friendship.gateway';
 import { FriendshipService } from './friendship.service';

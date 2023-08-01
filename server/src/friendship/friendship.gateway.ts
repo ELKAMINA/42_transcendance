@@ -16,14 +16,10 @@ import { MessageBody } from '@nestjs/websockets';
 import { Socket, Server, Namespace } from 'socket.io';
 import { Injectable, Logger, UnauthorizedException, Res, ForbiddenException } from '@nestjs/common';
 
-import { AuthService } from 'src/auth/auth.service';
-import { UserService } from 'src/user/user.service';
+import { AuthService } from '../auth/auth.service';
+import { UserService } from '../user/user.service';
 import { FriendshipService } from './friendship.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-// import { MyMiddleware } from 'src/socket/socket.middleware';
-// import { AuthService } from 'src/auth/auth.service';
-// namespace: '/friendship',
-// cors: { origin: 'http://localhost:3000', credentials: true }
+import { PrismaService } from '../prisma/prisma.service';
 
 @WebSocketGateway({
   namespace: 'friendship',

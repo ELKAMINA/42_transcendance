@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { gameDto } from './dto/game.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UserService } from 'src/user/user.service';
+import { GameDto } from './dto/game.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class GameService {
@@ -10,7 +10,7 @@ export class GameService {
     private userService: UserService,
   ) {}
 
-  async matchCreation(roomInfos: gameDto) {
+  async matchCreation(roomInfos: GameDto) {
     console.log('roomInfos at the end of the game', roomInfos);
     let winner: string;
     if (roomInfos.scorePlayers[0] > roomInfos.scorePlayers[1]) {

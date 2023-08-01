@@ -16,22 +16,11 @@ import {
   import { Socket, Server, Namespace } from 'socket.io';
   import { Injectable, Logger, UnauthorizedException, Res, ForbiddenException } from '@nestjs/common';
   
-  import { AuthService } from 'src/auth/auth.service';
-  import { UserService } from 'src/user/user.service';
-  import { PrismaService } from 'src/prisma/prisma.service';
+  import { AuthService } from '../auth/auth.service';
+  import { UserService } from '../user/user.service';
+  import { PrismaService } from '../prisma/prisma.service';
   import { HomeService } from './home.service';
-  // import { MyMiddleware } from 'src/socket/socket.middleware';
-  // import { AuthService } from 'src/auth/auth.service';
-  // namespace: '/friendship',
-  // cors: { origin: 'http://localhost:3000', credentials: true }
-  
-//   @WebSocketGateway({
-//     namespace: 'profile',
-//     cors: {
-//       origin: ['http://localhost:3000'],
-//       credentials: true,
-//     },
-//   }) // every front client can connect to our gateway. Marks the class as the WebSocket gateway<; This is a socket constructor
+
   @WebSocketGateway(4003, {cors: {
     origin: 'http://localhost:3000',
     credentials: true,

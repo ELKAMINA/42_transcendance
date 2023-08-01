@@ -1,10 +1,10 @@
 import { Get, Body, Post } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/decorators';
+import { Public } from '../decorators';
 import { Query } from '@nestjs/common';
 import { Redirect } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Controller('user')
 @ApiTags('user')

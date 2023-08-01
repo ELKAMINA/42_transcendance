@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import "./chat.css";
 import "./game.css";
-import Navbar from "../components/NavBar";
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import {
     selectonGamePage,
@@ -15,6 +14,9 @@ import HomePage from "./home";
 import Settings from "../components/Game/Settings";
 import { Matchmaking } from "../components/Game/MatchMaking";
 import Pong from "../components/Game/Pong";
+import EndGame from '../components/Game/EndGame'
+import { gameInfo } from "../data/gameInfo";
+import { selectCurrentUser } from "../redux-features/auth/authSlice";
 
 export const socket = io("http://localhost:4010", {
     withCredentials: true,
@@ -34,24 +36,62 @@ function Game() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const onGamePage = useAppSelector(selectonGamePage);
-    const [gameStatus, setGameStatus] = useState(GameStates.SETTINGS);
-    const currentRoute = window.location.pathname;
+    const user = useAppSelector(selectCurrentUser)
+    const [gameStatus, setGameStatus] = useState(GameStates.GAMEON);
     const [socketId, setSocketId] = useState("");
+    const [gameSettings, setGameSettings] = useState<gameInfo>({
+            id: "",
+            createdDate: new Date(),
+            totalSet: 0,
+            mapName: "",
+            power: false,
+            isFull: false,
+            players: [],
+            scorePlayers: [],
+            playerOneId: "",
+            playerTwoId: "",
+            gameStatus: GameStates.SETTINGS,
+            totalPoint: 2,
+            boardColor: "#ffffff",
+            ballColor: "#000000",
+            paddleColor: "#000000",
+            netColor: "#000000",
+    })
 
     const renderGameComponent = () => {
         switch (gameStatus) {
             case GameStates.SETTINGS:
                 return <Settings />;
             case GameStates.MATCHMAKING:
-                return <Matchmaking />;
+                return <Matchmaking room={gameSettings}/>
             case GameStates.GAMEON:
                 return <Pong />;
-            // case GameStates.ENDGAME:
-            //     return <EndGame />;
+            case GameStates.ENDGAME:
+                return <EndGame />;
             default:
                 return <HomePage />;
         }
     };
+
+    socket.off('updateComponent').on('updateComponent', (StateAndRoom) => {
+        console.log(" 4 - Normalement je rentre la avec state = Settings(0) et Room = R ", StateAndRoom);
+        if (StateAndRoom.room){
+            console.log('i got here ')
+            setGameSettings(StateAndRoom.room)
+        }
+        setGameStatus(StateAndRoom.status);
+    })
+
+    socket.off('updateGameSettings').on('updateGameSettings', (StateAndRoom) => {
+        if (StateAndRoom.room){
+            console.log(' - Normalement uen room créée ', StateAndRoom);
+            setGameSettings(StateAndRoom.room)
+        }
+        setGameStatus(StateAndRoom.status);
+    })
+    useEffect(() => {
+
+    }, [gameStatus])
 
     useEffect(() => {
         socket.connect();
@@ -80,7 +120,6 @@ function Game() {
     console.log(`[Game] onGamePage: ${onGamePage}`);
     return (
         <div>
-            <Navbar currentRoute={currentRoute} />
             {renderGameComponent()}
         </div>
     );

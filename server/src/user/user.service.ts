@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as argon from 'argon2';
-import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ForbiddenException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { send } from 'process';
 import { UserUpdates } from './types';
-import { GameService } from 'src/game/game.service';
 
 @Injectable()
 export class UserService {

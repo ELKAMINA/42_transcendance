@@ -1,11 +1,11 @@
 import { Body, Get, Post } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/decorators';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Public } from '../decorators';
+import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 
-import { ChannelService } from 'src/channel/channel.service';
+import { ChannelService } from '../channel/channel.service';
 import { Channel, User } from '@prisma/client';
 
 type DateTime = Date;

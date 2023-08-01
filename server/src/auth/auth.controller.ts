@@ -26,7 +26,7 @@ import { GetCurrentUserOAuth } from '../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId } from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
 import { User } from '@prisma/client';
-import { Jwt2faAuthGuard } from 'src/guards/jwt-2fa-auth.guard';
+import { Jwt2faAuthGuard } from '../guards/jwt-2fa-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')

@@ -38,6 +38,7 @@ export default function Settings() {
     };
 
     const sendSettings = () => {
+        console.log(" 5 - Normalement im emit les settings ");
         socket.emit("RequestGameSettings", {
             board: board,
             net: net,

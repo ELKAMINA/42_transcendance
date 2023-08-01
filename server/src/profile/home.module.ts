@@ -5,7 +5,7 @@ import { HomeService } from './home.service';
 import { ProfileGateway } from './home.gateway';
 import { HomeController } from './home.controller';
 import { UserService } from '../user/user.service';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { FriendshipService } from '../friendship/friendship.service';
 
