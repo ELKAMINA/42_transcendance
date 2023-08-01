@@ -1,8 +1,7 @@
 /* *** External imports *** */
 import * as React from "react";
-import { Box, Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import Button from "@mui/material/Button";
-import Cookies from "js-cookie";
 // import { useDispatch } from 'react-redux';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks.tsx";
 /* *** Internal imports *** */
@@ -10,14 +9,13 @@ import "./home.css";
 import Navbar from "../components/NavBar.tsx";
 import { selectCurrentUser } from "../redux-features/auth/authSlice.tsx";
 import { useNavigate } from "react-router-dom";
-import { white } from "material-ui/styles/colors";
-import api from "../utils/Axios-config/Axios.tsx";
 import LeaderboardRow from "./../components/Leaderboard/Skeleton.tsx";
 import {
     FetchLeaderBoard,
     selectLeaderBoard,
 	updateOnGamePage
 } from "../redux-features/game/gameSlice.tsx";
+import { client_gameType } from "../data/gameInfo.tsx";
 
 // export const HomeSock = io('http://localhost:4001/home');
 
@@ -35,7 +33,7 @@ function HomePage() {
     // const r_tokenAbbr = `${refresh_token.slice(0,10)}...`
 
     const play = () => {
-        navigate("/game");
+        navigate(`/game?data`, { state: { data: {client_gameType: client_gameType.RANDOM, sender: "", receiver: ""}}});
     };
 
     React.useEffect(() => {
@@ -52,25 +50,12 @@ function HomePage() {
         <>
             <Navbar currentRoute={currentRoute} />
             <Box
-                sx={
-                    {
-                        // backgroundColor: "blueviolet",
-                        // display: "flex",
-                        // flexDirection: "row",
-                        // flexGrow: 2,
-                        // justifyContent: "space-between",
-                    }
-                }
             >
                 <Stack
                     sx={{
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        // width: "100vw",
-                        // height: "100vh",
-                        // justifyContent: "space-evenly",
-                        // backgroundColor: "yellow",
                     }}
                 >
                     <h1 className="welcome">{welcome}</h1>
@@ -89,9 +74,6 @@ function HomePage() {
                         PLAY
                     </Button>
                 </Stack>
-                {/* <Stack>
-                <Typography> Leaderboard </Typography>
-            </Stack> */}
                 <Stack
                     sx={{
                         display: "flex",

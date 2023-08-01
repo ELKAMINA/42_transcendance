@@ -16,3 +16,8 @@ export interface gameInfo {
     paddleColor: string,
     netColor: string,
 }
+
+export enum client_gameType{
+    RANDOM,
+    ONETOONE,
+}

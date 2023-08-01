@@ -15,6 +15,7 @@ import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { Socket } from 'socket.io-client';
 import AdminMenu from '../AdminMenu';
 import GiveOwnership from '../GiveOwnership';
+import PlayConfirmation from './Play'
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
@@ -97,7 +98,20 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 			console.log('ERROR from request with params ', e)
 		})
 	}
+
+	const handleGame = () => {
+		console.log(`The sender is : ${currentUser} and the receiver is : ${channelName}`)
+		socketRef.current?.emit('RequestPlayingToServer', {
+			sender: currentUser,
+			receiver: channelName
+		})
+	}
 	
+	socketRef.current?.off('RequestPlayingFromServer').on('RequestPlayingFromServer', (senderReceiver)=> {
+		if (currentUser === senderReceiver.receiver){
+			setOpenBlock(true)
+		}
+	})
 	return (
 		<Box 
 			p={2}
@@ -133,7 +147,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					</Stack>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} spacing={3}>
-					<IconButton sx={{color: '#07457E'}}>
+					<IconButton sx={{color: '#07457E'}} onClick={handleGame}>
 						<SportsEsportsIcon />
 					</IconButton>
 					{isPrivateConv &&
@@ -154,6 +168,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 				</Stack>
 			</Stack>
 			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
+			{openBlock && <PlayConfirmation open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
 		</Box>
 		)
 }

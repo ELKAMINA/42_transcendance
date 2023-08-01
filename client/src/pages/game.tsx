@@ -1,7 +1,6 @@
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
 import "./chat.css";
 import "./game.css";
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
@@ -34,11 +33,17 @@ enum GameStates {
 
 function Game() {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useAppDispatch();
     const onGamePage = useAppSelector(selectonGamePage);
     const user = useAppSelector(selectCurrentUser)
     const [gameStatus, setGameStatus] = useState(GameStates.GAMEON);
     const [socketId, setSocketId] = useState("");
+    
+    const client_gameType = location.state.data;
+    // console.log("gametype From Homepage ", gameType)
+    
+    
     const [gameSettings, setGameSettings] = useState<gameInfo>({
             id: "",
             createdDate: new Date(),
@@ -97,6 +102,7 @@ function Game() {
         socket.connect();
         socket.off("connect").on("connect", () => {
             console.log(socket.id);
+            socket.emit('initPlayground', client_gameType)
             if (onGamePage === 0) {
                 console.log("[Game] State", 0);
                 dispatch(updateOnGamePage(1));

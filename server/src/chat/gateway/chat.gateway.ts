@@ -1,4 +1,4 @@
-import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { MessageDto } from '../dto/messagePayload.dto';
 import { ChatService } from '../chat.service';
 import { Server, Socket } from 'socket.io';
@@ -34,6 +34,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
 	}
   
+	// Handling playing button from channel conversation
+	@SubscribeMessage('RequestPlayingToServer')
+	async RequestPlayingToServer(@ConnectedSocket() socket: Socket, @MessageBody() body: any){
+		// console.log(`rooms dans lesquels le sender ${body.sender} est : `, socket.rooms)
+		this.server.to(body.receiver).emit('RequestPlayingFromServer', body)
+	}
+
+	@SubscribeMessage('AnswerPlayingToServer')
+	async AnswerPlayingToServer(@ConnectedSocket() socket: Socket, @MessageBody() body: any){
+		console.log(`rooms ${socket.rooms} && body : ${body}`)
+		// this.server.to(body.receiver).emit('RequestPlayingFromServer', body)
+	}
+
 	@SubscribeMessage('blockUser')
 	async handleBlockUser(socket: Socket, @MessageBody() body: any,
 	): Promise<void> {
