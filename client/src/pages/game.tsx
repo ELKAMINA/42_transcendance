@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./chat.css";
 import "./game.css";
@@ -44,7 +44,7 @@ function Game() {
     const user = useAppSelector(selectCurrentUser);
     const [gameStatus, setGameStatus] = useState(GameStates.GAMEON);
     const [socketId, setSocketId] = useState("");
-    const [playButtonInfo, setplayButtonInfo] = useState(location.state.data);
+    const playButtonInfo = useRef(location.state.data);
 
     const testPlayButtonInfo = () => {
         let ptype = prompt(
@@ -134,9 +134,11 @@ function Game() {
             if (onGamePage === 0) {
                 console.log("[Game] State", 0);
                 dispatch(updateOnGamePage(1));
-                setplayButtonInfo(testPlayButtonInfo());
+                playButtonInfo.current = testPlayButtonInfo();
+                // console.log("[GATEWAY] playButtonInfo:", playButtonInfo);
                 // ADD THE USER SOCKET TO THE POOL SOCKET
-                socket.emit("initPlayground", playButtonInfo);
+                // socket.emit("initPlayground", playButtonInfo); // FOR PRODUCTION
+                socket.emit("initPlayground", playButtonInfo.current); // FOR TEST
             } else if (onGamePage === 1) {
                 // REFRESH OR RECONNECTION OF THE USER
                 console.warn("[Game] State", 1);
