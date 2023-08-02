@@ -95,7 +95,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('initPlayground')
   async initPlayground(@ConnectedSocket() client: Socket, @Body() body) {
     // WARNING: ADD A SECURITY ??
-    let result: GameStates;
+    let result = GameStates.HOMEPAGE;
     let roomAssigned: GameDto; // UNDEFINED
     let socketClientRoomId = client.id; // STORE THE SOCKET ID OR THE ROOM TO COMMUNICATE
 
@@ -119,7 +119,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.userService.updateData(user.nickname, { status: 'Playing' });
       // ADD THE SOCKET USER TO THE SOCKETS POOL
       this.socketsPool.set(user.nickname, client.id);
-      // CASE OF RANDOM MATCH FROM HOME OR NAVBAR
+      /*** CASE OF RANDOM MATCH FROM HOME OR NAVBAR ***/
       if (body.type === server_gameType.RANDOM) {
         result = this.assignAroomToPlayer(user.nickname);
         console.log('[GATEWAY] Statut pour render component ', result);
@@ -127,9 +127,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (result === 1) {
           // SAFETY OF PLAYING AGAINST THE SAME PLAYER
           // CHECK IF THE SECOND PLAYER HAS A WAITING ROOM WITH HIS NAME
-          const amItheSndPlayer = this.AllRooms.find((obj) =>
-            obj.players.includes(user.nickname),
-          );
+          const amItheSndPlayer = this.userAlreadyInRoom(user.nickname);
           // IF THE SECOND PLAYER HAS ALREADY A ROOM OF HIS NAME
           if (amItheSndPlayer) result = GameStates.HOMEPAGE;
           else {
@@ -152,6 +150,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // CASE OF ONE TO ONE MATCH FROM CHANNEL
       else if (body.type === server_gameType.ONETOONE) {
         console.log('[GATEWAY] Match type: ONE TO ONE');
+        // CHECK IF BOTH PLAYERS ARE NOT ALREADY IN A ROOM
+        // IF ONE ON BOTH === TRUE
+        // RESULT ==> GameStates.HOMEPAGE;
+        // IF NOT FOR BOTH
+        // THEN SENDER --> GameStates.SETTINGS
+        // THEN RECEIVER --> GameStates.MATHCMAKING
+        const senderRoom = this.userAlreadyInRoom(body.sender);
+        const receiverRoom = this.userAlreadyInRoom(body.receiver);
+        if (senderRoom || receiverRoom) {
+          console.error('[GATEWAY - ONE-TO-ONE] One user is already in a rrom');
+          result = GameStates.HOMEPAGE;
+        } else {
+          if (user.nickname === body.sender) {
+            result = GameStates.SETTINGS;
+          } else {
+            result = GameStates.MATCHMAKING;
+          }
+        }
       } else {
         console.error('[GATEWAY] Match type: UNKNOW');
       }
@@ -173,7 +189,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.handshake.headers.cookie,
     );
     console.log("6 - Normalement c'est Babolat ", user.nickname);
-
+    let roomId = client.id;
     const room: GameDto = {
       id: user.nickname,
       createdDate: new Date(),
@@ -198,21 +214,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     room.scorePlayers.push(0);
     this.AllRooms.push(room);
     client.join(room.id);
+    if (body.roomInfo.type === server_gameType.ONETOONE) {
+      roomId = room.id;
+      room.players.push(body.roomInfo.receiver);
+      // TODO: ADD SAFETY CHECK IF THE RECEIVER SOCKETS IS NOT ANYMORE IN THE POOL
+      room.playerTwoId = this.socketsPool.get(body.roomInfo.receiver);
+      const receiverSocket = await this.server
+        .in(room.playerTwoId)
+        .fetchSockets();
+      room.isFull = true;
+      room.gameStatus = GameStatus.Busy;
+      receiverSocket.join(roomId);
+    }
     console.log('7 - Normalement uen room créée ', this.AllRooms);
-    this.server.to(client.id).emit('updateGameSettings', {
+    this.server.to(roomId).emit('updateGameSettings', {
       status: GameStates.MATCHMAKING,
       room: room,
     });
-  }
-
-  assignAroomToPlayer(nickname: string) {
-    const possibleRooms = this.AllRooms.filter(
-      (el) => el.gameStatus === GameStatus.WaitingOpponent,
-    );
-    console.log('Toutes les rooms possibles ? ', possibleRooms);
-    if (possibleRooms.length === 0)
-      return GameStates.SETTINGS; // pas de room en attente => création
-    else return GameStates.MATCHMAKING; // room en attente d'opponent
   }
 
   async handleDisconnect(client: Socket) {
@@ -234,10 +252,33 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('[GATEWAY] AllRooms: ', this.AllRooms);
     // DELETE THE USERFROM THE SOCKETS POOL
     this.socketsPool.delete(user.nickname);
+
+    // TODO:
+    // HANDLE IN A BETTER WAY THE MODIFICATION OF THE STATUS
+    // OR MAKE SURE TO NOT HAVE SIDE EFFECT IF THE USER IS ALREADY PLAYING
     this.userService.updateData(user.nickname, { status: 'Online' });
     // console.log(
     //   `Socket disconnection >>${client.id}<< user: >>${user.nickname}<<`,
     // );
+  }
+
+  /*** UTILS ***/
+
+  assignAroomToPlayer(nickname: string) {
+    const possibleRooms = this.AllRooms.filter(
+      (el) => el.gameStatus === GameStatus.WaitingOpponent,
+    );
+    console.log('Toutes les rooms possibles ? ', possibleRooms);
+    if (possibleRooms.length === 0)
+      return GameStates.SETTINGS; // pas de room en attente => création
+    else return GameStates.MATCHMAKING; // room en attente d'opponent
+  }
+
+  // CHECK IF A USER IS ALREADY IN A ROOM
+  userAlreadyInRoom(userName: string): GameDto | undefined {
+    const room = this.AllRooms.find((obj) => obj.players.includes(userName));
+    console.log('[GATEWAY] userAlreadyInRoom: ', room);
+    return room;
   }
 
   // FIND A ROOM WHICH IS RELATED TO THE USER AS OWNER AND IN WAITING OF OPPONENT

@@ -5,7 +5,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { gameInfo } from "../../data/gameInfo";
 import Navbar from "../../components/NavBar";
 
-
 const halfGridStyle = {
     height: "100vh",
     background: "rgba(255, 255, 255, 0.5)",
@@ -18,22 +17,24 @@ const waitingGridStyle = {
 };
 
 interface PongProps {
-    room: gameInfo,
+    room: gameInfo;
 }
 
 export const Matchmaking: React.FC<PongProps> = ({ room }) => {
     const currentRoute = window.location.pathname;
-    const [versus, setVersusScreen] = useState(false)
+    const [versus, setVersusScreen] = useState(false);
     useEffect(() => {
         let timerId: any;
         if (room.isFull === true) {
-            setVersusScreen(true)
+            setVersusScreen(true);
             timerId = setTimeout(() => {
                 setVersusScreen(false);
             }, 4000);
         }
         return () => clearTimeout(timerId);
-    }, [room.isFull]);
+    }, []);
+
+    useEffect(() => {}, [room]);
 
     return (
         <>

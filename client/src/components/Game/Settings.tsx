@@ -10,8 +10,14 @@ import { MuiColorInput } from "mui-color-input";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { socket } from "../../pages/game";
+import { type } from "os";
+import { roomInfo } from "../../data/gameInfo";
 
-export default function Settings() {
+interface SettingsProps {
+    clickPlay: roomInfo;
+}
+
+const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
     const [board, setBoardColor] = useState("#000000");
@@ -45,6 +51,7 @@ export default function Settings() {
             ball: ball,
             paddle: paddle,
             points: points,
+            roomInfo: clickPlay,
         });
         setOpen(false);
     };
@@ -163,4 +170,6 @@ export default function Settings() {
             </Dialog>
         </div>
     );
-}
+};
+
+export default Settings;

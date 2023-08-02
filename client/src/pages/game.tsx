@@ -86,7 +86,7 @@ function Game() {
     const renderGameComponent = () => {
         switch (gameStatus) {
             case GameStates.SETTINGS:
-                return <Settings />;
+                return <Settings clickPlay={playButtonInfo.current} />;
             case GameStates.MATCHMAKING:
                 return <Matchmaking room={gameSettings} />;
             case GameStates.GAMEON:
