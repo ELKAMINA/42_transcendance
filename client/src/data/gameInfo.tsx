@@ -10,14 +10,20 @@ export interface gameInfo {
     scorePlayers: number[];
     playerOneId: string;
     playerTwoId: string;
-    gameStatus: number,
-    boardColor: string,
-    ballColor: string,
-    paddleColor: string,
-    netColor: string,
+    gameStatus: number;
+    boardColor: string;
+    ballColor: string;
+    paddleColor: string;
+    netColor: string;
 }
 
-export enum client_gameType{
+export enum client_gameType {
     RANDOM,
     ONETOONE,
+}
+
+export interface roomInfo {
+    type: client_gameType;
+    sender: string;
+    receiver: string;
 }

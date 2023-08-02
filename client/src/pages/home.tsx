@@ -13,7 +13,7 @@ import LeaderboardRow from "./../components/Leaderboard/Skeleton.tsx";
 import {
     FetchLeaderBoard,
     selectLeaderBoard,
-	updateOnGamePage
+    updateOnGamePage,
 } from "../redux-features/game/gameSlice.tsx";
 import { client_gameType } from "../data/gameInfo.tsx";
 
@@ -33,11 +33,19 @@ function HomePage() {
     // const r_tokenAbbr = `${refresh_token.slice(0,10)}...`
 
     const play = () => {
-        navigate(`/game?data`, { state: { data: {client_gameType: client_gameType.RANDOM, sender: "", receiver: ""}}});
+        navigate(`/game?data`, {
+            state: {
+                data: {
+                    type: client_gameType.RANDOM,
+                    sender: "",
+                    receiver: "",
+                },
+            },
+        });
     };
 
     React.useEffect(() => {
-		dispatch(updateOnGamePage(0))
+        dispatch(updateOnGamePage(0));
         dispatch(FetchLeaderBoard());
     }, []);
 
@@ -49,8 +57,7 @@ function HomePage() {
     const content = (
         <>
             <Navbar currentRoute={currentRoute} />
-            <Box
-            >
+            <Box>
                 <Stack
                     sx={{
                         display: "flex",

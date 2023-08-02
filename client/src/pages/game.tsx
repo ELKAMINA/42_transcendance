@@ -13,9 +13,10 @@ import HomePage from "./home";
 import Settings from "../components/Game/Settings";
 import { Matchmaking } from "../components/Game/MatchMaking";
 import Pong from "../components/Game/Pong";
-import EndGame from '../components/Game/EndGame'
+import EndGame from "../components/Game/EndGame";
 import { gameInfo } from "../data/gameInfo";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
+import { roomInfo } from "../data/gameInfo";
 
 export const socket = io("http://localhost:4010", {
     withCredentials: true,
@@ -29,6 +30,7 @@ enum GameStates {
     MATCHMAKING,
     GAMEON,
     ENDGAME,
+    HOMEPAGE,
 }
 
 function Game() {
@@ -36,39 +38,38 @@ function Game() {
     const location = useLocation();
     const dispatch = useAppDispatch();
     const onGamePage = useAppSelector(selectonGamePage);
-    const user = useAppSelector(selectCurrentUser)
+    const user = useAppSelector(selectCurrentUser);
     const [gameStatus, setGameStatus] = useState(GameStates.GAMEON);
     const [socketId, setSocketId] = useState("");
-    
-    const client_gameType = location.state.data;
-    // console.log("gametype From Homepage ", gameType)
-    
-    
+
+    const playButtonInfo = location.state.data;
+    console.log("playButtonInfo:", playButtonInfo);
+
     const [gameSettings, setGameSettings] = useState<gameInfo>({
-            id: "",
-            createdDate: new Date(),
-            totalSet: 0,
-            mapName: "",
-            power: false,
-            isFull: false,
-            players: [],
-            scorePlayers: [],
-            playerOneId: "",
-            playerTwoId: "",
-            gameStatus: GameStates.SETTINGS,
-            totalPoint: 2,
-            boardColor: "#ffffff",
-            ballColor: "#000000",
-            paddleColor: "#000000",
-            netColor: "#000000",
-    })
+        id: "",
+        createdDate: new Date(),
+        totalSet: 0,
+        mapName: "",
+        power: false,
+        isFull: false,
+        players: [],
+        scorePlayers: [],
+        playerOneId: "",
+        playerTwoId: "",
+        gameStatus: GameStates.SETTINGS,
+        totalPoint: 2,
+        boardColor: "#ffffff",
+        ballColor: "#000000",
+        paddleColor: "#000000",
+        netColor: "#000000",
+    });
 
     const renderGameComponent = () => {
         switch (gameStatus) {
             case GameStates.SETTINGS:
                 return <Settings />;
             case GameStates.MATCHMAKING:
-                return <Matchmaking room={gameSettings}/>
+                return <Matchmaking room={gameSettings} />;
             case GameStates.GAMEON:
                 return <Pong />;
             case GameStates.ENDGAME:
@@ -78,35 +79,46 @@ function Game() {
         }
     };
 
-    socket.off('updateComponent').on('updateComponent', (StateAndRoom) => {
-        console.log(" 4 - Normalement je rentre la avec state = Settings(0) et Room = R ", StateAndRoom);
-        if (StateAndRoom.room){
-            console.log('i got here ')
-            setGameSettings(StateAndRoom.room)
+    socket.off("updateComponent").on("updateComponent", (StateAndRoom: any) => {
+        console.log(
+            " 4 - Normalement je rentre la avec state = Settings(0) et Room = R ",
+            StateAndRoom
+        );
+        if (StateAndRoom.room) {
+            console.log("i got here ");
+            setGameSettings(StateAndRoom.room);
         }
         setGameStatus(StateAndRoom.status);
-    })
 
-    socket.off('updateGameSettings').on('updateGameSettings', (StateAndRoom) => {
-        if (StateAndRoom.room){
-            console.log(' - Normalement uen room créée ', StateAndRoom);
-            setGameSettings(StateAndRoom.room)
+        if (StateAndRoom.status === GameStates.HOMEPAGE) {
+            dispatch(updateOnGamePage(0));
+            navigate("/welcome");
         }
-        setGameStatus(StateAndRoom.status);
-    })
-    useEffect(() => {
+    });
 
-    }, [gameStatus])
+    socket
+        .off("updateGameSettings")
+        .on("updateGameSettings", (StateAndRoom: any) => {
+            if (StateAndRoom.room) {
+                console.log(" - Normalement uen room créée ", StateAndRoom);
+                setGameSettings(StateAndRoom.room);
+            }
+            setGameStatus(StateAndRoom.status);
+        });
+    useEffect(() => {}, [gameStatus]);
 
     useEffect(() => {
         socket.connect();
         socket.off("connect").on("connect", () => {
             console.log(socket.id);
-            socket.emit('initPlayground', client_gameType)
+            // FIRST CONNECTION OF THE USER
             if (onGamePage === 0) {
                 console.log("[Game] State", 0);
                 dispatch(updateOnGamePage(1));
+                // ADD THE USER SOCKET TO THE POOL SOCKET
+                socket.emit("initPlayground", playButtonInfo);
             } else if (onGamePage === 1) {
+                // REFRESH OR RECONNECTION OF THE USER
                 console.warn("[Game] State", 1);
                 dispatch(updateOnGamePage(0));
                 navigate("/welcome");
@@ -124,11 +136,7 @@ function Game() {
     }, []);
 
     console.log(`[Game] onGamePage: ${onGamePage}`);
-    return (
-        <div>
-            {renderGameComponent()}
-        </div>
-    );
+    return <div>{renderGameComponent()}</div>;
 }
 
 export default Game;
