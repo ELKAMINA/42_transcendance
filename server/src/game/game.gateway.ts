@@ -108,8 +108,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user) {
       console.error('[GATEWAY] USER NOT FOUND');
     }
-    // UPDATE THE USER STATUS
-    this.userService.updateData(user.nickname, { status: 'Playing' });
     const isPlaying = (await this.userService.searchUser(user.nickname)).status;
     console.log('[GATEWAY] isPlaying:', isPlaying);
     // Si user a le statut "isPlaying", renvoi vers HomePage
@@ -117,6 +115,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (isPlaying === 'Playing') {
       result = GameStates.HOMEPAGE;
     } else {
+      // UPDATE THE USER STATUS
+      this.userService.updateData(user.nickname, { status: 'Playing' });
       // ADD THE SOCKET USER TO THE SOCKETS POOL
       this.socketsPool.set(user.nickname, client.id);
       // CASE OF RANDOM MATCH FROM HOME OR NAVBAR
@@ -143,10 +143,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             roomAssigned.gameStatus = GameStatus.Busy;
             roomAssigned.isFull = true;
             client.join(roomAssigned.id);
+            socketClientRoomId = roomAssigned.id;
+            console.log('[GATEWAY] Assigned room ', roomAssigned);
           }
-          const [socketId, roomName] = [...client.rooms];
-          console.log('[GATEWAY] Assigned room ', roomAssigned);
-          socketClientRoomId = roomName;
         }
         console.log('[GATEWAY] le résultat ', result);
       }
@@ -224,10 +223,32 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user) {
       console.error('[GATEWAY] USER NOT FOUND');
     }
+    console.log('[GATEWAY] user: ', user);
+    // DELETE THE ROOM OF THE USER IF HE IS THE OWNER AND ALONE IN THE ROOM
+    const room = this.findWaitingOwnerRoom(user.nickname);
+    if (room) {
+      this.AllRooms = this.AllRooms.filter((element) => {
+        element.id === room.id;
+      });
+    }
+    console.log('[GATEWAY] AllRooms: ', this.AllRooms);
+    // DELETE THE USERFROM THE SOCKETS POOL
     this.socketsPool.delete(user.nickname);
     this.userService.updateData(user.nickname, { status: 'Online' });
     // console.log(
     //   `Socket disconnection >>${client.id}<< user: >>${user.nickname}<<`,
     // );
+  }
+
+  // FIND A ROOM WHICH IS RELATED TO THE USER AS OWNER AND IN WAITING OF OPPONENT
+  findWaitingOwnerRoom(userName: string): GameDto | undefined {
+    const room = this.AllRooms.find(
+      (element) =>
+        element.id === userName &&
+        element.isFull === false &&
+        element.gameStatus === GameStatus.WaitingOpponent,
+    );
+    console.log('[GATEWAY] findWaitingOwnerRoom: ', room);
+    return room;
   }
 }
