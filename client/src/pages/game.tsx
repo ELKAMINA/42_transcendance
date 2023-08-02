@@ -16,7 +16,9 @@ import Pong from "../components/Game/Pong";
 import EndGame from "../components/Game/EndGame";
 import { gameInfo } from "../data/gameInfo";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
+import PlayConfirmation from "../components/Conversation/Play";
 import { roomInfo } from "../data/gameInfo";
+import { current } from "@reduxjs/toolkit";
 
 export const socket = io("http://localhost:4010", {
     withCredentials: true,
@@ -31,6 +33,7 @@ enum GameStates {
     GAMEON,
     ENDGAME,
     HOMEPAGE,
+    TEST,
 }
 
 function Game() {
@@ -41,8 +44,24 @@ function Game() {
     const user = useAppSelector(selectCurrentUser);
     const [gameStatus, setGameStatus] = useState(GameStates.GAMEON);
     const [socketId, setSocketId] = useState("");
+    const [playButtonInfo, setplayButtonInfo] = useState(location.state.data);
 
-    const playButtonInfo = location.state.data;
+    const testPlayButtonInfo = () => {
+        let ptype = prompt(
+            "Type of the room: 0 (RANDOM) or 1 (ONE TO ONE)",
+            "0"
+        );
+        if (!ptype) {
+            ptype = "0";
+        }
+        const type = parseInt(ptype);
+        const sender = prompt("Sender: ael-khat | Anthony", user);
+        const receiver = prompt("Sender: ael-khat | Anthony");
+        console.warn(type, sender, receiver);
+        return { type, sender, receiver };
+    };
+
+    // let playButtonInfo = location.state.data;
     console.log("playButtonInfo:", playButtonInfo);
 
     const [gameSettings, setGameSettings] = useState<gameInfo>({
@@ -115,6 +134,7 @@ function Game() {
             if (onGamePage === 0) {
                 console.log("[Game] State", 0);
                 dispatch(updateOnGamePage(1));
+                setplayButtonInfo(testPlayButtonInfo());
                 // ADD THE USER SOCKET TO THE POOL SOCKET
                 socket.emit("initPlayground", playButtonInfo);
             } else if (onGamePage === 1) {
