@@ -9,6 +9,9 @@ import { PongProps } from "../../data/gameInfo";
 import { socket } from "../../pages/game";
 import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 import { useAppSelector } from "../../utils/redux-hooks";
+import { Button } from "@mui/material";
+import DialogActions from "@mui/material/DialogActions";
+import { useNavigate } from "react-router-dom";
 
 export const EndGame: React.FC<PongProps> = ({ room }) => {
     const theme = useTheme();
@@ -16,9 +19,14 @@ export const EndGame: React.FC<PongProps> = ({ room }) => {
     const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
     const [open, setOpen] = useState(true);
     const currentRoute = window.location.pathname;
+    const navigate = useNavigate();
 
     const handleCancel = () => {
         setOpen(false);
+    };
+
+    const goHome = () => {
+        navigate("/welcome");
     };
 
     return (
@@ -70,6 +78,16 @@ export const EndGame: React.FC<PongProps> = ({ room }) => {
                         </>
                     )}
             </Dialog>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    size="medium"
+                    autoFocus
+                    onClick={goHome}
+                >
+                    Back home
+                </Button>
+            </DialogActions>
         </div>
     );
 };
