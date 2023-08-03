@@ -42,7 +42,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // CONTAINS EVERY CREATED GAME ROOM
   private AllRooms: Array<GameDto> = new Array<GameDto>();
   // CONTAINS EVERY CONNECTED SOCKETS USER
-  private socketsPool: Map<string, string> = new Map<string, string>();
+  private socketsPool: Map<string, Socket> = new Map<string, Socket>();
 
   async handleConnection() {
     this.socketsPool.forEach((element, key, map) => {
@@ -118,7 +118,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // UPDATE THE USER STATUS
       this.userService.updateData(user.nickname, { status: 'Playing' });
       // ADD THE SOCKET USER TO THE SOCKETS POOL
-      this.socketsPool.set(user.nickname, client.id);
+      this.socketsPool.set(user.nickname, client);
       /*** CASE OF RANDOM MATCH FROM HOME OR NAVBAR ***/
       if (body.type === server_gameType.RANDOM) {
         result = this.assignAroomToPlayer(user.nickname);
@@ -209,6 +209,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       paddleColor: body.paddle,
       netColor: body.net,
     };
+
     room.players.push(user.nickname);
     room.scorePlayers.push(0);
     room.scorePlayers.push(0);
@@ -218,19 +219,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       roomId = room.id;
       room.players.push(body.roomInfo.receiver);
       // TODO: ADD SAFETY CHECK IF THE RECEIVER SOCKETS IS NOT ANYMORE IN THE POOL
-      room.playerTwoId = this.socketsPool.get(body.roomInfo.receiver);
-      const receiverSocket = await this.server
-        .in(room.playerTwoId)
-        .fetchSockets();
+      const playerTwoSocket = this.socketsPool.get(body.roomInfo.receiver);
+      room.playerTwoId = playerTwoSocket.id;
+      console.log('[GATEWAY] receiverSocket: ');
       room.isFull = true;
       room.gameStatus = GameStatus.Busy;
-      receiverSocket.join(roomId);
+      playerTwoSocket.join(roomId);
     }
-    console.log('7 - Normalement uen room créée ', this.AllRooms);
-    this.server.to(roomId).emit('updateGameSettings', {
-      status: GameStates.MATCHMAKING,
-      room: room,
-    });
+    if (body.roomInfo.type === server_gameType.RANDOM) {
+      this.server.to(roomId).emit('updateGameSettings', {
+        status: GameStates.MATCHMAKING,
+        room: room,
+      });
+    } else {
+      this.server.to(roomId).emit('updateGameSettings', {
+        status: GameStates.GAMEON,
+        room: room,
+      });
+    }
   }
 
   async handleDisconnect(client: Socket) {
@@ -242,7 +248,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error('[GATEWAY] USER NOT FOUND');
     }
     console.log('[GATEWAY] user: ', user);
-    // DELETE THE ROOM OF THE USER IF HE IS THE OWNER AND ALONE IN THE ROOM
+    // DELETE THE ROOM OF THE USER IF HE IS THE OWNER AND ALONE IN THE ROOM (WAITING)
     const room = this.findWaitingOwnerRoom(user.nickname);
     if (room) {
       this.AllRooms = this.AllRooms.filter((element) => {
@@ -268,7 +274,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const possibleRooms = this.AllRooms.filter(
       (el) => el.gameStatus === GameStatus.WaitingOpponent,
     );
-    console.log('Toutes les rooms possibles ? ', possibleRooms);
+    console.log('[GATEWAY] All waiting room: ', possibleRooms);
     if (possibleRooms.length === 0)
       return GameStates.SETTINGS; // pas de room en attente => création
     else return GameStates.MATCHMAKING; // room en attente d'opponent
