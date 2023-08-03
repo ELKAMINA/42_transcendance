@@ -14,12 +14,11 @@ import {
   OnGatewayDisconnect,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Socket, Server, Namespace } from 'socket.io';
+import { parse } from 'cookie';
+import { Socket, Server } from 'socket.io';
 import { Response } from 'express';
 import { gameDto } from './dto/game.dto';
 import { UserService } from 'src/user/user.service';
-import { UserDetails } from 'src/user/types';
-import { FriendshipGateway } from 'src/friendship/friendship.gateway';
 import { GameService } from './game.service';
 
 @WebSocketGateway(4010, { cors: '*' })
@@ -29,7 +28,6 @@ export class GameGateway
 {
   constructor(
     private userService: UserService,
-    private friendshipGateway: FriendshipGateway,
     private gameService: GameService,
   ) {}
 
@@ -190,9 +188,7 @@ export class GameGateway
 
   async handleDisconnect(client: Socket) {
     console.log('Disconnection Client Id', client.id);
-    const user = this.friendshipGateway.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    const user = this.getUserInfoFromSocket(client.handshake.headers.cookie);
     // const game = this.games.find(user.login);
     // console.log(game);
     // const opponent = game.
@@ -239,5 +235,11 @@ export class GameGateway
       }
     }
     return undefined; // Return undefined if the value is not found in the nested array
+  }
+
+  getUserInfoFromSocket(cookie: string) {
+    const { Authcookie: userInfo } = parse(cookie);
+    const idAtRt = JSON.parse(userInfo);
+    return idAtRt;
   }
 }

@@ -1,23 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Box,
   Stack,
   Avatar,
 } from "@mui/material";
+import { useState } from "react";
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector, useAppDispatch } from "../utils/redux-hooks";
-import { useState } from "react";
 
-import { FetchAllBlockedFriends, FetchAllFriendRequests } from "../redux-features/friendship/friendshipSlice";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
-import { FetchUserByName } from "../utils/global/global";
-// import { FriendReqSocket } from "../pages/friendship";
-// import { socket } from '../socket'
-import { socket } from '../pages/friendship';
-
+import {socket} from '../components/AllFriendship'
 
 type FriendshipProps = {
     id: string,
@@ -65,12 +60,6 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
         setButtonColor('grey')
         setBlockBgColor('grey')
     }
-    // useEffect(()=> {
-    //     socket?.on('friendAdded', (data: any) => {
-    //         dispatch(FetchAllFriendRequests());
-    //         dispatch(FetchAllBlockedFriends());
-    //        })
-    // }, [])
 
     return (
         <>

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
-import { io } from 'socket.io-client';
 import { useDispatch } from 'react-redux';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
 import { useNavigate } from 'react-router-dom';
@@ -13,16 +12,9 @@ import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllSug
 import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-features/friendship/friendshipSlice';
 import { FetchSuggestions, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentAccessToken, selectCurrentUser, setOnlyTokens } from '../redux-features/auth/authSlice';
+import {socket} from '../components/AllFriendship'
 
 
-
-export const socket = io('http://localhost:4001/friendship', {
-  withCredentials: true,
-  transports: ['websocket'],
-  upgrade: false,
-  autoConnect: false,
-  // reconnection: true,
-})
 
 export type userInfo = {
   nickname: string,
@@ -35,39 +27,32 @@ function Suggestions () {
   const currUser = useAppSelector(selectCurrentUser)
   let suggestions = useAppSelector(selectSuggestions);
   useEffect(() => {
-    socket.connect()
-    socket.on('connect', () => {
-      // console.log('first time ')
-      dispatch(FetchSuggestions());
-    })
+    dispatch(FetchSuggestions());
     return () => {
-      socket.disconnect()  // cleanUp function when component unmount
+      // socket.disconnect()  // cleanUp function when component unmount
       // dispatch(setSelectedItem(''))
     }
-  }, [])
-  useEffect(() => {
-      socket.on('newUserConnected', (user: string) => {
-          if (user !== currUser ){
-            dispatch(FetchSuggestions());
-          }
-      })
-      socket.on('newCookie', (data) => {
-        dispatch(setOnlyTokens({...data}));
-        const serializeData = JSON.stringify(data);
-        Cookies.set('Authcookie', serializeData, { path: '/' });
-      })
-      socket.on('friendAdded', () => {
-        dispatch(FetchSuggestions())
-      })
-      socket.on('denyFriend', () => {
-        dispatch(FetchSuggestions())
-      })
-      return () => {  // cleanUp function when component unmount
-      }
-    }, []);
-      suggestions = useAppSelector(selectSuggestions)
+  }, [dispatch])
+
+    socket.on('newUserConnected', (user: string) => {
+        if (user !== currUser ){
+          dispatch(FetchSuggestions());
+        }
+    })
+    socket.on('newCookie', (data) => {
+      dispatch(setOnlyTokens({...data}));
+      const serializeData = JSON.stringify(data);
+      Cookies.set('Authcookie', serializeData, { path: '/' });
+    })
+    socket.on('friendAdded', () => {
+      dispatch(FetchSuggestions())
+    })
+    socket.on('denyFriend', () => {
+      dispatch(FetchSuggestions())
+    })
+    suggestions = useAppSelector(selectSuggestions)
         
-        const content = (
+    const content = (
     <div>
       {/* <Navbar currentRoute={ currentRoute }/> */}
       <h1> You may know... </h1>
@@ -92,17 +77,14 @@ function Requests () {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    socket.connect()
-    socket.on('connect', () => {
       dispatch(FetchAllFriendRequests());
-    })
     // dispatch(FetchAllFriendRequests());
     return () => {
-      socket.disconnect()  // cleanUp function when component unmount
+      // socket.disconnect()  // cleanUp function when component unmount
       // dispatch(setSelectedItem(''))
     }
-  }, [])
-  useEffect(() => {
+  }, [dispatch])
+
     socket?.on('friendAdded', (data: any) => {
       dispatch(FetchAllFriendRequests());
  
@@ -114,9 +96,6 @@ function Requests () {
     socket?.on('denyFriend', () => {
       dispatch(FetchAllFriendRequests());
     })
-    return () => {
-    }
-  }, []);
   const friendsRequests = useAppSelector(selectFrRequests);
 
   
@@ -141,18 +120,16 @@ function Friends () {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    socket.connect()
-    socket.on('connect', () => {
       dispatch(FetchAllFriends());
       dispatch(FetchAllBlockedFriends())
-    })
+
     // dispatch(FetchAllFriends());
     return () => {
       socket.disconnect()  // cleanUp function when component unmount
       // dispatch(setSelectedItem(''))
     }
-  }, [])
-  useEffect(() => {
+  }, [dispatch])
+ 
     socket?.on('friendBlocked', (data: any) => {
       dispatch(FetchAllBlockedFriends())
     })
@@ -162,9 +139,6 @@ function Friends () {
     socket?.on('denyFriend', (data: any) => {
       
      })
-    return () => {
-    }
-  }, []);
   const friends = useAppSelector(selectFriends);
   const blocked = useAppSelector(selectBlockedFriends)
   

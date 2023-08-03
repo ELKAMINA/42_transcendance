@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { io } from 'socket.io-client';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
@@ -19,6 +20,13 @@ import { selectItems, setSelectedItem } from '../redux-features/friendship/frien
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { useState } from 'react';
 
+export const socket = io('http://localhost:4006', {
+  withCredentials: true,
+  transports: ['websocket'],
+  upgrade: false,
+  autoConnect: false,
+  // reconnection: false,
+})
 interface Myprops {
   items: string[];
 }
@@ -48,6 +56,13 @@ export default function FriendshipComponent(props: Myprops) {
           return <Suggestions />;
       }
     }
+    React.useEffect(() => {
+      socket.connect()
+
+      return () => {
+        socket.disconnect()
+      }
+    })
     
   return (
     <Box sx={{ display: 'flex'}}>
