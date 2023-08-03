@@ -61,6 +61,9 @@ export class GameDto {
 
   gameStatus: GameStatus;
 
+  @IsBoolean()
+  isEndGame: boolean;
+
   @IsString()
   boardColor: string;
 

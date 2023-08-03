@@ -126,6 +126,7 @@ export const Pong: React.FC<PongProps> = ({ room }) => {
             `BALLE  : Top =  ${ball.current.getBallTop()} \n Right = ${ball.current.getBallRight()} \n Left = ${ball.current.getBallLeft()} \n Bottom = ${ball.current.getBallBottom()}`
         );
         console.log("Ball collision status:", ball.current.getCanBeCollided());
+        player1.current.setScore(2);
     };
 
     const render = async (
@@ -216,9 +217,7 @@ export const Pong: React.FC<PongProps> = ({ room }) => {
                 // resetPlayer();
                 cancelAnimationFrame(intervalId);
                 intervalId = 0;
-                // if (socket.id === room.playerOneId) {
-                //     socket.emit("requestEndOfGame");
-                // }
+                socket.emit("requestEndOfGame");
             } else {
                 intervalId = requestAnimationFrame(theGame);
             }

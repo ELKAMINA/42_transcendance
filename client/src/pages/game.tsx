@@ -13,7 +13,7 @@ import HomePage from "./home";
 import Settings from "../components/Game/Settings";
 import { Matchmaking } from "../components/Game/MatchMaking";
 import Pong from "../components/Game/Pong";
-import EndGame from "../components/Game/EndGame";
+import { EndGame } from "../components/Game/EndGame";
 import { gameInfo } from "../data/gameInfo";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
 import { Versus } from "../components/Game/Versus";
@@ -95,7 +95,7 @@ function Game() {
             case GameStates.GAMEON:
                 return <Pong room={gameSettings} />;
             case GameStates.ENDGAME:
-                return <EndGame />;
+                return <EndGame room={gameSettings} />;
             default:
                 return <HomePage />;
         }

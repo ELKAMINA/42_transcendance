@@ -205,6 +205,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       collided: true,
       scorePlayers: new Array<number>(),
       gameStatus: GameStatus.WaitingOpponent,
+      isEndGame: false,
       totalPoint: body.points,
       boardColor: body.board,
       ballColor: body.ball,
@@ -248,7 +249,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // THE SECOND USER WILL BE IGNORED BECAUSE THE STATUS OF THE ROOM SERVER
   // WILL BE GAMEON
   @SubscribeMessage('RequestGameOn')
-  async requestGameOn(@ConnectedSocket() client: Socket, @Body() body) {
+  async requestGameOn(@ConnectedSocket() client: Socket) {
     // TODO: ADD A SECURITY ??
     const user = await this.friendshipGateway.getUserInfoFromSocket(
       client.handshake.headers.cookie,
@@ -261,6 +262,27 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateRoomData(room.id, 'gameStatus', GameStatus.GameOn);
       this.server.to(room.id).emit('updateComponent', {
         status: GameStates.GAMEON,
+        room: room,
+      });
+    }
+  }
+
+  @SubscribeMessage('requestEndOfGame')
+  async requestEndOfGame(@ConnectedSocket() client: Socket, @Body() body) {
+    // TODO: ADD A SECURITY ??
+    const user = await this.friendshipGateway.getUserInfoFromSocket(
+      client.handshake.headers.cookie,
+    );
+    if (!user) {
+      console.error('[GATEWAY] USER NOT FOUND');
+    }
+    const room = this.userAlreadyInRoom(user.nickname); // SHALLOW COPY
+    if (room.isEndGame === false) {
+      this.updateRoomData(room.id, 'isEndGame', true);
+      // TEMPORARY TEST
+      this.updateRoomData(room.id, 'scorePlayers', [2, 0]);
+      this.server.to(room.id).emit('updateComponent', {
+        status: GameStates.ENDGAME,
         room: room,
       });
     }
