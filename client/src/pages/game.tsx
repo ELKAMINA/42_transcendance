@@ -42,7 +42,7 @@ function Game() {
     const dispatch = useAppDispatch();
     const onGamePage = useAppSelector(selectonGamePage);
     const user = useAppSelector(selectCurrentUser);
-    const [gameStatus, setGameStatus] = useState(GameStates.GAMEON);
+    const [gameStatus, setGameStatus] = useState(GameStates.HOMEPAGE);
     const [socketId, setSocketId] = useState("");
     const playButtonInfo = useRef(location.state.data);
 
@@ -90,7 +90,7 @@ function Game() {
             case GameStates.MATCHMAKING:
                 return <Matchmaking room={gameSettings} />;
             case GameStates.GAMEON:
-                return <Pong />;
+                return <Pong room={gameSettings} />;
             case GameStates.ENDGAME:
                 return <EndGame />;
             default:

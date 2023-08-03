@@ -124,7 +124,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         result = this.assignAroomToPlayer(user.nickname);
         console.log('[GATEWAY] Statut pour render component ', result);
         // CASE OF JOINING A ROOM
-        if (result === 1) {
+        if (result === GameStates.MATCHMAKING) {
           // SAFETY OF PLAYING AGAINST THE SAME PLAYER
           // CHECK IF THE SECOND PLAYER HAS A WAITING ROOM WITH HIS NAME
           const amItheSndPlayer = this.userAlreadyInRoom(user.nickname);
@@ -143,6 +143,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             client.join(roomAssigned.id);
             socketClientRoomId = roomAssigned.id;
             console.log('[GATEWAY] Assigned room ', roomAssigned);
+            result = GameStates.GAMEON;
           }
         }
         console.log('[GATEWAY] le résultat ', result);
