@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import Button from "@mui/material/Button";
 import { Grid, Typography, Stack } from "@mui/material";
@@ -20,6 +21,7 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
+    const navigate = useNavigate();
     const [board, setBoardColor] = useState("#000000");
     const [net, setNetColor] = useState("#ffffff");
     const [paddle, setPaddleColor] = useState("#ffffff");
@@ -43,8 +45,13 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
         setBallColor(newValue);
     };
 
+    const sendCancel = () => {
+        console.warn("[Settings] Button 'cancel' clicked");
+        navigate("/welcome");
+    };
+
     const sendSettings = () => {
-        console.log(" 5 - Normalement im emit les settings ");
+        console.log("[Settings] Button 'submit' clicked");
         socket.emit("RequestGameSettings", {
             board: board,
             net: net,
@@ -157,6 +164,14 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
                         </Grid>
                     </DialogContent>
                     <DialogActions>
+                        <Button
+                            variant="contained"
+                            size="medium"
+                            autoFocus
+                            onClick={sendCancel}
+                        >
+                            CANCEL
+                        </Button>
                         <Button
                             variant="contained"
                             size="medium"
