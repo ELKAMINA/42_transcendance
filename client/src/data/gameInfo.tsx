@@ -27,3 +27,7 @@ export interface roomInfo {
     sender: string;
     receiver: string;
 }
+
+export interface PongProps {
+    room: gameInfo;
+}
