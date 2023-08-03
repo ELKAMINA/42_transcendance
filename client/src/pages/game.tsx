@@ -9,17 +9,15 @@ import {
     updateOnGamePage,
 } from "../redux-features/game/gameSlice";
 
+import { selectCurrentUser } from "../redux-features/auth/authSlice";
+/*** GAME IMPORT ***/
 import HomePage from "./home";
 import Settings from "../components/Game/Settings";
-import { Matchmaking } from "../components/Game/MatchMaking";
+import Matchmaking from "../components/Game/MatchMaking";
+import Versus from "../components/Game/Versus";
 import Pong from "../components/Game/Pong";
-import { EndGame } from "../components/Game/EndGame";
+import EndGame from "../components/Game/EndGame";
 import { gameInfo } from "../data/gameInfo";
-import { selectCurrentUser } from "../redux-features/auth/authSlice";
-import { Versus } from "../components/Game/Versus";
-import PlayConfirmation from "../components/Conversation/Play";
-import { roomInfo } from "../data/gameInfo";
-import { current } from "@reduxjs/toolkit";
 
 export const socket = io("http://localhost:4010", {
     withCredentials: true,

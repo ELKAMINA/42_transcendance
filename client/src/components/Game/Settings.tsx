@@ -11,7 +11,6 @@ import { MuiColorInput } from "mui-color-input";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { socket } from "../../pages/game";
-import { type } from "os";
 import { roomInfo } from "../../data/gameInfo";
 
 interface SettingsProps {

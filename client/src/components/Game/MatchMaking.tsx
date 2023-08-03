@@ -1,8 +1,6 @@
 import Grid from "@mui/material/Grid"; // Grid version 1
 import { Typography } from "@mui/material";
-import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { gameInfo } from "../../data/gameInfo";
 import Navbar from "../../components/NavBar";
 import { PongProps } from "../../data/gameInfo";
 
@@ -12,7 +10,7 @@ const waitingGridStyle = {
     color: "#005A9C",
 };
 
-export const Matchmaking: React.FC<PongProps> = ({ room }) => {
+const Matchmaking: React.FC<PongProps> = ({ room }) => {
     const currentRoute = window.location.pathname;
 
     return (
@@ -41,3 +39,5 @@ export const Matchmaking: React.FC<PongProps> = ({ room }) => {
         </>
     );
 };
+
+export default Matchmaking;

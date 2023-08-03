@@ -13,7 +13,7 @@ import { Button } from "@mui/material";
 import DialogActions from "@mui/material/DialogActions";
 import { useNavigate } from "react-router-dom";
 
-export const EndGame: React.FC<PongProps> = ({ room }) => {
+const EndGame: React.FC<PongProps> = ({ room }) => {
     const theme = useTheme();
     const user = useAppSelector(selectCurrentUser);
     const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
@@ -91,3 +91,5 @@ export const EndGame: React.FC<PongProps> = ({ room }) => {
         </div>
     );
 };
+
+export default EndGame;

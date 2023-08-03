@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
 import Grid from "@mui/material/Grid"; // Grid version 1
 import { Typography } from "@mui/material";
 import { PongProps } from "../../data/gameInfo";
@@ -12,7 +11,7 @@ const halfGridStyle = {
     background: "rgba(255, 255, 255, 0.5)",
 };
 
-export const Versus: React.FC<PongProps> = ({ room }) => {
+const Versus: React.FC<PongProps> = ({ room }) => {
     const currentRoute = window.location.pathname;
     const navigate = useNavigate();
 
@@ -102,3 +101,5 @@ export const Versus: React.FC<PongProps> = ({ room }) => {
         </>
     );
 };
+
+export default Versus;
