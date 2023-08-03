@@ -18,6 +18,7 @@ import { GameStatus } from './dto/game.dto';
 enum GameStates {
   SETTINGS,
   MATCHMAKING,
+  VERSUS,
   GAMEON, //Pong Component
   ENDGAME,
   HOMEPAGE,
@@ -94,7 +95,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('initPlayground')
   async initPlayground(@ConnectedSocket() client: Socket, @Body() body) {
-    // WARNING: ADD A SECURITY ??
+    // TODO: ADD A SECURITY ??
     let result = GameStates.HOMEPAGE;
     let roomAssigned: GameDto; // UNDEFINED
     let socketClientRoomId = client.id; // STORE THE SOCKET ID OR THE ROOM TO COMMUNICATE
@@ -143,7 +144,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             client.join(roomAssigned.id);
             socketClientRoomId = roomAssigned.id;
             console.log('[GATEWAY] Assigned room ', roomAssigned);
-            result = GameStates.GAMEON;
+            result = GameStates.VERSUS;
           }
         }
         console.log('[GATEWAY] le résultat ', result);
@@ -234,6 +235,31 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     } else {
       this.server.to(roomId).emit('updateGameSettings', {
+        status: GameStates.VERSUS,
+        room: room,
+      });
+    }
+  }
+
+  // CHANGE THE CLIENT GAME STATES TO GAMEON WHICH WILL DISPLAY
+  // PONG BOARD AND ACTIVATE THE GAME
+  // THE EMIT SIGNAL WILL BE ACTIVATED ONLY ONE TIME
+  // WHEN ONE OF TWO USER OF THE ROOM WILL SEND THE REQUEST
+  // THE SECOND USER WILL BE IGNORED BECAUSE THE STATUS OF THE ROOM SERVER
+  // WILL BE GAMEON
+  @SubscribeMessage('RequestGameOn')
+  async requestGameOn(@ConnectedSocket() client: Socket, @Body() body) {
+    // TODO: ADD A SECURITY ??
+    const user = await this.friendshipGateway.getUserInfoFromSocket(
+      client.handshake.headers.cookie,
+    );
+    if (!user) {
+      console.error('[GATEWAY] USER NOT FOUND');
+    }
+    const room = this.userAlreadyInRoom(user.nickname); // SHALLOW COPY
+    if (room.gameStatus !== GameStatus.GameOn) {
+      this.updateRoomData(room.id, 'gameStatus', GameStatus.GameOn);
+      this.server.to(room.id).emit('updateComponent', {
         status: GameStates.GAMEON,
         room: room,
       });
@@ -241,7 +267,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    // WARNING: ADD A SECURITY ??
+    // TODO: ADD A SECURITY ??
     const user = await this.friendshipGateway.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );
@@ -298,5 +324,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     console.log('[GATEWAY] findWaitingOwnerRoom: ', room);
     return room;
+  }
+
+  updateRoomData(roomId: string, data: string, newValue: any) {
+    this.AllRooms.forEach((element) => {
+      if (element.id === roomId) {
+        element[data] = newValue;
+      }
+    });
   }
 }

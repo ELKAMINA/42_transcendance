@@ -11,6 +11,7 @@ import {
 export enum GameStatus {
   WaitingOpponent,
   Busy,
+  GameOn,
   Ended,
 }
 export class GameDto {

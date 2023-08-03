@@ -16,6 +16,7 @@ import Pong from "../components/Game/Pong";
 import EndGame from "../components/Game/EndGame";
 import { gameInfo } from "../data/gameInfo";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
+import { Versus } from "../components/Game/Versus";
 import PlayConfirmation from "../components/Conversation/Play";
 import { roomInfo } from "../data/gameInfo";
 import { current } from "@reduxjs/toolkit";
@@ -30,10 +31,10 @@ export const socket = io("http://localhost:4010", {
 enum GameStates {
     SETTINGS,
     MATCHMAKING,
+    VERSUS,
     GAMEON,
     ENDGAME,
     HOMEPAGE,
-    TEST,
 }
 
 function Game() {
@@ -89,6 +90,8 @@ function Game() {
                 return <Settings clickPlay={playButtonInfo.current} />;
             case GameStates.MATCHMAKING:
                 return <Matchmaking room={gameSettings} />;
+            case GameStates.VERSUS:
+                return <Versus room={gameSettings} />;
             case GameStates.GAMEON:
                 return <Pong room={gameSettings} />;
             case GameStates.ENDGAME:
