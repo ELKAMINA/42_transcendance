@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import { Box } from "@mui/material";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { store } from "../app/store";
@@ -30,7 +30,7 @@ const UserProfile = () => {
     });
     // const userToStalk = transformData(new URLSearchParams(location.search));
     const userToStalk = location.state.data;
-    console.log("user to Stalk ", userToStalk);
+    // console.log("user to Stalk ", userToStalk);
 
     const friendship = async () =>
         await api
@@ -48,11 +48,11 @@ const UserProfile = () => {
     }, []);
 
     return (
-        <div className="userprofile-container">
-            <div className="userprofile-header">
+        <Box className="userprofile-container">
+            <Box className="userprofile-header">
                 <Navbar currentRoute={currentRoute} />
-            </div>
-            <div className="userprofile-middle">
+            </Box>
+            <Box className="userprofile-middle">
                 <UserProfileHeader
                     name={userToStalk.login}
                     status={userToStalk.status}
@@ -60,9 +60,9 @@ const UserProfile = () => {
                     srcAvatar={userToStalk.avatar}
                 />
                 <ProfileInfo interestProfile={userToStalk} />
-            </div>
-            <div className="userprofile-infos"></div>
-        </div>
+            </Box>
+            <Box className="userprofile-infos"></Box>
+        </Box>
     );
 };
 

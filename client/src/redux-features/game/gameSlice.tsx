@@ -142,7 +142,7 @@ export function FetchLeaderBoard() {
             .get("http://localhost:4001/game/leaderboard")
             .then((res) => {
                 dispatch(updateLeaderBoard(res.data));
-                console.log(" response pur le leaderboard ", res.data);
+                // console.log(" response pur le leaderboard ", res.data);
             })
             .catch((e) => {
                 console.error("erreur dans la requete Leaderboard ", e);

@@ -18,7 +18,7 @@ import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
 import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, setAvatar, logOut} from '../redux-features/auth/authSlice';
 import { useLogOutMutation } from '../app/api/authApiSlice';
 import {FetchActualUser, selectActualUser} from '../redux-features/friendship/friendshipSlice';
-import { fetchDisplayedChannel, updateUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 /* *** Internal imports *** */
 interface NavbarProps {
@@ -51,9 +51,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
                 },
             })
             .then((res) => {
-                // const params = new URLSearchParams(res.data).toString()
-                // navigate(`/userprofile?data=${params}`)})
-                // console.log(" retour du serveur ", res.data);
                 navigate(`/userprofile?data`, { state: { data: res.data } });
             })
             .catch((e) => {
@@ -61,9 +58,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
             });
     };
 
-    useEffect(() => {
-        dispatch(fetchDisplayedChannel("WelcomeChannel")); // reset displayed channel to WelcomeChannel
-    }, [logout]); // means this useEffect will be triggered every time the logout function is called
+    // useEffect(() => {
+    //     dispatch(fetchDisplayedChannel("WelcomeChannel")); // reset displayed channel to WelcomeChannel
+    // }, [logout]); // means this useEffect will be triggered every time the logout function is called
 
     const loggingOut = async (
         event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
@@ -105,10 +102,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     }, [dispatch]);
 
     const srcAvatar = useAppSelector(selectCurrentAvatar);
-    // console.log('avatar ', srcAvatar)
 
     let componentToRender;
-    // if (currentRoute === '/welcome' ) {
     componentToRender = (
         <>
             <div className="navbar__header__middle">
@@ -179,50 +174,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
             </div>
         </>
     );
-    // }
-    // else {
-    //     componentToRender = (
-    //         <>
-    //             <div className="navbar__header__right__options">
-    //                 <Avatar src={srcAvatar} sx={{
-    //                     margin: '5px',
-    //                     width: 50,
-    //                     height: 50,
-    //                 }}/>
-    //                 <Button
-    //                     id="demo-positioned-button"
-    //                     aria-controls={open ? 'demo-positioned-menu' : undefined}
-    //                     aria-haspopup="true"
-    //                     aria-expanded={open ? 'true' : undefined}
-    //                     onClick={handleClick}
-    //                 >
-    //                     {nickname}
-    //                 </Button>
-    //                 <Menu
-    //                     id="demo-positioned-menu"
-    //                     aria-labelledby="demo-positioned-button"
-    //                     anchorEl={anchorEl}
-    //                     open={open}
-    //                     onClose={handleClose}
-    //                     anchorOrigin={{
-    //                     vertical: 'top',
-    //                     horizontal: 'left',
-    //                     }}
-    //                     transformOrigin={{
-    //                     vertical: 'top',
-    //                     horizontal: 'left',
-    //                     }}
-    //                 >
-    //                 <MenuItem onClick={getMyProfile}>Profile</MenuItem>
-    //                 <MenuItem component="a" href="/" onClick={handleSubmit}>Settings</MenuItem>
-    //                 <MenuItem component="a" href="/" onClick={logOut}>Logout</MenuItem>
-    //                 </Menu>
-    //                 <IconButton component="a" href="/" onClick={logOut}>
-    //                     <LogoutIcon fontSize='medium' />
-    //                 </IconButton>
-    //             </div>
-    //         </>
-    //     )
     return <div className="navbar"> {componentToRender} </div>;
 };
 

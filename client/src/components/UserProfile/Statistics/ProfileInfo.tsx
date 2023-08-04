@@ -30,7 +30,7 @@ function TabPanel(props: TabPanelProps) {
         >
             {value === index && (
                 <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
+                    <Typography component="div">{children}</Typography>
                 </Box>
             )}
         </div>
@@ -66,7 +66,7 @@ export default function ProfileInfo(props: Myprops) {
                 Date.parse(a.createdAt.toString())
         );
     // console.log("login  ", props.interestProfile.login);
-    console.log("tous lesmatches ", matches);
+    // console.log("tous lesmatches ", matches);
     // console.log("les p1 ", props.interestProfile.p1);
     return (
         <Box sx={{ bgcolor: "background.paper", width: "90vw" }}>

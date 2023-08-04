@@ -82,7 +82,7 @@ function UserProfileHeader(props: myProps) {
           height: '150px',
           marginRight:'5px',
         }}/>
-        <Typography variant="h3">{props.name}</Typography>
+        <Typography component='div' variant="h3">{props.name}</Typography>
       </Box>
         <Box ml={2} display="flex" flexDirection='row' justifyContent='space-between' flexWrap='wrap'>
           <StyledBadge
@@ -90,7 +90,7 @@ function UserProfileHeader(props: myProps) {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             variant="dot"
           >
-          <Typography variant="body1" color="textSecondary">
+          <Typography component='div' variant="body1" color="textSecondary">
               {props.status}
           </Typography>
           </StyledBadge>
