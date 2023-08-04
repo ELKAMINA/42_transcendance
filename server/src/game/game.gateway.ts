@@ -118,7 +118,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (result === EGameServerStates.MATCHMAKING) {
           // SAFETY OF PLAYING AGAINST THE SAME PLAYER
           // CHECK IF THE SECOND PLAYER HAS A WAITING ROOM WITH HIS NAME
-          const amItheSndPlayer = this.userAlreadyInRoom(user.nickname);
+          const amItheSndPlayer = this.userInRoom(user.nickname);
           // IF THE SECOND PLAYER HAS ALREADY A ROOM OF HIS NAME
           if (amItheSndPlayer) result = EGameServerStates.HOMEPAGE;
           else {
@@ -148,8 +148,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // IF NOT FOR BOTH
         // THEN SENDER --> EGameServerStates.SETTINGS
         // THEN RECEIVER --> EGameServerStates.MATHCMAKING
-        const senderRoom = this.userAlreadyInRoom(body.sender);
-        const receiverRoom = this.userAlreadyInRoom(body.receiver);
+        const senderRoom = this.userInRoom(body.sender);
+        const receiverRoom = this.userInRoom(body.receiver);
         if (senderRoom || receiverRoom) {
           console.error('[GATEWAY - ONE-TO-ONE] One user is already in a rrom');
           result = EGameServerStates.HOMEPAGE;
@@ -180,8 +180,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = await this.friendshipGateway.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );
-    console.log("6 - Normalement c'est Babolat ", user.nickname);
+    console.log('[GATEWAY] Request game settings by: ', user.nickname);
     let roomId = client.id;
+    let playType = body.roomInfo.type;
     const room: GameDto = {
       id: user.nickname,
       createdDate: new Date(),
@@ -208,18 +209,31 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     room.scorePlayers.push(0);
     this.AllRooms.push(room);
     client.join(room.id);
-    if (body.roomInfo.type === EServerPlayType.ONETOONE) {
+    if (playType === EServerPlayType.ONETOONE) {
       roomId = room.id;
-      room.players.push(body.roomInfo.receiver);
       // TODO: ADD SAFETY CHECK IF THE RECEIVER SOCKETS IS NOT ANYMORE IN THE POOL
       const playerTwoSocket = this.socketsPool.get(body.roomInfo.receiver);
+      // SAFETY CHECK WHERE THE RECEIVER HAS ALREADY LEFT THE GAME BEFORE THE END
+      // OF THE GAME SETTINGS DEFINITION
+      if (!playerTwoSocket) {
+        console.error(
+          `[GATEWAY] Receiver ${body.roomInfo.receiver} has left the game before the submit of game settings`,
+        );
+        this.server.to(roomId).emit('updateComponent', {
+          status: EGameServerStates.HOMEPAGE,
+          room: room,
+        });
+        return;
+      }
+      console.log('[GATEWAY] receiverSocket: ', playerTwoSocket.id);
+      playerTwoSocket.join(roomId);
+      room.players.push(body.roomInfo.receiver);
       room.playerTwoId = playerTwoSocket.id;
-      console.log('[GATEWAY] receiverSocket: ');
       room.isFull = true;
       room.roomStatus = ERoomStates.Busy;
-      playerTwoSocket.join(roomId);
     }
-    if (body.roomInfo.type === EServerPlayType.RANDOM) {
+    console.log('TEST');
+    if (playType === EServerPlayType.RANDOM) {
       this.server.to(roomId).emit('updateGameSettings', {
         status: EGameServerStates.MATCHMAKING,
         room: room,
@@ -231,7 +245,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     }
   }
-
   // CHANGE THE CLIENT GAME STATES TO GAMEON WHICH WILL DISPLAY
   // PONG BOARD AND ACTIVATE THE GAME
   // THE EMIT SIGNAL WILL BE ACTIVATED ONLY ONE TIME
@@ -247,7 +260,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user) {
       console.error('[GATEWAY] USER NOT FOUND');
     }
-    const room = this.userAlreadyInRoom(user.nickname); // SHALLOW COPY
+    const room = this.userInRoom(user.nickname); // SHALLOW COPY
     if (room.roomStatus !== ERoomStates.GameOn) {
       this.updateRoomData(room.id, 'roomStatus', ERoomStates.GameOn);
       this.server.to(room.id).emit('updateComponent', {
@@ -266,7 +279,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user) {
       console.error('[GATEWAY] USER NOT FOUND');
     }
-    const room = this.userAlreadyInRoom(user.nickname); // SHALLOW COPY
+    const room = this.userInRoom(user.nickname); // SHALLOW COPY
     if (room.isEndGame === false) {
       this.updateRoomData(room.id, 'isEndGame', true);
       // TEMPORARY TEST
@@ -279,6 +292,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
+    let room: GameDto; // UNDEFINED
     // TODO: ADD A SECURITY ??
     const user = await this.friendshipGateway.getUserInfoFromSocket(
       client.handshake.headers.cookie,
@@ -287,15 +301,39 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error('[GATEWAY] USER NOT FOUND');
     }
     console.log('[GATEWAY] user: ', user);
-    // DELETE THE ROOM OF THE USER IF HE IS THE OWNER AND ALONE IN THE ROOM (WAITING)
-    const room = this.findWaitingOwnerRoom(user.nickname);
+    room = this.userInRoom(user.nickname);
     if (room) {
-      this.AllRooms = this.AllRooms.filter((element) => {
-        element.id === room.id;
-      });
+      // DELETE THE ROOM OF THE USER IF HE IS THE OWNER AND ALONE IN THE ROOM (WAITING)
+      // USE CASE:
+      // - PLAYER TYPE RANDOM AND NO OPPONENT IS COMING TO THE ROOM
+      // - PLAYER TYPE ONE TO NONE BUT THE OPPONENT HAS LEFT THE ROOM BEFORE THE END OF GAME SETTINGS
+      if (
+        room.id === user.nickname &&
+        room.isFull === false &&
+        room.roomStatus === ERoomStates.WaitingOpponent
+      ) {
+        this.AllRooms = this.AllRooms.filter((element) => {
+          element.id === room.id;
+        });
+      }
+      // USE CASES:
+      // - DISCONNECTION OF ONE OF BOTH PLAYERS IN VERSUS SCREEN
+      // - RAGEQUIT
+      // - ENDGAME (FIRST DISCONNECTION OF A PLAYER)
+      else if (room.isFull === true) {
+        // DISCONNECTION OF ONE OF BOTH PLAYERS IN VERSUS SCREEN
+        if (room.roomStatus === ERoomStates.Busy) {
+          if (room.players.length != 2) {
+            this.AllRooms = this.AllRooms.filter((element) => {
+              element.id === room.id;
+            });
+          }
+        }
+      }
     }
+
     console.log('[GATEWAY] AllRooms: ', this.AllRooms);
-    // DELETE THE USERFROM THE SOCKETS POOL
+    // DELETE THE USER FROM THE SOCKETS POOL
     this.socketsPool.delete(user.nickname);
 
     // TODO:
@@ -320,9 +358,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // CHECK IF A USER IS ALREADY IN A ROOM
-  userAlreadyInRoom(userName: string): GameDto | undefined {
+  userInRoom(userName: string): GameDto | undefined {
     const room = this.AllRooms.find((obj) => obj.players.includes(userName));
-    console.log('[GATEWAY] userAlreadyInRoom: ', room);
+    console.log('[GATEWAY] userInRoom: ', room);
     return room;
   }
 
