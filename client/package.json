@@ -28,6 +28,7 @@
     "js-cookie": "^3.0.5",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
+    "mui-file-input": "^2.0.6",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "qrcode.react": "^3.1.0",

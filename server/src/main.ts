@@ -16,19 +16,26 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-	  exceptionFactory: (validationErrors: ValidationError[] = []) => {
-		return new BadRequestException(validationErrors);
-	},
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        return new BadRequestException(validationErrors);
+      },
     }),
   ); // to allow the pipes for the verification we want to do on our dto and stripe out the fields that we don't need
   app.use(cookieParser());
   app.use(passport.initialize());
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://0.0.0.0:4001', 'http://localhost:4001', '*'],
+    origin: [
+      'http://localhost:3000',
+      'http://0.0.0.0:4001',
+      'http://localhost:4001',
+      '*',
+    ],
     credentials: true,
     allowedHeaders: ['Content-Type', 'authorization'],
   });
   app.useWebSocketAdapter(new IoAdapter(app));
+  // app.useGlobalFilters(new ValidationExceptionFilter());
+
   /* Communications layer : FIN */
 
   // For Swagger

@@ -1,23 +1,20 @@
 import Cookies from 'js-cookie';
+import { Route, Routes } from "react-router-dom";
 
 import "./App.css";
 import Tfa from './pages/tfa';
+import Game from './pages/game'
 import Chat from "./pages/chat";
 import HomePage  from "./pages/home";
 import Layout from './components/Layout';
-import Game from './pages/game'
-import { Route, Routes } from "react-router-dom";
+import UserProfile from './pages/userProfile';
 import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
-// import { Suggestions, Requests, Friends } from './pages/friendship';
-import UserProfile from './pages/userProfile';
-import { useAppDispatch, useAppSelector } from './utils/redux-hooks';
+import { useAppDispatch } from './utils/redux-hooks';
+import { setTokens } from './redux-features/auth/authSlice';
 import SettingsContainer from './containers/Settings/Settings';
-import { setTokens, setAvatar, selectCurrentUser, selectCurrentRefreshToken, selectCurrentAccessToken } from './redux-features/auth/authSlice';
 import FriendshipContainer from './containers/Friendship/Friendship';
-import { useEffect } from 'react';
-import { useLogOutMutation } from './app/api/authApiSlice';
-import { FetchActualUser, selectActualUser } from './redux-features/friendship/friendshipSlice';
+
 
 type cred = {
 	nickname: string;
@@ -52,7 +49,6 @@ const App = () => {
             <Route path="/userprofile" element={<UserProfile />}/>
             <Route path="/settings" element={<SettingsContainer />}/>
             <Route path="/game" element={<Game />}/>
-            {/* <Route path="/pong" element={<Pong />}/> */}
           </Route>
         </Route>
       </Routes>
