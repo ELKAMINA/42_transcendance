@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid"; // Grid version 1
 import { Typography } from "@mui/material";
-import { PongProps } from "../../data/gameInfo";
+import { IPongProps } from "../../interface/IClientGame";
 import Navbar from "../../components/NavBar";
 import { socket } from "../../pages/game";
 
@@ -11,7 +11,7 @@ const halfGridStyle = {
     background: "rgba(255, 255, 255, 0.5)",
 };
 
-const Versus: React.FC<PongProps> = ({ room }) => {
+const Versus: React.FC<IPongProps> = ({ room }) => {
     const currentRoute = window.location.pathname;
     const navigate = useNavigate();
 

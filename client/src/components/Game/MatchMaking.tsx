@@ -2,7 +2,7 @@ import Grid from "@mui/material/Grid"; // Grid version 1
 import { Typography } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import Navbar from "../../components/NavBar";
-import { PongProps } from "../../data/gameInfo";
+import { IPongProps } from "../../interface/IClientGame";
 
 const waitingGridStyle = {
     height: "100vh",
@@ -10,7 +10,7 @@ const waitingGridStyle = {
     color: "#005A9C",
 };
 
-const Matchmaking: React.FC<PongProps> = ({ room }) => {
+const Matchmaking: React.FC<IPongProps> = ({ room }) => {
     const currentRoute = window.location.pathname;
 
     return (

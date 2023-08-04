@@ -1,4 +1,18 @@
-export interface gameInfo {
+import { EClientPlayType } from "../enum/EClientGame";
+
+// OLD NAME roomInfo
+export interface IPlayInfo {
+    type: EClientPlayType;
+    sender: string;
+    receiver: string;
+}
+
+export interface IPongProps {
+    room: IRoomInfo;
+}
+
+// OLD NAME gameInfo
+export interface IRoomInfo {
     id: string;
     createdDate: Date;
     totalSet: number;
@@ -15,19 +29,4 @@ export interface gameInfo {
     ballColor: string;
     paddleColor: string;
     netColor: string;
-}
-
-export enum client_gameType {
-    RANDOM,
-    ONETOONE,
-}
-
-export interface roomInfo {
-    type: client_gameType;
-    sender: string;
-    receiver: string;
-}
-
-export interface PongProps {
-    room: gameInfo;
 }

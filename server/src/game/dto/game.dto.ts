@@ -7,13 +7,8 @@ import {
   IsNotEmpty,
   IsString,
 } from 'class-validator';
+import { ERoomStates } from '../enum/EServerGame';
 
-export enum GameStatus {
-  WaitingOpponent,
-  Busy,
-  GameOn,
-  Ended,
-}
 export class GameDto {
   @IsNotEmpty()
   @IsString()
@@ -59,7 +54,7 @@ export class GameDto {
   @IsBoolean()
   collided: boolean;
 
-  gameStatus: GameStatus;
+  roomStatus: ERoomStates;
 
   @IsBoolean()
   isEndGame: boolean;

@@ -17,7 +17,8 @@ import Matchmaking from "../components/Game/MatchMaking";
 import Versus from "../components/Game/Versus";
 import Pong from "../components/Game/Pong";
 import EndGame from "../components/Game/EndGame";
-import { gameInfo } from "../data/gameInfo";
+import { IRoomInfo } from "../interface/IClientGame";
+import { EGameClientStates } from "../enum/EClientGame";
 
 export const socket = io("http://localhost:4010", {
     withCredentials: true,
@@ -26,22 +27,13 @@ export const socket = io("http://localhost:4010", {
     autoConnect: false,
 });
 
-enum GameStates {
-    SETTINGS,
-    MATCHMAKING,
-    VERSUS,
-    GAMEON,
-    ENDGAME,
-    HOMEPAGE,
-}
-
 function Game() {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useAppDispatch();
     const onGamePage = useAppSelector(selectonGamePage);
     const user = useAppSelector(selectCurrentUser);
-    const [gameStatus, setGameStatus] = useState(GameStates.HOMEPAGE);
+    const [gameStatus, setGameStatus] = useState(EGameClientStates.HOMEPAGE);
     const [socketId, setSocketId] = useState("");
     const playButtonInfo = useRef(location.state.data);
 
@@ -63,7 +55,7 @@ function Game() {
     // let playButtonInfo = location.state.data;
     console.log("playButtonInfo:", playButtonInfo);
 
-    const [gameSettings, setGameSettings] = useState<gameInfo>({
+    const [gameSettings, setGameSettings] = useState<IRoomInfo>({
         id: "",
         createdDate: new Date(),
         totalSet: 0,
@@ -74,7 +66,7 @@ function Game() {
         scorePlayers: [],
         playerOneId: "",
         playerTwoId: "",
-        gameStatus: GameStates.SETTINGS,
+        gameStatus: EGameClientStates.SETTINGS,
         totalPoint: 2,
         boardColor: "#ffffff",
         ballColor: "#000000",
@@ -84,15 +76,15 @@ function Game() {
 
     const renderGameComponent = () => {
         switch (gameStatus) {
-            case GameStates.SETTINGS:
+            case EGameClientStates.SETTINGS:
                 return <Settings clickPlay={playButtonInfo.current} />;
-            case GameStates.MATCHMAKING:
+            case EGameClientStates.MATCHMAKING:
                 return <Matchmaking room={gameSettings} />;
-            case GameStates.VERSUS:
+            case EGameClientStates.VERSUS:
                 return <Versus room={gameSettings} />;
-            case GameStates.GAMEON:
+            case EGameClientStates.GAMEON:
                 return <Pong room={gameSettings} />;
-            case GameStates.ENDGAME:
+            case EGameClientStates.ENDGAME:
                 return <EndGame room={gameSettings} />;
             default:
                 return <HomePage />;
@@ -110,7 +102,7 @@ function Game() {
         }
         setGameStatus(StateAndRoom.status);
 
-        if (StateAndRoom.status === GameStates.HOMEPAGE) {
+        if (StateAndRoom.status === EGameClientStates.HOMEPAGE) {
             dispatch(updateOnGamePage(0));
             navigate("/welcome");
         }

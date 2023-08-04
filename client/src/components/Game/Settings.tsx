@@ -11,10 +11,10 @@ import { MuiColorInput } from "mui-color-input";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { socket } from "../../pages/game";
-import { roomInfo } from "../../data/gameInfo";
+import { IRoomInfo } from "../../interface/IClientGame";
 
 interface SettingsProps {
-    clickPlay: roomInfo;
+    clickPlay: IRoomInfo;
 }
 
 const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {

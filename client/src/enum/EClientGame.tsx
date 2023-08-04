@@ -1,0 +1,17 @@
+// OLD NAME client_gameType
+// REPRESENT THE PLAYER BUTTON TYPE FROM HOME PAGE OR CHANNEL
+export enum EClientPlayType {
+    RANDOM,
+    ONETOONE,
+}
+
+// OLD NAME GameStates
+// REPRESENT THE LAYER OF THE GAME COMPONENT
+export enum EGameClientStates {
+    SETTINGS,
+    MATCHMAKING,
+    VERSUS,
+    GAMEON,
+    ENDGAME,
+    HOMEPAGE,
+}

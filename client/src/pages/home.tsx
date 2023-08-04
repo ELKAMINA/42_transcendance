@@ -15,7 +15,7 @@ import {
     selectLeaderBoard,
     updateOnGamePage,
 } from "../redux-features/game/gameSlice.tsx";
-import { client_gameType } from "../data/gameInfo.tsx";
+import { EClientPlayType } from "../enum/EClientGame.tsx";
 
 // export const HomeSock = io('http://localhost:4001/home');
 
@@ -36,7 +36,7 @@ function HomePage() {
         navigate(`/game?data`, {
             state: {
                 data: {
-                    type: client_gameType.RANDOM,
+                    type: EClientPlayType.RANDOM,
                     sender: "",
                     receiver: "",
                 },

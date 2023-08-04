@@ -2,12 +2,12 @@ import { useEffect, useRef } from "react";
 import Grid from "@mui/material/Grid"; // Grid version 1
 import { Box } from "@mui/material";
 import Navbar from "../../components/NavBar";
-import { PongProps } from "../../data/gameInfo";
+import { IPongProps } from "../../interface/IClientGame";
 import { socket } from "../../pages/game";
 import Player from "../../classes/Player";
 import Ball from "../../classes/Ball";
 
-export const Pong: React.FC<PongProps> = ({ room }) => {
+export const Pong: React.FC<IPongProps> = ({ room }) => {
     const currentRoute = window.location.pathname;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const canvas = useRef<CanvasRenderingContext2D | null>(null);

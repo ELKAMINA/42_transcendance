@@ -5,7 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Navbar from "../../components/NavBar";
-import { PongProps } from "../../data/gameInfo";
+import { IPongProps } from "../../interface/IClientGame";
 import { socket } from "../../pages/game";
 import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 import { useAppSelector } from "../../utils/redux-hooks";
@@ -13,7 +13,7 @@ import { Button } from "@mui/material";
 import DialogActions from "@mui/material/DialogActions";
 import { useNavigate } from "react-router-dom";
 
-const EndGame: React.FC<PongProps> = ({ room }) => {
+const EndGame: React.FC<IPongProps> = ({ room }) => {
     const theme = useTheme();
     const user = useAppSelector(selectCurrentUser);
     const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
