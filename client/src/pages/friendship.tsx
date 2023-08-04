@@ -106,7 +106,7 @@ function Requests () {
       {(friendsRequests.length > 0) && <h1> They want to be your friend... </h1> &&
       <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
         {friendsRequests.map((sugg: any) => 
-          <FriendSuggestion id={sugg.user_id} login={sugg.senderId} avatar={sugg.SenderAv} type="requestReception" bgColor='#AFEEEE'/>)}
+          <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.senderId} avatar={sugg.SenderAv} type="requestReception" bgColor='#AFEEEE'/>)}
       </Stack>
       }
       
@@ -151,7 +151,7 @@ function Friends () {
         {friends && friends.map((sugg: any) => 
           <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends" bgColor='#AFEEEE'/>)}
           {blocked && blocked.map((sugg: any) => 
-          <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="blockedFriends" bgColor='grey'/>)}
+          <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="blockedFriends" bgColor='grey'/>)}
       </Stack>
     </div>
   )

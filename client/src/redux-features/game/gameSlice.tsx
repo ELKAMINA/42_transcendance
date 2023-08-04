@@ -78,9 +78,9 @@ export const gameSlice = createSlice({
         ) => {
             state.leaderboard = action.payload;
         },
-        // updateActualUserRank: (state, action: PayloadAction<number>) => {
-        //     state.rank = action.payload;
-        // },
+        resetGameStore : (state) => {
+            return initialState;
+        }
     },
 });
 
@@ -97,6 +97,7 @@ export const {
     updateMatchesWon,
     updateOpponent,
     updateLeaderBoard,
+    resetGameStore,
 } = gameSlice.actions;
 export const selectTotalMatchesPlayed: any = (state: RootState) =>
     state.persistedReducer.game.totalMatchesPlayed;
@@ -121,6 +122,7 @@ export const selectOpponent = (state: RootState) =>
     state.persistedReducer.game.opponent;
 export const selectLeaderBoard = (state: RootState) =>
     state.persistedReducer.game.leaderboard;
+
 
 export function FetchTotalPlayers() {
     return async (dispatch: any, getState: any) => {

@@ -116,6 +116,9 @@ export const channelsSlice = createSlice({
 				userPrivateConvs : action.payload
 			}
 		},
+		resetChannelStore : (state) => {
+            return initialState;
+        }
 	}
 })
 
@@ -325,6 +328,7 @@ export const {
 	updatePrivateChannels,
 	updatePublicChannels,
 	updatePrivateConvs,
+	resetChannelStore,
 } = channelsSlice.actions;
 
 export default channelsSlice.reducer

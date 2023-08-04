@@ -50,11 +50,14 @@ export const channelType = createSlice({
 			state.protected_by_password = initialState.protected_by_password;
 			state.key = initialState.key;
 		},
+		resetChannelTypeStore : (state) => {
+            return initialState;
+        }
 		  
 	}
 })
 
-export const { addChannelType, isProtectedByPassword, addPassword, resetChannelType } = channelType.actions
+export const { addChannelType, isProtectedByPassword, addPassword, resetChannelType, resetChannelTypeStore } = channelType.actions
 
 export default channelType.reducer
 

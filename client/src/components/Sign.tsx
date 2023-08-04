@@ -1,22 +1,21 @@
 
-import Cookies from 'js-cookie';
 import * as React from 'react';
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import { useState, useRef } from 'react';
-// import { useAppDispatch } from '../utils/redux-hooks';
-import { useDispatch } from 'react-redux';
-import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
 import './Sign.css';
 import logoft from "../img/42 white.png";
-import { setSignCredentials, setTokens, setAvatar, selectTfaInput, getTfaInput, setNick } from '../redux-features/auth/authSlice';
-import { useSignupMutation, useSigninMutation} from '../app/api/authApiSlice';
-import { FetchActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
-import { FetchUserByName } from '../utils/global/global';
+import { useNavigate } from 'react-router-dom';
 import { UserModel } from '../types/users/userType';
+import { useAppDispatch } from '../utils/redux-hooks';
+import { FetchUserByName } from '../utils/global/global';
+import { useSignupMutation, useSigninMutation} from '../app/api/authApiSlice';
+import { setSignCredentials, setAvatar, setNick, resetAuthStore } from '../redux-features/auth/authSlice';
+import { resetChannelName, resetChannelNameStore } from '../redux-features/chat/createChannel/channelNameSlice';
+import { resetChannelStore } from '../redux-features/chat/channelsSlice';
+import { resetChannelType } from '../redux-features/chat/createChannel/channelTypeSlice';
 
 
 interface Signing {
@@ -25,6 +24,7 @@ interface Signing {
   }
 
 export default function Sign(props: Signing){
+    const dispatch = useAppDispatch();
     const userRef = React.useRef<HTMLInputElement>(null)
     const errRef = React.useRef<HTMLInputElement>(null)
     const [nickname, setNickname] = React.useState('')
@@ -36,11 +36,14 @@ export default function Sign(props: Signing){
     // const tfaInput = useAppSelector(selectTfaInput)
     const [ signin] = useSigninMutation();
     const [signup] = useSignupMutation(); // isLoading : Frequently Used Query Hook Return Values => When true, indicates that the query is currently loading for the first time, and has no data yet. This will be true for the first request fired off, but not for subsequent requests.
-    const dispatch = useAppDispatch()
-
     const navigate = useNavigate()
 
     React.useEffect(() => {
+        dispatch(resetAuthStore())
+        dispatch(resetChannelType())
+        dispatch(resetChannelName())
+        dispatch(resetChannelStore())
+        dispatch(resetChannelNameStore())
         if (userRef && userRef.current)
             userRef.current.focus()
     }, [])
