@@ -8,7 +8,6 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-
 import { UserService } from '../user/user.service';
 import { FriendshipGateway } from '../friendship/friendship.gateway';
 import { GameService } from './game.service';
@@ -18,7 +17,6 @@ import {
   EGameServerStates,
   ERoomStates,
 } from './enum/EServerGame';
-import { newUser } from 'src/auth/test/stubs';
 
 @WebSocketGateway(4010, { cors: '*' })
 @Injectable()
@@ -47,6 +45,105 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         element,
       );
     });
+  }
+
+  async handleDisconnect(client: Socket) {
+    let room: GameDto; // UNDEFINED
+    // TODO: ADD A SECURITY ??
+    const user = await this.friendshipGateway.getUserInfoFromSocket(
+      client.handshake.headers.cookie,
+    );
+    if (!user) {
+      console.error('[GATEWAY - handleDisconnect] USER NOT FOUND');
+    }
+    console.log('[GATEWAY - handleDisconnect]', 'user: ', user);
+    room = this.userInRoom(user.nickname);
+    if (!room) {
+      console.log(
+        '[GATEWAY - handleDisconnect]',
+        'The player is not linked to a room (leaving settings screen or else): ',
+        user.nickname,
+      );
+    } else {
+      // DELETE THE ROOM OF THE USER IF HE IS THE OWNER AND ALONE IN THE ROOM (WAITING)
+      // USE CASE:
+      // - PLAYER TYPE RANDOM AND NO OPPONENT IS COMING TO THE ROOM
+      // - PLAYER TYPE ONE TO NONE BUT THE OPPONENT HAS LEFT THE ROOM BEFORE THE END OF GAME SETTINGS
+      if (
+        room.id === user.nickname &&
+        room.isFull === false &&
+        room.roomStatus === ERoomStates.WaitingOpponent
+      ) {
+        console.log(
+          '[GATEWAY - handleDisconnect]',
+          'The player has left the game during the waiting opponent: ',
+          user.nickname,
+        );
+        this.removeRoom(room.id);
+      }
+      // USE CASES:
+      // - DISCONNECTION OF ONE OF BOTH PLAYERS IN VERSUS SCREEN
+      // - RAGEQUIT
+      // - ENDGAME (FIRST DISCONNECTION OF A PLAYER)
+      else if (room.isFull === true) {
+        // DISCONNECTION OF ONE OF BOTH PLAYERS IN VERSUS SCREEN
+        if (room.roomStatus === ERoomStates.Busy) {
+          console.error(
+            '[GATEWAY - handleDisconnect]',
+            'THE PLAYER HAS LEFT THE GAME DURING VERSUS SCREEN: ',
+            user.nickname,
+          );
+          this.removePlayerFromRoom(user.nickname, room);
+          this.server.to(room.id).emit('updateComponent', {
+            status: EGameServerStates.HOMEPAGE,
+            room: room,
+          });
+        } else if (room.roomStatus === ERoomStates.GameOn) {
+          // RAGE QUIT / DISCONNECTION OF ONE OF BOTH PLAYERS DURING A GAME
+          if (!room.isEndGame) {
+            console.warn(
+              '[GATEWAY - handleDicsonnect]',
+              'The player has been disconnected or has left the game (rage quit): ',
+              user.nickname,
+            );
+            // FORCE THE SCORE OF THE ROOM ACCORDING TO THE PLAYER WHO
+            // HAS LEFT THE ROOM
+            this.forceScore(user.nickname, room);
+            room.isEndGame = true;
+            // SEND THE OPPONENT ON THE END GAME SCREEN
+            this.server.to(room.id).emit('updateComponent', {
+              status: EGameServerStates.ENDGAME,
+              room: room,
+            });
+          } else {
+            console.log(
+              '[GATEWAY - handleDicsonnect]',
+              'End game disconnection of the player: ',
+              user.nickname,
+            );
+          }
+          this.createMatchHistory(room);
+          this.removePlayerFromRoom(user.nickname, room);
+        }
+        // THE LAST PLAYER DISCONNECTION TRIGGER THE DELETION OF THE SERVER ROOM
+        if (room.playerOneId === '0' && room.playerTwoId === '0') {
+          this.removeRoom(room.id);
+        }
+      }
+    }
+
+    // DELETE THE USER FROM THE SOCKETS POOL
+    this.socketsPool.delete(user.nickname);
+
+    // TODO:
+    // HANDLE IN A BETTER WAY THE MODIFICATION OF THE STATUS
+    // OR MAKE SURE TO NOT HAVE SIDE EFFECT IF THE USER IS ALREADY PLAYING
+    this.userService.updateData(user.nickname, { status: 'Online' });
+
+    // SAFETY PURGE AT EACH DISCONNECTION OF A PLAYER
+    this.safetyRoomPurge();
+
+    console.log('[GATEWAY - handleDisconnect]', 'AllRooms: ', this.AllRooms);
   }
 
   @SubscribeMessage('initPlayground')
@@ -283,65 +380,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async handleDisconnect(client: Socket) {
-    let room: GameDto; // UNDEFINED
-    // TODO: ADD A SECURITY ??
-    const user = await this.friendshipGateway.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
-    if (!user) {
-      console.error('[GATEWAY - handleDisconnect] USER NOT FOUND');
+  createMatchHistory(room: GameDto) {
+    console.log('[GATEWAY - createMatchHistory]', 'room: ', room);
+    if (room.roomStatus !== ERoomStates.Ended) {
+      this.gameService.matchCreation(room);
+      room.roomStatus = ERoomStates.Ended;
+    } else {
+      console.log(
+        '[GATEWAY - createMatchHistory]',
+        'The match has already been created',
+      );
     }
-    console.log('[GATEWAY - handleDisconnect]', 'user: ', user);
-    room = this.userInRoom(user.nickname);
-    if (room) {
-      // DELETE THE ROOM OF THE USER IF HE IS THE OWNER AND ALONE IN THE ROOM (WAITING)
-      // USE CASE:
-      // - PLAYER TYPE RANDOM AND NO OPPONENT IS COMING TO THE ROOM
-      // - PLAYER TYPE ONE TO NONE BUT THE OPPONENT HAS LEFT THE ROOM BEFORE THE END OF GAME SETTINGS
-      if (
-        room.id === user.nickname &&
-        room.isFull === false &&
-        room.roomStatus === ERoomStates.WaitingOpponent
-      ) {
-        this.removeRoom(room.id);
-      }
-      // USE CASES:
-      // - DISCONNECTION OF ONE OF BOTH PLAYERS IN VERSUS SCREEN
-      // - RAGEQUIT
-      // - ENDGAME (FIRST DISCONNECTION OF A PLAYER)
-      else if (room.isFull === true) {
-        // DISCONNECTION OF ONE OF BOTH PLAYERS IN VERSUS SCREEN
-        if (room.roomStatus === ERoomStates.Busy) {
-          this.removePlayerFromRoom(user.nickname, room);
-          console.error(
-            `[GATEWAY - handleDisconnect] THE PLAYER ${user.nickname} HAS LEFT THE GAME DURING VERSUS SCREEN`,
-          );
-          this.server.to(room.id).emit('updateComponent', {
-            status: EGameServerStates.HOMEPAGE,
-            room: room,
-          });
-        }
-        // THE LAST PLAYER DISCONNECTION TRIGGER THE DELETION OF THE SERVER ROOM
-        if (room.players.length <= 0) {
-          console.log('[GATEWAY - handleDisconnect]', 'players.length <= 1: ');
-          this.removeRoom(room.id);
-        }
-      }
-    }
-
-    // DELETE THE USER FROM THE SOCKETS POOL
-    this.socketsPool.delete(user.nickname);
-
-    // TODO:
-    // HANDLE IN A BETTER WAY THE MODIFICATION OF THE STATUS
-    // OR MAKE SURE TO NOT HAVE SIDE EFFECT IF THE USER IS ALREADY PLAYING
-    this.userService.updateData(user.nickname, { status: 'Online' });
-
-    // SAFETY PURGE AT EACH DISCONNECTION OF A PLAYER
-    this.safetyRoomPurge();
-
-    console.log('[GATEWAY - handleDisconnect]', 'AllRooms: ', this.AllRooms);
   }
 
   /*** UTILS ***/
@@ -381,6 +430,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return room.players[0] === userName ? 0 : 1;
   }
 
+  forceScore(userName: string, room: GameDto) {
+    if (this.playerNumberInRoom(userName, room) === 0) {
+      room.scorePlayers[0] = -42;
+    } else {
+      room.scorePlayers[1] = -42;
+    }
+  }
+
   // REMOVE A PLAYER FROM A ROOM
   removePlayerFromRoom(userName: string, room: GameDto) {
     console.log(
@@ -392,12 +449,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     if (this.playerNumberInRoom(userName, room) === 0) {
       room.playerOneId = '0';
+      // DO NOT USE IT BECAUSE SIDE EFFECT IN SOME DISCONNECION CASES
       // room.players = ['', room.players[1]];
     } else {
       room.playerTwoId = '0';
+      // DO NOT USE IT BECAUSE SIDE EFFECT IN SOME DISCONNECION CASES
       // room.players = [room.players[0], ''];
     }
-    room.players = room.players.filter((element) => element !== userName);
+    // DO NOT USE IT BECAUSE SIDE EFFECT IN SOME DISCONNECION CASES
+    // room.players = room.players.filter((element) => element !== userName);
     console.log('[GATEWAY - removePlayerFromRoom]', 'room: ', room);
   }
 
@@ -432,7 +492,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       element.isFull === false &&
       element.playerOneId === '0' &&
       element.playerTwoId === '0' &&
-      element.roomStatus === ERoomStates.WaitingOpponent
+      element.roomStatus === ERoomStates.Ended
     ) {
       console.log('[GATEWAY - purgeCallbackFilter]', 'false');
       return false; // false === MUST BE DELETED
@@ -442,6 +502,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   };
 
   // SAFETY PURGE ROOM ACCORDING TO EXISTING SOCKETS IN SOCKETS POOL
+  // DELETE EVERY ROOM WHEN EACH PLAYERS ARE NOT PRESENT ANYMORE IN
+  // THE SOCKETS POOL
   safetyRoomPurge() {
     console.log('[GATEWAY - safetyRoomPurge]');
     this.AllRooms.forEach((element) => {
@@ -455,7 +517,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         element.playerOneId = '0';
         element.playerTwoId = '0';
         element.players = [];
-        element.roomStatus = ERoomStates.WaitingOpponent;
+        element.roomStatus = ERoomStates.Ended;
       }
     });
     this.AllRooms = this.AllRooms.filter(this.purgeCallbackFilter);
