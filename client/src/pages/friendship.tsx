@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Button, Container, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
 import { useNavigate } from 'react-router-dom';
@@ -58,22 +58,17 @@ function Suggestions () {
       <Container maxWidth="lg">
         <Typography 
           sx={{
-            margin: '1%',
             fontWeight: 'bold',
             fontSize: '30px',
-            padding: '3%'
           }}
         > You may know... </Typography>
-        <Stack spacing={2} sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems:'baseline',
-          flexWrap: 'wrap',
-          justifyContent: 'space-evenly',
-        }} >
-          {suggestions.map((sugg: any) => 
-            <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>)}
-        </Stack>
+        <Grid container spacing={2}>
+          {suggestions.map((sugg: any, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>
+            </Grid>
+          ))}
+        </Grid>
       </Container>
   )
   return content;
@@ -108,23 +103,19 @@ function Requests () {
 
   
   const content = (
-      <Container maxWidth="lg" sx={{
-        margin: '2%' 
+      <Container maxWidth="lg" fixed sx={{
+        margin: '1%',
       }}>
         {(friendsRequests.length === 0) && <Typography sx={{
-              margin: '1%',
               fontWeight: 'bold',
               fontSize: '30px',
-              padding: '3%',
             }}>No request yet </Typography> }
         {(friendsRequests.length > 0) && <Typography sx={{
-              margin: '3%',
               fontWeight: 'bold',
               fontSize: '30px',
-              padding: '3%',
             }}> They want to be your friend... </Typography>}
-          <Stack spacing={1} sx={{
-            flexGrow: 1,
+          <Stack spacing={3} sx={{
+            // flexGrow: 1,
             flexDirection: 'row',
             flexWrap:'wrap',
             alignItems:'center',
@@ -167,16 +158,29 @@ function Friends () {
   
 //   console.log("frieeeends ", friends);
   const content = (
-    <div>
-      {/* <Navbar currentRoute={ currentRoute }/> */}
-      <h1> Your beloved... </h1>
-      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
-        {friends && friends.map((sugg: any) => 
-          <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends" bgColor='#AFEEEE'/>)}
-          {blocked && blocked.map((sugg: any) => 
-          <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="blockedFriends" bgColor='grey'/>)}
+      <Container maxWidth="lg" fixed sx={{
+        margin: '1%',
+      }}>
+      <Typography 
+        sx={{
+          fontWeight: 'bold',
+          fontSize: '30px',
+        }}
+      > Your friends... </Typography>
+      <Stack  spacing={3} sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:'flex-end',
+        justifyContent: 'space-evenly',
+        flexWrap: 'wrap',
+      }} >
+      
+          {friends && friends.map((sugg: any) => 
+            <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends" bgColor='#AFEEEE'/>)}
+            {blocked && blocked.map((sugg: any) => 
+            <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="blockedFriends" bgColor='grey'/>)}
       </Stack>
-    </div>
+    </Container>
   )
   return content;
 }
