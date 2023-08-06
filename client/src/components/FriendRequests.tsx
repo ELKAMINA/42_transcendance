@@ -3,6 +3,8 @@ import {
   Box,
   Stack,
   Avatar,
+  Grid,
+  Typography
 } from "@mui/material";
 import { useState } from "react";
 import AddIcon from '@mui/icons-material/Add';
@@ -63,12 +65,13 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
 
     return (
         <>
-            <Box
+            {/* <Box
             sx={{
                 display: 'flex',
+                flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems:'center',
-                width: 150,
+                width: 210,
                 height: 40,
                 borderRadius: 2,
                 backgroundColor: blockBgColor === 'yellowgreen' ? bgColor : blockBgColor,
@@ -99,6 +102,53 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                         </>
                     )}
                 </Stack>
+            </Box> */}
+            <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                width: 210,
+                height: 40,
+                backgroundColor: blockBgColor === 'yellowgreen' ? bgColor : blockBgColor,
+                '&:hover': {
+                    backgroundColor: '#AFEEEE',
+                },
+                padding: '10px',
+                opacity: 0.8,
+                borderRadius: 2,
+              }}>
+                  <Grid container spacing={2} sx={{
+                    alignItems: ' center',
+                  }}>
+                    <Grid item xs={4}>
+                        <Avatar src={avatar} sx={{ width: 30, height: 30 }}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                    <Typography gutterBottom variant="subtitle1" component="div">
+                        {login}
+                    </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                        {type === "request" && <AddIcon sx={{ color: 'yellow' }} onClick={addFriend}/>}
+                        {type === "requestReception" && (
+                            <>
+                                <DoneIcon sx={{ color: 'green' }} onClick={accept}/>
+                                <CloseIcon sx={{ color: 'red' }} onClick={deny}/>               
+                            </>
+                        )}
+                        {(type === 'myFriends') && (
+                            <>
+                                <BlockIcon sx={{ color: buttonColor, width: 20, height: 20 }} onClick={block}/>
+                            </>
+                        )}
+                        {(type === 'blockedFriends') && (
+                            <>
+                                <BlockIcon sx={{ color: 'grey', width: 20, height: 20 }}/>
+                            </>
+                        )}
+                    </Grid>
+                    </Grid>
             </Box>
         </> 
     )

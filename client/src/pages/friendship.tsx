@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { Button } from '@mui/material';
+import { Button, Container, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
+import { Box } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,7 @@ import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-feat
 import { FetchSuggestions, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentAccessToken, selectCurrentUser, setOnlyTokens } from '../redux-features/auth/authSlice';
 import {socket} from '../components/AllFriendship'
+import { StackedBarChartSharp } from '@mui/icons-material';
 
 
 
@@ -53,20 +55,26 @@ function Suggestions () {
     suggestions = useAppSelector(selectSuggestions)
         
     const content = (
-    <div>
-      {/* <Navbar currentRoute={ currentRoute }/> */}
-      <h1> You may know... </h1>
-      <Stack spacing={2} sx={{
-        // display: 'flex',
-        flexDirection: 'row',
-        flexWrap:'wrap',
-        alignItems:'center',
-        justifyContent: 'space-between',
-      }} >
-        {suggestions.map((sugg: any) => 
-          <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>)}
-      </Stack>
-    </div>
+      <Container maxWidth="lg">
+        <Typography 
+          sx={{
+            margin: '1%',
+            fontWeight: 'bold',
+            fontSize: '30px',
+            padding: '3%'
+          }}
+        > You may know... </Typography>
+        <Stack spacing={2} sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems:'baseline',
+          flexWrap: 'wrap',
+          justifyContent: 'space-evenly',
+        }} >
+          {suggestions.map((sugg: any) => 
+            <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>)}
+        </Stack>
+      </Container>
   )
   return content;
 };
@@ -100,18 +108,33 @@ function Requests () {
 
   
   const content = (
-    <div>
-      {/* <Navbar currentRoute={ currentRoute }/> */}
-      {(friendsRequests.length === 0) && <h1>No one wanna be your friend </h1> }
-      {(friendsRequests.length > 0) && <h1> They want to be your friend... </h1> &&
-      <Stack spacing={1}  direction='row' flexWrap='wrap' flexShrink='0' minWidth='10vw' minHeight='20vh' alignItems='center' justifyContent='center' >
-        {friendsRequests.map((sugg: any) => 
-          <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.senderId} avatar={sugg.SenderAv} type="requestReception" bgColor='#AFEEEE'/>)}
-      </Stack>
-      }
-      
-      
-    </div>
+      <Container maxWidth="lg" sx={{
+        margin: '2%' 
+      }}>
+        {(friendsRequests.length === 0) && <Typography sx={{
+              margin: '1%',
+              fontWeight: 'bold',
+              fontSize: '30px',
+              padding: '3%',
+            }}>No request yet </Typography> }
+        {(friendsRequests.length > 0) && <Typography sx={{
+              margin: '3%',
+              fontWeight: 'bold',
+              fontSize: '30px',
+              padding: '3%',
+            }}> They want to be your friend... </Typography>}
+          <Stack spacing={1} sx={{
+            flexGrow: 1,
+            flexDirection: 'row',
+            flexWrap:'wrap',
+            alignItems:'center',
+            justifyContent: 'space-between',
+            margin: '10px',
+          }} >
+            {friendsRequests.map((sugg: any) => 
+              <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.senderId} avatar={sugg.SenderAv} type="requestReception" bgColor='#AFEEEE'/>)}
+            </Stack>
+        </Container>
   )
   return content;
 }
