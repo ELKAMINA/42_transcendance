@@ -13,13 +13,14 @@ class Player {
     constructor(
         userInfo: Array<string>,
         position: Array<number>,
-        paddleSpeed: number
+        paddleSpeed: number,
+        paddleColor: string
     ) {
         this.userInfo = userInfo;
         this.paddlePosition = position;
         this.score = 0;
         this.paddleSpeed = paddleSpeed;
-        this.paddleColor = "#FFFFFF";
+        this.paddleColor = paddleColor;
         this.paddleDimension = [10, 100];
         this.paddleTop = position[1]; // Y CORRDINATE
         this.paddleBottom = 50; // HEIGHT OF THE PADDLE

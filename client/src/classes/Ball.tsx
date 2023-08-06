@@ -11,13 +11,13 @@ class Ball {
     private ballRight: number;
     private canBeCollided: boolean;
 
-    constructor(position: Array<number>, speed: number) {
+    constructor(position: Array<number>, speed: number, color: string) {
         this.position = [...position];
         this.speed = speed;
         this.radius = 10;
         this.velocity = [4, 4];
         this.isVisible = true;
-        this.color = "#FFFFFF";
+        this.color = color;
         this.ballTop = this.position[1] - this.radius;
         this.ballBottom = this.position[1] + this.radius;
         this.ballLeft = this.position[0] - this.radius;

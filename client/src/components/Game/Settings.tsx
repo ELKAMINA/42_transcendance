@@ -21,26 +21,31 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
     const navigate = useNavigate();
-    const [board, setBoardColor] = useState("#000000");
-    const [net, setNetColor] = useState("#ffffff");
-    const [paddle, setPaddleColor] = useState("#ffffff");
-    const [ball, setBallColor] = useState("#ffffff");
     const [points, setTotalPoints] = useState("2");
+    const [boardColor, setBoardColor] = useState("#000000");
+    const [netColor, setNetColor] = useState("#FFFFFF");
+    const [scoreColor, setScoreColor] = useState("#FFFFFF");
+    const [paddleColor, setPaddleColor] = useState("#FFFFFF");
+    const [ballColor, setBallColor] = useState("#FFFFFF");
     const [open, setOpen] = useState(true);
 
-    const handleBoard = (newValue: string) => {
+    const handleBoardColor = (newValue: string) => {
         setBoardColor(newValue);
     };
 
-    const handleNet = (newValue: string) => {
+    const handleNetColor = (newValue: string) => {
         setNetColor(newValue);
     };
 
-    const handlePaddle = (newValue: string) => {
+    const handleScoreColor = (newValue: string) => {
+        setScoreColor(newValue);
+    };
+
+    const handlePaddleColor = (newValue: string) => {
         setPaddleColor(newValue);
     };
 
-    const handleBall = (newValue: string) => {
+    const handleBallColor = (newValue: string) => {
         setBallColor(newValue);
     };
 
@@ -52,12 +57,13 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
     const sendSettings = () => {
         console.log("[Settings] Button 'submit' clicked");
         socket.emit("RequestGameSettings", {
-            board: board,
-            net: net,
-            ball: ball,
-            paddle: paddle,
-            points: points,
             roomInfo: clickPlay,
+            points: points,
+            boardColor: boardColor,
+            netColor: netColor,
+            scoreColor: scoreColor,
+            ballColor: ballColor,
+            paddleColor: paddleColor,
         });
         setOpen(false);
     };
@@ -84,65 +90,6 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
                                         fontWeight: "bold",
                                     }}
                                 >
-                                    Board color:
-                                </Typography>
-                                <MuiColorInput
-                                    format="hex"
-                                    value={board}
-                                    onChange={handleBoard}
-                                ></MuiColorInput>
-                            </Grid>
-
-                            <Grid item xs={12}>
-                                <Typography
-                                    sx={{
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    Net color:
-                                </Typography>
-                                <MuiColorInput
-                                    format="hex"
-                                    value={net}
-                                    onChange={handleNet}
-                                ></MuiColorInput>
-                            </Grid>
-
-                            <Grid item xs={12}>
-                                <Typography
-                                    sx={{
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    Paddle color:
-                                </Typography>
-                                <MuiColorInput
-                                    format="hex"
-                                    value={paddle}
-                                    onChange={handlePaddle}
-                                ></MuiColorInput>
-                            </Grid>
-
-                            <Grid item xs={12}>
-                                <Typography
-                                    sx={{
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    Ball color:
-                                </Typography>
-                                <MuiColorInput
-                                    format="hex"
-                                    value={ball}
-                                    onChange={handleBall}
-                                ></MuiColorInput>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Typography
-                                    sx={{
-                                        fontWeight: "bold",
-                                    }}
-                                >
                                     Total Points:
                                 </Typography>
                                 <Input
@@ -159,6 +106,79 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
                                         setTotalPoints(e.target.value)
                                     }
                                 ></Input>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography
+                                    sx={{
+                                        fontWeight: "bold",
+                                    }}
+                                >
+                                    Board color:
+                                </Typography>
+                                <MuiColorInput
+                                    format="hex"
+                                    value={boardColor}
+                                    onChange={handleBoardColor}
+                                ></MuiColorInput>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography
+                                    sx={{
+                                        fontWeight: "bold",
+                                    }}
+                                >
+                                    Net color:
+                                </Typography>
+                                <MuiColorInput
+                                    format="hex"
+                                    value={netColor}
+                                    onChange={handleNetColor}
+                                ></MuiColorInput>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography
+                                    sx={{
+                                        fontWeight: "bold",
+                                    }}
+                                >
+                                    Score color:
+                                </Typography>
+                                <MuiColorInput
+                                    format="hex"
+                                    value={scoreColor}
+                                    onChange={handleScoreColor}
+                                ></MuiColorInput>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography
+                                    sx={{
+                                        fontWeight: "bold",
+                                    }}
+                                >
+                                    Paddle color:
+                                </Typography>
+                                <MuiColorInput
+                                    format="hex"
+                                    value={paddleColor}
+                                    onChange={handlePaddleColor}
+                                ></MuiColorInput>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography
+                                    sx={{
+                                        fontWeight: "bold",
+                                    }}
+                                >
+                                    Ball color:
+                                </Typography>
+                                <MuiColorInput
+                                    format="hex"
+                                    value={ballColor}
+                                    onChange={handleBallColor}
+                                ></MuiColorInput>
                             </Grid>
                         </Grid>
                     </DialogContent>

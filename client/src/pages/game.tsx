@@ -68,10 +68,11 @@ function Game() {
         playerTwoId: "",
         gameStatus: EGameClientStates.SETTINGS,
         totalPoint: 2,
-        boardColor: "#ffffff",
+        boardColor: "#FFFFFF",
+        netColor: "#000000",
+        scoreColor: "#000000",
         ballColor: "#000000",
         paddleColor: "#000000",
-        netColor: "#000000",
     });
 
     const renderGameComponent = () => {

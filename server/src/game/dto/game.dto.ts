@@ -19,14 +19,6 @@ export class GameDto {
   createdDate: Date;
 
   @IsNotEmpty()
-  @IsInt()
-  totalSet: number;
-
-  @IsNotEmpty()
-  @IsInt()
-  totalPoint: number;
-
-  @IsNotEmpty()
   @IsString()
   mapName: string;
 
@@ -41,33 +33,45 @@ export class GameDto {
   @ArrayMaxSize(2)
   players: string[];
 
-  @IsArray()
-  @ArrayMaxSize(2)
-  scorePlayers: number[];
-
   @IsString()
   playerOneId: string;
 
   @IsString()
   playerTwoId: string;
 
-  @IsBoolean()
-  collided: boolean;
+  @IsArray()
+  @ArrayMaxSize(2)
+  scorePlayers: number[];
 
   roomStatus: ERoomStates;
 
   @IsBoolean()
   isEndGame: boolean;
 
+  @IsBoolean()
+  collided: boolean;
+
+  // SETTINGS CUSTOMIZATION
+  @IsNotEmpty()
+  @IsInt()
+  totalSet: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  totalPoint: number;
+
   @IsString()
   boardColor: string;
+
+  @IsString()
+  netColor: string;
+
+  @IsString()
+  scoreColor: string;
 
   @IsString()
   ballColor: string;
 
   @IsString()
   paddleColor: string;
-
-  @IsString()
-  netColor: string;
 }

@@ -26,7 +26,8 @@ export interface IRoomInfo {
     playerTwoId: string;
     gameStatus: number;
     boardColor: string;
+    netColor: string;
+    scoreColor: string;
     ballColor: string;
     paddleColor: string;
-    netColor: string;
 }

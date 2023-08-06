@@ -14,12 +14,22 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
     // TODO: USE THE CANVAS DIMENSION
     const [canvasWidth, canvasHeight] = [800, 600];
     const player1 = useRef<Player>(
-        new Player([room.playerOneId, room.players[0]], [0, 0], 20)
+        new Player(
+            [room.playerOneId, room.players[0]],
+            [0, 0],
+            20,
+            room.paddleColor
+        )
     );
     const player2 = useRef<Player>(
-        new Player([room.playerTwoId, room.players[1]], [0, 0], 20)
+        new Player(
+            [room.playerTwoId, room.players[1]],
+            [0, 0],
+            20,
+            room.paddleColor
+        )
     );
-    const ball = useRef<Ball>(new Ball([0, 0], 5));
+    const ball = useRef<Ball>(new Ball([0, 0], 5, room.ballColor));
     // VARIABLE TO STOP SETINTERVAL
     let intervalId: any;
 
@@ -78,7 +88,7 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
 
     const drawNet = (ctx: CanvasRenderingContext2D) => {
         for (let i = 0; i <= canvasHeight; i += 20) {
-            drawRect(ctx, canvasWidth / 2, i, 5, 10, "#FFFFFF");
+            drawRect(ctx, canvasWidth / 2, i, 5, 10, room.netColor);
         }
     };
 
@@ -137,7 +147,7 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         ctx.clearRect(0, 0, cs.width, cs.height);
 
         // DRAW THE BOARD IN BLACK COLOR
-        drawRect(ctx, 0, 0, cs.width, cs.height, "#000000");
+        drawRect(ctx, 0, 0, cs.width, cs.height, room.boardColor);
 
         // DRAW THE NET
         drawNet(ctx);
@@ -148,14 +158,14 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
             player1.current.getScore().toString(),
             (1 * canvasWidth) / 4,
             (1 * canvasHeight) / 6,
-            "#FFFFFF"
+            room.scoreColor
         );
         drawText(
             ctx,
             player2.current.getScore().toString(),
             (3 * canvasWidth) / 4,
             (1 * canvasHeight) / 6,
-            "#FFFFFF"
+            room.scoreColor
         );
 
         // PLAYER 1 PADDLE
