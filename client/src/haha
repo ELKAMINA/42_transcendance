@@ -1,0 +1,66 @@
+            <div className="navbar__header__middle">
+                <div className="navbar__header__options navbar__header__options--active">
+                    <HomeIcon fontSize="large" onClick={home} />
+                </div>
+                <div className="navbar__header__options">
+                    <PersonAddIcon fontSize="large" onClick={friendship} />
+                </div>
+                <img src="" alt="" />
+                <div className="navbar__header__options">
+                    <TelegramIcon onClick={chat} />
+                </div>
+                <div className="navbar__header__options">
+                    <SportsEsportsIcon onClick={play} />
+                </div>
+            </div>
+
+            {/* ********************************** */}
+            <div className="navbar__header__right">
+                <Avatar
+                    src={srcAvatar}
+                    sx={{
+                        margin: "5px",
+                        width: 50,
+                        height: 50,
+                    }}
+                />
+                <Button
+                    id="demo-positioned-button"
+                    aria-controls={open ? "demo-positioned-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+                    onClick={handleClick}
+                    sx={{ color: "white" }}
+                >
+                    {nickname}
+                </Button>
+                <Menu
+                    id="demo-positioned-menu"
+                    aria-labelledby="demo-positioned-button"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                    }}
+                    transformOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                    }}
+                    sx={{
+                        zIndex: 0,
+                    }}
+                >
+                    <MenuItem onClick={getMyProfile}>Profile</MenuItem>
+                    <MenuItem component="a" href="/" onClick={handleSubmit}>
+                        Settings
+                    </MenuItem>
+                    <MenuItem component="a" href="/" onClick={loggingOut}>
+                        Logout
+                    </MenuItem>
+                </Menu>
+                <IconButton component="a" href="/" onClick={loggingOut}>
+                    <LogoutIcon fontSize="medium" />
+                </IconButton>
+            </div>

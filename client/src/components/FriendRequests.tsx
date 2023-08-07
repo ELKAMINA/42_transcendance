@@ -87,20 +87,18 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                     borderRadius: '6%',
                     backgroundColor: blockBgColor === 'yellowgreen' ? bgColor : blockBgColor,
                     '&:hover': {
-                        // backgroundColor: '#AFEEEE',
                         background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)',
                     },
-                    // opacity: 0.7,
+                    // opacity: 0.6,
                 }}
                 elevation={3}
             >
-                <Grid container rowSpacing={1} sx={{
+                <Grid item container direction='row'  rowSpacing={1} sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    // alignContent: 'center',
-                    justifyContent: 'center',
-                    // margin: '6%',
-
+                    margin: '3%',
+                    flexWrap: 'nowrap',
+                    // backgroundColor: 'yellow',
                 }}>
                     <Grid container direction="column" item spacing={1} xs={4} sm={6} md={6} lg={6} sx={{
                         display: 'flex',
@@ -110,10 +108,10 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                     zeroMinWidth
                     >
                         <Grid item>
-                            <Avatar src={avatar} sx={{ width: 60, height: 60 }}/>
+                            <Avatar src={avatar} sx={{ width: 40, height: 40 }}/>
                         </Grid>
                         <Grid item>
-                            <Typography gutterBottom variant="h6" component="div" noWrap>
+                            <Typography gutterBottom variant="h5" component="div" noWrap>
                                 {login}
                             </Typography>
                         </Grid>
@@ -137,8 +135,10 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                             <>
                                 <Grid container direction='row' spacing={5}>
                                     <Grid item xs={3} sm={3} md={3} lg={3} >
-                                        <IconButton aria-label="add" color="success"  onClick={accept}>
-                                            <CheckCircleRoundedIcon fontSize="large"/>
+                                        <IconButton aria-label="add"  onClick={accept}>
+                                            <CheckCircleRoundedIcon sx={{
+                                                color:"#99e000",
+                                            }} fontSize="large"/>
                                         </IconButton>
                                     </Grid>
                                     <Grid item xs={3} sm={3} md={3} lg={3}>

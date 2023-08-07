@@ -54,6 +54,9 @@ function Suggestions () {
           sx={{
             fontWeight: 'bold',
             fontSize: '30px',
+            color: '#07457E',
+            textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+            margin: 4,
           }}
         > You may know... </Typography>
         <Grid container spacing={2}>
@@ -103,10 +106,16 @@ function Requests () {
         {(friendsRequests.length === 0) && <Typography sx={{
               fontWeight: 'bold',
               fontSize: '30px',
+              color: '#07457E',
+              textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+              margin: 4,
             }}>No request yet </Typography> }
         {(friendsRequests.length > 0) && <Typography sx={{
               fontWeight: 'bold',
               fontSize: '30px',
+              color: '#07457E',
+              textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+              margin: 4,
             }}> They want to be your friend... </Typography>}
           <Stack spacing={3} sx={{
             // flexGrow: 1,
@@ -159,6 +168,9 @@ function Friends () {
         sx={{
           fontWeight: 'bold',
           fontSize: '30px',
+          color: '#07457E',
+          textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+          margin: 4,
         }}
       > Your friends... </Typography>
       <Stack  spacing={3} sx={{
