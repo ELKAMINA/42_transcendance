@@ -88,43 +88,43 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       else if (room.isFull === true) {
         // DISCONNECTION OF ONE OF BOTH PLAYERS IN VERSUS SCREEN
         if (room.roomStatus === ERoomStates.Busy) {
-          console.error(
+          console.warn(
             '[GATEWAY - handleDisconnect]',
-            'THE PLAYER HAS LEFT THE GAME DURING VERSUS SCREEN: ',
+            'The player has left the game during versus screen: ',
             user.nickname,
           );
-          this.removePlayerFromRoom(user.nickname, room);
           this.server.to(room.id).emit('updateComponent', {
             status: EGameServerStates.HOMEPAGE,
             room: room,
           });
         } else if (room.roomStatus === ERoomStates.GameOn) {
           // RAGE QUIT / DISCONNECTION OF ONE OF BOTH PLAYERS DURING A GAME
-          if (!room.isEndGame) {
-            console.warn(
-              '[GATEWAY - handleDicsonnect]',
-              'The player has been disconnected or has left the game (rage quit): ',
-              user.nickname,
-            );
-            // FORCE THE SCORE OF THE ROOM ACCORDING TO THE PLAYER WHO
-            // HAS LEFT THE ROOM
-            this.forceScore(user.nickname, room);
-            room.isEndGame = true;
-            // SEND THE OPPONENT ON THE END GAME SCREEN
-            this.server.to(room.id).emit('updateComponent', {
-              status: EGameServerStates.ENDGAME,
-              room: room,
-            });
-          } else {
-            console.log(
-              '[GATEWAY - handleDicsonnect]',
-              'End game disconnection of the player: ',
-              user.nickname,
-            );
-          }
+          // FORCE THE SCORE OF THE ROOM ACCORDING TO THE PLAYER WHO
+          // HAS LEFT THE ROOM
+          console.warn(
+            '[GATEWAY - handleDisconnect]',
+            'The player has left the game (disconnection or rage quit): ',
+            user.nickname,
+          );
+          this.forceScore(user.nickname, room);
           this.createMatchHistory(room);
-          this.removePlayerFromRoom(user.nickname, room);
+          // SEND THE OPPONENT ON THE END GAME SCREEN
+          this.server.to(room.id).emit('updateComponent', {
+            status: EGameServerStates.ENDGAME,
+            room: room,
+          });
+        } else if (
+          room.roomStatus === ERoomStates.Ended ||
+          room.roomStatus === ERoomStates.Closed
+        ) {
+          console.log(
+            '[GATEWAY - handleDicsonnect]',
+            'End game disconnection of the player: ',
+            user.nickname,
+          );
+          this.createMatchHistory(room);
         }
+        this.removePlayerFromRoom(user.nickname, room);
         // THE LAST PLAYER DISCONNECTION TRIGGER THE DELETION OF THE SERVER ROOM
         if (room.playerOneId === '0' && room.playerTwoId === '0') {
           this.removeRoom(room.id);
@@ -279,7 +279,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       playerTwoId: '0',
       scorePlayers: new Array<number>(),
       roomStatus: ERoomStates.WaitingOpponent,
-      isEndGame: false,
       collided: true,
       totalSet: 1,
       totalPoint: body.points,
@@ -369,27 +368,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error('[GATEWAY - requestEndOfGame] USER NOT FOUND');
     }
     const room = this.userInRoom(user.nickname); // SHALLOW COPY
-    if (room.isEndGame === false) {
-      this.updateRoomData(room.id, 'isEndGame', true);
+    if (room.roomStatus !== ERoomStates.Ended) {
+      this.updateRoomData(room.id, 'roomStatus', ERoomStates.Ended);
       // TEMPORARY TEST
       this.updateRoomData(room.id, 'scorePlayers', [2, 0]);
       this.server.to(room.id).emit('updateComponent', {
         status: EGameServerStates.ENDGAME,
         room: room,
       });
-    }
-  }
-
-  createMatchHistory(room: GameDto) {
-    console.log('[GATEWAY - createMatchHistory]', 'room: ', room);
-    if (room.roomStatus !== ERoomStates.Ended) {
-      this.gameService.matchCreation(room);
-      room.roomStatus = ERoomStates.Ended;
-    } else {
-      console.log(
-        '[GATEWAY - createMatchHistory]',
-        'The match has already been created',
-      );
     }
   }
 
@@ -430,6 +416,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return room.players[0] === userName ? 0 : 1;
   }
 
+  // FORCE THE SCORE OF A PLAYER WHO HAS LEFT THE GAME (DISCONNECTION OR RAGE QUIT)
   forceScore(userName: string, room: GameDto) {
     if (this.playerNumberInRoom(userName, room) === 0) {
       room.scorePlayers[0] = -42;
@@ -479,20 +466,34 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 
+  // CREATE THE MATCH TO THE MATCH HISTORY DATABASE
+  createMatchHistory(room: GameDto) {
+    console.log('[GATEWAY - createMatchHistory]', 'room: ', room);
+    if (room.roomStatus !== ERoomStates.Closed) {
+      this.gameService.matchCreation(room);
+      room.roomStatus = ERoomStates.Closed;
+    } else {
+      console.log(
+        '[GATEWAY - createMatchHistory]',
+        'The match has already been created',
+      );
+    }
+  }
+
   // REMOVE A ROOM FROM THE SERVER
   removeRoom(roomId: string) {
     console.log('[GATEWAY - removeRoom]', 'roomId: ', roomId);
     this.AllRooms = this.AllRooms.filter((element) => element.id !== roomId);
-    console.log('[GATEWAY - removeRoom]', 'AllRooms: ', this.AllRooms);
   }
 
+  // FUNCTION TO FILTER THE ROOMS DURING SAFETY PURGE FUNCTION
   purgeCallbackFilter = (element: GameDto): boolean => {
     console.log('[GATEWAY - purgeCallbackFilter]', 'element: ', element);
     if (
       element.isFull === false &&
       element.playerOneId === '0' &&
       element.playerTwoId === '0' &&
-      element.roomStatus === ERoomStates.Ended
+      element.roomStatus === ERoomStates.Closed
     ) {
       console.log('[GATEWAY - purgeCallbackFilter]', 'false');
       return false; // false === MUST BE DELETED
@@ -507,17 +508,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   safetyRoomPurge() {
     console.log('[GATEWAY - safetyRoomPurge]');
     this.AllRooms.forEach((element) => {
-      console.log('[GATEWAY - safetyRoomPurge]', 'room: ', element);
       if (
         !this.socketsPool.get(element.players[0]) &&
         !this.socketsPool.get(element.players[1])
       ) {
-        console.log('[GATEWAY - safetyRoomPurge]', 'TEST');
+        console.log(
+          '[GATEWAY - safetyRoomPurge]',
+          'ERROR ABOUT PLAYERS IN THE ROOM: ',
+          element,
+        );
         element.isFull = false;
         element.playerOneId = '0';
         element.playerTwoId = '0';
         element.players = [];
-        element.roomStatus = ERoomStates.Ended;
+        element.roomStatus = ERoomStates.Closed;
       }
     });
     this.AllRooms = this.AllRooms.filter(this.purgeCallbackFilter);

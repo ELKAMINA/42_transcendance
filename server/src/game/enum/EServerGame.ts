@@ -22,4 +22,5 @@ export enum ERoomStates {
   Busy,
   GameOn,
   Ended,
+  Closed,
 }

@@ -46,9 +46,6 @@ export class GameDto {
   roomStatus: ERoomStates;
 
   @IsBoolean()
-  isEndGame: boolean;
-
-  @IsBoolean()
   collided: boolean;
 
   // SETTINGS CUSTOMIZATION
