@@ -30,7 +30,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   // CONTAINS EVERY CREATED GAME ROOM
-  private AllRooms: Array<GameDto> = new Array<GameDto>();
+  private allRooms: Array<GameDto> = new Array<GameDto>();
   // CONTAINS EVERY CONNECTED SOCKETS USER
   private socketsPool: Map<string, Socket> = new Map<string, Socket>();
 
@@ -143,7 +143,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // SAFETY PURGE AT EACH DISCONNECTION OF A PLAYER
     this.safetyRoomPurge();
 
-    console.log('[GATEWAY - handleDisconnect]', 'AllRooms: ', this.AllRooms);
+    console.log('[GATEWAY - handleDisconnect]', 'allRooms: ', this.allRooms);
   }
 
   /***************************************************************************/
@@ -194,7 +194,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           else {
             // IF THE SECOND PLAYER DOES NOT HAVE A ROOM
             // THEN FIND A WAITING ROOM AVAILABLE
-            roomAssigned = this.AllRooms.find(
+            roomAssigned = this.allRooms.find(
               (el) => el.roomStatus === ERoomStates.WaitingOpponent,
             );
             // UPDATE THE ROOM WITH THE SECOND PLAYER INFO
@@ -294,7 +294,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     room.players.push(user.nickname);
     room.scorePlayers.push(0);
     room.scorePlayers.push(0);
-    this.AllRooms.push(room);
+    this.allRooms.push(room);
     client.join(room.id);
     if (playType === EServerPlayType.ONETOONE) {
       roomId = room.id;
@@ -386,7 +386,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   getGameStates(userName: string) {
     console.log('[GATEWAY - getGameStates]', 'userName: ', userName);
-    const possibleRooms = this.AllRooms.filter(
+    const possibleRooms = this.allRooms.filter(
       (el) => el.roomStatus === ERoomStates.WaitingOpponent,
     );
     console.log(
@@ -402,7 +402,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // CHECK IF A USER IS ALREADY IN A ROOM
   userInRoom(userName: string): GameDto | undefined {
     console.log('[GATEWAY - userInRoom]', 'userName: ', userName);
-    const room = this.AllRooms.find((obj) => obj.players.includes(userName));
+    const room = this.allRooms.find((obj) => obj.players.includes(userName));
     console.log('[GATEWAY - userInRoom] ', 'room: ', room);
     return room;
   }
@@ -462,7 +462,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       '| newValue: ',
       newValue,
     );
-    this.AllRooms.forEach((element) => {
+    this.allRooms.forEach((element) => {
       if (element.id === roomId) {
         element[data] = newValue;
       }
@@ -486,7 +486,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // REMOVE A ROOM FROM THE SERVER
   removeRoom(roomId: string) {
     console.log('[GATEWAY - removeRoom]', 'roomId: ', roomId);
-    this.AllRooms = this.AllRooms.filter((element) => element.id !== roomId);
+    this.allRooms = this.allRooms.filter((element) => element.id !== roomId);
   }
 
   // FUNCTION TO FILTER THE ROOMS DURING SAFETY PURGE FUNCTION
@@ -510,7 +510,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // THE SOCKETS POOL
   safetyRoomPurge() {
     console.log('[GATEWAY - safetyRoomPurge]');
-    this.AllRooms.forEach((element) => {
+    this.allRooms.forEach((element) => {
       if (
         !this.socketsPool.get(element.players[0]) &&
         !this.socketsPool.get(element.players[1])
@@ -527,7 +527,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         element.roomStatus = ERoomStates.Closed;
       }
     });
-    this.AllRooms = this.AllRooms.filter(this.purgeCallbackFilter);
+    this.allRooms = this.allRooms.filter(this.purgeCallbackFilter);
   }
 
   /***************************************************************************/
@@ -535,9 +535,71 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('requestMovePaddle')
   async handleRequestMovePaddle(client: Socket, value: number): Promise<void> {
     const [socketId, roomName] = [...client.rooms];
-    const room = this.AllRooms.find((el) => el.id === roomName);
+    const room = this.allRooms.find((el) => el.id === roomName);
     const player =
       room.playerOneId === socketId ? room.playerOneId : room.playerTwoId;
     this.server.to(roomName).emit('updateMovePaddle', { player, value });
+  }
+
+  /***************************************************************************/
+  /*** OLD PONG VERSION ***/
+  @SubscribeMessage('requestMoveBall')
+  async handleRequestMoveBall(
+    client: Socket,
+    value: { positions: Array<number>; velocity: Array<number> },
+  ): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updateMoveBall', value);
+  }
+
+  @SubscribeMessage('requestAfterPaddleCollision')
+  async handlerequestAfterPaddleCollisionl(
+    client: Socket,
+    value: {
+      positions: Array<number>;
+      velocity: Array<number>;
+      canBeCollided: boolean;
+    },
+  ): Promise<void> {
+    // console.log('value ', value);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updateAfterPaddleCollision', value);
+  }
+
+  @SubscribeMessage('requestResetPositionBall')
+  async handleRequestResetPositionBall(
+    client: Socket,
+    value: { positions: Array<number>; canBeCollided: boolean },
+  ): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePositionBall', value);
+  }
+
+  @SubscribeMessage('requestResetPositionPlayer')
+  async handleRequestResetPositionPlayer(
+    client: Socket,
+    value: { player1Position: Array<number>; player2Position: Array<number> },
+  ): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePositionPlayer', value);
+  }
+
+  @SubscribeMessage('requestPlayerScore')
+  async handleRequestPlayerScore(client: Socket, value: string): Promise<void> {
+    // console.log('rooms ', client.rooms);
+    const [socketId, roomName] = [...client.rooms];
+    const room = this.allRooms.find((el) => el.id === roomName);
+    if (value === socketId) {
+      room.scorePlayers[0] += 1;
+    } else room.scorePlayers[1] += 1;
+    // console.log(`socket id ${socketId} in the room ${roomName}`);
+    this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
   }
 }

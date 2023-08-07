@@ -1,13 +1,13 @@
-/* .pongCanvas {
+.pongCanvas {
     border: 10px solid black;
     display: table;
     padding: 0;
     width: 100%;
     height: 100%;
     position: absolute;
-} */
+}
 
-.wrapper {
+/* .wrapper {
     display: table;
     padding: 0;
     width: 100%;
@@ -28,7 +28,7 @@
     width: auto;
     height: auto;
     background-color: pink;
-}
+} */
 
 /* Mobile */
 /* body::before {
