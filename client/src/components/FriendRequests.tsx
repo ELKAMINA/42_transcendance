@@ -97,10 +97,12 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                 <Grid container rowSpacing={1} sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    alignContent: 'center',
+                    // alignContent: 'center',
+                    justifyContent: 'center',
+                    // margin: '6%',
 
                 }}>
-                    <Grid container direction="column" spacing={1} xs={4} sm={6} md={6} lg={6} sx={{
+                    <Grid container direction="column" item spacing={1} xs={4} sm={6} md={6} lg={6} sx={{
                         display: 'flex',
                         alignItems: 'center',
                         flexWrap: 'nowrap',
@@ -116,18 +118,24 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                             </Typography>
                         </Grid>
                     </Grid>
-                    <Grid container xs={6} sm={6} md={6} lg={6} sx={{
-                        display: 'flex',
-                        // alignContent: 'center',
-                        justifyContent: 'flex-end',
-                        alignItems: 'flex-end',
-                        p:1,
-                    }}>
-                        <Grid item>
-                            {type === "request" &&  <Button variant="contained" size="small" onClick={addFriend}>Ajouter</Button>}
-                            {type === "requestReception" && (
-                                <>
-                                <Grid container item direction='row' xs={6} sm={6} md={6} lg={6} spacing={5}>
+                    {type === "request" &&  
+                        (
+                            <Grid container item xs={6} sm={6} md={6} lg={6} sx={{
+                                display: 'flex',
+                                // alignContent: 'center',
+                                justifyContent: 'flex-end',
+                                alignItems: 'flex-end',
+                                p:1,
+                            }}>
+                                <Grid item>
+                                    <Button variant="contained" size="small" onClick={addFriend}>Ajouter</Button>
+                                </Grid>
+                            </Grid>
+                        )}
+
+                        {type === "requestReception" && (
+                            <>
+                                <Grid container direction='row' spacing={5}>
                                     <Grid item xs={3} sm={3} md={3} lg={3} >
                                         <IconButton aria-label="add" color="success"  onClick={accept}>
                                             <CheckCircleRoundedIcon fontSize="large"/>
@@ -139,21 +147,35 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                                         </IconButton>
                                     </Grid>
                                 </Grid>
+                            </>
+                        )}
+                        {(type === 'myFriends') && (
+                                <>
+                                    <Grid container direction='row' item xs={3} sm={3} md={3} lg={3}spacing={5}>
+                                        <Grid item xs={3} sm={3} md={3} lg={3} sx={{
+                                            margin: "20%",
+                                        }}>
+                                            <IconButton aria-label="block" color="error" onClick={block}>
+                                                <BlockIcon sx={{ color: buttonColor}}  fontSize="medium"/>
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
                                 </>
                             )}
-                            {(type === 'myFriends') && (
-                                    <>
-                                        <BlockIcon sx={{ color: buttonColor}} onClick={block} fontSize="medium"/>
-                                    </>
-                                )}
-                                {(type === 'blockedFriends') && (
-                                    <>
-                                        <BlockIcon sx={{ color: 'grey'}} fontSize="medium"/>
-                                    </>
-                                )}
-                        </Grid>
+                            {(type === 'blockedFriends') && (
+                                <>
+                                    <Grid container direction='row' item xs={3} sm={3} md={3} lg={3}spacing={5}>
+                                        <Grid item xs={3} sm={3} md={3} lg={3} sx={{
+                                            margin: "20%",
+                                        }}>
+                                            <IconButton aria-label="block" color="error" onClick={block}>
+                                                <BlockIcon sx={{ color: 'grey'}} fontSize="medium"/>
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+                                </>
+                            )}
                     </Grid>
-                </Grid>
             </Paper>
         </> 
     );

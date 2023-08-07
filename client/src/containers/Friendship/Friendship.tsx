@@ -28,3 +28,4 @@ function FriendshipContainer() {
 }
 
 export default FriendshipContainer
+ 

@@ -65,7 +65,7 @@ function Suggestions () {
         <Grid container spacing={2}>
           {suggestions.map((sugg: any, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
-              <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>
+              <FriendSuggestion key={index} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>
             </Grid>
           ))}
         </Grid>
@@ -122,8 +122,8 @@ function Requests () {
             justifyContent: 'space-between',
             margin: '10px',
           }} >
-            {friendsRequests.map((sugg: any) => 
-              <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.senderId} avatar={sugg.SenderAv} type="requestReception" bgColor='#AFEEEE'/>)}
+            {friendsRequests.map((sugg: any, index) => 
+              <FriendSuggestion key={index} id={sugg.user_id} login={sugg.senderId} avatar={sugg.SenderAv} type="requestReception" bgColor='#AFEEEE'/>)}
             </Stack>
         </Container>
   )
@@ -175,10 +175,10 @@ function Friends () {
         flexWrap: 'wrap',
       }} >
       
-          {friends && friends.map((sugg: any) => 
-            <FriendSuggestion id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends" bgColor='#AFEEEE'/>)}
-            {blocked && blocked.map((sugg: any) => 
-            <FriendSuggestion key={sugg.user_id} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="blockedFriends" bgColor='grey'/>)}
+          {friends && friends.map((sugg: any, index) => 
+            <FriendSuggestion key={index} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="myFriends" bgColor='#AFEEEE'/>)}
+            {blocked && blocked.map((sugg: any, index) => 
+            <FriendSuggestion key={index} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="blockedFriends" bgColor='grey'/>)}
       </Stack>
     </Container>
   )
