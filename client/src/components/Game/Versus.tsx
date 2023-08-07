@@ -21,7 +21,7 @@ const Versus: React.FC<IPongProps> = ({ room }) => {
 
         timerId = setTimeout(() => {
             socket.emit("RequestGameOn");
-        }, 4000);
+        }, 1000);
         return () => {
             clearTimeout(timerId);
         };

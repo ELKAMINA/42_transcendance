@@ -1,3 +1,93 @@
-.canvas {
+/* .pongCanvas {
     border: 10px solid black;
+    display: table;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+} */
+
+.wrapper {
+    display: table;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+.container {
+    display: table-cell;
+    vertical-align: middle;
+}
+.canvas-container {
+    position: relative;
+    max-width: 1024px;
+    min-width: 320px;
+    margin: 0 auto;
+}
+.pongGame {
+    width: auto;
+    height: auto;
+    background-color: pink;
+}
+
+/* Mobile */
+/* body::before {
+    display: none;
+    content: '{ "current": "small", "all": ["small"] }';
+} */
+/* Tablet */
+/* @media (min-width: 480px) {
+    body::before {
+        content: '{ "current": "medium", "all": ["small", "medium"] }';
+    }
+} */
+/* Desktop */
+/* @media (min-width: 640px) {
+    body::before {
+        content: '{ "current": "large", "all": ["small", "medium", "large"] }';
+    }
+} */
+
+/* @media all and (orientation: portrait) {
+    .pongGame {
+        background-color: aqua;
+    }
+}
+
+@media all and (orientation: landscape) {
+    .pongGame {
+        background-color: green;
+    }
+} */
+
+/* Exact aspect ratio */
+@media (aspect-ratio: 2/1) {
+    .pongGame {
+        background-color: pink;
+    }
+}
+
+/* Minimum aspect ratio */
+@media (min-aspect-ratio: 16/9) {
+    .pongGame {
+        background-color: green;
+    }
+}
+
+/* Maximum aspect ratio */
+@media (max-aspect-ratio: 8/5) {
+    .pongGame {
+        background-color: brown;
+    }
+}
+
+@media only screen and (max-aspect-ratio: 1/1) {
+    .pongGame {
+        background-color: yellow;
+    }
+}
+@media only screen and (min-aspect-ratio: 1/1) {
+    .pongGame {
+        background-color: blue;
+    }
 }

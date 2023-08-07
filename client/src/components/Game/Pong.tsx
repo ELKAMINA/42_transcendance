@@ -256,7 +256,21 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
     return (
         <>
             <Navbar currentRoute={currentRoute} />
-            <Grid container spacing={1} alignItems="center">
+            <div className="wrapper">
+                <div className="container">
+                    <div className="canvas-container">
+                        {/* <canvas id="main" width="1024" height="640"></canvas> */}
+                        <canvas
+                            className="pongCanvas"
+                            ref={canvasRef}
+                            width={canvasWidth}
+                            height={canvasHeight}
+                            tabIndex={0}
+                        />
+                    </div>
+                </div>
+            </div>
+            {/* <Grid container spacing={1} alignItems="center">
                 <>
                     <Box>
                         <Box
@@ -277,7 +291,7 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
                         </Box>
                     </Box>
                 </>
-            </Grid>
+            </Grid> */}
         </>
     );
 };
