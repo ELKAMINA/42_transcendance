@@ -24,7 +24,7 @@ function Leaderboard() {
             textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
             transition: 'all 0.3s ease',
         }}> Leaderboard </Typography>
-        <Grid container spacing={1.5}>
+        <Grid container spacing={1}>
             {leaderboard &&
                 leaderboard.map((element: any, i: number) => (
                 <Grid container item key={i}>

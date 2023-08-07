@@ -104,9 +104,9 @@ function HomePage() {
                 open={openLeaderboard} 
                 onClose={openLboard(false)}
               >
-                <ObliqueBox>
-                    <Leaderboard/>
-                </ObliqueBox>
+                {/* <ObliqueBox> */}
+                <Leaderboard/>
+                {/* </ObliqueBox> */}
               </StyledDrawer>
       )}
         </>

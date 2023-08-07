@@ -30,9 +30,11 @@ const LeaderboardRow = (props: Myprops) => {
         <CssBaseline/>
         <Paper
             sx={{
-                width: '100%',
-                borderRadius: '3%',
-                background: "linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)",
+                width: '95%',
+                borderRadius: '15%',
+                background: "linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.59) 50%)",
+                p: 1,
+                m:1,
             }}
             elevation={12}
         >
@@ -62,8 +64,8 @@ const LeaderboardRow = (props: Myprops) => {
                 <Grid item sm container>
                     <Grid item xs container direction="column" spacing={3}>
                         <Grid item xs>
-                            <Typography gutterBottom variant="h5" component="div">
-                                {props.rank}
+                            <Typography gutterBottom variant="h6" component="div">
+                                Rank: {props.rank}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Total cumul points: {props.level}
