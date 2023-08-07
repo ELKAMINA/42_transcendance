@@ -235,7 +235,13 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         theGame();
         cs.addEventListener("keydown", keyPressed);
         cs.focus();
-        cs.addEventListener("mousedown", mousedown);
+        // cs.addEventListener("mousedown", mousedown);
+        // TEST RESPONSIVE
+        window.addEventListener("resize", function (event) {
+            var newWidth = window.innerWidth;
+            var newHeight = window.innerHeight;
+            console.log("newWidth: ", newWidth, "newHeight: ", newHeight);
+        });
         return () => {
             if (socket) {
                 if (intervalId) {
