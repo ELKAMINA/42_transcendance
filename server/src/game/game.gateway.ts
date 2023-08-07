@@ -146,6 +146,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('[GATEWAY - handleDisconnect]', 'AllRooms: ', this.AllRooms);
   }
 
+  /***************************************************************************/
+  /*** ROOM MANAGEMENT EVENTS ***/
   @SubscribeMessage('initPlayground')
   async initPlayground(@ConnectedSocket() client: Socket, @Body() body) {
     // TODO: ADD A SECURITY ??
@@ -379,7 +381,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  /*** UTILS ***/
+  /***************************************************************************/
+  /*** ROOM MANAGEMENT UTILS ***/
 
   getGameStates(userName: string) {
     console.log('[GATEWAY - getGameStates]', 'userName: ', userName);
@@ -525,5 +528,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     });
     this.AllRooms = this.AllRooms.filter(this.purgeCallbackFilter);
+  }
+
+  /***************************************************************************/
+  /*** GAME EVENTS ***/
+  @SubscribeMessage('requestMovePaddle')
+  async handleRequestMovePaddle(client: Socket, value: number): Promise<void> {
+    const [socketId, roomName] = [...client.rooms];
+    const room = this.AllRooms.find((el) => el.id === roomName);
+    const player =
+      room.playerOneId === socketId ? room.playerOneId : room.playerTwoId;
+    this.server.to(roomName).emit('updateMovePaddle', { player, value });
   }
 }
