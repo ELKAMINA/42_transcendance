@@ -16,6 +16,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import { selectItems, setSelectedItem } from '../../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { useState } from 'react';
+import { Stack } from '@mui/material';
 
 import { PersonalInformation, Security } from '../../pages/settings';
 
@@ -47,37 +48,37 @@ export default function SettingsComponent(props: Myprops) {
     }
     
   return (
-    <Box sx={{ display: 'flex'}}>
-      <CssBaseline/>
-      <Drawer className='drawer'
-        variant="permanent"
-        sx={{
-          width: '30vw',
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: '30vw', boxSizing: 'border-box', background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 100%)'},
-        }}
+    <Box sx={{ display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh'}}>
+    <CssBaseline/>
+      <Stack sx={{
+        background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 100%)',
+        width: '30%',
+      }}
       >
-        <Toolbar />
-        <Box sx={{ 
-          overflow: 'auto',
-          }}>
-          <List>
-            {items.map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleSbClick(event, 0, text)}>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
-      <Box component="main" sx={{ flex: 1, p: 3, overflow:'hidden'}}>
-        <Toolbar />
-        <div>{renderSelectedBox()}</div>
-      </Box>
+            <List>
+              {items.map((text, index) => (
+                <ListItem key={text}>
+                  <ListItemButton
+                  selected={selectedIndex === 0}
+                  onClick={(event) => handleSbClick(event, 0, text)}>
+                    <ListItemText primary={
+                        <Typography
+                        style={{ fontWeight: 'bold',
+                        fontSize: 20,
+                        color: '#07457E',
+                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                      }}
+                      >
+                        {text}
+                      </Typography>
+
+                    } />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Stack>
+        {renderSelectedBox()}
     </Box>
   );
 }

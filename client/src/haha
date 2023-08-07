@@ -1,66 +1,53 @@
-            <div className="navbar__header__middle">
-                <div className="navbar__header__options navbar__header__options--active">
-                    <HomeIcon fontSize="large" onClick={home} />
-                </div>
-                <div className="navbar__header__options">
-                    <PersonAddIcon fontSize="large" onClick={friendship} />
-                </div>
-                <img src="" alt="" />
-                <div className="navbar__header__options">
-                    <TelegramIcon onClick={chat} />
-                </div>
-                <div className="navbar__header__options">
-                    <SportsEsportsIcon onClick={play} />
-                </div>
-            </div>
+<Stack sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    margin: 10,
+    flex: 1,
+}}>
+    <h2>Personal Information</h2>
+    <form id='form'>
+        <Stack spacing={2} sx={{
+            margin: '10px',
+            width: '50vw',
+        }}>
+            <input
+                type="text"
+                placeholder="Nickname" 
+                onChange={(e)=> setNickname(e.target.value)}
+                ref={userRef}
+                value={nickname}
+                required
+            />
+            <input 
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e)=> setPwd(e.target.value)}
+                required
+            />
+            <input 
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e)=> setEmail(e.target.value)}
+                required
+            />
 
-            {/* ********************************** */}
-            <div className="navbar__header__right">
-                <Avatar
-                    src={srcAvatar}
-                    sx={{
-                        margin: "5px",
-                        width: 50,
-                        height: 50,
-                    }}
-                />
-                <Button
-                    id="demo-positioned-button"
-                    aria-controls={open ? "demo-positioned-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
-                    onClick={handleClick}
-                    sx={{ color: "white" }}
-                >
-                    {nickname}
-                </Button>
-                <Menu
-                    id="demo-positioned-menu"
-                    aria-labelledby="demo-positioned-button"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                    }}
-                    transformOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                    }}
-                    sx={{
-                        zIndex: 0,
-                    }}
-                >
-                    <MenuItem onClick={getMyProfile}>Profile</MenuItem>
-                    <MenuItem component="a" href="/" onClick={handleSubmit}>
-                        Settings
-                    </MenuItem>
-                    <MenuItem component="a" href="/" onClick={loggingOut}>
-                        Logout
-                    </MenuItem>
-                </Menu>
-                <IconButton component="a" href="/" onClick={loggingOut}>
-                    <LogoutIcon fontSize="medium" />
-                </IconButton>
-            </div>
+        </Stack>
+    </form>
+    <input
+        id="image-upload"
+        type="file" accept="image/*" onChange={handleImageUpload}
+        style={{ display: 'none' }}
+    />
+    <IconButton onClick={handleButtonClick} sx={{
+        fontSize: '15px'
+    }}> Upload your avatar </IconButton>
+    {selectedImage && <Avatar src={selectedImage}/>}
+    <br>
+    </br>
+    <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Save</Button>
+    <p ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</p>
+    <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+</Stack>

@@ -6,6 +6,9 @@ import Stack from '@mui/material/Stack';
 import { useDispatch } from 'react-redux';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
 import { io } from 'socket.io-client';
+import { Container, FormControl, Typography } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import CssBaseline from '@mui/material/CssBaseline';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import Avatar from '@mui/material/Avatar';
@@ -77,8 +80,7 @@ export function PersonalInformation () {
 
         }
       }, [dispatch, setErrMsg])
-    const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
-
+    const [selectedImage, setSelectedImage] = React.useState<string>('');
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -93,7 +95,12 @@ export function PersonalInformation () {
         }
     };
 
-    const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleButtonClick = () => {
+        const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+        fileInput?.click();
+        };
+
+    const handleSubmit: any = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try{
             sock.emit('changeProfile', {
@@ -115,66 +122,78 @@ export function PersonalInformation () {
 
     }
 
-    const handleButtonClick = () => {
-        const fileInput = document.getElementById('image-upload') as HTMLInputElement;
-        fileInput?.click();
-    
-    };
-
     const content = (
-        <Stack sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            margin: 10,
-            flex: 1,
+        <Container sx={{
+            width: '40%',
+            height: '40%',
+            p: 2,
         }}>
-            <h2>Personal Information</h2>
-            <form id='form'>
-                <Stack spacing={2} sx={{
-                    margin: '10px',
-                    width: '50vw',
-                }}>
-                    <input
-                        type="text"
-                        placeholder="Nickname" 
-                        onChange={(e)=> setNickname(e.target.value)}
-                        ref={userRef}
-                        value={nickname}
-                        required
-                    />
-                    <input 
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e)=> setPwd(e.target.value)}
-                        required
-                    />
-                    <input 
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e)=> setEmail(e.target.value)}
-                        required
-                    />
-
-                </Stack>
-            </form>
-            <input
-                id="image-upload"
-                type="file" accept="image/*" onChange={handleImageUpload}
-                style={{ display: 'none' }}
-            />
-            <IconButton onClick={handleButtonClick} sx={{
-                fontSize: '15px'
-            }}> Upload your avatar </IconButton>
-            {selectedImage && <Avatar src={selectedImage}/>}
-            <br>
-            </br>
-            <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Save</Button>
-            <p ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</p>
-            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-        </Stack>
+        <CssBaseline/>
+            <Typography align='center' variant='h4' sx={{
+                margin: '5%',
+            }}>Personal Information</Typography>
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Nickname"
+                    name="nickname"
+                    autoComplete="nickname"
+                    autoFocus
+                    sx={{
+                        color: 'whitesmoke',
+                    }}
+                />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    helperText={errMsg}
+                    autoComplete="current-password"
+                    sx={{
+                        '& .MuiFormHelperText-root': {
+                        color: 'red', // Your custom color
+                        },
+                    }}
+                />
+                <FormControl 
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
+                >
+                <input
+                    id="image-upload"
+                    type="file" accept="image/*" onChange={handleImageUpload}
+                    style={{ display: 'none' }}
+                />
+                <IconButton onClick={handleButtonClick}> 
+                <Avatar 
+                    src={selectedImage} 
+                    style={{
+                    margin: "10px",
+                    width: "60px",
+                    height: "60px",
+                    }} 
+                />
+                </IconButton>
+                </FormControl>
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3 }}
+                >
+                Save
+                </Button>
+                <Typography ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</Typography>
+            </Box>
+        </Container>
     )
     return content;
 }
