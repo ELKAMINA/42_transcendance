@@ -1,17 +1,31 @@
-import React from 'react'
-import FriendshipComponent from '../../components/AllFriendship'
+import React from 'react';
+import { Box } from '@mui/material';
+
+// import './Friendship.css';
 import Navbar from '../../components/NavBar';
-import './Friendship.css';
+import FriendshipComponent from '../../components/AllFriendship'
 
 function FriendshipContainer() {
     const itemList = ['Suggestions', 'Requests', 'Friends'];
 	const currentRoute = window.location.pathname;
   return (
-    <div>
+    <>
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
         <Navbar currentRoute={ currentRoute }/>
-        <FriendshipComponent items= {itemList}/>
-    </div>
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}>
+          <FriendshipComponent items= {itemList}/>
+        </Box>
+      </Box>
+    </>
   )
 }
 
 export default FriendshipContainer
+ 

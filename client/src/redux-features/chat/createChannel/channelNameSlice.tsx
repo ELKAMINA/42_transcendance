@@ -12,9 +12,12 @@ export const channelNameSlice = createSlice({
 			return newChannelName;
 		},
 		resetChannelName: () => initialState,
+		resetChannelNameStore : (state) => {
+            return initialState;
+        }
 	}
 })
 
-export const { changeChannelName, resetChannelName } = channelNameSlice.actions
+export const { changeChannelName, resetChannelName, resetChannelNameStore } = channelNameSlice.actions
 
 export default channelNameSlice.reducer

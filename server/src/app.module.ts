@@ -6,14 +6,15 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import UserModule from './user/user.module';
 import AuthModule from './auth/auth.module';
-import HomeModule from './profile/home.module';
 import { AtGuard } from './guards/at-auth.guard';
 import PrismaModule from './prisma/prisma.module';
 import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
 import { FriendshipModule } from './friendship/friendship.module';
-import { FriendshipGateway } from './friendship/friendship.gateway';
-import channelModule, { BannedSchedulerModule, MuteSchedulerModule } from './channel/channel.module';
+import channelModule, {
+  BannedSchedulerModule,
+  MuteSchedulerModule,
+} from './channel/channel.module';
 import { ChannelService } from './channel/channel.service';
 import { ChatGateway } from './chat/gateway/chat.gateway';
 import { ChatService } from './chat/chat.service';
@@ -24,7 +25,6 @@ import { ProfileGateway } from './profile/home.gateway';
 import { HomeService } from './profile/home.service';
 import { FriendshipService } from './friendship/friendship.service';
 import { GameModule } from './game/game.module';
-import { GameService } from './game/game.service';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -32,7 +32,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ConfigModule.forRoot({
       isGlobal: true, // To make the config Module global to all the app
     }),
-	ScheduleModule.forRoot(),
+    ScheduleModule.forRoot(),
     AuthModule,
     UserModule,
     channelModule,
@@ -51,8 +51,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuthService,
     UserService,
     ChannelService,
-	MuteSchedulerModule,
-	BannedSchedulerModule,
+    MuteSchedulerModule,
+    BannedSchedulerModule,
     JwtService,
     ChatGateway,
     ProfileGateway,
@@ -60,7 +60,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     HomeService,
     GlobalService,
     FriendshipService,
-    // GameService,
   ],
 })
 export default class AppModule {}

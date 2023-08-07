@@ -1,19 +1,13 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
+import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
-import Badge from '@mui/material/Badge';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
-import { useState } from 'react';
+import Typography from '@mui/material/Typography';
+
+import { useAppSelector } from '../../utils/redux-hooks';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 interface myProps {
     name: string | null,
@@ -24,13 +18,13 @@ interface myProps {
       thoseWhoBlockedMe: boolean
     }
     srcAvatar: string | undefined,
-    // friendship: boolean,
 }
 
 
 
 function UserProfileHeader(props: myProps) {
   const [color, setColorBadge] = useState('red');
+  const user = useAppSelector(selectCurrentUser)
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
       backgroundColor: color,
@@ -82,7 +76,7 @@ function UserProfileHeader(props: myProps) {
           height: '150px',
           marginRight:'5px',
         }}/>
-        <Typography variant="h3">{props.name}</Typography>
+        <Typography component='div' variant="h3">{props.name}</Typography>
       </Box>
         <Box ml={2} display="flex" flexDirection='row' justifyContent='space-between' flexWrap='wrap'>
           <StyledBadge
@@ -90,7 +84,7 @@ function UserProfileHeader(props: myProps) {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             variant="dot"
           >
-          <Typography variant="body1" color="textSecondary">
+          <Typography component='div' variant="body1" color="textSecondary">
               {props.status}
           </Typography>
           </StyledBadge>
@@ -99,7 +93,7 @@ function UserProfileHeader(props: myProps) {
         {props.friendship.myBlockedFriend && <div className='userprof-header'>Not friends - Blocked by you</div> }
         {props.friendship.thoseWhoBlockedMe && <div className='userprof-header'> Not friends - Blocked you</div> }
         {props.friendship.isMyfriend && <div className='userprof-header'>Friend</div> }
-        {!props.friendship.isMyfriend && !props.friendship.thoseWhoBlockedMe && !props.friendship.myBlockedFriend && <div className='userprof-header'>Not Friends</div>}
+        {!props.friendship.isMyfriend && !props.friendship.thoseWhoBlockedMe && !props.friendship.myBlockedFriend && props.name !== user  && <div className='userprof-header'>Not Friends</div>}
         </Box> 
   </Box>
   )

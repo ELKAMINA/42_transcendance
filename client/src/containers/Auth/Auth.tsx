@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Sign from '../../components/Sign';
-import './Auth.css';
+import { Container, CssBaseline } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -24,7 +24,7 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 5 }}>
           <Typography component='div'>{children}</Typography>
         </Box>
       )}
@@ -46,28 +46,55 @@ export default function AuthContainer(){
       setValue(newValue);
     };
     return (
-      <section className='auth'>
-        <h2 className='auth-welcome'>Welcome to Undergroung Pong</h2>
-        <div className='auth-menu'>
-          <Box className='auth-menu'>
+      <Container component="main" sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100vh',
+        minWidth: '100vw',
+        background: 'linear-gradient(180deg, #07457E 10%, rgba(0, 151, 160, 0.69) 80%)',
+      }}>
+        <CssBaseline/>
+          <Box sx={{
+            // marginTop: 10,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            background: 'white',
+            height: '100%',
+            width: '55%',
+            margin: '7%',
+            borderRadius: '16%',
+          }}>
+              <Typography sx={{
+                marginBottom: '40px',
+                marginTop: '40px',
+                fontFamily: 'sans-serif',
+                color: 'whitesmoke',
+                alignContent: 'center',
+              }} 
+              component="h1" variant="h3"></Typography>
               <Box>
-                <div className='auth-options'>
                   <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Sign Up" {...a11yProps(0)} />
-                    <Tab label="Sign In" {...a11yProps(1)} />
+                    <Tab
+                      sx={{
+                        fontSize: '18px',
+                      }}
+                    label="Sign Up" {...a11yProps(0)} />
+                    <Tab 
+                      sx={{
+                        fontSize: '18px',
+                      }}
+                    label="Sign In" {...a11yProps(1)} />
                   </Tabs>
-                </div>
               </Box>
-            <div className='auth-inputs'>
               <TabPanel value={value} index={0}>
                   <Sign intro="NewBie? Let's sign up" type="Sign up"/>
               </TabPanel>
               <TabPanel value={value} index={1}>
                   <Sign intro="Veteran? Let's sign in" type="Sign in"/>
               </TabPanel>
-            </div>
           </Box>
-        </div>
-      </section>
+      </Container>
     );
 }

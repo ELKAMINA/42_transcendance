@@ -17,10 +17,13 @@ export const channelUserSlice = createSlice({
 			state = state.filter(user => user.login !== action.payload);
 		},
 		resetChannelUser: () => initialState,
+		resetChannelUserStore : (state) => {
+            return initialState;
+        }
 	}
 })
 
-export const { addChannelUser, deleteChannelUser, resetChannelUser } = channelUserSlice.actions
+export const { addChannelUser, deleteChannelUser, resetChannelUser, resetChannelUserStore } = channelUserSlice.actions
 export const selectUsersInChannel = (state: RootState) => state.persistedReducer.channelUser
 
 export default channelUserSlice.reducer

@@ -1,23 +1,27 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Box,
   Stack,
   Avatar,
+  Grid,
+  Typography,
+  CssBaseline
 } from "@mui/material";
+import { useState } from "react";
+import { Button } from "@mui/material";
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
-import { useAppSelector, useAppDispatch } from "../utils/redux-hooks";
-import { useState } from "react";
+import ButtonBase from '@mui/material/ButtonBase';
+import IconButton from '@mui/material/IconButton';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
-import { FetchAllBlockedFriends, FetchAllFriendRequests } from "../redux-features/friendship/friendshipSlice";
+import {socket} from '../components/AllFriendship'
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
-import { FetchUserByName } from "../utils/global/global";
-// import { FriendReqSocket } from "../pages/friendship";
-// import { socket } from '../socket'
-import { socket } from '../pages/friendship';
-
+import { useAppSelector, useAppDispatch } from "../utils/redux-hooks";
 
 type FriendshipProps = {
     id: string,
@@ -26,6 +30,14 @@ type FriendshipProps = {
     type: string,
     bgColor: string,
   };
+
+
+  const Img = styled('img')({
+    margin: 'auto',
+    display: 'block',
+    maxWidth: '100%',
+    maxHeight: '100%',
+});
 
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type, bgColor}) => {
     // const [avt, setAvtr] = useState('')
@@ -65,52 +77,106 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
         setButtonColor('grey')
         setBlockBgColor('grey')
     }
-    // useEffect(()=> {
-    //     socket?.on('friendAdded', (data: any) => {
-    //         dispatch(FetchAllFriendRequests());
-    //         dispatch(FetchAllBlockedFriends());
-    //        })
-    // }, [])
 
     return (
         <>
-            <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems:'center',
-                width: 150,
-                height: 40,
-                borderRadius: 2,
-                backgroundColor: blockBgColor === 'yellowgreen' ? bgColor : blockBgColor,
-                '&:hover': {
-                    backgroundColor: '#AFEEEE',
-                },
-                opacity: 0.8,
-            }}
+            <CssBaseline/>
+            <Paper
+                sx={{
+                    p: 2,
+                    borderRadius: '6%',
+                    backgroundColor: blockBgColor === 'yellowgreen' ? bgColor : blockBgColor,
+                    '&:hover': {
+                        // backgroundColor: '#AFEEEE',
+                        background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)',
+                    },
+                    // opacity: 0.7,
+                }}
+                elevation={3}
             >
-                <Stack direction="row" spacing={1} alignItems='center' >
-                    <Avatar src={avatar} sx={{ width: 30, height: 30 }}/>
-                    <h3 style={{'color': 'black', 'fontSize': '13px'}}>{login}</h3>
-                    {type === "request" && <AddIcon sx={{ color: 'yellow' }} onClick={addFriend}/>}
-                    {type === "requestReception" && (
-                        <>
-                            <DoneIcon sx={{ color: 'green' }} onClick={accept}/>
-                            <CloseIcon sx={{ color: 'red' }} onClick={deny}/>               
-                        </>
-                    )}
-                    {(type === 'myFriends') && (
-                        <>
-                            <BlockIcon sx={{ color: buttonColor, width: 20, height: 20 }} onClick={block}/>
-                        </>
-                    )}
-                    {(type === 'blockedFriends') && (
-                        <>
-                            <BlockIcon sx={{ color: 'grey', width: 20, height: 20 }}/>
-                        </>
-                    )}
-                </Stack>
-            </Box>
+                <Grid container rowSpacing={1} sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    // alignContent: 'center',
+                    justifyContent: 'center',
+                    // margin: '6%',
+
+                }}>
+                    <Grid container direction="column" item spacing={1} xs={4} sm={6} md={6} lg={6} sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexWrap: 'nowrap',
+                    }}
+                    zeroMinWidth
+                    >
+                        <Grid item>
+                            <Avatar src={avatar} sx={{ width: 60, height: 60 }}/>
+                        </Grid>
+                        <Grid item>
+                            <Typography gutterBottom variant="h6" component="div" noWrap>
+                                {login}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    {type === "request" &&  
+                        (
+                            <Grid container item xs={6} sm={6} md={6} lg={6} sx={{
+                                display: 'flex',
+                                // alignContent: 'center',
+                                justifyContent: 'flex-end',
+                                alignItems: 'flex-end',
+                                p:1,
+                            }}>
+                                <Grid item>
+                                    <Button variant="contained" size="small" onClick={addFriend}>Ajouter</Button>
+                                </Grid>
+                            </Grid>
+                        )}
+
+                        {type === "requestReception" && (
+                            <>
+                                <Grid container direction='row' spacing={5}>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} >
+                                        <IconButton aria-label="add" color="success"  onClick={accept}>
+                                            <CheckCircleRoundedIcon fontSize="large"/>
+                                        </IconButton>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3}>
+                                        <IconButton aria-label="delete" color="error" onClick={deny}>
+                                            <CloseIcon fontSize="large"/>
+                                        </IconButton>
+                                    </Grid>
+                                </Grid>
+                            </>
+                        )}
+                        {(type === 'myFriends') && (
+                                <>
+                                    <Grid container direction='row' item xs={3} sm={3} md={3} lg={3}spacing={5}>
+                                        <Grid item xs={3} sm={3} md={3} lg={3} sx={{
+                                            margin: "20%",
+                                        }}>
+                                            <IconButton aria-label="block" color="error" onClick={block}>
+                                                <BlockIcon sx={{ color: buttonColor}}  fontSize="medium"/>
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+                                </>
+                            )}
+                            {(type === 'blockedFriends') && (
+                                <>
+                                    <Grid container direction='row' item xs={3} sm={3} md={3} lg={3}spacing={5}>
+                                        <Grid item xs={3} sm={3} md={3} lg={3} sx={{
+                                            margin: "20%",
+                                        }}>
+                                            <IconButton aria-label="block" color="error" onClick={block}>
+                                                <BlockIcon sx={{ color: 'grey'}} fontSize="medium"/>
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+                                </>
+                            )}
+                    </Grid>
+            </Paper>
         </> 
-    )
+    );
 }

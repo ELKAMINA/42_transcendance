@@ -18,10 +18,25 @@ interface authState {
     user: Record<string, any>,
 }
 
+const initialState: authState = {
+    nickname:"", access_token: "",
+    refresh_token: "",
+    qrCode: "",
+    avatar: "",
+    selectedItems: "",
+    email: "",
+    tfaAuth: false,
+    tfaState: 'Two Factor authentication is Off',
+    afterSub: false,
+    tfaInput: false,
+    user: {},
+
+}
+
 // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
 const authSlice = createSlice({
     name: 'auth',
-    initialState: { nickname:"", access_token: "", refresh_token: "", qrCode: "", avatar: "", tfaAuth: false, tfaState: 'Two Factor authentication is Off', afterSub: false, tfaInput: false} as authState,
+    initialState,
     reducers: {
         setSignCredentials: (state, action) => {
             // console.log('payloooaad ', action.payload)
@@ -81,13 +96,13 @@ const authSlice = createSlice({
         getTfaInput : (state, action: PayloadAction<boolean>) => {
             state.tfaInput = action.payload
         },
-        // getActualUser : (state, action: PayloadAction<{}>) => {
-        //     state.user = action.payload
-        // }
+        resetAuthStore : (state) => {
+            return initialState;
+        }
     },
 })
 
-export const { setSignCredentials, logOut, setTokens, setOnlyTokens, setAvatar, setSelectedItem, setNick, setMail, setTfaAuth, setQrCode, setTfaState, setAfterSub, getTfaInput} = authSlice.actions
+export const { setSignCredentials, logOut, setTokens, setOnlyTokens, setAvatar, setSelectedItem, setNick, setMail, setTfaAuth, setQrCode, setTfaState, setAfterSub, getTfaInput, resetAuthStore} = authSlice.actions
 
 export const selectCurrentUser = (state: RootState) => state.persistedReducer.auth.nickname
 export const selectCurrentAccessToken = (state: RootState) => state.persistedReducer.auth.access_token

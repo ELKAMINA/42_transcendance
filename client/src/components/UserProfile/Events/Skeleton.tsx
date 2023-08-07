@@ -52,7 +52,7 @@ const MatchHistory = (props: Myprops) => {
                     flex: "1",
                 }}
             >
-                <Typography
+                <Typography component="div"
                     sx={{ fontSize: 30, color: "00FFFF" }}
                     color="text.secondary"
                     gutterBottom
@@ -66,14 +66,14 @@ const MatchHistory = (props: Myprops) => {
                         alignItems: "center",
                     }}
                 >
-                    <Typography
+                    <Typography component="div"
                         sx={{ fontSize: 30, color: "#07457E" }}
                         color="text.secondary"
                         gutterBottom
                     >
                         {props.us.p1_score} - {props.us.p2_score}
                     </Typography>
-                    <Typography
+                    <Typography component="div"
                         sx={{ fontSize: 12, color: "#07457E", font: "italic" }}
                         color="text.secondary"
                         gutterBottom
@@ -82,7 +82,7 @@ const MatchHistory = (props: Myprops) => {
                         {/* {Date.parse(props.us.createdAt.toString())} */}
                     </Typography>
                 </Box>
-                <Typography
+                <Typography component="div"
                     sx={{ fontSize: 30, color: "00FFFF" }}
                     color="text.secondary"
                     gutterBottom

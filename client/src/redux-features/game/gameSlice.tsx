@@ -127,6 +127,7 @@ export const selectLeaderBoard = (state: RootState) =>
 export const selectonGamePage = (state: RootState) =>
     state.persistedReducer.game.onGamePage;
 
+
 export function FetchTotalPlayers() {
     return async (dispatch: any, getState: any) => {
         await api

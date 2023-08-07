@@ -1,14 +1,11 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+
+import './Skeleton.css';
 import { useAppDispatch, useAppSelector } from '../../../utils/redux-hooks';
 import { FetchTotalPlayers, selectTotalPlayers } from '../../../redux-features/game/gameSlice';
-import { useEffect } from 'react';
-import './Skeleton.css';
 
 interface Myprops {
     name: string,
@@ -33,17 +30,17 @@ const Statistics = (props: Myprops) => {
             <CardContent sx={{
                 alignContent: 'center',
             }}>
-            <Typography sx={{ fontSize: 30, color: '#07457E' }} color="text.secondary" gutterBottom>
-                {props.name}
-            </Typography>
-            <Typography variant="h3" component="div" sx={{
-                display: 'flex',
-                flexDirection:'column',
-                alignItems: 'center',
-            }}>
-                {props.data}
-                {props.name === 'Rank' && <h6 className= 'statistics-outof'> out of {totalPlayers}</h6>}
-            </Typography>
+                <Typography component="div" sx={{ fontSize: 30, color: '#07457E' }} color="text.secondary" gutterBottom>
+                    {props.name}
+                </Typography>
+                <Typography variant="h3" component="div" sx={{
+                    display: 'flex',
+                    flexDirection:'column',
+                    alignItems: 'center',
+                }}>
+                    {props.data}
+                    {props.name === 'Rank' && <div className= 'statistics-outof'> out of {totalPlayers}</div>}
+                </Typography>
             </CardContent>
         </Card>
     )
