@@ -4,7 +4,8 @@ import {
   Stack,
   Avatar,
   Grid,
-  Typography
+  Typography,
+  CssBaseline
 } from "@mui/material";
 import { useState } from "react";
 import { Button } from "@mui/material";
@@ -15,6 +16,8 @@ import DoneIcon from '@mui/icons-material/Done';
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
 import ButtonBase from '@mui/material/ButtonBase';
+import IconButton from '@mui/material/IconButton';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 import {socket} from '../components/AllFriendship'
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
@@ -77,28 +80,35 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
 
     return (
         <>
+            <CssBaseline/>
             <Paper
                 sx={{
                     p: 2,
-                    borderRadius: '6%'
+                    borderRadius: '6%',
+                    backgroundColor: blockBgColor === 'yellowgreen' ? bgColor : blockBgColor,
+                    '&:hover': {
+                        // backgroundColor: '#AFEEEE',
+                        background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)',
+                    },
+                    // opacity: 0.7,
                 }}
                 elevation={3}
             >
-                <Grid container spacing={2} sx={{
+                <Grid container rowSpacing={1} sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    // background: 'yellow',
+                    alignContent: 'center',
+
                 }}>
-                    <Grid container spacing={2} sx={{
+                    <Grid container direction="column" spacing={1} xs={4} sm={6} md={6} lg={6} sx={{
                         display: 'flex',
                         alignItems: 'center',
                         flexWrap: 'nowrap',
-                        p: 2,
                     }}
                     zeroMinWidth
                     >
                         <Grid item>
-                            <Avatar src={avatar} sx={{ width: 90, height: 90 }}/>
+                            <Avatar src={avatar} sx={{ width: 60, height: 60 }}/>
                         </Grid>
                         <Grid item>
                             <Typography gutterBottom variant="h6" component="div" noWrap>
@@ -106,33 +116,39 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                             </Typography>
                         </Grid>
                     </Grid>
-                    <Grid container spacing={2} sx={{
-                            display: 'flex',
-                            // background: 'red',
-                            justifyContent:'flex-end',
-                        }}>
-                        <Grid item >
-                            {type === "request" &&  <Button variant="contained" onClick={addFriend}>Ajouter</Button>}
+                    <Grid container xs={6} sm={6} md={6} lg={6} sx={{
+                        display: 'flex',
+                        // alignContent: 'center',
+                        justifyContent: 'flex-end',
+                        alignItems: 'flex-end',
+                        p:1,
+                    }}>
+                        <Grid item>
+                            {type === "request" &&  <Button variant="contained" size="small" onClick={addFriend}>Ajouter</Button>}
                             {type === "requestReception" && (
                                 <>
-                                <Grid container item direction='row' spacing={3}>
-                                    <Grid item xs={6}>
-                                        <Button variant="contained" color="success" onClick={accept}>Ajouter</Button>
+                                <Grid container item direction='row' xs={6} sm={6} md={6} lg={6} spacing={5}>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} >
+                                        <IconButton aria-label="add" color="success"  onClick={accept}>
+                                            <CheckCircleRoundedIcon fontSize="large"/>
+                                        </IconButton>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <Button variant="outlined" color="error" onClick={deny}>Supprimer</Button>
+                                    <Grid item xs={3} sm={3} md={3} lg={3}>
+                                        <IconButton aria-label="delete" color="error" onClick={deny}>
+                                            <CloseIcon fontSize="large"/>
+                                        </IconButton>
                                     </Grid>
                                 </Grid>
                                 </>
                             )}
                             {(type === 'myFriends') && (
                                     <>
-                                        <BlockIcon sx={{ color: buttonColor, width: 20, height: 20 }} onClick={block}/>
+                                        <BlockIcon sx={{ color: buttonColor}} onClick={block} fontSize="medium"/>
                                     </>
                                 )}
                                 {(type === 'blockedFriends') && (
                                     <>
-                                        <BlockIcon sx={{ color: 'grey', width: 20, height: 20 }}/>
+                                        <BlockIcon sx={{ color: 'grey'}} fontSize="medium"/>
                                     </>
                                 )}
                         </Grid>

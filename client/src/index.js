@@ -7,6 +7,7 @@ import './index.css';
 import { store, persistor } from './app/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { CssBaseline } from '@mui/material';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,7 +15,9 @@ root.render(
     <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Router>
-        <App />
+        <CssBaseline>
+          <App />
+        </CssBaseline>
       </Router>
     </PersistGate>
   </Provider>,
