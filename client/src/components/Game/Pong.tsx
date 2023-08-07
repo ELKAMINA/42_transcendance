@@ -30,19 +30,30 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         )
     );
     const ball = useRef<Ball>(new Ball([0, 0], 5, room.ballColor));
+
+    player1.current.setPaddlePosition([
+        10,
+        (3 * canvasHeight) / 6 - player1.current.getPaddleDimension()[1] / 2,
+    ]);
+    player2.current.setPaddlePosition([
+        canvasWidth - 10 - player2.current.getPaddleDimension()[0],
+        (3 * canvasHeight) / 6 - player2.current.getPaddleDimension()[1] / 2,
+    ]);
+    ball.current.setPosition([canvasWidth / 2, canvasHeight / 2]);
+
     // VARIABLE TO STOP SETINTERVAL
     let intervalId: any;
 
     /*** UTILS FUNCTIONS  ***/
     const update = async () => {
-        // socket.on("updateMovePaddle", (data) => {
-        //     // console.log(`Player ${data.player} must be updated`);
-        //     const player = getPlayerId(data.player);
-        //     player.setPaddlePosition([
-        //         player.getPaddlePosition()[0],
-        //         data.value,
-        //     ]);
-        // });
+        socket.on("updateMovePaddle", (data) => {
+            // console.log(`Player ${data.player} must be updated`);
+            const player = getPlayerId(data.player);
+            player.setPaddlePosition([
+                player.getPaddlePosition()[0],
+                data.value,
+            ]);
+        });
         // updateBall();
         // resetBall();
     };
@@ -191,17 +202,6 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
             ball.current.getColor()
         );
     };
-
-    // HANDLE THE VERSUS SCREEN
-    // useEffect(() => {
-    //     let timerId: any;
-
-    //     timerId = setTimeout(() => {
-    //         setVersusScreen(false);
-    //     }, 4000);
-
-    //     return () => clearTimeout(timerId);
-    // }, [versus]);
 
     // HANDLE THE GAME
     useEffect(() => {
