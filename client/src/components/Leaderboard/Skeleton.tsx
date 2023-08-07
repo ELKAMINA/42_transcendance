@@ -12,6 +12,8 @@ import Avatar from "@mui/material/Avatar";
 import { Rowing } from "@mui/icons-material";
 import {CssBaseline} from "@mui/material";
 import Paper from '@mui/material/Paper';
+import { useAppSelector } from "../../utils/redux-hooks";
+import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 
 interface Myprops {
     avatar: string;
@@ -24,6 +26,7 @@ interface Myprops {
 }
 
 const LeaderboardRow = (props: Myprops) => {
+    const user = useAppSelector(selectCurrentUser)
     React.useEffect(() => {}, []);
     return (
         <>
@@ -32,7 +35,7 @@ const LeaderboardRow = (props: Myprops) => {
             sx={{
                 width: '95%',
                 borderRadius: '15%',
-                background: "linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.59) 50%)",
+                background: props.login === user ? "linear-gradient(180deg, #FFD700 0%, rgba(0, 181, 160, 0.19) 50%)" : "linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.59) 50%)" ,
                 p: 1,
                 m:1,
             }}
