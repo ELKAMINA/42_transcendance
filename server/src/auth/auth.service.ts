@@ -135,11 +135,14 @@ export class AuthService {
           status: 'Online',
         },
       });
-      if (dto.avatar === "") {
+      if (dto.avatar === '') {
         await this.prisma.user.update({
-          where: {login: user.login},
-          data: {avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU"}
-        })
+          where: { login: user.login },
+          data: {
+            avatar:
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUKXpZECK0fPRdVpTN1mP828iGNWf8Apne_NMRYM66k9sPfY3Ehbux1vzlOOOPLOzkM0&usqp=CAU',
+          },
+        });
       }
       const tokens = await this.signTokens(user.user_id, user.login);
       await this.updateRtHash(user.user_id, tokens.refresh_token);
@@ -361,7 +364,7 @@ export class AuthService {
   async loginWith2fa(user: string, res: Response): Promise<object> {
     try {
       const usr = await this.userServ.searchUser(user);
-      return this.signin(
+      return await this.signin(
         {
           nickname: usr.login,
           password: usr.hash,
