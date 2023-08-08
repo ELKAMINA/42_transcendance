@@ -123,7 +123,6 @@ export default function Sign(props: Signing){
                 console.log('error ', err);
                 if (err.status === 400)
                 {
-                    console.log('iciii ');
                     setErrMsg("Please check that nickname/password are not empty OR \n Password is at least 6 characters");
                 }
                 else if (err.data && err.data.message && typeof err.data.message === 'string' ){

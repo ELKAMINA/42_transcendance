@@ -92,15 +92,24 @@ export function PersonalInformation () {
         const fileInput = document.getElementById('image-upload') as HTMLInputElement;
         fileInput?.click();
         };
+    
+    const handleNicknameChange: any = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNickname(e.target.value);
+    }
+
+    const handlePwdChange: any = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPwd(e.target.value);
+    }
+
 
     const handleSubmit: any = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try{
+            // console.log('je rentre ici ??')
             sock.emit('changeProfile', {
                 oldNick: currUser,
                 login: nickname,
                 pwd: password,
-                mail: email,
                 atr: avatar,
             })
         }
@@ -133,6 +142,8 @@ export function PersonalInformation () {
                     label="Nickname"
                     name="nickname"
                     autoComplete="nickname"
+                    value={nickname}
+                    onChange={handleNicknameChange}
                     autoFocus
                     sx={{
                         color: 'whitesmoke',
@@ -145,6 +156,8 @@ export function PersonalInformation () {
                     name="password"
                     label="Password"
                     type="password"
+                    value={password}
+                    onChange={handlePwdChange}
                     helperText={errMsg}
                     autoComplete="current-password"
                     sx={{

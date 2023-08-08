@@ -66,12 +66,13 @@ export class UserService {
           login: userInfo.oldNick,
         },
       });
-      // console.log('le user ', userInfo);
-      // const {login, hash, avatar, email} = user
+
       if (
-        (await argon.verify(user.hash, userInfo.pwd)) == false &&
-        userInfo.pwd != ''
+        userInfo.pwd !== '' &&
+        (await argon.verify(user.hash, userInfo.pwd)) == false
       ) {
+        console.log('Update ici ');
+        console.log(`new mdp ${userInfo.pwd} `);
         const newHashedPwd = await argon.hash(userInfo.pwd);
         const up1 = await this.prisma.user.update({
           where: {
@@ -82,7 +83,7 @@ export class UserService {
           },
         });
       }
-      if (user.avatar != userInfo.atr && userInfo.atr != '') {
+      if (userInfo.atr != '' && user.avatar != userInfo.atr) {
         const up2 = await this.prisma.user.update({
           where: {
             login: userInfo.oldNick,
@@ -92,17 +93,7 @@ export class UserService {
           },
         });
       }
-      if (user.email != userInfo.mail && userInfo.mail != '') {
-        const up3 = await this.prisma.user.update({
-          where: {
-            login: userInfo.oldNick,
-          },
-          data: {
-            email: userInfo.mail,
-          },
-        });
-      }
-      if (user.login != userInfo.login && userInfo.login != '') {
+      if (userInfo.login != '' && user.login != userInfo.login) {
         const up4 = await this.prisma.user.update({
           where: {
             login: userInfo.oldNick,
@@ -117,7 +108,7 @@ export class UserService {
           login: userInfo.login,
         },
       });
-      // console.log('le user apres modif ', finalUser);
+      console.log('le user apres modif ', finalUser);
       return finalUser;
     } catch (error: any) {
       if (
