@@ -127,12 +127,14 @@ export class AuthService {
     const pwd = await argon.hash(dto.password);
     // console.log('dto', dto)
     try {
+      const nbUsers = await this.prisma.user.count();
       const user = await this.prisma.user.create({
         data: {
           login: dto.nickname,
           hash: pwd,
           avatar: dto.avatar,
           status: 'Online',
+          rank: nbUsers + 1,
         },
       });
       if (dto.avatar === '') {
