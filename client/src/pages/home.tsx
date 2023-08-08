@@ -67,7 +67,7 @@ function HomePage() {
     const content = (
         <>
             <Navbar currentRoute={currentRoute}/>
-            <Box sx={{
+            <Box sx={(theme) => ({
                 display: 'flex',
                 flexDirection: 'column',
                 // width: '100%',
@@ -75,10 +75,27 @@ function HomePage() {
                 overflow: 'hidden',
                 alignItems: 'center',
                 p: 4,
-                background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)'
-            }}>
-                <Typography sx={{
-                    fontSize: 200,
+                background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)',
+                [theme.breakpoints.up('md')]: {
+                    alignItems: 'center', // center alignment for larger screens
+                    padding: theme.spacing(8), // more padding for larger screens
+                    justifyContent: 'center',
+                },
+                [theme.breakpoints.down('sm')]: {
+                    alignItems: 'center', // left alignment for smaller screens
+                    justifyContent: 'center', 
+                },
+                [theme.breakpoints.down('xs')]: {
+                    alignItems: 'center', // left alignment for smaller screens
+                }
+            })}>
+                <Typography sx={(theme)=> ({
+                    fontSize: {
+                        xs: 40,
+                        sm: 70,
+                        md: 150,
+                        lg: 200,
+                    },
                     letterSpacing: 6,
                     fontFamily: 'Press Start 2P',
                     color: '#07457E',
@@ -87,26 +104,37 @@ function HomePage() {
                     '&:hover': {
                         textShadow: '0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #ff0, 0 0 30px #ff0, 0 0 40px #f0f',
                     },
-                }}>
+                })}>
                     PONG
                 </Typography>
-                <Stack>
-                    <Button size='large' sx={{
-                        fontSize: 50,
+                <Stack direction={{xs: 'column', md: 'column', lg: 'column', sm:'column'}} spacing={2}>
+                    <Button size='large' sx={(theme)=> ({
+                        fontSize: {
+                            xs: 20,
+                            sm: 30,
+                            md: 40,
+                            lg: 50,
+                        },
                         fontFamily: 'Press Start 2P',
                         color: '#d5f4e6',
                         textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
                         transition: 'all 0.3s ease',
-                    }} onClick={play}>
+                    })}  onClick={play}>
                         PLAY NOW
                     </Button>
-                    <Button size='large' sx={{
-                        fontSize: 50,
+                    <Button size='large'
+                    sx={(theme)=> ({
+                        fontSize: {
+                            xs: 20,
+                            sm: 30,
+                            md: 40,
+                            lg: 50,
+                        },
                         fontFamily: 'Press Start 2P',
                         color: '#d5f4e6',
                         textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
                         transition: 'all 0.3s ease',
-                    }} onClick={openLboard(true)}>
+                    })} onClick={openLboard(true)}>
                         Leaderboard
                     </Button>
                 </Stack>
