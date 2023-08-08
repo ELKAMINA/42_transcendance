@@ -11,19 +11,36 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import MenuIcon from '@mui/icons-material/Menu';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { blue } from "@mui/material/colors";
+import {Container} from "@mui/material";
 
-import "./Navbar.css";
+
+// import "./Navbar.css";
 import api from '../utils/Axios-config/Axios';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
 import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, setAvatar, logOut} from '../redux-features/auth/authSlice';
 import { useLogOutMutation } from '../app/api/authApiSlice';
 import {FetchActualUser, selectActualUser} from '../redux-features/friendship/friendshipSlice';
 import { fetchDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { Box } from "@mui/material";
 
 /* *** Internal imports *** */
 interface NavbarProps {
     currentRoute: string;
 }
+
+const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#07457E',
+      }
+    },
+  });
 
 const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     const dispatch = useAppDispatch();
@@ -58,9 +75,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
             });
     };
 
-    // useEffect(() => {
-    //     dispatch(fetchDisplayedChannel("WelcomeChannel")); // reset displayed channel to WelcomeChannel
-    // }, [logout]); // means this useEffect will be triggered every time the logout function is called
 
     const loggingOut = async (
         event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
@@ -103,33 +117,36 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
 
     const srcAvatar = useAppSelector(selectCurrentAvatar);
 
-    let componentToRender;
-    componentToRender = (
-        <>
-            <div className="navbar__header__middle">
-                <div className="navbar__header__options navbar__header__options--active">
-                    <HomeIcon fontSize="large" onClick={home} />
-                </div>
-                <div className="navbar__header__options">
-                    <PersonAddIcon fontSize="large" onClick={friendship} />
-                </div>
-                <img src="" alt="" />
-                <div className="navbar__header__options">
-                    <TelegramIcon onClick={chat} />
-                </div>
-                <div className="navbar__header__options">
-                    <SportsEsportsIcon onClick={play} />
-                </div>
-            </div>
-
-            {/* ********************************** */}
-            <div className="navbar__header__right">
-                <Avatar
+    return (
+        <ThemeProvider theme={theme}>
+            <AppBar position="static" color='primary'>
+                <Toolbar variant="dense" sx={{
+                    height: '8vh',
+                }}>
+                    <Container sx={{
+                        display: 'flex',
+                        flexGrow: '0.2',
+                        justifyContent: 'space-around',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                    }}>
+                        <HomeIcon fontSize="large" onClick={home}/>
+                        <PersonAddIcon fontSize="large" onClick={friendship} />
+                        <TelegramIcon onClick={chat} />
+                        <SportsEsportsIcon onClick={play} />
+                    </Container>
+                    <Container sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexGrow: '1',
+                        justifyContent: 'flex-end'
+                    }}>
+                    <Avatar
                     src={srcAvatar}
                     sx={{
                         margin: "5px",
-                        width: 50,
-                        height: 50,
+                        width: 40,
+                        height: 40,
                     }}
                 />
                 <Button
@@ -168,13 +185,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
                         Logout
                     </MenuItem>
                 </Menu>
-                <IconButton component="a" href="/" onClick={loggingOut}>
+                <IconButton component="a" href="/" onClick={loggingOut} sx={{ color: "white" }}>
                     <LogoutIcon fontSize="medium" />
                 </IconButton>
-            </div>
-        </>
+                    </Container>
+                </Toolbar>
+            </AppBar>
+        </ThemeProvider>
     );
-    return <div className="navbar"> {componentToRender} </div>;
 };
 
 export default Navbar;

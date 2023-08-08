@@ -10,6 +10,10 @@ import { CardActionArea, Grid } from "@mui/material";
 import { useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import { Rowing } from "@mui/icons-material";
+import {CssBaseline} from "@mui/material";
+import Paper from '@mui/material/Paper';
+import { useAppSelector } from "../../utils/redux-hooks";
+import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 
 interface Myprops {
     avatar: string;
@@ -22,59 +26,60 @@ interface Myprops {
 }
 
 const LeaderboardRow = (props: Myprops) => {
+    const user = useAppSelector(selectCurrentUser)
     React.useEffect(() => {}, []);
     return (
-        <Grid
-            container
-            spacing={4}
-            // justifyContent={"space-between"}
+        <>
+        <CssBaseline/>
+        <Paper
             sx={{
-                width: "50vw",
-                height: "10vh",
-                borderRadius: "20px",
-                alignItems: "center",
-                background:
-                    "linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)",
-                // display: "flex",
-                // flexDirection: "row",
-                // justifyContent: "space-between",
+                width: '95%',
+                borderRadius: '15%',
+                background: props.login === user ? "linear-gradient(180deg, #FFD700 0%, rgba(0, 181, 160, 0.19) 50%)" : "linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.59) 50%)" ,
+                p: 1,
+                m:1,
             }}
+            elevation={12}
         >
-            <Grid item>
-                <Avatar src={props.avatar} sx={{ width: 100, height: 100 }} />
-            </Grid>
-            <Grid item sm container>
-                <Grid item xs container direction="column" spacing={2}>
-                    <Grid item xs>
-                        <Typography gutterBottom variant="h5" component="div">
-                            {props.login}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Total matches played : {props.totalMatches}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Total matches won : {props.totalWins}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Total matches lost : {props.totalloss}
-                        </Typography>
+            <Grid container spacing={1}>
+                <Grid item>
+                    <Avatar src={props.avatar} sx={{ width: 50, height: 50 }} />
+                </Grid>
+                <Grid item sm container>
+                    <Grid item xs container direction="column" spacing={2}>
+                        <Grid item xs>
+                            <Typography gutterBottom variant="h5" component="div">
+                                {props.login}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Total matches played : {props.totalMatches}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Total matches won : {props.totalWins}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Total matches lost : {props.totalloss}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <Grid item sm container>
+                    <Grid item xs container direction="column" spacing={3}>
+                        <Grid item xs>
+                            <Typography gutterBottom variant="h6" component="div">
+                                Rank: {props.rank}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Total cumul points: {props.level}
+                            </Typography>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
 
-            <Grid item sm container>
-                <Grid item xs container direction="column" spacing={3}>
-                    <Grid item xs>
-                        <Typography gutterBottom variant="h5" component="div">
-                            {props.rank}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Total cumul points: {props.level}
-                        </Typography>
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
+        </Paper>
+        </>
     );
 };
 export default LeaderboardRow;

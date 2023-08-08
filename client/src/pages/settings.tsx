@@ -1,24 +1,22 @@
 
 import * as React from 'react';
-import { useEffect, useRef } from 'react';
-import { Button } from '@mui/material';
-import Stack from '@mui/material/Stack';
-import { useDispatch } from 'react-redux';
-import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
-import { io } from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/NavBar';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 import Popup from 'reactjs-popup';
-import Cookies from 'js-cookie';
-import { selectCurrentUser, setNick, setMail, setAvatar, setTfaAuth, selectTfaAuth, setQrCode, selectQrCode, selectTfaState, setTfaState, selectAfterSub, setAfterSub  } from '../redux-features/auth/authSlice';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
-import api from '../utils/Axios-config/Axios';
+import { io } from 'socket.io-client';
+import { Button } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import CssBaseline from '@mui/material/CssBaseline';
+import { MuiOtpInput } from 'mui-one-time-password-input'
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { Container, FormControl, Typography } from '@mui/material';
+
 import './settings.css';
+import api from '../utils/Axios-config/Axios';
+import { selectCurrentUser, setNick, setMail, setAvatar, setTfaAuth, selectTfaAuth, setQrCode, selectQrCode, selectTfaState, setTfaState, selectAfterSub, setAfterSub  } from '../redux-features/auth/authSlice';
+import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
 import { FetchActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
 
 export const sock = io('http://localhost:4003', {
@@ -26,11 +24,9 @@ export const sock = io('http://localhost:4003', {
   transports: ['websocket'], 
   upgrade: false,
   autoConnect: false,
-//   reconnection: false,
 })
 
 export function PersonalInformation () {
-    const userRef = React.useRef<HTMLInputElement>(null)
     const [nickname, setNickname] = React.useState('')
     const [password, setPwd] = React.useState('')
     const [avatar, setAr] = React.useState('')
@@ -58,7 +54,7 @@ export function PersonalInformation () {
       }, [])
 
       React.useEffect(() => {
-        sock.on('UpdateInfoUser', (data: any) => {
+        sock.off('UpdateInfoUser').on('UpdateInfoUser', (data: any) => {
             if (data.status === 403){
                 setErrMsg(data.message);
             }
@@ -77,8 +73,7 @@ export function PersonalInformation () {
 
         }
       }, [dispatch, setErrMsg])
-    const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
-
+    const [selectedImage, setSelectedImage] = React.useState<string>('');
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -93,7 +88,12 @@ export function PersonalInformation () {
         }
     };
 
-    const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleButtonClick = () => {
+        const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+        fileInput?.click();
+        };
+
+    const handleSubmit: any = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try{
             sock.emit('changeProfile', {
@@ -115,66 +115,78 @@ export function PersonalInformation () {
 
     }
 
-    const handleButtonClick = () => {
-        const fileInput = document.getElementById('image-upload') as HTMLInputElement;
-        fileInput?.click();
-    
-    };
-
     const content = (
-        <Stack sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            margin: 10,
-            flex: 1,
+        <Container sx={{
+            width: '40%',
+            height: '40%',
+            p: 2,
         }}>
-            <h2>Personal Information</h2>
-            <form id='form'>
-                <Stack spacing={2} sx={{
-                    margin: '10px',
-                    width: '50vw',
-                }}>
-                    <input
-                        type="text"
-                        placeholder="Nickname" 
-                        onChange={(e)=> setNickname(e.target.value)}
-                        ref={userRef}
-                        value={nickname}
-                        required
-                    />
-                    <input 
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e)=> setPwd(e.target.value)}
-                        required
-                    />
-                    <input 
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e)=> setEmail(e.target.value)}
-                        required
-                    />
-
-                </Stack>
-            </form>
-            <input
-                id="image-upload"
-                type="file" accept="image/*" onChange={handleImageUpload}
-                style={{ display: 'none' }}
-            />
-            <IconButton onClick={handleButtonClick} sx={{
-                fontSize: '15px'
-            }}> Upload your avatar </IconButton>
-            {selectedImage && <Avatar src={selectedImage}/>}
-            <br>
-            </br>
-            <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Save</Button>
-            <p ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</p>
-            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-        </Stack>
+        <CssBaseline/>
+            <Typography align='center' variant='h4' sx={{
+                margin: '5%',
+            }}>Personal Information</Typography>
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Nickname"
+                    name="nickname"
+                    autoComplete="nickname"
+                    autoFocus
+                    sx={{
+                        color: 'whitesmoke',
+                    }}
+                />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    helperText={errMsg}
+                    autoComplete="current-password"
+                    sx={{
+                        '& .MuiFormHelperText-root': {
+                        color: 'red', // Your custom color
+                        },
+                    }}
+                />
+                <FormControl 
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
+                >
+                <input
+                    id="image-upload"
+                    type="file" accept="image/*" onChange={handleImageUpload}
+                    style={{ display: 'none' }}
+                />
+                <IconButton onClick={handleButtonClick}> 
+                <Avatar 
+                    src={selectedImage} 
+                    style={{
+                    margin: "10px",
+                    width: "60px",
+                    height: "60px",
+                    }} 
+                />
+                </IconButton>
+                </FormControl>
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3 }}
+                >
+                Save
+                </Button>
+                <Typography ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</Typography>
+            </Box>
+        </Container>
     )
     return content;
 }
@@ -240,64 +252,62 @@ export function Security () {
         })
         .catch((e) => {console.log("error ", e)});
     }
+
+    const handleCode = (newValue: string) => {
+        setTfaCode(newValue);
+    }
+
     return (
-        <>
-            <h1>Two Factor Authentication </h1>
-            <Stack sx={{
+        <Container sx={{
+            width: '40%',
+            height: '40%',
+            p: 2,
+            }}
+        >
+        <CssBaseline/>
+            <Typography align='center' variant='h4' sx={{
+                margin: '5%',
+            }}>Two Factor Authentication</Typography>
+            <Box  sx={{
                 display: 'flex',
                 flexDirection: 'column',
+                alignItems: 'center',
             }}>
-                <Box sx={{
-                    display: 'flex',
+                <FormControlLabel control={<Switch
+                    checked={checked}
+                    onChange={handleChange}
+                />} label={twofa} sx={{
+                }}/>
+                <Popup 
+                    position="right center" 
+                    on="click"
+                    closeOnDocumentClick
+                    modal
+                    nested    
+                >
+                </Popup>
+                <img
+                src={qrcode}
+                alt=""
+                className='omg'
+                />
 
-                }}>
-                    <FormControlLabel control={<Switch
-                        checked={checked}
-                        onChange={handleChange}
-                    />} label={twofa} sx={{
-                    }}/>
-                    <Popup 
-                        // trigger={<div>TFA</div>}
-                        position="right center" 
-                        on="click"
-                        closeOnDocumentClick
-                        modal
-                        nested    
-                    >
-                    </Popup>
-                    <img
-                    src={qrcode}
-                    alt=""
-                    className='omg'
-                    />
-
-                    {checked === true && afterSub === false && 
-                        <>
-                            <Box sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                                margin: '10px',
-                                flex: 1,
-                            }}>
-                                <form id='form'>
-                                    <input
-                                        type="text"
-                                        onChange={(e)=> setTfaCode(e.target.value)}
-                                        placeholder="Tfa-Code"
-                                        value={TfaCode}
-                                        required
-                                    />
-                                </form>
-                                <Button className="tfa-btn" type="submit" variant="contained" onClick={handleSubmit}>Send code</Button>
-                                <p ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</p>
-                            </Box>
-                        </>
-
-                    }   
-                </Box>
-
-            </Stack>
-        </>
+                {checked === true && afterSub === false && 
+                    <>
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            flex: 1,
+                        }}>
+                            <MuiOtpInput 
+                            value={TfaCode} onChange={handleCode} gap={0.5} length={6} margin="6%"/>
+                            <Button className="tfa-btn" type="submit" variant="contained" onClick={handleSubmit}>Send code</Button>
+                            <p ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</p>
+                        </Box>
+                    </>
+                }   
+            </Box>
+        </Container>
     )
 }

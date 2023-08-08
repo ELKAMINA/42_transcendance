@@ -120,7 +120,7 @@ export default function Sign(props: Signing){
             navigate('/welcome')
         } catch (err: any) {
             if (err){
-                console.log('error ', err);
+                // console.log('error ', err);
                 if (err.status === 400)
                 {
                     setErrMsg("Please check that nickname/password are not empty OR \n Password is at least 6 characters");
@@ -212,10 +212,6 @@ export default function Sign(props: Signing){
                     sx={{ mt: 1.5, mb: 2 }}
                     onClick={ft_auth} ><span>{props.type} with</span><img src={logoft} alt="42" width={"20px"}/>
                 </Button>
-                {/* <Typography sx={{
-                    color: 'red',
-                }}
-                ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</Typography> */}
             </Box>
         </Container>
     )

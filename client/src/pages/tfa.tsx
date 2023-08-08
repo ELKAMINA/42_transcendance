@@ -1,16 +1,16 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
+import { Box, Typography } from '@mui/material';
+import { MuiOtpInput } from 'mui-one-time-password-input'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector} from '../utils/redux-hooks';
 
+
 import './home.css';
 import api from '../utils/Axios-config/Axios'
-import { selectCurrentAccessToken, selectCurrentUser, setSignCredentials, setTokens } from '../redux-features/auth/authSlice';
-import { useTfaAuthenticateMutation } from '../app/api/authApiSlice';
-import axios from 'axios';
-import { Box } from '@mui/material';
+import { selectCurrentUser, setSignCredentials} from '../redux-features/auth/authSlice';
 
-function Tfa () {
+function Tfa () { 
     let nickname: string;
     const dispatch = useAppDispatch();
     const location = useLocation();
@@ -35,6 +35,9 @@ function Tfa () {
           console.log('this is shit')
         }
       }
+      const handleCode = (newValue: string) => {
+        setTfaCode(newValue);
+    }
     return (
         <Box sx={{
           display: 'flex',
@@ -45,16 +48,14 @@ function Tfa () {
           background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 70%)',
           justifyContent: 'space-evenly'
         }}>
-          <h1> Enter your TFA code to Sign in </h1>
-          <form id='form'>
-          <input
-            type="text"
-            onChange={(e)=> setTfaCode(e.target.value)}
-            placeholder="Tfa-Code"
-            value={TfaCode}
-            required
-            />
-          </form>
+          <Typography sx={{
+            color: '#07457E',
+            fontSize: "40px",
+            textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+          }}> Enter your TFA code to Sign in </Typography>
+          <MuiOtpInput 
+          width="50%"
+          value={TfaCode} onChange={handleCode} gap={3} length={6} margin="6%"/>
           <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Send code</Button>
       </Box>
     )
