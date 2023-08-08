@@ -15,6 +15,10 @@ export class GameDto {
   id: string;
 
   @IsNotEmpty()
+  @IsString()
+  owner: string;
+
+  @IsNotEmpty()
   @IsDate()
   createdDate: Date;
 
