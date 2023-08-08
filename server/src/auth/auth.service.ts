@@ -178,6 +178,7 @@ export class AuthService {
           login: dto.nickname,
         },
       });
+      // console.log('le user Vincent ', us);
       if (us) {
         await this.prisma.user.update({
           where: {
@@ -186,9 +187,8 @@ export class AuthService {
           data: { status: 'Online' },
         });
       }
-      // console.log('le user Vincent ', us);
       if (dto.type === 'notTfa') {
-        if (us && (await argon.verify(us.hash, dto.password)) == false) {
+        if (us && (await argon.verify(us.hash, dto.password)) === false) {
           throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
         }
       }
@@ -305,6 +305,14 @@ export class AuthService {
         faEnabled: true,
       },
     });
+  }
+
+  async checkingPwdBeforeTfa(body) {
+    const user = await this.userServ.searchUser(body.nickname);
+    if (user) {
+      if ((await argon.verify(user.hash, body.password)) === false)
+        throw new HttpException('Invalid password', HttpStatus.FORBIDDEN);
+    }
   }
 
   async isTwoFactorAuthenticationCodeValid(

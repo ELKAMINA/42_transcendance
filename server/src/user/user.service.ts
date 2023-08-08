@@ -66,13 +66,11 @@ export class UserService {
           login: userInfo.oldNick,
         },
       });
-
+      console.log('user ', user);
       if (
         userInfo.pwd !== '' &&
-        (await argon.verify(user.hash, userInfo.pwd)) == false
+        (await argon.verify(user.hash, userInfo.pwd)) === false
       ) {
-        console.log('Update ici ');
-        console.log(`new mdp ${userInfo.pwd} `);
         const newHashedPwd = await argon.hash(userInfo.pwd);
         const up1 = await this.prisma.user.update({
           where: {
@@ -83,7 +81,7 @@ export class UserService {
           },
         });
       }
-      if (userInfo.atr != '' && user.avatar != userInfo.atr) {
+      if (userInfo.atr !== '' && user.avatar !== userInfo.atr) {
         const up2 = await this.prisma.user.update({
           where: {
             login: userInfo.oldNick,
@@ -93,22 +91,11 @@ export class UserService {
           },
         });
       }
-      if (userInfo.login != '' && user.login != userInfo.login) {
-        const up4 = await this.prisma.user.update({
-          where: {
-            login: userInfo.oldNick,
-          },
-          data: {
-            login: userInfo.login,
-          },
-        });
-      }
       const finalUser = await this.prisma.user.findUnique({
         where: {
-          login: userInfo.login,
+          login: userInfo.oldNick,
         },
       });
-      console.log('le user apres modif ', finalUser);
       return finalUser;
     } catch (error: any) {
       if (
