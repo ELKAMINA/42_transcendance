@@ -131,36 +131,36 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
                         cursor: 'pointer',
                     }}>
                         <HomeIcon sx={(theme) => ({
-                            size: {
-                                xs: 'small',
-                                sm: 'small',
-                                md: 'medium',
-                                lg: 'large',
-                            }
+                            fontSize: {
+                                xs: '1rem',
+                                sm: '1.1rem',
+                                md: '1.3rem',
+                                lg: '1.7rem',
+                            },
                         })} onClick={home}/>
                         <PersonAddIcon sx={(theme) => ({
-                            size: {
-                                xs: 'small',
-                                sm: 'small',
-                                md: 'medium',
-                                lg: 'large',
-                            }
+                            fontSize: {
+                            xs: '1rem',
+                            sm: '1.1rem',
+                            md: '1.3rem',
+                            lg: '1.7rem',
+                            },
                         })} onClick={friendship} />
                         <TelegramIcon sx={(theme) => ({
-                            size: {
-                                xs: 'small',
-                                sm: 'small',
-                                md: 'medium',
-                                lg: 'large',
-                            }
+                         fontSize: {
+                            xs: '1rem',
+                            sm: '1.1rem',
+                            md: '1.3rem',
+                            lg: '1.7rem',
+                        },
                         })}onClick={chat} />
                         <SportsEsportsIcon sx={(theme) => ({
-                            size: {
-                                xs: 'small',
-                                sm: 'small',
-                                md: 'medium',
-                                lg: 'large',
-                            }
+                           fontSize: {
+                            xs: '1rem',
+                            sm: '1.1rem',
+                            md: '1.3rem',
+                            lg: '1.7rem',
+                        },
                         })}onClick={play} />
                     </Container>
                     <Container sx={{
@@ -183,7 +183,15 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
                     aria-haspopup="true"
                     aria-expanded={open ? "true" : undefined}
                     onClick={handleClick}
-                    sx={{ color: "white" }}
+                    sx={(theme) => ({
+                        fontSize: {
+                            xs: '0.5rem',
+                            sm: '0.7rem',
+                            md: '0.8rem',
+                            lg: '1rem',
+                        },
+                        color: "white",
+                    })}
                 >
                     {nickname}
                 </Button>
@@ -213,16 +221,17 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
                         Logout
                     </MenuItem>
                 </Menu>
-                <IconButton component="a" href="/" onClick={loggingOut} sx={(theme) => ({
-                            size: {
-                                xs: 'small',
-                                sm: 'small',
-                                md: 'medium',
-                                lg: 'large',
-                            },
-                            color: "white",
-                        })} >
-                    <LogoutIcon/>
+                <IconButton component="a" href="/" onClick={loggingOut} >
+                    <LogoutIcon sx={(theme) => ({
+                        fontSize: {
+                            xs: '1rem',
+                            sm: '1.1rem',
+                            md: '1.3rem',
+                            lg: '1.7rem',
+                        },
+                        color: "white",
+                    })}
+                    />
                 </IconButton>
                     </Container>
                 </Toolbar>
