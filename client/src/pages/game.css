@@ -1,3 +1,7 @@
+.app.game {
+    background-color: black;
+}
+
 .pongCanvas {
     border: 10px solid black;
     display: table;
@@ -61,20 +65,18 @@
 } */
 
 /* Exact aspect ratio */
-@media (aspect-ratio: 2/1) {
+/* @media (aspect-ratio: 2/1) {
     .pongGame {
         background-color: pink;
     }
 }
 
-/* Minimum aspect ratio */
 @media (min-aspect-ratio: 16/9) {
     .pongGame {
         background-color: green;
     }
 }
 
-/* Maximum aspect ratio */
 @media (max-aspect-ratio: 8/5) {
     .pongGame {
         background-color: brown;
@@ -90,4 +92,4 @@
     .pongGame {
         background-color: blue;
     }
-}
+} */

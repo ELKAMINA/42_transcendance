@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import Button from "@mui/material/Button";
-import { Grid, Typography, Stack } from "@mui/material";
+import { Box, Grid, Typography, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Input from "@mui/joy/Input";
 import DialogActions from "@mui/material/DialogActions";
@@ -74,9 +74,171 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
 
     return (
         <div>
+            <Box sx={{
+                height: '100vh',
+                alignItems: 'center',
+                background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)'
+            }}>
+                <Dialog fullScreen={false} maxWidth={'sm'} open={open} onClose={handleCancel}>
+                    <DialogTitle>
+                        <Typography align='center' sx={{
+                            fontSize: 50,
+                            margin: 1,
+                            color: '#07457E',
+                            textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                            transition: 'all 0.3s ease',
+                        }}>
+                            Customize the Game
+                        </Typography>
+                        <Typography align='center' sx={{
+                            fontSize: 20,
+                            margin: 1,
+                            color: '#07457E',
+                            textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                            transition: 'all 0.3s ease',
+                        }}>
+                            (room owner only)
+                        </Typography>
+                    </DialogTitle>
+                    <Stack>
+                        <DialogContent>
+                            <Grid container spacing={2} columns={24}>
+                                <Grid item xs={12}>
+                                    <Typography align='left' component="div" sx={{
+                                        margin: 1,
+                                        color: '#07457E',
+                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                                        transition: 'all 0.3s ease',
+                                    }}>
+                                        Total points
+                                    </Typography>
+                                    <Input
+                                        sx={{
+                                            maxWidth: "229.993px",
+                                            height: "55.9943px",
+                                            borderRadius: "4px",
+                                        }}
+                                        value={points}
+                                        type="Total points"
+                                        size="lg"
+                                        placeholder="Total points"
+                                        onChange={(e: any) =>
+                                            setTotalPoints(e.target.value)
+                                        }
+                                    ></Input>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Typography align='left' component="div" sx={{
+                                        margin: 1,
+                                        color: '#07457E',
+                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                                        transition: 'all 0.3s ease',
+                                    }}>
+                                        Board color
+                                    </Typography>
+                                    <MuiColorInput
+                                        format="hex"
+                                        value={boardColor}
+                                        onChange={handleBoardColor}
+                                    ></MuiColorInput>
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                <Typography align='left' component="div" sx={{
+                                        margin: 1,
+                                        color: '#07457E',
+                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                                        transition: 'all 0.3s ease',
+                                    }}>
+                                        Net color
+                                    </Typography>
+                                    <MuiColorInput
+                                        format="hex"
+                                        value={netColor}
+                                        onChange={handleNetColor}
+                                    ></MuiColorInput>
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                <Typography align='left' component="div" sx={{
+                                        margin: 1,
+                                        color: '#07457E',
+                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                                        transition: 'all 0.3s ease',
+                                    }}>
+                                        Score color
+                                    </Typography>
+                                    <MuiColorInput
+                                        format="hex"
+                                        value={scoreColor}
+                                        onChange={handleScoreColor}
+                                    ></MuiColorInput>
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                <Typography align='left' component="div" sx={{
+                                        margin: 1,
+                                        color: '#07457E',
+                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                                        transition: 'all 0.3s ease',
+                                    }}>
+                                        Paddle color
+                                    </Typography>
+                                    <MuiColorInput
+                                        format="hex"
+                                        value={paddleColor}
+                                        onChange={handlePaddleColor}
+                                    ></MuiColorInput>
+                                </Grid>
+                                <Grid item xs={12}>
+                                <Typography align='left' component="div" sx={{
+                                        margin: 1,
+                                        color: '#07457E',
+                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                                        transition: 'all 0.3s ease',
+                                    }}>
+                                        Ball color
+                                    </Typography>
+                                    <MuiColorInput
+                                        format="hex"
+                                        value={ballColor}
+                                        onChange={handleBallColor}
+                                    ></MuiColorInput>
+                                </Grid>
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions>
+                        <Button
+                            variant="contained"
+                            size="medium"
+                            autoFocus
+                            onClick={sendCancel}
+                        >
+                            CANCEL
+                        </Button>
+                        <Button
+                            variant="contained"
+                            size="medium"
+                            autoFocus
+                            onClick={sendSettings}
+                        >
+                            SUBMIT
+                        </Button>
+                    </DialogActions>
+                    </Stack>
+                </Dialog>
+            </Box>
+        </div>
+    );
+};
+
+export default Settings;
+
+/*
+        <div>
             <Dialog fullScreen={fullScreen} open={open} onClose={handleCancel}>
                 <DialogTitle>
-                    <Typography>
+                    <Typography align='center'>
                         {" "}
                         As the owner of the room, you can customize the Game{" "}
                     </Typography>
@@ -203,7 +365,4 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
                 </Stack>
             </Dialog>
         </div>
-    );
-};
-
-export default Settings;
+*/
