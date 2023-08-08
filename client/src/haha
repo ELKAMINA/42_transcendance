@@ -1,0 +1,53 @@
+<Stack sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    margin: 10,
+    flex: 1,
+}}>
+    <h2>Personal Information</h2>
+    <form id='form'>
+        <Stack spacing={2} sx={{
+            margin: '10px',
+            width: '50vw',
+        }}>
+            <input
+                type="text"
+                placeholder="Nickname" 
+                onChange={(e)=> setNickname(e.target.value)}
+                ref={userRef}
+                value={nickname}
+                required
+            />
+            <input 
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e)=> setPwd(e.target.value)}
+                required
+            />
+            <input 
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e)=> setEmail(e.target.value)}
+                required
+            />
+
+        </Stack>
+    </form>
+    <input
+        id="image-upload"
+        type="file" accept="image/*" onChange={handleImageUpload}
+        style={{ display: 'none' }}
+    />
+    <IconButton onClick={handleButtonClick} sx={{
+        fontSize: '15px'
+    }}> Upload your avatar </IconButton>
+    {selectedImage && <Avatar src={selectedImage}/>}
+    <br>
+    </br>
+    <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Save</Button>
+    <p ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</p>
+    <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+</Stack>

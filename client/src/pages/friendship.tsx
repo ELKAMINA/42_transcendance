@@ -1,22 +1,16 @@
-import { useEffect, useRef } from 'react';
-import { Button, Container, Typography } from '@mui/material';
+import { useEffect} from 'react';
+import {Container, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
-import { Box, Grid } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { Grid } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These typed hooks are different from the authSlice, because, as we're using redux thunks inside slices, we need specific typing for typescript
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/NavBar';
 import Cookies from 'js-cookie';
 // import { ConnectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { updateAllRequests, updateAllFriends, updateBlockedFriends, updateAllSuggestions, setSelectedItem, FetchAllBlockedFriends, selectBlockedFriends } from '../redux-features/friendship/friendshipSlice';
+import { FetchAllBlockedFriends, selectBlockedFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-features/friendship/friendshipSlice';
 import { FetchSuggestions, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
-import { selectCurrentAccessToken, selectCurrentUser, setOnlyTokens } from '../redux-features/auth/authSlice';
+import { selectCurrentUser, setOnlyTokens } from '../redux-features/auth/authSlice';
 import {socket} from '../components/AllFriendship'
-import { StackedBarChartSharp } from '@mui/icons-material';
-
-
 
 export type userInfo = {
   nickname: string,
@@ -60,6 +54,9 @@ function Suggestions () {
           sx={{
             fontWeight: 'bold',
             fontSize: '30px',
+            color: '#07457E',
+            textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+            margin: 4,
           }}
         > You may know... </Typography>
         <Grid container spacing={2}>
@@ -109,10 +106,16 @@ function Requests () {
         {(friendsRequests.length === 0) && <Typography sx={{
               fontWeight: 'bold',
               fontSize: '30px',
+              color: '#07457E',
+              textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+              margin: 4,
             }}>No request yet </Typography> }
         {(friendsRequests.length > 0) && <Typography sx={{
               fontWeight: 'bold',
               fontSize: '30px',
+              color: '#07457E',
+              textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+              margin: 4,
             }}> They want to be your friend... </Typography>}
           <Stack spacing={3} sx={{
             // flexGrow: 1,
@@ -165,6 +168,9 @@ function Friends () {
         sx={{
           fontWeight: 'bold',
           fontSize: '30px',
+          color: '#07457E',
+          textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+          margin: 4,
         }}
       > Your friends... </Typography>
       <Stack  spacing={3} sx={{

@@ -78,7 +78,11 @@ export default function FriendshipComponent(props: Myprops) {
                     >
                     <ListItemText primary={
                       <Typography
-                        style={{ fontWeight: 'bold'}}
+                        style={{ fontWeight: 'bold',
+                        fontSize: 20,
+                        color: '#07457E',
+                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+                      }}
                       >
                         {text}
                       </Typography>
