@@ -17,6 +17,7 @@ import {
   EGameServerStates,
   ERoomStates,
 } from './enum/EServerGame';
+import { nextTick } from 'process';
 
 @WebSocketGateway(4010, { cors: '*' })
 @Injectable()
@@ -34,17 +35,35 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // CONTAINS EVERY CONNECTED SOCKETS USER
   private socketsPool: Map<string, Socket> = new Map<string, Socket>();
 
-  async handleConnection() {
-    this.socketsPool.forEach((element, key, map) => {
-      console.log(
-        '[GATEWAY - handleConnection]',
-        'Socket Pool:',
-        'key: ',
-        key,
-        'value: ',
-        element,
-      );
-    });
+  async handleConnection(client: Socket) {
+    // this.socketsPool.forEach((element, key, map) => {
+    //   console.log(
+    //     '[GATEWAY - handleConnection]',
+    //     'Socket Pool:',
+    //     'key: ',
+    //     key,
+    //     'value: ',
+    //     element,
+    //   );
+    // });
+    // TODO: ADD A SECURITY ??
+    const user = await this.getUserInfoFromSocket(
+      client.handshake.headers.cookie,
+    );
+    if (!user) {
+      console.error('[GATEWAY - handleConnection] USER NOT FOUND');
+    }
+    console.log('[GATEWAY - handleConnection]', 'user: ', user);
+    const userSocket = this.socketsPool.get(user.nickname);
+    if (userSocket && client.id !== userSocket.id) {
+      console.error('[GATEWAY - handleConnection]', 'The user has already a socket in the sockets pool: ', user.nickname);
+      // this.server.to(client.id).emit('updateComponent', {
+      //   status: EGameServerStates.HOMEPAGE,
+      //   room: client.id,
+      // });
+    } else {
+      this.socketsPool.set(user.nickname, client);
+    }
   }
 
   async handleDisconnect(client: Socket) {
@@ -57,6 +76,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error('[GATEWAY - handleDisconnect] USER NOT FOUND');
     }
     console.log('[GATEWAY - handleDisconnect]', 'user: ', user);
+    const userSocket = this.socketsPool.get(user.nickname);
+    if (userSocket && client.id !== userSocket.id) {
+      console.error('[GATEWAY - handleDisconnect]', 'The user has already a socket in the sockets pool: ', user.nickname);
+      return ;
+    }
     room = this.userInRoom(user.nickname);
     if (!room) {
       console.log(
@@ -70,7 +94,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // - PLAYER TYPE RANDOM AND NO OPPONENT IS COMING TO THE ROOM
       // - PLAYER TYPE ONE TO NONE BUT THE OPPONENT HAS LEFT THE ROOM BEFORE THE END OF GAME SETTINGS
       if (
-        room.id === user.nickname &&
+        room.owner === user.nickname &&
         room.isFull === false &&
         room.roomStatus === ERoomStates.WaitingOpponent
       ) {
@@ -174,7 +198,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // UPDATE THE USER STATUS
       this.userService.updateData(user.nickname, { status: 'Playing' });
       // ADD THE SOCKET USER TO THE SOCKETS POOL
-      this.socketsPool.set(user.nickname, client);
+      // this.socketsPool.set(user.nickname, client);
       /*** CASE OF RANDOM MATCH FROM HOME OR NAVBAR ***/
       if (body.type === EServerPlayType.RANDOM) {
         console.log('[GATEWAY - initPlayground]', 'Match type: ', body.type);
@@ -270,9 +294,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     let roomId = client.id;
     const playType = body.roomInfo.type;
+    const now = new Date();
     const room: GameDto = {
-      id: user.nickname,
-      createdDate: new Date(),
+      id: user.nickname + "_" + now,
+      owner: user.nickname,
+      createdDate: now,
       mapName: 'Default',
       power: false,
       isFull: false,
@@ -334,6 +360,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         room: room,
       });
     }
+    console.log('[GATEWAY - RequestGameSettings]', 'room: ', room);
   }
 
   // CHANGE THE CLIENT GAME STATES TO GAMEON WHICH WILL DISPLAY
@@ -352,6 +379,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error('[GATEWAY - RequestGameOn] USER NOT FOUND');
     }
     const room = this.userInRoom(user.nickname); // SHALLOW COPY
+    // SAFETY
+    if (!room) {
+      this.server.to(client.id).emit('updateComponent', {
+        status: EGameServerStates.HOMEPAGE,
+        room: room,
+      });
+    }
     if (room.roomStatus !== ERoomStates.GameOn) {
       this.updateRoomData(room.id, 'roomStatus', ERoomStates.GameOn);
       this.server.to(room.id).emit('updateComponent', {
@@ -402,9 +436,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // CHECK IF A USER IS ALREADY IN A ROOM
   userInRoom(userName: string): GameDto | undefined {
-    console.log('[GATEWAY - userInRoom]', 'userName: ', userName);
-    const room = this.allRooms.find((obj) => obj.players.includes(userName));
-    console.log('[GATEWAY - userInRoom] ', 'room: ', room);
+    // console.log('[GATEWAY - userInRoom]', 'userName: ', userName);
+    // const room = this.allRooms.find((obj) => obj.players.includes(userName));
+    // console.log('[GATEWAY - userInRoom] ', 'room: ', room);
+    // return room;
+    let room: GameDto = undefined;
+    this.allRooms.forEach((element) => {
+      if (element.players.includes(userName)) {
+        const playerIdNumber = this.playerNumberInRoom(userName, element);
+        console.log('[GATEWAY - userInRoom]', 'playerIdNumber: ', playerIdNumber)
+        if ((playerIdNumber === 0 && element.playerOneId !== '0') ||
+        (playerIdNumber === 1 && element.playerTwoId !== '0')) {
+          console.log('[GATEWAY - userInRoom] ', 'element: ', element);
+          room = element;
+        }
+      }
+    })
+    console.log('[GATEWAY - userInRoom]', "room: ", room);
     return room;
   }
 

@@ -135,11 +135,9 @@ function Game() {
             if (onGamePage === 0) {
                 console.log("[Game]", "on connect", "onGamePage: ", onGamePage);
                 dispatch(updateOnGamePage(1));
-                playButtonInfo.current = testPlayButtonInfo();
+                playButtonInfo.current = testPlayButtonInfo(); // FOR TEST
+                socket.emit("initPlayground", playButtonInfo.current);
                 // console.log("[GATEWAY] playButtonInfo:", playButtonInfo);
-                // ADD THE USER SOCKET TO THE POOL SOCKET
-                // socket.emit("initPlayground", playButtonInfo); // FOR PRODUCTION
-                socket.emit("initPlayground", playButtonInfo.current); // FOR TEST
             } else if (onGamePage === 1) {
                 // REFRESH OR RECONNECTION OF THE USER
                 console.warn(
