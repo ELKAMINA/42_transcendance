@@ -38,6 +38,11 @@ function Tfa () {
       const handleCode = (newValue: string) => {
         setTfaCode(newValue);
     }
+
+    const handleCancel = () => {
+      navigate('/')
+    }
+    
     return (
         <Box sx={{
           display: 'flex',
@@ -57,6 +62,7 @@ function Tfa () {
           width="50%"
           value={TfaCode} onChange={handleCode} gap={3} length={6} margin="6%"/>
           <Button className="mui-btn" type="submit" variant="contained" onClick={handleSubmit}>Send code</Button>
+          <Button className="mui-btn" type="submit" variant="contained" onClick={handleCancel}>Cancel</Button>
       </Box>
     )
 }

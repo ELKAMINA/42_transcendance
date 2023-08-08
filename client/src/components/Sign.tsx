@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserModel } from '../types/users/userType';
 import { useAppDispatch } from '../utils/redux-hooks';
 import { FetchUserByName } from '../utils/global/global';
-import { useSignupMutation, useSigninMutation} from '../app/api/authApiSlice';
+import { useSignupMutation, useSigninMutation, useCheckPwdMutation} from '../app/api/authApiSlice';
 import { setSignCredentials, setAvatar, setNick, resetAuthStore } from '../redux-features/auth/authSlice';
 import { resetChannelName, resetChannelNameStore } from '../redux-features/chat/createChannel/channelNameSlice';
 import { resetChannelStore } from '../redux-features/chat/channelsSlice';
@@ -41,6 +41,7 @@ export default function Sign(props: Signing){
     // const tfaInput = useAppSelector(selectTfaInput)
     const [ signin] = useSigninMutation();
     const [signup] = useSignupMutation(); // isLoading : Frequently Used Query Hook Return Values => When true, indicates that the query is currently loading for the first time, and has no data yet. This will be true for the first request fired off, but not for subsequent requests.
+    const [checkPwd] = useCheckPwdMutation();
     const navigate = useNavigate()
 
     React.useEffect(() => {
@@ -106,10 +107,11 @@ export default function Sign(props: Signing){
                 userData = await signup({ nickname, password, avatar, type: 'notTfa' }).unwrap() // unwrap extracts the payload of a fulfilled action or to throw either the error
             }
             else{
-                    const user: UserModel = await FetchUserByName(nickname)
+                const user: UserModel = await FetchUserByName(nickname)
                 if (user.faEnabled)
                 {
                     dispatch(setNick(nickname))
+                    await checkPwd({ nickname, password}).unwrap()
                     return (navigate('/tfa'))
                 }
                 else {
@@ -120,7 +122,7 @@ export default function Sign(props: Signing){
             navigate('/welcome')
         } catch (err: any) {
             if (err){
-                console.log('error ', err);
+                // console.log('error ', err);
                 if (err.status === 400)
                 {
                     setErrMsg("Please check that nickname/password are not empty OR \n Password is at least 6 characters");

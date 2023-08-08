@@ -27,7 +27,6 @@ export const sock = io('http://localhost:4003', {
 })
 
 export function PersonalInformation () {
-    const [nickname, setNickname] = React.useState('')
     const [password, setPwd] = React.useState('')
     const [avatar, setAr] = React.useState('')
     const [email, setEmail] = React.useState('')
@@ -41,7 +40,7 @@ export function PersonalInformation () {
 
     React.useEffect(() => {
         setErrMsg('')
-    }, [nickname, password])
+    }, [password])
     // console.log('user actuel ', currUser)
     React.useEffect(() => {
         sock.connect()
@@ -92,10 +91,7 @@ export function PersonalInformation () {
         const fileInput = document.getElementById('image-upload') as HTMLInputElement;
         fileInput?.click();
         };
-    
-    const handleNicknameChange: any = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNickname(e.target.value);
-    }
+
 
     const handlePwdChange: any = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setPwd(e.target.value);
@@ -108,7 +104,6 @@ export function PersonalInformation () {
             // console.log('je rentre ici ??')
             sock.emit('changeProfile', {
                 oldNick: currUser,
-                login: nickname,
                 pwd: password,
                 atr: avatar,
             })
@@ -135,7 +130,7 @@ export function PersonalInformation () {
                 margin: '5%',
             }}>Personal Information</Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                <TextField
+                {/* <TextField
                     margin="normal"
                     required
                     fullWidth
@@ -148,7 +143,7 @@ export function PersonalInformation () {
                     sx={{
                         color: 'whitesmoke',
                     }}
-                />
+                /> */}
                 <TextField
                     margin="normal"
                     required

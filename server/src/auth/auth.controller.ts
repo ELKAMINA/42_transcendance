@@ -88,7 +88,7 @@ export default class AuthController {
   @Public()
   @Get('42/redirect')
   @UseGuards(FtOauthGuard)
-//   @Redirect('http://localhost:3000/welcome')
+  //   @Redirect('http://localhost:3000/welcome')
   async oAuthRedirect(
     @GetCurrentUserOAuth() userInfo: OauthPayload,
     @Res({ passthrough: true }) res: Response,
@@ -99,7 +99,7 @@ export default class AuthController {
   /* ******************** */
 
   /* 2FA Strategy */
-//   @Public()
+  //   @Public()
   @Post('2fa/generate')
   async register(@Res() response: Response, @Body() body: User) {
     // console.log('la request ', body)
@@ -109,9 +109,12 @@ export default class AuthController {
     return response.json(qrCode);
   }
 
-//   @Public()
+  //   @Public()
   @Post('2fa/turn-on')
-  async turnOnTwoFactorAuthentication(@Body() body, @Res({passthrough: true}) res: Response) {
+  async turnOnTwoFactorAuthentication(
+    @Body() body,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     // console.log('le body ', body)
     this.authService.isTwoFactorAuthenticationCodeValid(
       body.TfaCode,
@@ -122,25 +125,40 @@ export default class AuthController {
   }
 
   @Public()
+  @Post('checkPwd')
+  @HttpCode(HttpStatus.OK)
+  async checkPwdTfa(
+    @Req() request,
+    @Body() body,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.checkingPwdBeforeTfa(body);
+  }
+
+  @Public()
   @Post('2fa/authenticate')
   @HttpCode(HttpStatus.OK)
-  async authenticate(@Req() request, @Body() body, @Res({ passthrough: true }) res: Response) {
+  async authenticate(
+    @Req() request,
+    @Body() body,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     let payload = null;
-    // console.log('le body ', body)
-    try{
-      const validation = await this.authService.isTwoFactorAuthenticationCodeValid(
-        body.TfaCode,
-        body.nickname,
-        res,
-      );
-      if (validation){
-        // console.log("validation OK", validation)
-        payload = await	this.authService.loginWith2fa(body.nickname, res)
+    // console.log('le body ', body);
+    try {
+      const validation =
+        await this.authService.isTwoFactorAuthenticationCodeValid(
+          body.TfaCode,
+          body.nickname,
+          res,
+        );
+      if (validation) {
+        payload = await this.authService.loginWith2fa(body.nickname, res);
         return payload;
       }
-    }
-    catch{
-      console.log("validation Ko")
+    } catch (e) {
+      console.log('validation Ko'); // Mettre un message d'erreur côté Froonts
+      return e;
     }
   }
 
@@ -148,7 +166,7 @@ export default class AuthController {
   @Post('2fa/cancel')
   @HttpCode(HttpStatus.OK)
   async cancelTfa(@Body() body) {
-    this.authService.cancelTfa(body.nickname)
+    this.authService.cancelTfa(body.nickname);
   }
 
   @Public()
