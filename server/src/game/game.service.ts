@@ -56,12 +56,12 @@ export class GameService {
   }
 
   async getLeaderBoard() {
-    const leaderBoard = await this.prisma.user.findMany({
-      orderBy: {
-        // login: 'asc',
-        // level: 'desc',
-        rank: 'asc',
-      },
+    const query = await this.prisma.user.findMany({
+      orderBy: [
+        {
+          rank: 'asc',
+        },
+      ],
       select: {
         avatar: true,
         login: true,
@@ -72,8 +72,10 @@ export class GameService {
         rank: true,
       },
     });
-    // console.log('leaderboard ', leaderBoard);
-    return leaderBoard;
+    // query.forEach((element) => {
+    //   console.log('[GATEWAY - getLeaderBoard]','query element: ', element);
+    // })
+    return query;
   }
 
   async updateUserGameStat(player: string, iswinner: boolean, score: number) {
@@ -88,8 +90,47 @@ export class GameService {
     });
   }
 
+  // GET ALL USER GAME STATISTICS AND BY RESPECTING THE FOLLOWING RANKING RULES:
+  // - PROMOTE THE USER WHO HAS THE MOST POINT, IF EQUALITY THEN
+  //    -> PROMOTE THE USER WHO HAS THE LESS MATCH PLAYED (GOOD RATIO), IF EQUALITY THEN
+  //      -> PROMOTE THE USER WHO HAS THE LESS MATCH PLAYED, IF EQUALITY THEN
+  //        -> PROMOTE THE USER WHO HAS THE LESS LOSS MATCH PLAYED, IF EQUALITY THEN
+  //            -> PROMOTE THE USER ACCORDING TO HIS NAME (SORRY GUYS AS: ZOE, ZORRO, ZELDA)
+  async getUserGameStat() {
+    const query = await this.prisma.user.findMany({
+      orderBy: [
+        {
+          level: 'desc',
+        },
+        {
+          totalMatches: 'asc',
+        },
+        {
+          totalloss: 'asc',
+        },
+        {
+          login: 'asc',
+        }
+      ],
+      select: {
+        avatar: true,
+        login: true,
+        totalMatches: true,
+        totalWins: true,
+        totalloss: true,
+        level: true,
+        rank: true,
+      },
+    });
+    // console.log('[GATEWAY - getLeaderBoard]','leaderboard: ', leaderBoard);
+    query.forEach((element) => {
+      console.log('[GATEWAY - getUserGameStat]','query element: ', element);
+    })
+    return query;
+  }
+
   async updateRankOfAllUsers() {
-    const sortedUsers = await this.getLeaderBoard();
+    const sortedUsers = await this.getUserGameStat();
     sortedUsers.map(async (element: any, index: number) => {
       await this.prisma.user.update({
         where: { login: element.login },
