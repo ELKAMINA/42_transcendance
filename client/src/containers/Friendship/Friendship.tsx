@@ -18,7 +18,6 @@ function FriendshipContainer() {
         <Box sx={{
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden',
         }}>
           <FriendshipComponent items= {itemList}/>
         </Box>

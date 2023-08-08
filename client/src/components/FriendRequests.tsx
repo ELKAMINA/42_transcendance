@@ -89,7 +89,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                     '&:hover': {
                         background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)',
                     },
-                    // opacity: 0.6,
+                    overflow: 'hidden',
                 }}
                 elevation={3}
             >
@@ -111,7 +111,9 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                             <Avatar src={avatar} sx={{ width: 40, height: 40 }}/>
                         </Grid>
                         <Grid item>
-                            <Typography gutterBottom variant="h5" component="div" noWrap>
+                            <Typography gutterBottom component="div" noWrap={true} sx={{
+                                fontSize: "13px",
+                            }}>
                                 {login}
                             </Typography>
                         </Grid>
@@ -120,7 +122,6 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                         (
                             <Grid container item xs={6} sm={6} md={6} lg={6} sx={{
                                 display: 'flex',
-                                // alignContent: 'center',
                                 justifyContent: 'flex-end',
                                 alignItems: 'flex-end',
                                 p:1,

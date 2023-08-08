@@ -7,9 +7,9 @@ import {
   OnGatewayDisconnect,
   ConnectedSocket,
 } from '@nestjs/websockets';
+import { parse } from 'cookie';
 import { Socket, Server } from 'socket.io';
 import { UserService } from '../user/user.service';
-import { FriendshipGateway } from '../friendship/friendship.gateway';
 import { GameService } from './game.service';
 import { GameDto } from './dto/game.dto';
 import {
@@ -23,7 +23,6 @@ import {
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private userService: UserService,
-    private friendshipGateway: FriendshipGateway,
     private gameService: GameService,
   ) {}
 
@@ -31,6 +30,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // CONTAINS EVERY CREATED GAME ROOM
   private allRooms: Array<GameDto> = new Array<GameDto>();
+
   // CONTAINS EVERY CONNECTED SOCKETS USER
   private socketsPool: Map<string, Socket> = new Map<string, Socket>();
 
@@ -50,7 +50,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect(client: Socket) {
     let room: GameDto; // UNDEFINED
     // TODO: ADD A SECURITY ??
-    const user = await this.friendshipGateway.getUserInfoFromSocket(
+    const user = await this.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );
     if (!user) {
@@ -158,7 +158,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('[GATEWAY - initPlayground]', 'body: ', body);
 
     // Récupération du user connecté à partir du cookie
-    const user = await this.friendshipGateway.getUserInfoFromSocket(
+    const user = await this.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );
     if (!user) {
@@ -260,7 +260,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('RequestGameSettings')
   async requestGameSettings(@ConnectedSocket() client: Socket, @Body() body) {
-    const user = await this.friendshipGateway.getUserInfoFromSocket(
+    const user = await this.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );
     console.log(
@@ -269,7 +269,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       user.nickname,
     );
     let roomId = client.id;
-    let playType = body.roomInfo.type;
+    const playType = body.roomInfo.type;
     const room: GameDto = {
       id: user.nickname,
       createdDate: new Date(),
@@ -335,6 +335,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     }
   }
+
   // CHANGE THE CLIENT GAME STATES TO GAMEON WHICH WILL DISPLAY
   // PONG BOARD AND ACTIVATE THE GAME
   // THE EMIT SIGNAL WILL BE ACTIVATED ONLY ONE TIME
@@ -344,7 +345,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('RequestGameOn')
   async requestGameOn(@ConnectedSocket() client: Socket) {
     // TODO: ADD A SECURITY ??
-    const user = await this.friendshipGateway.getUserInfoFromSocket(
+    const user = await this.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );
     if (!user) {
@@ -363,7 +364,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('requestEndOfGame')
   async requestEndOfGame(@ConnectedSocket() client: Socket, @Body() body) {
     // TODO: ADD A SECURITY ??
-    const user = await this.friendshipGateway.getUserInfoFromSocket(
+    const user = await this.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );
     if (!user) {
@@ -601,5 +602,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } else room.scorePlayers[1] += 1;
     // console.log(`socket id ${socketId} in the room ${roomName}`);
     this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
+  }
+
+  getUserInfoFromSocket(cookie: string) {
+    const { Authcookie: userInfo } = parse(cookie);
+    const idAtRt = JSON.parse(userInfo);
+    return idAtRt;
   }
 }

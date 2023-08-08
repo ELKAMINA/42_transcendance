@@ -120,12 +120,13 @@ export default function Sign(props: Signing){
             navigate('/welcome')
         } catch (err: any) {
             if (err){
-                // console.log('error ', err);
+                console.log('error ', err);
                 if (err.status === 400)
                 {
+                    console.log('iciii ');
                     setErrMsg("Please check that nickname/password are not empty OR \n Password is at least 6 characters");
                 }
-                if (err.data.message){
+                else if (err.data && err.data.message && typeof err.data.message === 'string' ){
                     setErrMsg(err.data.message);
                 }
             }

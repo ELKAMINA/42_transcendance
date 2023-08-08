@@ -49,7 +49,7 @@ function Suggestions () {
     suggestions = useAppSelector(selectSuggestions)
         
     const content = (
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 8vh)' }}>
         <Typography 
           sx={{
             fontWeight: 'bold',

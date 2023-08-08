@@ -58,11 +58,14 @@ export default function FriendshipComponent(props: Myprops) {
     })
     
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh'}}>
+    <Box sx={{ display: 'flex', flexDirection: 'row', width: '100vw', minHeight: '100vh', overflowY: 'auto'}}>
         <CssBaseline/>
           <Stack sx={{
             background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 100%)',
             width: '30%',
+            height: '100vh',
+            overflowY: 'auto',
+            maxHeight: "100vh",
           }}
           >
             <List>
