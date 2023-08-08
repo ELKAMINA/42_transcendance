@@ -408,7 +408,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (room.roomStatus !== ERoomStates.Ended) {
       this.updateRoomData(room.id, 'roomStatus', ERoomStates.Ended);
       // TEMPORARY TEST
-      this.updateRoomData(room.id, 'scorePlayers', [2, 0]);
+      // this.updateRoomData(room.id, 'scorePlayers', [2, 0]); // FOR TEST
       this.server.to(room.id).emit('updateComponent', {
         status: EGameServerStates.ENDGAME,
         room: room,
