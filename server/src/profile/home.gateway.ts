@@ -14,18 +14,23 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MessageBody } from '@nestjs/websockets';
 import { Socket, Server, Namespace } from 'socket.io';
+import { ValidationError } from 'class-validator';
+import { WsException } from '@nestjs/websockets';
 import {
   Injectable,
   Logger,
   UnauthorizedException,
   Res,
   ForbiddenException,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HomeService } from './home.service';
+import { UserUpdatesDto } from 'src/user/dto/user.dto';
 // import { MyMiddleware } from 'src/socket/socket.middleware';
 // import { AuthService } from 'src/auth/auth.service';
 // namespace: '/friendship',
@@ -110,16 +115,27 @@ export class ProfileGateway
     socket.disconnect();
   }
 
+  @UsePipes(
+    new ValidationPipe({
+      exceptionFactory(validationErrors: ValidationError[] = []) {
+        const errors = validationErrors;
+        return new WsException(errors);
+      },
+    }),
+  )
   @SubscribeMessage('changeProfile')
   async changeProfile(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() body: any,
+    @MessageBody() updates: UserUpdatesDto,
   ) {
-    // console.log('les sockets ', socket.id)
-    // console.log('... client sending :', body);
-    const newInfos = await this.userServ.updateUserInfo(body);
-    //   await this.friends.requestFriendship(body.sender, body.receiver.nickname);
-    this.io.emit('UpdateInfoUser', newInfos);
+    try {
+      const newInfos = await this.userServ.updateUserInfo(updates);
+      //   await this.friends.requestFriendship(body.sender, body.receiver.nickname);
+      this.io.emit('UpdateInfoUser', newInfos);
+    } catch (e) {
+      console.log('error ', e);
+      return e;
+    }
   }
 
   getUserInfoFromSocket(cookie: string) {

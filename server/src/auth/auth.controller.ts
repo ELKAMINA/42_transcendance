@@ -8,14 +8,11 @@ import {
   Post,
   HttpStatus,
   HttpCode,
-  Redirect,
-  Header,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthDto } from './dto/auth.dto';
-import { JwtPayload } from './types/jwtPayload.type';
 import { Public } from '../decorators/public.decorator';
 import { AuthService } from './auth.service';
 import { RtGuard } from '../guards/rt-guard';
@@ -26,7 +23,6 @@ import { GetCurrentUserOAuth } from '../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId } from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
 import { User } from '@prisma/client';
-import { Jwt2faAuthGuard } from '../guards/jwt-2fa-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')

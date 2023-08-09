@@ -9,6 +9,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 // import { MuiFileInput } from 'mui-file-input'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 // import './Sign.css';
 import logoft from "../img/42 white.png";
@@ -125,7 +126,7 @@ export default function Sign(props: Signing){
                 // console.log('error ', err);
                 if (err.status === 400)
                 {
-                    setErrMsg("is it empty? is it < 6?");
+                    setErrMsg("Password must be at least 6 characters && Field must not be empty\n");
                 }
                 else if (err.data && err.data.message && typeof err.data.message === 'string' ){
                     setErrMsg(err.data.message);
@@ -149,7 +150,9 @@ export default function Sign(props: Signing){
         <Container>
             <CssBaseline/>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <Tooltip title={errMsg}>
                 <TextField
+                    error= {errMsg === '' ? false: true}
                     margin="normal"
                     required
                     fullWidth
@@ -157,7 +160,7 @@ export default function Sign(props: Signing){
                     name="nickname"
                     autoComplete="nickname"
                     autoFocus
-                    helperText={errMsg.slice(0, 12)}
+                    helperText=""
                     sx={{
                         '& .MuiFormHelperText-root': {
                             color: 'red', // Your custom color
@@ -165,14 +168,17 @@ export default function Sign(props: Signing){
                         color: 'whitesmoke',
                       }}
                 />
+            </Tooltip>
+            <Tooltip title={errMsg}>
                 <TextField
+                    error= {errMsg === '' ? false: true}
                     margin="normal"
                     required
                     fullWidth
                     name="password"
                     label="Password"
                     type="password"
-                    helperText={errMsg.slice(13, 24)}
+                    helperText=""
                     autoComplete="current-password"
                     sx={{
                         '& .MuiFormHelperText-root': {
@@ -180,6 +186,7 @@ export default function Sign(props: Signing){
                         },
                       }}
                 />
+            </Tooltip>
                 <FormControl 
                     sx={{
                         display: 'flex',
