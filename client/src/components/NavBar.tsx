@@ -118,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     const srcAvatar = useAppSelector(selectCurrentAvatar);
 
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider  theme={theme}>
             <AppBar position="static" color='primary'>
                 <Toolbar variant="dense" sx={{
                     height: '8vh',
@@ -130,10 +130,38 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
                         alignItems: 'center',
                         cursor: 'pointer',
                     }}>
-                        <HomeIcon fontSize="large" onClick={home}/>
-                        <PersonAddIcon fontSize="large" onClick={friendship} />
-                        <TelegramIcon onClick={chat} />
-                        <SportsEsportsIcon onClick={play} />
+                        <HomeIcon sx={(theme) => ({
+                            fontSize: {
+                                xs: '1rem',
+                                sm: '1.1rem',
+                                md: '1.3rem',
+                                lg: '1.7rem',
+                            },
+                        })} onClick={home}/>
+                        <PersonAddIcon sx={(theme) => ({
+                            fontSize: {
+                            xs: '1rem',
+                            sm: '1.1rem',
+                            md: '1.3rem',
+                            lg: '1.7rem',
+                            },
+                        })} onClick={friendship} />
+                        <TelegramIcon sx={(theme) => ({
+                         fontSize: {
+                            xs: '1rem',
+                            sm: '1.1rem',
+                            md: '1.3rem',
+                            lg: '1.7rem',
+                        },
+                        })}onClick={chat} />
+                        <SportsEsportsIcon sx={(theme) => ({
+                           fontSize: {
+                            xs: '1rem',
+                            sm: '1.1rem',
+                            md: '1.3rem',
+                            lg: '1.7rem',
+                        },
+                        })}onClick={play} />
                     </Container>
                     <Container sx={{
                         display: 'flex',
@@ -155,7 +183,15 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
                     aria-haspopup="true"
                     aria-expanded={open ? "true" : undefined}
                     onClick={handleClick}
-                    sx={{ color: "white" }}
+                    sx={(theme) => ({
+                        fontSize: {
+                            xs: '0.5rem',
+                            sm: '0.7rem',
+                            md: '0.8rem',
+                            lg: '1rem',
+                        },
+                        color: "white",
+                    })}
                 >
                     {nickname}
                 </Button>
@@ -185,8 +221,17 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
                         Logout
                     </MenuItem>
                 </Menu>
-                <IconButton component="a" href="/" onClick={loggingOut} sx={{ color: "white" }}>
-                    <LogoutIcon fontSize="medium" />
+                <IconButton component="a" href="/" onClick={loggingOut} >
+                    <LogoutIcon sx={(theme) => ({
+                        fontSize: {
+                            xs: '1rem',
+                            sm: '1.1rem',
+                            md: '1.3rem',
+                            lg: '1.7rem',
+                        },
+                        color: "white",
+                    })}
+                    />
                 </IconButton>
                     </Container>
                 </Toolbar>
