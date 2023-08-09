@@ -125,7 +125,7 @@ export default function Sign(props: Signing){
                 // console.log('error ', err);
                 if (err.status === 400)
                 {
-                    setErrMsg("Please check that nickname/password are not empty OR \n Password is at least 6 characters");
+                    setErrMsg("is it empty? is it < 6?");
                 }
                 else if (err.data && err.data.message && typeof err.data.message === 'string' ){
                     setErrMsg(err.data.message);
@@ -157,7 +157,11 @@ export default function Sign(props: Signing){
                     name="nickname"
                     autoComplete="nickname"
                     autoFocus
+                    helperText={errMsg.slice(0, 12)}
                     sx={{
+                        '& .MuiFormHelperText-root': {
+                            color: 'red', // Your custom color
+                          },
                         color: 'whitesmoke',
                       }}
                 />
@@ -168,7 +172,7 @@ export default function Sign(props: Signing){
                     name="password"
                     label="Password"
                     type="password"
-                    helperText={errMsg}
+                    helperText={errMsg.slice(13, 24)}
                     autoComplete="current-password"
                     sx={{
                         '& .MuiFormHelperText-root': {
