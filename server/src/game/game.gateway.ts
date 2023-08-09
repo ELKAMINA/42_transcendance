@@ -35,17 +35,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // CONTAINS EVERY CONNECTED SOCKETS USER
   private socketsPool: Map<string, Socket> = new Map<string, Socket>();
 
+  /***************************************************************************/
+  /*** USER CONNNECTION EVENTS ***/
   async handleConnection(client: Socket) {
-    // this.socketsPool.forEach((element, key, map) => {
-    //   console.log(
-    //     '[GATEWAY - handleConnection]',
-    //     'Socket Pool:',
-    //     'key: ',
-    //     key,
-    //     'value: ',
-    //     element,
-    //   );
-    // });
     // TODO: ADD A SECURITY ??
     const user = await this.getUserInfoFromSocket(
       client.handshake.headers.cookie,
@@ -418,8 +410,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /***************************************************************************/
   /*** ROOM MANAGEMENT UTILS ***/
+  // RETURN THE USER INFO FROM THE COOKIE
+  getUserInfoFromSocket(cookie: string) {
+    const { Authcookie: userInfo } = parse(cookie);
+    const idAtRt = JSON.parse(userInfo);
+    return idAtRt;
+  }
 
-  getGameStates(userName: string) {
+  // RETURN A RENDER STATE ACCORDING TO AVAILABLE WAITING ROOM
+  getGameStates(userName: string): EGameServerStates {
     console.log('[GATEWAY - getGameStates]', 'userName: ', userName);
     const possibleRooms = this.allRooms.filter(
       (el) => el.roomStatus === ERoomStates.WaitingOpponent,
@@ -590,71 +589,65 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(roomName).emit('updateMovePaddle', { player, value });
   }
 
-  /***************************************************************************/
-  /*** OLD PONG VERSION ***/
-  @SubscribeMessage('requestMoveBall')
-  async handleRequestMoveBall(
-    client: Socket,
-    value: { positions: Array<number>; velocity: Array<number> },
-  ): Promise<void> {
-    // console.log('rooms ', client.rooms);
-    const [socketId, roomName] = [...client.rooms];
-    // console.log(`socket id ${socketId} in the room ${roomName}`);
-    this.server.to(roomName).emit('updateMoveBall', value);
-  }
+  // /***************************************************************************/
+  // /*** OLD PONG VERSION ***/
+  // @SubscribeMessage('requestMoveBall')
+  // async handleRequestMoveBall(
+  //   client: Socket,
+  //   value: { positions: Array<number>; velocity: Array<number> },
+  // ): Promise<void> {
+  //   // console.log('rooms ', client.rooms);
+  //   const [socketId, roomName] = [...client.rooms];
+  //   // console.log(`socket id ${socketId} in the room ${roomName}`);
+  //   this.server.to(roomName).emit('updateMoveBall', value);
+  // }
 
-  @SubscribeMessage('requestAfterPaddleCollision')
-  async handlerequestAfterPaddleCollisionl(
-    client: Socket,
-    value: {
-      positions: Array<number>;
-      velocity: Array<number>;
-      canBeCollided: boolean;
-    },
-  ): Promise<void> {
-    // console.log('value ', value);
-    const [socketId, roomName] = [...client.rooms];
-    // console.log(`socket id ${socketId} in the room ${roomName}`);
-    this.server.to(roomName).emit('updateAfterPaddleCollision', value);
-  }
+  // @SubscribeMessage('requestAfterPaddleCollision')
+  // async handlerequestAfterPaddleCollisionl(
+  //   client: Socket,
+  //   value: {
+  //     positions: Array<number>;
+  //     velocity: Array<number>;
+  //     canBeCollided: boolean;
+  //   },
+  // ): Promise<void> {
+  //   // console.log('value ', value);
+  //   const [socketId, roomName] = [...client.rooms];
+  //   // console.log(`socket id ${socketId} in the room ${roomName}`);
+  //   this.server.to(roomName).emit('updateAfterPaddleCollision', value);
+  // }
 
-  @SubscribeMessage('requestResetPositionBall')
-  async handleRequestResetPositionBall(
-    client: Socket,
-    value: { positions: Array<number>; canBeCollided: boolean },
-  ): Promise<void> {
-    // console.log('rooms ', client.rooms);
-    const [socketId, roomName] = [...client.rooms];
-    // console.log(`socket id ${socketId} in the room ${roomName}`);
-    this.server.to(roomName).emit('updatePositionBall', value);
-  }
+  // @SubscribeMessage('requestResetPositionBall')
+  // async handleRequestResetPositionBall(
+  //   client: Socket,
+  //   value: { positions: Array<number>; canBeCollided: boolean },
+  // ): Promise<void> {
+  //   // console.log('rooms ', client.rooms);
+  //   const [socketId, roomName] = [...client.rooms];
+  //   // console.log(`socket id ${socketId} in the room ${roomName}`);
+  //   this.server.to(roomName).emit('updatePositionBall', value);
+  // }
 
-  @SubscribeMessage('requestResetPositionPlayer')
-  async handleRequestResetPositionPlayer(
-    client: Socket,
-    value: { player1Position: Array<number>; player2Position: Array<number> },
-  ): Promise<void> {
-    // console.log('rooms ', client.rooms);
-    const [socketId, roomName] = [...client.rooms];
-    // console.log(`socket id ${socketId} in the room ${roomName}`);
-    this.server.to(roomName).emit('updatePositionPlayer', value);
-  }
+  // @SubscribeMessage('requestResetPositionPlayer')
+  // async handleRequestResetPositionPlayer(
+  //   client: Socket,
+  //   value: { player1Position: Array<number>; player2Position: Array<number> },
+  // ): Promise<void> {
+  //   // console.log('rooms ', client.rooms);
+  //   const [socketId, roomName] = [...client.rooms];
+  //   // console.log(`socket id ${socketId} in the room ${roomName}`);
+  //   this.server.to(roomName).emit('updatePositionPlayer', value);
+  // }
 
-  @SubscribeMessage('requestPlayerScore')
-  async handleRequestPlayerScore(client: Socket, value: string): Promise<void> {
-    // console.log('rooms ', client.rooms);
-    const [socketId, roomName] = [...client.rooms];
-    const room = this.allRooms.find((el) => el.id === roomName);
-    if (value === socketId) {
-      room.scorePlayers[0] += 1;
-    } else room.scorePlayers[1] += 1;
-    // console.log(`socket id ${socketId} in the room ${roomName}`);
-    this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
-  }
-
-  getUserInfoFromSocket(cookie: string) {
-    const { Authcookie: userInfo } = parse(cookie);
-    const idAtRt = JSON.parse(userInfo);
-    return idAtRt;
-  }
+  // @SubscribeMessage('requestPlayerScore')
+  // async handleRequestPlayerScore(client: Socket, value: string): Promise<void> {
+  //   // console.log('rooms ', client.rooms);
+  //   const [socketId, roomName] = [...client.rooms];
+  //   const room = this.allRooms.find((el) => el.id === roomName);
+  //   if (value === socketId) {
+  //     room.scorePlayers[0] += 1;
+  //   } else room.scorePlayers[1] += 1;
+  //   // console.log(`socket id ${socketId} in the room ${roomName}`);
+  //   this.server.to(roomName).emit('updatePlayerScore', room.scorePlayers);
+  // }
 }
