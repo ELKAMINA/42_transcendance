@@ -27,9 +27,9 @@ export const sock = io('http://localhost:4003', {
 })
 
 export function PersonalInformation () {
+    const [nickname, setNickname] = React.useState('')
     const [password, setPwd] = React.useState('')
     const [avatar, setAr] = React.useState('')
-    const [email, setEmail] = React.useState('')
     const currUser = useAppSelector(selectCurrentUser)
     const [errMsg, setErrMsg] = React.useState('')
     const [confMsg, setConfMsg] = React.useState('')
@@ -97,9 +97,26 @@ export function PersonalInformation () {
         setPwd(e.target.value);
     }
 
+    const handleNicknameChange: any = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNickname(e.target.value);
+    }
 
     const handleSubmit: any = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        if ( data.entries.length === 0) {
+            console.log('je rentre ici ??', data)
+            setErrMsg('Form is null');
+            return ;
+        }
+        // const nicknameValue = data.get('nickname');
+        // const passwordValue = data.get('password');
+        // if (nicknameValue === null || passwordValue === null) {
+        //     setErrMsg('Nickname or password is missing');
+        //     return;
+        // }
+        // const nickname: string = nicknameValue.toString();
+        // const password: string = passwordValue.toString();
         try{
             // console.log('je rentre ici ??')
             sock.emit('changeProfile', {
@@ -130,7 +147,7 @@ export function PersonalInformation () {
                 margin: '5%',
             }}>Personal Information</Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                {/* <TextField
+                <TextField
                     margin="normal"
                     required
                     fullWidth
@@ -143,7 +160,7 @@ export function PersonalInformation () {
                     sx={{
                         color: 'whitesmoke',
                     }}
-                /> */}
+                />
                 <TextField
                     margin="normal"
                     required
