@@ -12,12 +12,17 @@ import { Socket, Server } from 'socket.io';
 import { UserService } from '../user/user.service';
 import { GameService } from './game.service';
 import { GameDto } from './dto/game.dto';
+import { BoardDto } from './dto/board.dto';
+import { BallDto } from './dto/ball.dto';
+import { PlayerDto } from './dto/player.dto';
 import {
   EServerPlayType,
   EGameServerStates,
   ERoomStates,
 } from './enum/EServerGame';
-import { nextTick } from 'process';
+
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { validateOrReject } from 'class-validator';
 
 @WebSocketGateway(4010, { cors: '*' })
 @Injectable()
@@ -25,6 +30,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private userService: UserService,
     private gameService: GameService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -48,7 +54,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('[GATEWAY - handleConnection]', 'user: ', user);
     const userSocket = this.socketsPool.get(user.nickname);
     if (userSocket && client.id !== userSocket.id) {
-      console.error('[GATEWAY - handleConnection]', 'The user has already a socket in the sockets pool: ', user.nickname);
+      console.error(
+        '[GATEWAY - handleConnection]',
+        'The user has already a socket in the sockets pool: ',
+        user.nickname,
+      );
       // this.server.to(client.id).emit('updateComponent', {
       //   status: EGameServerStates.HOMEPAGE,
       //   room: client.id,
@@ -70,8 +80,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('[GATEWAY - handleDisconnect]', 'user: ', user);
     const userSocket = this.socketsPool.get(user.nickname);
     if (userSocket && client.id !== userSocket.id) {
-      console.error('[GATEWAY - handleDisconnect]', 'The user has already a socket in the sockets pool: ', user.nickname);
-      return ;
+      console.error(
+        '[GATEWAY - handleDisconnect]',
+        'The user has already a socket in the sockets pool: ',
+        user.nickname,
+      );
+      return;
     }
     room = this.userInRoom(user.nickname);
     if (!room) {
@@ -163,7 +177,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /***************************************************************************/
-  /*** ROOM MANAGEMENT EVENTS ***/
+  /*** ROOM EVENTS ***/
   @SubscribeMessage('initPlayground')
   async initPlayground(@ConnectedSocket() client: Socket, @Body() body) {
     // TODO: ADD A SECURITY ??
@@ -288,7 +302,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const playType = body.roomInfo.type;
     const now = new Date();
     const room: GameDto = {
-      id: user.nickname + "_" + now,
+      id: user.nickname + '_' + now,
       owner: user.nickname,
       createdDate: now,
       mapName: 'Default',
@@ -384,6 +398,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         status: EGameServerStates.GAMEON,
         room: room,
       });
+      this.initGame(room);
     }
   }
 
@@ -409,7 +424,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /***************************************************************************/
-  /*** ROOM MANAGEMENT UTILS ***/
+  /*** ROOM UTILS ***/
   // RETURN THE USER INFO FROM THE COOKIE
   getUserInfoFromSocket(cookie: string) {
     const { Authcookie: userInfo } = parse(cookie);
@@ -443,15 +458,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.allRooms.forEach((element) => {
       if (element.players.includes(userName)) {
         const playerIdNumber = this.playerNumberInRoom(userName, element);
-        console.log('[GATEWAY - userInRoom]', 'playerIdNumber: ', playerIdNumber)
-        if ((playerIdNumber === 0 && element.playerOneId !== '0') ||
-        (playerIdNumber === 1 && element.playerTwoId !== '0')) {
+        console.log(
+          '[GATEWAY - userInRoom]',
+          'playerIdNumber: ',
+          playerIdNumber,
+        );
+        if (
+          (playerIdNumber === 0 && element.playerOneId !== '0') ||
+          (playerIdNumber === 1 && element.playerTwoId !== '0')
+        ) {
           console.log('[GATEWAY - userInRoom] ', 'element: ', element);
           room = element;
         }
       }
-    })
-    console.log('[GATEWAY - userInRoom]', "room: ", room);
+    });
+    console.log('[GATEWAY - userInRoom]', 'room: ', room);
     return room;
   }
 
@@ -577,6 +598,278 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     this.allRooms = this.allRooms.filter(this.purgeCallbackFilter);
   }
+
+  /***************************************************************************/
+  /*** GAME MANAGEMENT ***/
+  // TEST OK
+  // addInterval(name: string, milliseconds: number) {
+  //   const callback = () => {
+  //     console.warn(`Interval \'${name}\' executing at time (${milliseconds})!`);
+  //   };
+
+  //   const interval = setInterval(callback, milliseconds);
+  //   this.schedulerRegistry.addInterval(name, interval);
+  // }
+
+  // deleteInterval(name: string) {
+  //   this.schedulerRegistry.deleteInterval(name);
+  //   console.warn(`Interval ${name} deleted!`);
+  // }
+
+  // async startGame(room: GameDto) {
+  //   console.log('[startGame]', 'start');
+  //   this.addInterval(room.id, 5000);
+  //   const interval = this.schedulerRegistry.getInterval(room.id);
+  //   clearInterval(interval);
+  // }
+
+  async initGame(room: GameDto) {
+    // const frameTime = 1000; // FOR TEST
+    const frameTime = 1000 / 50; // FOR PRODUCTION
+    const player1Name = room.players[0];
+    const player2Name = room.players[1];
+    const player1Socket = this.socketsPool.get(player1Name);
+    const player2Socket = this.socketsPool.get(player2Name);
+    console.log('[initGame]', 'Start');
+    if (!player1Socket || !player2Socket) {
+      console.error('[GATEWAY - initGame]', 'PLAYER SOCKET NOT FOUND');
+      return;
+    }
+    const board: BoardDto = {
+      width: 800,
+      height: 600,
+    };
+    const ball: BallDto = {
+      position: [0, 0],
+      speed: 5,
+      radius: 10,
+      velocity: [4, 4],
+      isVisible: true,
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      canCollide: true,
+    };
+    const player1: PlayerDto = {
+      info: [player1Socket.id, player1Name],
+      position: [0, 0],
+      speed: 20,
+      dimension: [10, 100],
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    };
+    const player2: PlayerDto = {
+      info: [player1Socket.id, player1Name],
+      position: [0, 0],
+      speed: 20,
+      dimension: [10, 100],
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    };
+
+    ball.position = [board.width / 2, board.height / 2];
+    player1.position = [10, (3 * board.height) / 6 - player1.dimension[1] / 2];
+    player2.position = [
+      board.width - 10 - player2.dimension[0],
+      (3 * board.height) / 6 - player2.dimension[1] / 2,
+    ];
+
+    const updateScore = (ballX: number) => {
+      if (ballX <= 0 + ball.radius) {
+        room.scorePlayers[1] += 1;
+        console.log(
+          '[GATEWAY - updateScore]',
+          'room: ',
+          room.id,
+          'Player TWO has scored',
+        );
+      } else if (ballX >= board.width - ball.radius) {
+        room.scorePlayers[0] += 1;
+        console.log(
+          '[GATEWAY - updateScore]',
+          'room: ',
+          room.id,
+          'Player ONE has scored',
+        );
+      }
+      this.server.to(room.id).emit('updatePlayerScore', room.scorePlayers);
+    };
+
+    const resetBall = () => {
+      const [ballX, ballY] = ball.position;
+      if (ballX > 0 + ball.radius && ballX < board.width - ball.radius) {
+        return;
+      }
+      console.warn(
+        '[GATEWAY - resetBall]',
+        'room: ',
+        room.id,
+        'Someone has scored',
+        'BallX: ',
+        ballX,
+      );
+      ball.position = [board.width / 2, board.height / 2];
+      this.server.to(room.id).emit('updatePositionBall', {
+        positions: ball.position,
+        canBeCollided: true,
+      });
+      ball.velocity[0] = -ball.velocity[0];
+      resetPlayer();
+      updateScore(ballX);
+    };
+
+    const resetPlayer = () => {
+      player1.position = [
+        10,
+        (3 * board.height) / 6 - player1.dimension[1] / 2,
+      ];
+      player2.position = [
+        board.width - 10 - player2.dimension[0],
+        (3 * board.height) / 6 - player2.dimension[1] / 2,
+      ];
+      this.server.to(room.id).emit('updatePositionPlayer', {
+        player1Position: player1.position,
+        player2Position: player2.position,
+      });
+    };
+
+    const borderCollision = () => {
+      ball.position[0] = ball.position[0] + ball.velocity[0];
+      ball.position[1] = ball.position[1] + ball.velocity[1];
+      // CHECK IF THE BALL COLLIDES WITH THE TOP OR THE BOTTOM OF THE CANVAS
+      if (
+        ball.position[1] - ball.radius <= 0 ||
+        ball.position[1] + ball.radius >= board.height
+      ) {
+        ball.velocity[1] = -ball.velocity[1];
+      }
+      // EMIT THE BALL MOVEMENT
+      this.server.to(room.id).emit('updateMoveBall', {
+        positions: ball.position,
+        velocity: ball.velocity,
+      });
+    };
+
+    const paddleCollision = (player: PlayerDto): boolean => {
+      // PLAYER SHAPES
+      player.top = player.position[1];
+      player.bottom = player.position[1] + player.dimension[1];
+      player.left = player.position[0];
+      player.right = player.position[0] + player.dimension[0];
+      // BALL SHAPES
+      const radius = ball.radius;
+      ball.top = ball.position[1] - radius;
+      ball.bottom = ball.position[1] + radius;
+      ball.left = ball.position[0] - radius;
+      ball.right = ball.position[0] + radius;
+
+      return (
+        player.top < ball.bottom &&
+        player.bottom > ball.top &&
+        player.left < ball.right &&
+        player.right > ball.left
+      );
+    };
+
+    const ballRepositioning = (player: PlayerDto) => {
+      let collidePoint: number;
+      // GET THE COLLIDE POINT ACCORDING TO THE ORIGIN OF THE PADDLE
+      // 0 --> HEIGHT OF THE PADDLE
+      collidePoint =
+        ball.position[1] - (player.position[1] + player.dimension[1] / 2);
+      // VIRTUAL ORIGIN
+      // GET THE COLLIDE POINT ACCORDING TO THE VIRTUAL ORIGIN OF THE PADDLE WHICH
+      // IS THE HEIGHT OF THE PADDLE / 2
+      // collidePoint = collidePoint - player.getPaddleDimensionY() / 2;
+      // NORMALIZE THE COLLIDE POINT BETWEEN [-1 --> 0] and [0 --> 1]
+      // THIS VALUE WILL BE USED FOR THE COSINUS AND SINUS CALCULATION
+      collidePoint = collidePoint / player.dimension[1] / 2;
+
+      const angleRadian = (Math.PI / 4) * collidePoint;
+      const direction = ball.position[0] < board.width / 2 ? 1 : -1;
+      ball.velocity[0] = Math.cos(angleRadian) * direction * ball.speed;
+      ball.velocity[1] = Math.sin(angleRadian) * ball.speed;
+      if (ball.canCollide === false) {
+        // console.log("Ball can not collide anymore woth a player paddle");
+        return;
+      }
+      // EMIT THE BALL MOVEMENT
+      this.server.to(room.id).emit('updateAfterPaddleCollision', {
+        positions: ball.position,
+        velocity: ball.velocity,
+        canBeCollided: false,
+      });
+    };
+
+    const updateBall = () => {
+      borderCollision();
+      let player: PlayerDto;
+      if (ball.position[0] < board.width / 2) {
+        console.warn(
+          '[GATEWAY - updateBall]',
+          'room: ',
+          room.id,
+          'Side player 1',
+        );
+        player = player1;
+      } else {
+        console.warn(
+          '[GATEWAY - updateBall]',
+          'room: ',
+          room.id,
+          'Side player 2',
+        );
+        player = player2;
+      }
+      if (paddleCollision(player)) {
+        console.warn(
+          '[GATEWAY - updateBall]',
+          'room: ',
+          room.id,
+          'Collision detected',
+        );
+        ballRepositioning(player);
+      } else if (
+        ball.position[0] > (1 * board.width) / 4 &&
+        ball.position[0] < (3 * board.width) / 4
+      ) {
+        ball.canCollide = true;
+      }
+    };
+
+    const theGame = () => {
+      console.log('[GATEWAY - theGame] DEBUG: ', 'score: ', room.scorePlayers);
+      console.log('[GATEWAY - theGame] DEBUG: ', 'ball: ', ball);
+      console.log('[GATEWAY - theGame] DEBUG: ', 'player1: ', player1);
+      console.log('[GATEWAY - theGame] DEBUG: ', 'player2: ', player2);
+      console.warn(
+        `Interval \'${room.id}\' executing at time (${frameTime})!`,
+        'room: ',
+        room.id,
+        'baord: ',
+        board,
+      );
+      updateBall();
+      resetBall();
+      if (
+        room.scorePlayers[0] >= room.totalPoint ||
+        room.scorePlayers[1] >= room.totalPoint
+      ) {
+        console.log('[GATEWAY - updateBall]', 'room: ', room.id, 'End Game');
+        clearInterval(interval);
+        this.server.to(room.id).emit('endGame');
+      }
+    };
+    const interval = setInterval(theGame, frameTime);
+    this.schedulerRegistry.addInterval(room.id, interval);
+  }
+
+  /***************************************************************************/
 
   /***************************************************************************/
   /*** GAME EVENTS ***/

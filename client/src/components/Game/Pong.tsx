@@ -195,6 +195,45 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         );
     };
 
+    socket.off("updatePositionPlayer").on("updatePositionPlayer", (value) => {
+        player1.current.setPaddlePosition(value.player1Position);
+        player2.current.setPaddlePosition(value.player2Position);
+    });
+    socket.off("updatePositionBall").on("updatePositionBall", (value) => {
+        ball.current.setPosition(value.positions);
+        ball.current.setCanBeCollided(value.canBeCollided);
+    });
+    // UPDATE THE BALL VELOCITY
+    socket.off("updateMoveBall").on("updateMoveBall", (value) => {
+        // console.log(" BORDER COLLISION ")
+        ball.current.setPosition(value.positions);
+        ball.current.setVelocity(value.velocity);
+    });
+    // UPDATE THE BALL VELOCITY
+    socket
+        .off("updateAfterPaddleCollision")
+        .on("updateAfterPaddleCollision", (value) => {
+            // console.log("PADDLE COLLISION ", value)
+            ball.current.setPosition(value.positions);
+            ball.current.setVelocity(value.velocity);
+            ball.current.setCanBeCollided(value.canBeCollided);
+        });
+    socket.off("updatePlayerScore").on("updatePlayerScore", (value) => {
+        player1.current.setScore(value[0]);
+        player2.current.setScore(value[1]);
+    });
+    socket.off("updateMovePaddle").on("updateMovePaddle", (data) => {
+        // console.log(`Player ${data.player} must be updated`);
+        const player = getPlayerId(data.player);
+        player.setPaddlePosition([player.getPaddlePosition()[0], data.value]);
+    });
+    socket.off("endGame").on("endGame", (data) => {
+        console.log("[Pong - on EndGame]", "endGame");
+        if (intervalId) {
+            cancelAnimationFrame(intervalId);
+        }
+    });
+
     /***************************************************************************/
     /*** COMPONENT EFECT ***/
     // HANDLE THE GAME
@@ -218,11 +257,12 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
                 player1.current.getScore() >= room.totalPoint ||
                 player2.current.getScore() >= room.totalPoint
             ) {
+                console.warn("[Pong - theGame]", "End game");
                 // resetBall();
                 // resetPlayer();
-                cancelAnimationFrame(intervalId);
-                intervalId = 0;
-                socket.emit("requestEndOfGame");
+                // cancelAnimationFrame(intervalId);
+                // intervalId = 0;
+                // socket.emit("requestEndOfGame");
             } else {
                 intervalId = requestAnimationFrame(theGame);
             }
