@@ -47,4 +47,17 @@ export class BallDto {
   @IsNotEmpty()
   @IsBoolean()
   canCollide: boolean;
+
+  constructor() {
+    this.position = [0, 0];
+    this.speed = 5;
+    this.radius = 10;
+    this.velocity = [4, 4];
+    this.isVisible = true;
+    this.top = 0;
+    this.bottom = 0;
+    this.left = 0;
+    this.right = 0;
+    this.canCollide = true;
+  }
 }

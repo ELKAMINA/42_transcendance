@@ -9,4 +9,9 @@ export class BoardDto {
   @IsNotEmpty()
   @IsInt()
   height: number;
+
+  constructor(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+  }
 }

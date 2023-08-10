@@ -321,6 +321,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       scoreColor: body.scoreColor,
       ballColor: body.ballColor,
       paddleColor: body.paddleColor,
+      board: new BoardDto(800, 600),
+      ball: new BallDto(),
       player1: new PlayerDto(),
       player2: new PlayerDto(),
     };
@@ -637,22 +639,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error('[GATEWAY - initGame]', 'PLAYER SOCKET NOT FOUND');
       return;
     }
-    const board: BoardDto = {
-      width: 800,
-      height: 600,
-    };
-    const ball: BallDto = {
-      position: [0, 0],
-      speed: 5,
-      radius: 10,
-      velocity: [4, 4],
-      isVisible: true,
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      canCollide: true,
-    };
+    const board = room.board;
+    const ball = room.ball;
     const player1 = room.player1;
     const player2 = room.player2;
 
@@ -854,8 +842,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const interval = setInterval(theGame, frameTime);
     this.schedulerRegistry.addInterval(room.id, interval);
   }
-
-  /***************************************************************************/
 
   /***************************************************************************/
   /*** GAME EVENTS ***/
