@@ -8,6 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ERoomStates } from '../enum/EServerGame';
+import { PlayerDto } from './player.dto';
 
 export class GameDto {
   @IsNotEmpty()
@@ -75,4 +76,8 @@ export class GameDto {
 
   @IsString()
   paddleColor: string;
+
+  player1: PlayerDto;
+
+  player2: PlayerDto;
 }
