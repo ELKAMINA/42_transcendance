@@ -44,12 +44,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /***************************************************************************/
   /*** USER CONNNECTION EVENTS ***/
   async handleConnection(client: Socket) {
-    // TODO: ADD A SECURITY ??
-    const user = await this.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    // SAFETY
+    const user = await this.getUserInfoFromSocket(client);
     if (!user) {
       console.error('[GATEWAY - handleConnection] USER NOT FOUND');
+      return;
     }
     console.log('[GATEWAY - handleConnection]', 'user: ', user);
     const userSocket = this.socketsPool.get(user.nickname);
@@ -66,11 +65,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(client: Socket) {
     let room: GameDto = undefined;
-    const user = await this.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    const user = await this.getUserInfoFromSocket(client);
     if (!user) {
       console.error('[GATEWAY - handleDisconnect] USER NOT FOUND');
+      return;
     }
     console.log('[GATEWAY - handleDisconnect]', 'user: ', user);
     const userSocket = this.socketsPool.get(user.nickname);
@@ -169,9 +167,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // DELETE THE USER FROM THE SOCKETS POOL
     this.socketsPool.delete(user.nickname);
 
-    // TODO:
-    // HANDLE IN A BETTER WAY THE MODIFICATION OF THE STATUS
-    // OR MAKE SURE TO NOT HAVE SIDE EFFECT IF THE USER IS ALREADY PLAYING
     this.userService.updateData(user.nickname, { status: 'Online' });
 
     // SAFETY PURGE AT EACH DISCONNECTION OF A PLAYER
@@ -184,7 +179,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /*** ROOM EVENTS ***/
   @SubscribeMessage('initPlayground')
   async initPlayground(@ConnectedSocket() client: Socket, @Body() body) {
-    // TODO: ADD A SECURITY ??
     let gameRenderStates = EGameServerStates.HOMEPAGE;
     let roomAssigned: GameDto; // UNDEFINED
     let socketClientRoomId = client.id; // STORE THE SOCKET ID OR THE ROOM TO COMMUNICATE
@@ -192,11 +186,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('[GATEWAY - initPlayground]', 'body: ', body);
 
     // Récupération du user connecté à partir du cookie
-    const user = await this.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    const user = await this.getUserInfoFromSocket(client);
     if (!user) {
       console.error('[GATEWAY - initPlayground]', 'USER NOT FOUND');
+      this.server.to(socketClientRoomId).emit('updateComponent', {
+        status: gameRenderStates,
+        room: roomAssigned,
+      });
+      return;
     }
     const isPlaying = (await this.userService.searchUser(user.nickname)).status;
     console.log('[GATEWAY - initPlayground]', 'isPlaying: ', isPlaying);
@@ -294,9 +291,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('RequestGameSettings')
   async requestGameSettings(@ConnectedSocket() client: Socket, @Body() body) {
-    const user = await this.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    const user = await this.getUserInfoFromSocket(client);
+    if (!user) {
+      console.error('[GATEWAY - RequestGameSettings]', 'USER NOT FOUND');
+      this.server.to(client.id).emit('updateComponent', {
+        status: EGameServerStates.HOMEPAGE,
+        room: undefined,
+      });
+      return;
+    }
     console.log(
       '[GATEWAY - RequestGameSettings]',
       'Request game settings by: ',
@@ -340,7 +343,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.join(room.id);
     if (playType === EServerPlayType.ONETOONE) {
       roomId = room.id;
-      // TODO: ADD SAFETY CHECK IF THE RECEIVER SOCKETS IS NOT ANYMORE IN THE POOL
       const playerTwoSocket = this.socketsPool.get(body.roomInfo.receiver);
       // SAFETY CHECK WHERE THE RECEIVER HAS ALREADY LEFT THE GAME BEFORE THE END
       // OF THE GAME SETTINGS DEFINITION
@@ -387,12 +389,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // WILL BE GAMEON
   @SubscribeMessage('RequestGameOn')
   async requestGameOn(@ConnectedSocket() client: Socket) {
-    // TODO: ADD A SECURITY ??
-    const user = await this.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    // SAFETY
+    const user = await this.getUserInfoFromSocket(client);
     if (!user) {
-      console.error('[GATEWAY - RequestGameOn] USER NOT FOUND');
+      console.error('[GATEWAY - requestGameOn]', 'USER NOT FOUND');
+      this.server.to(client.id).emit('updateComponent', {
+        status: EGameServerStates.HOMEPAGE,
+        room: undefined,
+      });
+      return;
     }
     const room = this.userInRoom(user.nickname); // SHALLOW COPY
     // SAFETY
@@ -414,12 +419,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('requestEndOfGame')
   async requestEndOfGame(@ConnectedSocket() client: Socket, @Body() body) {
-    // TODO: ADD A SECURITY ??
-    const user = await this.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    // SAFETY
+    const user = await this.getUserInfoFromSocket(client);
     if (!user) {
-      console.error('[GATEWAY - requestEndOfGame] USER NOT FOUND');
+      console.error('[GATEWAY - requestEndOfGame]', 'USER NOT FOUND');
+      this.server.to(client.id).emit('updateComponent', {
+        status: EGameServerStates.HOMEPAGE,
+        room: undefined,
+      });
+      return;
     }
     const room = this.userInRoom(user.nickname); // SHALLOW COPY
     if (room.roomStatus !== ERoomStates.Ended) {
@@ -435,11 +443,43 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /***************************************************************************/
   /*** ROOM UTILS ***/
-  // RETURN THE USER INFO FROM THE COOKIE
-  getUserInfoFromSocket(cookie: string) {
-    const { Authcookie: userInfo } = parse(cookie);
-    const idAtRt = JSON.parse(userInfo);
-    return idAtRt;
+  // RETURN THE USER INFO FROM THE COOKIE OR FROM THE SOCKETS POOL
+  // IF THERE IS AN ISSUE WITH THE COOKIE AND/OR COOKIE CONTENT
+  getUserInfoFromSocket(client: Socket) {
+    const cookie = client.handshake.headers.cookie;
+    let idAtRt: any = undefined;
+
+    if (cookie) {
+      const { Authcookie: userInfo } = parse(cookie);
+      idAtRt = JSON.parse(userInfo);
+      if (idAtRt) {
+        return idAtRt;
+      }
+    }
+    console.error(
+      '[GATEWAY - getUserInfoFromSocket]',
+      'cookie OR idAtRt UNDEFINED',
+    );
+    idAtRt = {
+      nickname: undefined,
+      accessToken: undefined,
+      refreshToken: undefined,
+      avatar: undefined,
+    };
+    this.socketsPool.forEach((element, key) => {
+      if (element.id === client.id) {
+        idAtRt.nickname = key;
+        console.log(
+          '[GATEWAY - getUserInfoFromSocket]',
+          'Client found in socketsPool: ',
+          idAtRt.nickname,
+        );
+      }
+    });
+    if (idAtRt.nickname) {
+      return idAtRt;
+    }
+    return undefined;
   }
 
   // RETURN A RENDER STATE ACCORDING TO AVAILABLE WAITING ROOM
