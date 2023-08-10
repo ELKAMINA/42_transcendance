@@ -417,30 +417,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage('requestEndOfGame')
-  async requestEndOfGame(@ConnectedSocket() client: Socket, @Body() body) {
-    // SAFETY
-    const user = await this.getUserInfoFromSocket(client);
-    if (!user) {
-      console.error('[GATEWAY - requestEndOfGame]', 'USER NOT FOUND');
-      this.server.to(client.id).emit('updateComponent', {
-        status: EGameServerStates.HOMEPAGE,
-        room: undefined,
-      });
-      return;
-    }
-    const room = this.userInRoom(user.nickname); // SHALLOW COPY
-    if (room.roomStatus !== ERoomStates.Ended) {
-      this.updateRoomData(room.id, 'roomStatus', ERoomStates.Ended);
-      // TEMPORARY TEST
-      // this.updateRoomData(room.id, 'scorePlayers', [2, 0]); // FOR TEST
-      this.server.to(room.id).emit('updateComponent', {
-        status: EGameServerStates.ENDGAME,
-        room: room,
-      });
-    }
-  }
-
   /***************************************************************************/
   /*** ROOM UTILS ***/
   // RETURN THE USER INFO FROM THE COOKIE OR FROM THE SOCKETS POOL
@@ -888,7 +864,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           clearInterval(room.interval);
           room.interval = null;
         }
+        // STOP THE RENDER INTERVAL DURING THE GAME
         this.server.to(room.id).emit('endGame');
+        // UPDATE THE ROOM STATE
+        room.roomStatus = ERoomStates.Ended;
+        this.server.to(room.id).emit('updateComponent', {
+          status: EGameServerStates.ENDGAME,
+          room: room,
+        });
       }
     };
     room.interval = setInterval(theGame, room.frameTime);
