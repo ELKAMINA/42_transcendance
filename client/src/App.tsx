@@ -27,6 +27,7 @@ const App = () => {
   let myCookie: string | undefined = Cookies.get('Authcookie');
   if (myCookie !== undefined)
   {
+    // console.log('je rentre ici au rafraichissement ?')
     let cookieParsed = JSON.parse(myCookie);
     const credentials = {
       access_token : cookieParsed.accessToken,

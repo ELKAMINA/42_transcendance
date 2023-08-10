@@ -55,7 +55,7 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
     };
 
     const sendSettings = () => {
-        console.log("[Settings] Button 'submit' clicked");
+        // console.log("[Settings] Button 'submit' clicked");
         socket.emit("RequestGameSettings", {
             roomInfo: clickPlay,
             points: points,

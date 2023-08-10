@@ -3,7 +3,7 @@ import * as argon from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { ForbiddenException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { UserUpdates } from './types';
+import { UserUpdatesDto } from '../user/dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -59,14 +59,14 @@ export class UserService {
     else return null;
   }
 
-  async updateUserInfo(userInfo: UserUpdates) {
+  async updateUserInfo(userInfo: UserUpdatesDto) {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: {
           login: userInfo.oldNick,
         },
       });
-      console.log('user ', user);
+      // console.log('user ', user);
       if (
         userInfo.pwd !== '' &&
         (await argon.verify(user.hash, userInfo.pwd)) === false
@@ -91,9 +91,27 @@ export class UserService {
           },
         });
       }
+      if (userInfo.login !== '' && user.login !== userInfo.login) {
+        // console.log('userInfo ', userInfo);
+        const duplicate = await this.prisma.user.findUnique({
+          where: { login: userInfo.login },
+        });
+        if (duplicate && duplicate.login === userInfo.login) {
+          // console.log('duplicate login ', duplicate.login);
+          return new ForbiddenException('Credentials taken');
+        }
+        const up4 = await this.prisma.user.update({
+          where: {
+            login: userInfo.oldNick,
+          },
+          data: {
+            login: userInfo.login,
+          },
+        });
+      }
       const finalUser = await this.prisma.user.findUnique({
         where: {
-          login: userInfo.oldNick,
+          login: userInfo.login !== '' ? userInfo.login : userInfo.oldNick,
         },
       });
       return finalUser;
@@ -105,6 +123,7 @@ export class UserService {
           return new ForbiddenException('Credentials taken');
         }
       }
+      // console.log('errrrooor ', error);
       return error;
     } // PrismaClientKnownRequestEr
   }

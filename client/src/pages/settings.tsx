@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import { Button } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Switch from '@mui/material/Switch';
+import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,11 +14,13 @@ import { MuiOtpInput } from 'mui-one-time-password-input'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Container, FormControl, Typography } from '@mui/material';
 
+
 import './settings.css';
 import api from '../utils/Axios-config/Axios';
-import { selectCurrentUser, setNick, setMail, setAvatar, setTfaAuth, selectTfaAuth, setQrCode, selectQrCode, selectTfaState, setTfaState, selectAfterSub, setAfterSub  } from '../redux-features/auth/authSlice';
+import { selectCurrentUser, setNick, setAvatar, setTfaAuth, selectTfaAuth, setQrCode, selectQrCode, selectTfaState, setTfaState, selectAfterSub, setAfterSub, selectCurrentAccessToken, selectCurrentRefreshToken  } from '../redux-features/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
 import { FetchActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
+import Cookies from 'js-cookie';
 
 export const sock = io('http://localhost:4003', {
   withCredentials: true,
@@ -27,21 +30,18 @@ export const sock = io('http://localhost:4003', {
 })
 
 export function PersonalInformation () {
+    const [nickname, setNickname] = React.useState('')
     const [password, setPwd] = React.useState('')
     const [avatar, setAr] = React.useState('')
-    const [email, setEmail] = React.useState('')
     const currUser = useAppSelector(selectCurrentUser)
+    const access_token = useAppSelector(selectCurrentAccessToken)
+    const refresh_token = useAppSelector(selectCurrentRefreshToken)
     const [errMsg, setErrMsg] = React.useState('')
     const [confMsg, setConfMsg] = React.useState('')
     const errRef = React.useRef<HTMLInputElement>(null)
     const confRef = React.useRef<HTMLInputElement>(null)
     const dispatch = useAppDispatch();
 
-
-    React.useEffect(() => {
-        setErrMsg('')
-    }, [password])
-    // console.log('user actuel ', currUser)
     React.useEffect(() => {
         sock.connect()
         sock.on('connect', () => {
@@ -52,26 +52,39 @@ export function PersonalInformation () {
         }
       }, [])
 
-      React.useEffect(() => {
-        sock.off('UpdateInfoUser').on('UpdateInfoUser', (data: any) => {
-            if (data.status === 403){
-                setErrMsg(data.message);
-            }
-            else if (data !== null) {
-                if (data.login) dispatch(setNick(data.login));
-                if (data.email) dispatch(setMail(data.email));
-                if (data.avatar) dispatch(setAvatar(data.avatar));
-                setConfMsg('Changes registered')
-            }
-            else{
-                console.log('la data est null')
-            }
-        })
-        return () => {  // cleanUp function when component unmount
-            // sock.disconnect()
+      sock.off('UpdateInfoUser').on('UpdateInfoUser', async (data: any) => {
+        //  console.log('la data ', data)
+          if (data.status === 403){
+              setErrMsg(data.message);
+          }
+          else if (data !== null) {
+              if (data.login) dispatch(setNick(data.login));
+              if (data.avatar) dispatch(setAvatar(data.avatar));
+            //   console.log('[SETTINGS ] je rentre ici au rafraichissement ?', access_token)
+              setConfMsg('Changes saved')
+              const serializedData = JSON.stringify({nickname: data.login, accessToken: access_token, refreshToken: refresh_token})
+              Cookies.set('Authcookie', serializedData, {
+                sameSite: 'lax',
+                secure: false,
+                expires: new Date(Date.now() + 1800000000),
+                path: '/',
+              })
+          }
+          else{
+              console.log('la data est null')
+          }
+      })
 
+      sock.off('exception').on('exception', function(error) {
+        if (error.length > 0){
+            setErrMsg('Password must be at least 6 characters');
         }
-      }, [dispatch, setErrMsg])
+      });
+
+      React.useEffect(() => {
+        setErrMsg('')
+    }, [nickname, password, avatar])
+
     const [selectedImage, setSelectedImage] = React.useState<string>('');
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -97,13 +110,21 @@ export function PersonalInformation () {
         setPwd(e.target.value);
     }
 
+    const handleNicknameChange: any = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNickname(e.target.value);
+    }
 
     const handleSubmit: any = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        if ( nickname === '' && password === '' && avatar === '') {
+            setErrMsg('Form is null');
+            return ;
+        }
         try{
             // console.log('je rentre ici ??')
             sock.emit('changeProfile', {
                 oldNick: currUser,
+                login: nickname,
                 pwd: password,
                 atr: avatar,
             })
@@ -130,7 +151,9 @@ export function PersonalInformation () {
                 margin: '5%',
             }}>Personal Information</Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                {/* <TextField
+            <Tooltip title={errMsg}>
+                <TextField
+                    error= {errMsg === '' ? false: true}
                     margin="normal"
                     required
                     fullWidth
@@ -143,8 +166,12 @@ export function PersonalInformation () {
                     sx={{
                         color: 'whitesmoke',
                     }}
-                /> */}
+                />
+
+            </Tooltip>
+            <Tooltip title={errMsg}>
                 <TextField
+                    error= {errMsg === '' ? false: true}
                     margin="normal"
                     required
                     fullWidth
@@ -157,10 +184,11 @@ export function PersonalInformation () {
                     autoComplete="current-password"
                     sx={{
                         '& .MuiFormHelperText-root': {
-                        color: 'red', // Your custom color
+                            color: 'red', // Your custom color
                         },
                     }}
-                />
+                    />
+                </Tooltip>
                 <FormControl 
                     sx={{
                         display: 'flex',
@@ -192,7 +220,9 @@ export function PersonalInformation () {
                 >
                 Save
                 </Button>
-                <Typography ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</Typography>
+                <Typography sx={{
+                    color: 'green',
+                }} ref={confRef} className={confMsg ? "confmsg" : "offscreen"} aria-live="assertive">{confMsg}</Typography>
             </Box>
         </Container>
     )
