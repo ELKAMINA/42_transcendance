@@ -79,6 +79,7 @@ export class GameDto {
   @IsString()
   paddleColor: string;
 
+  // GAME OBJECT
   board: BoardDto;
 
   ball: BallDto;
@@ -86,4 +87,9 @@ export class GameDto {
   player1: PlayerDto;
 
   player2: PlayerDto;
+
+  // GAME LOOP
+  frameTime: number;
+
+  interval: NodeJS.Timer;
 }
