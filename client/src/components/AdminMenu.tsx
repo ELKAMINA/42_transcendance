@@ -1,22 +1,19 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import Stack from '@mui/material/Stack';
-import { Box, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import { useAppSelector } from '../utils/redux-hooks';
-import { selectCurrentUser } from '../redux-features/auth/authSlice';
-import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
-import { ChannelModel } from '../types/chat/channelTypes';
-import { Socket } from 'socket.io-client';
-import ManageBannedDialog from './ManageBannedDialog';
-import ManageMutedDialog from './ManageMutedDialog';
+
 import KickMember from './KickMember';
+import { Socket } from 'socket.io-client';
+import ManageMutedDialog from './ManageMutedDialog';
+import ManageBannedDialog from './ManageBannedDialog';
+
 
 export type AdminMenuProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
@@ -29,8 +26,8 @@ export default function AdminMenu({socketRef} : AdminMenuProps) {
 	const [openKickMemberDialog, setOpenKickMemberDialog] = React.useState<boolean>(false);
 
 	// check if user is owner of the selected channel
-	const currentUser : string = useAppSelector(selectCurrentUser);
-	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
+	// const currentUser : string = useAppSelector(selectCurrentUser);
+	// const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
 
 	const anchorRef = React.useRef<HTMLButtonElement>(null);
 

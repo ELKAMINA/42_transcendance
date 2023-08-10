@@ -2,9 +2,8 @@ import React from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 
 import LeaderboardRow from './Skeleton';
-import { UserLeaderBoard } from '../../types/users/userType';
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
-import { updateLeaderBoard, selectLeaderBoard, FetchLeaderBoard } from '../../redux-features/game/gameSlice';
+import { selectLeaderBoard, FetchLeaderBoard } from '../../redux-features/game/gameSlice';
 
 
 function Leaderboard() {
@@ -12,7 +11,7 @@ function Leaderboard() {
 
     React.useEffect(() => {
         dispatch(FetchLeaderBoard());
-    }, []);
+    }, [dispatch]);
 
     const leaderboard = useAppSelector(selectLeaderBoard);
 

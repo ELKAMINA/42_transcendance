@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { Theme, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-import { Stack, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import { Theme, useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+
 import { UserByLogin } from '../../types/users/userType';
-import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { useAppDispatch } from '../../utils/redux-hooks';
 
 
 const ITEM_HEIGHT = 48;

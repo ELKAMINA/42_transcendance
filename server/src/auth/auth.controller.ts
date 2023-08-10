@@ -98,14 +98,12 @@ export default class AuthController {
   //   @Public()
   @Post('2fa/generate')
   async register(@Res() response: Response, @Body() body: User) {
-    // console.log('la request ', body)
     const qrCode = await this.authService.generateTwoFactorAuthenticationSecret(
       body,
     );
     return response.json(qrCode);
   }
 
-  //   @Public()
   @Post('2fa/turn-on')
   async turnOnTwoFactorAuthentication(
     @Body() body,
@@ -123,11 +121,7 @@ export default class AuthController {
   @Public()
   @Post('checkPwd')
   @HttpCode(HttpStatus.OK)
-  async checkPwdTfa(
-    @Req() request,
-    @Body() body,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async checkPwdTfa(@Req() request, @Body() body) {
     return this.authService.checkingPwdBeforeTfa(body);
   }
 
@@ -140,7 +134,6 @@ export default class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     let payload = null;
-    // console.log('le body ', body);
     try {
       const validation =
         await this.authService.isTwoFactorAuthenticationCodeValid(
@@ -168,7 +161,6 @@ export default class AuthController {
   @Public()
   @Post('update-cookie')
   updateCookie(@Body() newCookie, @Res({ passthrough: true }) res: Response) {
-    // console.log('new cookie ', newCookie);
     this.authService.setCookie(newCookie, res);
   }
 }

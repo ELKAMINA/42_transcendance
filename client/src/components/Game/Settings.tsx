@@ -18,8 +18,6 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
-    const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
     const navigate = useNavigate();
     const [points, setTotalPoints] = useState("2");
     const [boardColor, setBoardColor] = useState("#000000");

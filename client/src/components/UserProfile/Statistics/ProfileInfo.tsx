@@ -1,15 +1,14 @@
 import * as React from "react";
-// import SwipeableViews from 'react-swipeable-views';
-import { useTheme } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Statistics from "./Skeleton";
-import { Rank, Wins, Loss, TotalMatches, Level } from "./Scores";
+import AppBar from "@mui/material/AppBar";
+import { useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+
 import MatchHistory from "../Events/Skeleton";
 import { UserModel } from "../../../types/users/userType";
+import { Rank, Wins, Loss, TotalMatches, Level } from "./Scores";
 
 interface TabPanelProps {
     children?: React.ReactNode;

@@ -1,11 +1,12 @@
-import { useDispatch } from "react-redux";
-import "./createChannel.css"
-import { Box, Stack, TextField } from "@mui/material";
 import React, { useState } from "react";
-import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
-import { Channel, ChannelModel } from "../../types/chat/channelTypes";
-import { fetchAllChannelsInDatabase, selectAllChannels } from "../../redux-features/chat/channelsSlice";
+import { useDispatch } from "react-redux";
+import { Box, TextField } from "@mui/material";
+
+import "./createChannel.css"
+import { ChannelModel } from "../../types/chat/channelTypes";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
+import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
+import { fetchAllChannelsInDatabase, selectAllChannels } from "../../redux-features/chat/channelsSlice";
 
 function CreateName() {
 	const dispatchSync = useAppDispatch();

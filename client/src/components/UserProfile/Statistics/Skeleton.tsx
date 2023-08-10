@@ -16,7 +16,8 @@ const Statistics = (props: Myprops) => {
     const dispatch = useAppDispatch();
     React.useEffect(() => {
         dispatch(FetchTotalPlayers());
-    }, [])
+    }, [dispatch])
+    
     const totalPlayers = useAppSelector(selectTotalPlayers);
     return (
         <Card sx={{ 

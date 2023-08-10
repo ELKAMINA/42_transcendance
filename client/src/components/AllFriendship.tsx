@@ -53,6 +53,7 @@ export default function FriendshipComponent(props: Myprops) {
       socket.connect()
 
       return () => {
+        setSelectedIndex(0)
         socket.disconnect()
       }
     })

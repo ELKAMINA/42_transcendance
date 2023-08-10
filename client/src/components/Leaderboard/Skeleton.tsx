@@ -1,17 +1,11 @@
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
+
 import * as React from "react";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import { CardActionArea, Grid } from "@mui/material";
-import { useEffect } from "react";
-import Avatar from "@mui/material/Avatar";
-import { Rowing } from "@mui/icons-material";
-import {CssBaseline} from "@mui/material";
+import { Grid } from "@mui/material";
 import Paper from '@mui/material/Paper';
+import Avatar from "@mui/material/Avatar";
+import {CssBaseline} from "@mui/material";
+import Typography from "@mui/material/Typography";
+
 import { useAppSelector } from "../../utils/redux-hooks";
 import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 
