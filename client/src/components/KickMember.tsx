@@ -1,20 +1,21 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import { Socket } from 'socket.io-client';
+import { useTheme } from '@mui/material/styles';
+import SendIcon from '@mui/icons-material/Send';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import UserList, { UserWithTime } from './UserList';
-import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import UserList from './UserList';
+
 import api from '../utils/Axios-config/Axios';
+import { useAppSelector } from '../utils/redux-hooks';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { UserByLogin, UserModel } from '../types/users/userType';
-import SendIcon from '@mui/icons-material/Send';
-import { Socket } from 'socket.io-client';
+import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 export type KickMemberProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>,

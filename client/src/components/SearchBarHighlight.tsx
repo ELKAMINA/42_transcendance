@@ -1,17 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import { styled } from '@mui/material/styles';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
-import React, { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { FetchAllFriends, selectFriends } from '../redux-features/friendship/friendshipSlice';
-import { selectCurrentUser } from '../redux-features/auth/authSlice';
-import { fetchAllChannelsInDatabase, selectAllChannels } from '../redux-features/chat/channelsSlice';
 import { Channel } from '../types/chat/channelTypes';
-import { InputAdornment } from '@mui/material';
-import { alpha, styled } from '@mui/material/styles';
 import { UserModel } from '../types/users/userType';
 
 

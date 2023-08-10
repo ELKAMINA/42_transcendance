@@ -1,0 +1,84 @@
+version: "3.9"
+services:
+  # server:
+  #   container_name: trans_BackE
+  #   restart: always
+  #   ports:
+  #     - 4001:4001
+  #   env_file:
+  #     - ./server/.env
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./server:/server
+  #     - /server/node_modules
+  #     - /server/prisma
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #   depends_on:
+  #     - dev-db
+  #   networks:
+  #     - transcendance
+  dev-db:
+    image: postgres:14
+    container_name: trans_pgres
+    restart: always
+    volumes:
+      - data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    env_file:
+      - ./server/.env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: trans
+    networks:
+      - transcendance
+  # client:
+  #   container_name: trans_FrontE
+  #   restart: always
+  #   ports:
+  #     - '3000:3000'
+  #   build:
+  #     context: client
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./client:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #   links:
+  #     - server
+  #   depends_on:
+  #     - server
+  #   networks:
+  #     - transcendance
+  # test-db:
+  #   image: postgres:14
+  #   ports:
+  #     - 5435:5435
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: 123
+  #     POSTGRES_DB: trans
+  #   networks:
+  #     - transcendance
+  # prisma:
+  #   links:
+  #     - dev-db
+  #   depends_on:
+  #     - dev-db
+  #   container_name: prisma
+  #   ports:
+  #     - '5555:5555'
+  #   build:
+  #     context: server/prisma
+  #     dockerfile: Dockerfile
+
+volumes:
+  data:
+
+networks:
+  transcendance:

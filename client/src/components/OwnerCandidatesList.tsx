@@ -1,14 +1,15 @@
 import * as React from 'react';
 import List from '@mui/material/List';
+import Avatar from '@mui/material/Avatar';
+import Checkbox from '@mui/material/Checkbox';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Checkbox from '@mui/material/Checkbox';
-import Avatar from '@mui/material/Avatar';
+
 import { UserModel } from '../types/users/userType';
 import { useAppSelector } from '../utils/redux-hooks';
-import { Channel, ChannelModel } from '../types/chat/channelTypes';
+import { ChannelModel } from '../types/chat/channelTypes';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 type OwnerCandidatesListProps = {

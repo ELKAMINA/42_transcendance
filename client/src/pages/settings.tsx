@@ -16,11 +16,11 @@ import { Container, FormControl, Typography } from '@mui/material';
 
 
 import './settings.css';
+import Cookies from 'js-cookie';
 import api from '../utils/Axios-config/Axios';
-import { selectCurrentUser, setNick, setAvatar, setTfaAuth, selectTfaAuth, setQrCode, selectQrCode, selectTfaState, setTfaState, selectAfterSub, setAfterSub, selectCurrentAccessToken, selectCurrentRefreshToken  } from '../redux-features/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
 import { FetchActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
-import Cookies from 'js-cookie';
+import { selectCurrentUser, setNick, setAvatar, setTfaAuth, selectTfaAuth, setQrCode, selectQrCode, selectTfaState, setTfaState, selectAfterSub, setAfterSub, selectCurrentAccessToken, selectCurrentRefreshToken  } from '../redux-features/auth/authSlice';
 
 export const sock = io('http://localhost:4003', {
   withCredentials: true,
@@ -249,7 +249,7 @@ export function Security () {
         return () => {  // cleanUp function when component unmount
             sock.disconnect()
         }
-      }, [])
+      }, [dispatch])
     const actualUser = useAppSelector(selectActualUser)
     const tfa = async () => {
         await api

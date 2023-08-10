@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import { Socket } from 'socket.io-client';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import { useTheme } from '@mui/material/styles';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import DialogContentText from '@mui/material/DialogContentText';
+
+import api from '../utils/Axios-config/Axios';
+import { emptyChannel } from '../data/emptyChannel';
+import { ChannelModel } from '../types/chat/channelTypes';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
-import api from '../utils/Axios-config/Axios';
-import { Channel, ChannelModel } from '../types/chat/channelTypes';
-import PasswordField from './PasswordField';
-import { FormHelperText, Stack } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SendIcon from '@mui/icons-material/Send';
-import { selectCurrentUser } from '../redux-features/auth/authSlice';
-import { Socket } from 'socket.io-client';
-import { emptyChannel } from '../data/emptyChannel';
 
 export type LeaveChannelDialogProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>,
@@ -36,7 +33,7 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 	const AppDispatch = useAppDispatch();
 	
 	async function updateMembers() : Promise<void> {
-		const updatedMembers = selectedChannel.members.filter((member) => member.login != currentUser)
+		const updatedMembers = selectedChannel.members.filter((member) => member.login !== currentUser)
 		// console.log('updatedMembers = ', updatedMembers);
 
 		await api

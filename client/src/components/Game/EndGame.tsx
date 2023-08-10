@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { Button } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 import useMediaQuery from "@mui/material/useMediaQuery";
+
 import Navbar from "../../components/NavBar";
 import { IPongProps } from "../../interface/IClientGame";
-import { socket } from "../../pages/game";
-import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 import { useAppSelector } from "../../utils/redux-hooks";
-import { Button } from "@mui/material";
-import DialogActions from "@mui/material/DialogActions";
-import { useNavigate } from "react-router-dom";
+import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 
 const EndGame: React.FC<IPongProps> = ({ room }) => {
     const theme = useTheme();

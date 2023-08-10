@@ -16,18 +16,11 @@ import SettingsContainer from './containers/Settings/Settings';
 import FriendshipContainer from './containers/Friendship/Friendship';
 
 
-type cred = {
-	nickname: string;
-	access_token:string;
-	refresh_token:string;
-}
-
 const App = () => {
   const dispatch = useAppDispatch()
   let myCookie: string | undefined = Cookies.get('Authcookie');
   if (myCookie !== undefined)
   {
-    // console.log('je rentre ici au rafraichissement ?')
     let cookieParsed = JSON.parse(myCookie);
     const credentials = {
       access_token : cookieParsed.accessToken,

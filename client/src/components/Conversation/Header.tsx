@@ -1,21 +1,21 @@
+import { useState } from 'react';
 import styled from '@emotion/styled';
-import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button, Tooltip } from '@mui/material'
+import { Socket } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import { useState } from 'react';
+import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button, Tooltip } from '@mui/material'
+
 import BlockUser from './BlockUser';
-import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { selectDisplayedChannel, } from '../../redux-features/chat/channelsSlice';
-import { Channel, ChannelModel } from '../../types/chat/channelTypes';
-import { emptyChannel } from '../../data/emptyChannel';
-import ChannelMenu from '../ChannelMenu';
-import { useNavigate } from 'react-router-dom';
-import api from '../../utils/Axios-config/Axios';
-import { selectCurrentUser } from '../../redux-features/auth/authSlice';
-import { Socket } from 'socket.io-client';
 import AdminMenu from '../AdminMenu';
-import GiveOwnerShipDialog from '../GiveOwnerShipDialog';
+import ChannelMenu from '../ChannelMenu';
+import api from '../../utils/Axios-config/Axios';
 import GiveOwnership from '../GiveOwnership';
+import { emptyChannel } from '../../data/emptyChannel';
+import { useAppSelector } from '../../utils/redux-hooks';
+import { ChannelModel } from '../../types/chat/channelTypes';
+import { selectDisplayedChannel, } from '../../redux-features/chat/channelsSlice';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {

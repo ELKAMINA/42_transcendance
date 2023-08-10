@@ -1,27 +1,24 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { Box, Container, FormControl, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
 import CssBaseline from '@mui/material/CssBaseline';
-// import { MuiFileInput } from 'mui-file-input'
-import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+import { Box, Container, FormControl } from '@mui/material';
 
-// import './Sign.css';
 import logoft from "../img/42 white.png";
 import { useNavigate } from 'react-router-dom';
 import { UserModel } from '../types/users/userType';
 import { useAppDispatch } from '../utils/redux-hooks';
 import { FetchUserByName } from '../utils/global/global';
-import { useSignupMutation, useSigninMutation, useCheckPwdMutation} from '../app/api/authApiSlice';
-import { setSignCredentials, setAvatar, setNick, resetAuthStore } from '../redux-features/auth/authSlice';
-import { resetChannelName, resetChannelNameStore } from '../redux-features/chat/createChannel/channelNameSlice';
 import { resetChannelStore } from '../redux-features/chat/channelsSlice';
 import { resetChannelType } from '../redux-features/chat/createChannel/channelTypeSlice';
+import { useSignupMutation, useSigninMutation, useCheckPwdMutation} from '../app/api/authApiSlice';
+import { resetChannelName, resetChannelNameStore } from '../redux-features/chat/createChannel/channelNameSlice';
+import { setSignCredentials, setAvatar, setNick, resetAuthStore } from '../redux-features/auth/authSlice';
 
 
 interface Signing {
@@ -33,11 +30,10 @@ export default function Sign(props: Signing){
     const dispatch = useAppDispatch();
     const userRef = React.useRef<HTMLInputElement>(null)
     const errRef = React.useRef<HTMLInputElement>(null)
-    const [value, setValue] = React.useState(null)
     const [nickname, setNickname] = React.useState('')
     const [selectedImage, setSelectedImage] = useState<string>('');
     const [password, setPwd] = React.useState('')
-    const [avtr, setAr] = React.useState('')
+    // const [avtr, setAr] = React.useState('')
     const [errMsg, setErrMsg] = React.useState('')
     // const tfaInput = useAppSelector(selectTfaInput)
     const [ signin] = useSigninMutation();
@@ -53,7 +49,7 @@ export default function Sign(props: Signing){
         dispatch(resetChannelNameStore())
         if (userRef && userRef.current)
             userRef.current.focus()
-    }, [])
+    }, [dispatch])
 
     React.useEffect(() => {
         setErrMsg('')
@@ -101,7 +97,7 @@ export default function Sign(props: Signing){
             if (selectedImage)
             {
                 dispatch(setAvatar(selectedImage));
-                setAr(selectedImage)
+                // setAr(selectedImage)
                 avatar = selectedImage;
             }
             if (props.type === "Sign up"){
@@ -139,11 +135,7 @@ export default function Sign(props: Signing){
         }
         setNickname('')
         setPwd('')
-        setAr('')
-    }
-
-    const handleChange = (newValue: any) => {
-      setValue(newValue)
+        // setAr('')
     }
     
     const content = (

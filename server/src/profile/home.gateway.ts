@@ -31,18 +31,7 @@ import { UserService } from 'src/user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HomeService } from './home.service';
 import { UserUpdatesDto } from 'src/user/dto/user.dto';
-// import { MyMiddleware } from 'src/socket/socket.middleware';
-// import { AuthService } from 'src/auth/auth.service';
-// namespace: '/friendship',
-// cors: { origin: 'http://localhost:3000', credentials: true }
 
-//   @WebSocketGateway({
-//     namespace: 'profile',
-//     cors: {
-//       origin: ['http://localhost:3000'],
-//       credentials: true,
-//     },
-//   }) // every front client can connect to our gateway. Marks the class as the WebSocket gateway<; This is a socket constructor
 @WebSocketGateway(4003, {
   cors: {
     origin: 'http://localhost:3000',
@@ -130,7 +119,6 @@ export class ProfileGateway
   ) {
     try {
       const newInfos = await this.userServ.updateUserInfo(updates);
-      //   await this.friends.requestFriendship(body.sender, body.receiver.nickname);
       this.io.emit('UpdateInfoUser', newInfos);
     } catch (e) {
       console.log('error ', e);
@@ -144,7 +132,7 @@ export class ProfileGateway
     return idAtRt;
   }
 
-  async verifyJwtSocketConnections(client: Socket, response: Response) {
+  async verifyJwtSocketConnections(client: Socket) {
     let newTokens;
     // console.log('Coookie ', client.handshake.headers.cookie);
     const userInfo = this.getUserInfoFromSocket(
@@ -154,14 +142,10 @@ export class ProfileGateway
       await this.jwt.verifyAsync(userInfo.accessToken, {
         secret: this.config.get('ACCESS_TOKEN'),
       });
-      // console.log('userInfo ', userInfo)
       this.createUser(userInfo, client);
     } catch (error: any) {
-      // console.log("ERRROOOOOOR ", error);
       if (error.name === 'TokenExpiredError') {
         try {
-          // console.log('ancien refresh tokens ', userInfo.refreshToken);
-          // console.log("user NICKNAME ", userInfo.nickname);
           newTokens = await this.auth.refresh(
             userInfo.nickname,
             userInfo.refreshToken,
@@ -171,21 +155,17 @@ export class ProfileGateway
             accessToken: newTokens.access_token,
             refreshToken: newTokens.refresh_token,
           };
-          // console.log("data avant serializarion ", data);
           axios
             .post('http://127.0.0.1:4001/auth/update-cookie', data)
             .then((res) => {
-              //   console.log('la response ', res);
+              console.log('response ', res);
             })
             .catch((e) => console.log('erooor ', e));
-          //   this.io.emit('newCookie', data);
           return newTokens;
         } catch (e) {
-          //   console.log('lerreuuuuuur ', e);
           throw new ForbiddenException('Invalid access and refresh tokens');
         }
       }
-      // return newTokens;
     }
   }
 

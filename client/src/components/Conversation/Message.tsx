@@ -1,12 +1,12 @@
+import React from 'react';
 import { Box, Stack, Typography } from '@mui/material'
-import { DocMsg, InfoMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
+
+import { useAppSelector } from '../../utils/redux-hooks';
 import { ChatMessage } from '../../types/chat/messageType'
-import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
-import { Channel, ChannelModel } from '../../types/chat/channelTypes';
 import areDifferentDays from '../../utils/areDifferentDays';
-import React, { useEffect } from 'react';
-import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { ChannelModel } from '../../types/chat/channelTypes';
+import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
+import { DocMsg, InfoMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
 
 function renderSwitchComponent(el : ChatMessage, index: number) {
 	switch (el.subtype) {
