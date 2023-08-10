@@ -604,6 +604,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         element.playerTwoId = '0';
         element.players = [];
         element.roomStatus = ERoomStates.Closed;
+        if (element.interval) {
+          clearInterval(element.interval);
+          element.interval = null;
+        }
       }
     });
     this.allRooms = this.allRooms.filter(this.purgeCallbackFilter);
