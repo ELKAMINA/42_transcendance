@@ -1,6 +1,4 @@
-import { useEffect, useRef } from "react";
-import Grid from "@mui/material/Grid"; // Grid version 1
-import { Box } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "../../components/NavBar";
 import { IPongProps } from "../../interface/IClientGame";
 import { socket } from "../../pages/game";
@@ -11,6 +9,8 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
     const currentRoute = window.location.pathname;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const canvas = useRef<CanvasRenderingContext2D | null>(null);
+    const [player1Score, setPlayer1Score] = useState(0);
+    const [player2Score, setPlayer2Score] = useState(0);
     // TODO: USE THE CANVAS DIMENSION
     const [canvasWidth, canvasHeight] = [800, 600];
     const player1 = useRef<Player>(
@@ -154,21 +154,22 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         // DRAW THE NET
         drawNet(ctx);
 
+        // DEPRICATED BECAUSE THE SCORE IS NOW DISPLAYED IN A DEDICATDE BANNER
         // DRAW THE SCORE
-        drawText(
-            ctx,
-            player1.current.getScore().toString(),
-            (1 * canvasWidth) / 4,
-            (1 * canvasHeight) / 6,
-            room.scoreColor
-        );
-        drawText(
-            ctx,
-            player2.current.getScore().toString(),
-            (3 * canvasWidth) / 4,
-            (1 * canvasHeight) / 6,
-            room.scoreColor
-        );
+        // drawText(
+        //     ctx,
+        //     player1.current.getScore().toString(),
+        //     (1 * canvasWidth) / 4,
+        //     (1 * canvasHeight) / 6,
+        //     room.scoreColor
+        // );
+        // drawText(
+        //     ctx,
+        //     player2.current.getScore().toString(),
+        //     (3 * canvasWidth) / 4,
+        //     (1 * canvasHeight) / 6,
+        //     room.scoreColor
+        // );
 
         // PLAYER 1 PADDLE
         const [p1X, p1Y] = player1.current.getPaddlePosition();
@@ -217,6 +218,8 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
     socket.off("updatePlayerScore").on("updatePlayerScore", (value) => {
         player1.current.setScore(value[0]);
         player2.current.setScore(value[1]);
+        setPlayer1Score(player1.current.getScore());
+        setPlayer2Score(player2.current.getScore());
     });
     socket.off("updateMovePaddle").on("updateMovePaddle", (data) => {
         player1.current.setPaddlePosition(data.player1Position);
@@ -285,42 +288,36 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
     return (
         <>
             <Navbar currentRoute={currentRoute} />
-            <div className="wrapper">
-                <div className="container">
-                    <div className="canvas-container">
-                        <canvas id="main" width="1024" height="640"></canvas>
-                        <canvas
-                            className="pongCanvas"
-                            ref={canvasRef}
-                            width={canvasWidth}
-                            height={canvasHeight}
-                            tabIndex={0}
-                        />
+            <div className="pongWrapper">
+                <div className="pongBanner">
+                    <div className="pongBannerPlayer">
+                        <div className="pongBannerPlayerName">
+                            {room.players[0]}
+                        </div>
+                        <div className="pongBannerPlayerScore">
+                            {player1Score}
+                        </div>
+                    </div>
+                    <div className="pongBannerVersus">Vs</div>
+                    <div className="pongBannerPlayer">
+                        <div className="pongBannerPlayerName">
+                            {room.players[1]}
+                        </div>
+                        <div className="pongBannerPlayerScore">
+                            {player2Score}
+                        </div>
                     </div>
                 </div>
+                <div className="pongGameSlice">
+                    <canvas
+                        className="pongGameCanvas"
+                        ref={canvasRef}
+                        width={canvasWidth}
+                        height={canvasHeight}
+                        tabIndex={0}
+                    />
+                </div>
             </div>
-            {/* <Grid container spacing={1} alignItems="center">
-                <>
-                    <Box>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                margin: "70px",
-                            }}
-                        >
-                            <canvas
-                                className="canvas"
-                                ref={canvasRef}
-                                width={canvasWidth}
-                                height={canvasHeight}
-                                tabIndex={0}
-                            />
-                        </Box>
-                    </Box>
-                </>
-            </Grid> */}
         </>
     );
 };

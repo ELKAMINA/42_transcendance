@@ -2,7 +2,50 @@
     background-color: black;
 }
 
-.pongCanvas {
+.pongWrapper {
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.pongBanner {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid black;
+    background-color: aqua;
+}
+
+.pongBannerPlayer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    margin: 5px;
+    padding: 5px;
+}
+
+.pongBannerVersus {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+}
+
+.pongBannerPlayerName,
+.pongBannerPlayerScore {
+    width: 100%;
+    height: 100%;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+}
+
+.pongGameCanvas {
     border: 10px solid black;
     display: table;
     padding: 0;
