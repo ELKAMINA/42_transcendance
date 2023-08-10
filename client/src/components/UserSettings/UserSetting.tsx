@@ -2,16 +2,16 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
-import ListItemButton from '@mui/material/ListItemButton';
+import CssBaseline from '@mui/material/CssBaseline';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
 
 import { useState } from 'react';
 import { Stack } from '@mui/material';
 import { PersonalInformation, Security } from '../../pages/settings';
-import { selectItems, setSelectedItem } from '../../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { selectItems, setSelectedItem } from '../../redux-features/auth/authSlice';
 
 
 interface Myprops {
@@ -40,7 +40,11 @@ export default function SettingsComponent(props: Myprops) {
           return <PersonalInformation />;
       }
     }
-    
+    React.useEffect(() => {
+      return () => {
+        setSelectedIndex(1)
+      }
+    })
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh'}}>
     <CssBaseline/>

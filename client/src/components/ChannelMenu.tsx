@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';
@@ -7,18 +6,19 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
-import { Box, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ManageAdminDialog from './ManageAdminDialog';
+
+import { Socket } from 'socket.io-client';
 import AddMembersDialog from './AddMembersDialog';
-import ManagePasswordDialog from './ManagePasswordDialog';
+import ManageAdminDialog from './ManageAdminDialog';
+import ChannelInfoDialog from './ChannelInfoDialog';
 import { useAppSelector } from '../utils/redux-hooks';
+import LeaveChannelDialog from './LeaveChannelDialog';
+import { ChannelModel } from '../types/chat/channelTypes';
+import ManagePasswordDialog from './ManagePasswordDialog';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
-import { ChannelModel } from '../types/chat/channelTypes';
-import { Socket } from 'socket.io-client';
-import LeaveChannelDialog from './LeaveChannelDialog';
-import ChannelInfoDialog from './ChannelInfoDialog';
 
 export type ChannelMenuProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;

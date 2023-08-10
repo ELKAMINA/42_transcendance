@@ -1,31 +1,32 @@
-# This is a multi-stage Dockefile
+# Stage 1 : Building the image
 
 FROM node:18-alpine AS builder
 
-# These are Build steps : Kikou *****
-
-# this is a builder instruction 
-
-
 WORKDIR /app/server
-# This instructs Docker to use this path as the default location for all subsequent commands. This way we do not have to type out full file paths but can use relative paths based on the working directory. All commands RUN/COPY are executed inside this directory
 
-COPY ["package.json", "package-lock.json*", "./"]
+COPY package*.json ./
+
 COPY prisma ./prisma/
 
-RUN npm install --legacy-peer-deps
-
+RUN npm install
 
 COPY tsconfig*.json ./
 
-COPY . .
-# TO add our source code into the image
+COPY start.sh .
 
-# ********** Kikouu
+RUN chmod +x start.sh
+
+COPY . .
+# To add our source code into the image
+
+
+EXPOSE 4001 
+#Port inside the container. Only informational
 
 RUN npm run build
 
-# Stage 2: This stage is used to run our application. It Copies from our builder image only files and folders required to run the Nest app.
+# Stage 2 : Running the container (This is Runtime) 
+
 FROM node:18-alpine
 
 COPY --from=builder /app/server/node_modules ./node_modules
@@ -36,7 +37,6 @@ COPY --from=builder /app/server/dist ./dist
 COPY --from=builder /app/server/prisma ./prisma
 COPY --from=builder /app/server/ ./
 
-EXPOSE 4001
+EXPOSE 4001 4003 4006 4010 5555
 
-CMD ["npm", "run", "start:migrate:dev"]
-# CMD is not executed during the build steps of your Docker image, rather than during executing the Docker container (docker run ... or docker-compose up).
+CMD ["sh", "./start.sh"]

@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import { useTheme } from '@mui/material/styles';
+import SendIcon from '@mui/icons-material/Send';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
-import { UserByLogin, UserModel } from '../types/users/userType';
+
 import api from '../utils/Axios-config/Axios';
-import { Channel, ChannelModel } from '../types/chat/channelTypes';
+import {ChannelModel } from '../types/chat/channelTypes';
+import { UserByLogin, UserModel } from '../types/users/userType';
+import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import MultipleSelectChip from '../pages/createChannel/createUsersList';
-import SendIcon from '@mui/icons-material/Send';
 import { selectFriends } from '../redux-features/friendship/friendshipSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 export default function AddMembersDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 

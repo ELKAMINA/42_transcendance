@@ -1,21 +1,21 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import { useTheme } from '@mui/material/styles';
+import SendIcon from '@mui/icons-material/Send';
+import DialogTitle from '@mui/material/DialogTitle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import UserList from './UserList';
+
+import api from '../utils/Axios-config/Axios';
+import { ChannelModel } from '../types/chat/channelTypes';
+import { UserModel } from '../types/users/userType';
+import OwnerCandidatesList from './OwnerCandidatesList';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
-import api from '../utils/Axios-config/Axios';
-import { Channel, ChannelModel } from '../types/chat/channelTypes';
-import { UserByLogin, UserModel } from '../types/users/userType';
-import SendIcon from '@mui/icons-material/Send';
-import DeleteIcon from '@mui/icons-material/Delete';
-import OwnerCandidatesList from './OwnerCandidatesList';
 
 export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();

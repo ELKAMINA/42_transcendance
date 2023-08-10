@@ -1,12 +1,9 @@
 import { useState } from 'react';
+import { Box, Button, Stack, } from '@mui/material';
 import CreateChannel from './createChannel/createChannel.tsx';
 import AlignItemsList from '../components/AlignItemsList.tsx';
-import { Box, Button, Stack, } from '@mui/material';
+
 import "./sideBar.css"
-import api from '../utils/Axios-config/Axios.tsx';
-import { useAppDispatch, useAppSelector } from '../utils/redux-hooks.tsx';
-import { fetchUserChannels } from '../redux-features/chat/channelsSlice.tsx';
-import { selectCurrentUser } from '../redux-features/auth/authSlice.tsx';
 import SearchBarContainer from '../components/SearchBarContainer.tsx';
 
 type handleSelectItemFunction = (pwd: string) => void;
@@ -16,9 +13,6 @@ interface SideBarProps {
 }
 
 function SideBar({handleSelectItem} : SideBarProps) {
-	const AppDispatch = useAppDispatch();
-	const nickname : string = useAppSelector(selectCurrentUser)
-	// button that opens the create channel window
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 
 	function getSelectedItem (selectedItem : string) {

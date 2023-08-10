@@ -1,9 +1,12 @@
 import Cookies from "js-cookie";
 import Menu from "@mui/material/Menu";
+import {Container} from "@mui/material";
 import React, { useEffect } from "react";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
+import AppBar from '@mui/material/AppBar';
 import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Toolbar from '@mui/material/Toolbar';
+import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import IconButton from "@mui/material/IconButton";
@@ -11,27 +14,17 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { blue } from "@mui/material/colors";
-import {Container} from "@mui/material";
 
 
-// import "./Navbar.css";
 import api from '../utils/Axios-config/Axios';
-import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
-import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, setAvatar, logOut} from '../redux-features/auth/authSlice';
 import { useLogOutMutation } from '../app/api/authApiSlice';
-import {FetchActualUser, selectActualUser} from '../redux-features/friendship/friendshipSlice';
-import { fetchDisplayedChannel } from '../redux-features/chat/channelsSlice';
-import { Box } from "@mui/material";
+import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
+import {FetchActualUser} from '../redux-features/friendship/friendshipSlice';
+import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, logOut} from '../redux-features/auth/authSlice';
 
-/* *** Internal imports *** */
 interface NavbarProps {
-    currentRoute: string;
+    currentRoute: string; 
 }
 
 const theme = createTheme({
@@ -45,7 +38,6 @@ const theme = createTheme({
 const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     const dispatch = useAppDispatch();
     const nickname = useAppSelector(selectCurrentUser);
-    const user = useAppSelector(selectActualUser);
     const navigate = useNavigate();
     const [logout] = useLogOutMutation();
     const access_token = useAppSelector(selectCurrentAccessToken);

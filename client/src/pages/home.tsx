@@ -22,7 +22,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 
   const ObliqueBox = styled(Box)(({ theme }) => ({
     position: 'relative',
-    height: '100%',
+    height: '100vh',
     '&::after': {
       content: '""',
       position: 'absolute',
@@ -58,7 +58,7 @@ function HomePage() {
 
     React.useEffect(() => {
         dispatch(updateOnGamePage(0));
-    }, []);
+    }, [dispatch]);
     
     const openLboard = (open: boolean) => (event: React.MouseEvent) => {
        setOpenl(open);
@@ -145,9 +145,9 @@ function HomePage() {
                 open={openLeaderboard} 
                 onClose={openLboard(false)}
               >
-                {/* <ObliqueBox> */}
-                <Leaderboard/>
-                {/* </ObliqueBox> */}
+                <ObliqueBox>
+                    <Leaderboard/>
+                </ObliqueBox>
               </StyledDrawer>
       )}
         </>

@@ -1,7 +1,5 @@
 import React from "react";
 import {
-  Box,
-  Stack,
   Avatar,
   Grid,
   Typography,
@@ -10,18 +8,14 @@ import {
 import { useState } from "react";
 import { Button } from "@mui/material";
 import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-import AddIcon from '@mui/icons-material/Add';
-import DoneIcon from '@mui/icons-material/Done';
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
-import ButtonBase from '@mui/material/ButtonBase';
 import IconButton from '@mui/material/IconButton';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 import {socket} from '../components/AllFriendship'
+import { useAppSelector } from "../utils/redux-hooks";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
-import { useAppSelector, useAppDispatch } from "../utils/redux-hooks";
 
 type FriendshipProps = {
     id: string,
@@ -32,19 +26,11 @@ type FriendshipProps = {
   };
 
 
-  const Img = styled('img')({
-    margin: 'auto',
-    display: 'block',
-    maxWidth: '100%',
-    maxHeight: '100%',
-});
-
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type, bgColor}) => {
     // const [avt, setAvtr] = useState('')
     const sender = useAppSelector(selectCurrentUser);
     const [buttonColor, setButtonColor] = useState('red'); // State to track the button color
     const [blockBgColor, setBlockBgColor] = useState('yellowgreen');
-    const dispatch = useAppDispatch();
 
     const receiver = {
         nickname: login,

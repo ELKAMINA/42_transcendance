@@ -1,13 +1,13 @@
-import { Stack, Divider, Typography, Box, IconButton } from '@mui/material';
 import Link from '@mui/material/Link';
-import DownloadIcon from '@mui/icons-material/Download';
 import ImageIcon from '@mui/icons-material/Image';
-import { ChatMessage } from '../../types/chat/messageType';
-import { format, isToday, isYesterday, startOfDay, endOfDay, isSameDay } from 'date-fns'
-import { useAppSelector } from '../../utils/redux-hooks';
+import DownloadIcon from '@mui/icons-material/Download';
+import { format, isYesterday, isSameDay } from 'date-fns'
+import { Stack, Divider, Typography, Box, IconButton } from '@mui/material';
+
 import { RootState } from '../../app/store';
+import { useAppSelector } from '../../utils/redux-hooks';
+import { ChatMessage } from '../../types/chat/messageType';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
-import { useEffect } from 'react';
 
 type TextMsgProps = {
 	el: ChatMessage;

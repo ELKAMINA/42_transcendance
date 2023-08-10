@@ -1,19 +1,20 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import SendIcon from '@mui/icons-material/Send';
+import { useTheme } from '@mui/material/styles';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+
 import UserList from './UserList';
+import api from '../utils/Axios-config/Axios';
+import { UserByLogin } from '../types/users/userType';
+import { ChannelModel } from '../types/chat/channelTypes';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
-import api from '../utils/Axios-config/Axios';
-import { ChannelModel } from '../types/chat/channelTypes';
-import { UserByLogin } from '../types/users/userType';
-import SendIcon from '@mui/icons-material/Send';
 
 export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
@@ -48,8 +49,8 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 	};
 
 	// filter the owner from available options because the owner cannot be destituted from its admin status
-	const channelMembersOptions = selectedChannel.members.filter(member => member.login != selectedChannel.ownedById)
-	const channelAdminsOptions = selectedChannel.admins.filter(admin => admin.login != selectedChannel.ownedById)
+	const channelMembersOptions = selectedChannel.members.filter(member => member.login !== selectedChannel.ownedById)
+	const channelAdminsOptions = selectedChannel.admins.filter(admin => admin.login !== selectedChannel.ownedById)
 
   	return (
 		<div>

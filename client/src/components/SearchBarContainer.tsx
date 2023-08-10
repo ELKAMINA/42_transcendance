@@ -1,18 +1,17 @@
-import SearchBarHighlights from "./SearchBarHighlight";
-
+import { Box } from "@mui/material";
+import { useSelector } from "react-redux";
 import React, { useEffect, useState } from 'react'
+import SearchBarHighlights from "./SearchBarHighlight";
+import EnterChannelConfirmationDialog from "./EnterChannelConfirmationDialog";
+
+import api from "../utils/Axios-config/Axios";
+import AskForPassword from "./AskForPassword";
+import { UserByLogin, UserModel } from '../types/users/userType';
+import { Channel, ChannelModel } from '../types/chat/channelTypes';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllFriends, selectFriends } from '../redux-features/friendship/friendshipSlice';
-import { selectCurrentUser } from '../redux-features/auth/authSlice';
-import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
-import { Channel, ChannelModel } from '../types/chat/channelTypes';
-import { UserByLogin, UserModel } from '../types/users/userType';
-import { Box } from "@mui/material";
-import AskForPassword from "./AskForPassword";
-import { emptyChannel } from "../data/emptyChannel";
-import { useSelector } from "react-redux";
-import api from "../utils/Axios-config/Axios";
-import EnterChannelConfirmationDialog from "./EnterChannelConfirmationDialog";
+import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
 
 export type SearchBarContainerProps = {
 	getSelectedItem: (item: string) => void;

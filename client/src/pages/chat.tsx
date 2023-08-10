@@ -1,19 +1,17 @@
-import './chat.css'
-
-import Navbar from '../components/NavBar';
-import SideBar from './sideBar';
-import Conversation from '../components/Conversation/Conversation';
 
 import { Provider } from 'react-redux';
-import { store } from '../app/store';
-import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { useEffect, useState } from "react";
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+
+import './chat.css'
+import SideBar from './sideBar';
+import { store } from '../app/store';
+import Navbar from '../components/NavBar';
+import Banned from '../components/Conversation/Banned';
+import Conversation from '../components/Conversation/Conversation';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
-import { emptyChannel } from '../data/emptyChannel';
-import { UserModel } from '../types/users/userType';
-import Banned from '../components/Conversation/Banned';
+import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 
 function Chat () {
 	const currentRoute = window.location.pathname;

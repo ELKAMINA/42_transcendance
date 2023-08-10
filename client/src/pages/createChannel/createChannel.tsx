@@ -1,23 +1,23 @@
 import "./createChannel.css"
 
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
-import React, { useEffect } from "react";
-import CreateName from "./createName";
-import CreateUsersList from "./createUsersList";
-import CreateType from "./createChannelType";
-import { ChannelTypeState, resetChannelType } from '../../redux-features/chat/createChannel/channelTypeSlice';
-import { Box, Button, Stack } from "@mui/material";
+import React from "react";
 import { IconButton } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
+import { useDispatch, useSelector } from 'react-redux';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
+
+import CreateName from "./createName";
+import { RootState } from '../../app/store';
+import CreateType from "./createChannelType";
+import CreateUsersList from "./createUsersList";
 import api from '../../utils/Axios-config/Axios' 
-import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
-import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
-import bugsBunny from '../../assets/profile_pictures/bugs-carrot.jpg'
+import { UserByLogin } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
-import { UserByLogin, UserModel } from "../../types/users/userType";
+import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
+import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { FetchUsersDb, selectFriends } from "../../redux-features/friendship/friendshipSlice";
+import { ChannelTypeState, resetChannelType } from '../../redux-features/chat/createChannel/channelTypeSlice';
 
 interface CreateChannelProps {
 	trigger: boolean;

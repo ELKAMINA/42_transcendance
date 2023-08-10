@@ -1,17 +1,17 @@
+import { Link } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { useAppDispatch, useAppSelector, } from '../utils/redux-hooks';
-import { Channel } from '../types/chat/channelTypes';
+
 import api from '../utils/Axios-config/Axios';
-import { fetchDisplayedChannel, fetchUserChannels } from '../redux-features/chat/channelsSlice';
-import { FetchActualUser, getActualUser, selectActualUser } from '../redux-features/friendship/friendshipSlice';
-import { UserByLogin, UserModel } from '../types/users/userType';
-import { Link } from '@mui/material';
+import { Channel } from '../types/chat/channelTypes';
+import { UserByLogin } from '../types/users/userType';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
+import { useAppDispatch, useAppSelector, } from '../utils/redux-hooks';
+import { fetchDisplayedChannel, fetchUserChannels } from '../redux-features/chat/channelsSlice';
 
 export type EnterChannelConfirmationDialogProps = {
 	selectedChannel : Channel | undefined;

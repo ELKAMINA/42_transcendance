@@ -1,17 +1,9 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { useAppDispatch, useAppSelector } from "../../../utils/redux-hooks";
-import {
-    FetchTotalPlayers,
-    selectTotalPlayers,
-} from "../../../redux-features/game/gameSlice";
-import { useEffect } from "react";
-import { UserModel } from "../../../types/users/userType";
+
 import { Match } from "../../../types/match";
 
 interface Myprops {
@@ -19,14 +11,13 @@ interface Myprops {
 }
 
 const MatchHistory = (props: Myprops) => {
-    const dispatch = useAppDispatch();
     let dateStr = props.us.createdAt;
     let date = new Date(dateStr);
 
     let formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
         .toString()
         .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-    console.log(formattedDate); // Outputs: 2023-07-27
+    // console.log(formatedDate); // Outputs: 2023-07-27
     React.useEffect(() => {}, []);
     return (
         <Card

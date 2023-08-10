@@ -1,4 +1,4 @@
-import { Channel, ChannelModel } from "../types/chat/channelTypes"
+import { ChannelModel } from "../types/chat/channelTypes"
 
 export const emptyChannel : ChannelModel = {
 	name : 'empty channel',
