@@ -97,7 +97,6 @@ export default function Sign(props: Signing){
             if (selectedImage)
             {
                 dispatch(setAvatar(selectedImage));
-                // setAr(selectedImage)
                 avatar = selectedImage;
             }
             if (props.type === "Sign up"){
@@ -119,7 +118,7 @@ export default function Sign(props: Signing){
             navigate('/welcome')
         } catch (err: any) {
             if (err){
-                // console.log('error ', err);
+                console.log('error ', err);
                 if (err.status === 400)
                 {
                     setErrMsg("Password must be at least 6 characters && Field must not be empty\n");
@@ -137,7 +136,6 @@ export default function Sign(props: Signing){
         setPwd('')
         // setAr('')
     }
-    
     const content = (
         <Container>
             <CssBaseline/>
