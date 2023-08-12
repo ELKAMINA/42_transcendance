@@ -14,6 +14,7 @@ export interface friendshipState {
 	allUsers: [],
     selectedItems: string,
     user: Record<string, any>,
+    error: number,
 }
 
 const initialState: friendshipState = {
@@ -25,6 +26,7 @@ const initialState: friendshipState = {
     selectedItems: '',
     user: {},
 	allUsers: [],
+    error: 0,
     // socket: {} as unknown as Socket ,
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -53,14 +55,17 @@ export const friendshipSlice = createSlice({
 		getAllUsersInDb:(state, action) => {
             state.allUsers = action.payload;
         }, 
+        setFriendshipError: (state, action: PayloadAction<number>) => {
+            state.error = action.payload;
+        },
         resetFriendshipStore : (state) => {
             return initialState;
-        }
+        },
     },
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-export const { updateAllSuggestions, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem, getActualUser, getAllUsersInDb, resetFriendshipStore} = friendshipSlice.actions
+export const { updateAllSuggestions, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem, getActualUser, getAllUsersInDb, resetFriendshipStore, setFriendshipError} = friendshipSlice.actions
 
 
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
@@ -69,6 +74,7 @@ export const selectFrRequests = (state: RootState) => state.persistedReducer.fri
 export const selectBlockedFriends = (state: RootState) => state.persistedReducer.friendship.blockedFriends
 export const selectItems = (state: RootState) => state.persistedReducer.friendship.selectedItems
 export const selectActualUser = (state: RootState) => state.persistedReducer.friendship.user
+export const selectError = (state: RootState) => state.persistedReducer.friendship.error
 
 export function FetchUsersDb() {
 	return async (dispatch:any, getState: any) => {
@@ -79,7 +85,7 @@ export function FetchUsersDb() {
 			dispatch(getAllUsersInDb(dt));
 		})
 		.catch((e) => {
-			console.log("Error - All users from db except me")
+			dispatch(setFriendshipError(1))
 		})
 	}
 }
@@ -88,16 +94,12 @@ export function FetchUsersDb() {
 export function FetchAllFriendRequests() {
 return async (dispatch:any, getState: any) => {
     await api
-    .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
-    .then((res) => {
-        // console.log('res.data ', res.data)
-        // console.log(`Les friend requests pour ${getState().persistedReducer.auth.nickname} sont : `)
-        // res.data.forEach((item: any, index: any) => {
-        //     console.log(`Friend ${index + 1}:`, item.senderId);
-        // });
-        // console.log('je rentre ici ', res.data);
-        dispatch(updateAllRequests(res.data))})
-        .catch((e) => {console.log("error ", e)});
+        .post("http://0.0.0.0:4001/friendship/receivedRequests", {nickname: getState().persistedReducer.auth.nickname})
+        .then((res) => {
+            dispatch(updateAllRequests(res.data))
+        })
+        .catch((e) => {dispatch(setFriendshipError(2))
+        });
     }
 }
 
@@ -110,7 +112,8 @@ export function FetchActualUser() {
             // console.log('lavatarr ', (res.data).avatar)
             dispatch(setAvatar((res.data).avatar))
         })
-        .catch((e) => {console.log("error ", e)});
+        .catch((e) => {dispatch(setFriendshipError(3))
+        });
     }
 }
 
@@ -120,13 +123,13 @@ export function FetchSuggestions() {
         await api
         .post("http://0.0.0.0:4001/friendship/suggestions", {nickname: getState().persistedReducer.auth.nickname})
         .then((res) => {
-            // console.log(`Les suggestions d'amis pour ${getState().persistedReducer.auth.nickname} sont : `)
-            // res.data.forEach((item: any, index: any) => {
-            //     console.log(`Friend ${index + 1}:`, item.login);
-            //   });
+            // console.log('JE RENTRE ICIIIIIIIIII')
             dispatch(updateAllSuggestions(res.data))
         })
-        .catch((e) => { console.log('cest lerreur de ta vie ', e)})
+        .catch((e) => {
+            // console.log('lerreur ', e);
+            dispatch(setFriendshipError(4))
+            })
         }
     } 
     
@@ -135,22 +138,23 @@ export function FetchSuggestions() {
             await api
             .post("http://0.0.0.0:4001/friendship/allFriends", {nickname: getState().persistedReducer.auth.nickname})
             .then((res) => {
-                dispatch(updateAllFriends(res.data))})
-                .catch((e) => {console.log("error ", e)});
-            }
+                dispatch(updateAllFriends(res.data))
+            })
+            .catch((e) => {dispatch(setFriendshipError(5))
+            });
         }
+    }
 
     export function FetchAllBlockedFriends() {
         return async (dispatch:any, getState: any) => {
             await api
             .post("http://0.0.0.0:4001/friendship/blockedFriends", {nickname: getState().persistedReducer.auth.nickname})
             .then((res) => {
-                dispatch(updateBlockedFriends(res.data))})
-                .catch((e) => {console.log("error ", e)});
-            }
+                dispatch(updateBlockedFriends(res.data))
+            })
+            .catch((e) => {dispatch(setFriendshipError(5))
+            });
         }
-            
-            
-            // // dispatch is for communicating with redux and tell him to trigger an action so when we write dispatch(setConnected(true) => we tell redux to call the reducer socket/setConnected with the action.payload = true which changes the state "isConnected to TRUE")
+    }
             
 export default friendshipSlice.reducer

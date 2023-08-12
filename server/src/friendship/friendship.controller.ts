@@ -1,9 +1,10 @@
-import { Body } from '@nestjs/common';
-import { Post, Get } from '@nestjs/common';
+import { Body, HttpException } from '@nestjs/common';
+import { Post } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 
 import { FriendshipService } from './friendship.service';
 import { FriendshipDto } from './dto';
+import { HttpStatusCode } from 'axios';
 
 @Controller('friendship')
 export class FriendshipController {
@@ -15,43 +16,71 @@ export class FriendshipController {
 
   @Post('/receivedRequests')
   async getFriendsReqReceived(@Body() body: FriendshipDto) {
-    const users = await this.friendshipService.getFriendReqReceived(
-      body.nickname,
-    );
-    return users;
+    try {
+      const users = await this.friendshipService.getFriendReqReceived(
+        body.nickname,
+      );
+      return users;
+    } catch (e) {
+      throw new HttpException('Error ', HttpStatusCode.Forbidden);
+    }
   }
 
   @Post('/sentRequests')
   async getFriendsReqSent(@Body() body: FriendshipDto) {
-    const users = await this.friendshipService.getFriendReqSent(body.nickname);
-    return users;
+    try {
+      const users = await this.friendshipService.getFriendReqSent(
+        body.nickname,
+      );
+      return users;
+    } catch (e) {
+      throw new HttpException('Error ', HttpStatusCode.Forbidden);
+    }
   }
 
   @Post('/allFriends')
   async getAllFriends(@Body() body: FriendshipDto) {
-    const users = await this.friendshipService.getAllFriends(body.nickname);
-    return users;
+    try {
+      const users = await this.friendshipService.getAllFriends(body.nickname);
+      return users;
+    } catch (e) {
+      throw new HttpException('Error ', HttpStatusCode.Forbidden);
+    }
   }
 
   @Post('/blockedFriends')
   async getAllBlockedFriends(@Body() body: FriendshipDto) {
-    const users = await this.friendshipService.getAllBlockedFriends(body.nickname);
-    return users;
+    try {
+      const users = await this.friendshipService.getAllBlockedFriends(
+        body.nickname,
+      );
+      return users;
+    } catch (e) {
+      throw new HttpException('Error ', HttpStatusCode.Forbidden);
+    }
   }
 
   @Post('/suggestions')
   async getFriendSuggestions(@Body() body) {
-    const suggestions = await this.friendshipService.getFriendSuggestions(body.nickname);
-    // console.log('suggestions ', suggestions)
-    return suggestions;
+    try {
+      const suggestions = await this.friendshipService.getFriendSuggestions(
+        body.nickname,
+      );
+      return suggestions;
+    } catch (e) {
+      throw new HttpException('Error ', HttpStatusCode.Forbidden);
+    }
   }
-
 
   @Post('/ismyfriend')
   async ismyfriend(@Body() body) {
-    const check = await this.friendshipService.ismyfriend(body);
-    // console.log('le check des friends et du blocage', check);
-    return check;
+    try {
+      const check = await this.friendshipService.ismyfriend(body);
+      // console.log('le check des friends et du blocage', check);
+      return check;
+    } catch (e) {
+      throw new HttpException('Error ', HttpStatusCode.Forbidden);
+    }
   }
 
   async acceptFriend(senderLogin: string, receiverLogin: string) {
@@ -77,6 +106,4 @@ export class FriendshipController {
     );
     return user;
   }
-
-
 }

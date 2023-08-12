@@ -166,14 +166,15 @@ export class AuthService {
           throw new ForbiddenException('Credentials taken');
         }
       }
+      console.log('la ????');
       throw error;
     } // PrismaClientKnownRequestError to catch the unique prisma duplicate error (for instance for the email that is duplicated )
   }
 
   async signin(dto: AuthDto, res: Response): Promise<object> {
     try {
-      // console.log("DTOOOO ", dto)
-      const us = await this.prisma.user.findUniqueOrThrow({
+      // console.log('DTOOOO ', dto);
+      const us = await this.prisma.user.findUnique({
         where: {
           login: dto.nickname,
         },
@@ -189,7 +190,7 @@ export class AuthService {
       }
       if (dto.type === 'notTfa') {
         if (us && (await argon.verify(us.hash, dto.password)) === false) {
-          throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
+          return new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
         }
       }
       if (us.avatar !== dto.avatar && dto.avatar !== '') {
@@ -215,9 +216,9 @@ export class AuthService {
       return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
     } catch (e: any) {
       if (e.code === 'P2025') {
-        throw new HttpException('No user found', HttpStatus.FORBIDDEN);
+        return new HttpException('No user found', HttpStatus.FORBIDDEN);
       }
-      throw e;
+      return e;
     }
   }
 
@@ -252,7 +253,7 @@ export class AuthService {
   }
 
   async validateUser(details: UserDetails) {
-    const us = await this.prisma.user.findUniqueOrThrow({
+    const us = await this.prisma.user.findUnique({
       where: {
         login: details.login,
       },

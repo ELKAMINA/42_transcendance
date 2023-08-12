@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from '../utils/redux-hooks'; // These 
 import Cookies from 'js-cookie';
 // import { ConnectSocket } from '../socket'
 import { FriendSuggestion } from '../components/FriendRequests';
-import { FetchAllBlockedFriends, selectBlockedFriends } from '../redux-features/friendship/friendshipSlice';
+import { FetchAllBlockedFriends, selectBlockedFriends, setFriendshipError } from '../redux-features/friendship/friendshipSlice';
 import { selectSuggestions, selectFrRequests, selectFriends} from '../redux-features/friendship/friendshipSlice';
 import { FetchSuggestions, FetchAllFriendRequests, FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 import { selectCurrentUser, setOnlyTokens } from '../redux-features/auth/authSlice';
@@ -22,54 +22,57 @@ function Suggestions () {
   const dispatch = useAppDispatch();
   const currUser = useAppSelector(selectCurrentUser)
   let suggestions = useAppSelector(selectSuggestions);
+
   useEffect(() => {
     dispatch(FetchSuggestions());
     return () => {
-      // socket.disconnect()  // cleanUp function when component unmount
-      // dispatch(setSelectedItem(''))
     }
-  }, [dispatch])
+  }, [])
 
-    socket.on('newUserConnected', (user: string) => {
+    socket.off('newUserConnected').on('newUserConnected', (user: string) => {
         if (user !== currUser ){
           dispatch(FetchSuggestions());
         }
     })
-    socket.on('newCookie', (data) => {
+    socket.off('newCookie').on('newCookie', (data) => {
       dispatch(setOnlyTokens({...data}));
       const serializeData = JSON.stringify(data);
       Cookies.set('Authcookie', serializeData, { path: '/' });
     })
-    socket.on('friendAdded', () => {
-      dispatch(FetchSuggestions())
+    socket.off('friendAdded').on('friendAdded', (data: any) => {
+      if (data != null){
+        dispatch(FetchSuggestions())
+      }
+      else dispatch(setFriendshipError(2))
     })
-    socket.on('denyFriend', () => {
-      dispatch(FetchSuggestions())
+    socket.off('denyFriend').on('denyFriend', (data:any) => {
+      if (data !== null)
+        dispatch(FetchSuggestions())
+      else 
+        dispatch(setFriendshipError(4))
     })
     suggestions = useAppSelector(selectSuggestions)
-        
-    const content = (
-      <Container maxWidth="lg" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 8vh)' }}>
-        <Typography 
-          sx={{
-            fontWeight: 'bold',
-            fontSize: '30px',
-            color: '#07457E',
-            textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-            margin: 4,
-          }}
-        > You may know... </Typography>
-        <Grid container spacing={2}>
-          {suggestions.map((sugg: any, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <FriendSuggestion key={index} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-  )
-  return content;
-};
+   return (
+       <Container maxWidth="lg" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 8vh)' }}>
+         <Typography 
+           sx={{
+             fontWeight: 'bold',
+             fontSize: '30px',
+             color: '#07457E',
+             textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
+             margin: 4,
+           }}
+         > You may know... </Typography>
+         <Grid container spacing={2}>
+           {suggestions.map((sugg: any, index) => (
+             <Grid item xs={12} sm={6} md={4} key={index}>
+               <FriendSuggestion key={index} id={sugg.user_id} login={sugg.login} avatar={sugg.avatar} type="request" bgColor='#AFEEEE'/>
+             </Grid>
+           ))}
+         </Grid>
+       </Container>
+     )
+  }
 
 // Suggestions -------------------
 
@@ -83,21 +86,27 @@ function Requests () {
       // socket.disconnect()  // cleanUp function when component unmount
       // dispatch(setSelectedItem(''))
     }
-  }, [dispatch])
+  }, [])
 
-    socket?.on('friendAdded', (data: any) => {
-      dispatch(FetchAllFriendRequests());
+    socket.off('friendAdded').on('friendAdded', (data: any) => {
+      console.log('oui 3')
+      if (data != null) dispatch(FetchAllFriendRequests());
+      else dispatch(setFriendshipError(2))
  
      })
-    socket?.on('acceptedFriend', (data: any) => {
-     dispatch(FetchAllFriendRequests());
+    socket.off('acceptedFriend').on('acceptedFriend', (data: any) => {
+      if (data != null)
+      dispatch(FetchAllFriendRequests());
+    else dispatch(setFriendshipError(2))
 
     })
-    socket?.on('denyFriend', () => {
-      dispatch(FetchAllFriendRequests());
+    socket.off('denyFriend').on('denyFriend', (data: any) => {
+      if (data !== null)
+        dispatch(FetchAllFriendRequests());
+      else dispatch(setFriendshipError(2))
+
     })
   const friendsRequests = useAppSelector(selectFrRequests);
-
   
   const content = (
       <Container maxWidth="lg" fixed sx={{
@@ -147,14 +156,13 @@ function Friends () {
     }
   }, [dispatch])
  
-    socket?.on('friendBlocked', (data: any) => {
+    socket.off('friendBlocked').on('friendBlocked', (data: any) => {
       dispatch(FetchAllBlockedFriends())
     })
-    socket?.on('acceptedFriend', (data: any) => {
-      dispatch(FetchAllFriends())
-     })
-    socket?.on('denyFriend', (data: any) => {
-      
+    socket.off('acceptedFriend').on('acceptedFriend', (data: any) => {
+      if (data != null)
+        dispatch(FetchAllFriends())
+      else dispatch(setFriendshipError(2))
      })
   const friends = useAppSelector(selectFriends);
   const blocked = useAppSelector(selectBlockedFriends)

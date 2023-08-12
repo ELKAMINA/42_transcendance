@@ -98,6 +98,7 @@ export default function ProfileInfo(props: Myprops) {
                         justifyContent: "space-around",
                         alignContent: "center",
                         flexWrap: "wrap",
+                        // height: '100vh',
                     }}
                 >
                     <Rank him={props.interestProfile} />

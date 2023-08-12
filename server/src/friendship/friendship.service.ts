@@ -1,57 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { UserService } from '../user/user.service';
+import { HttpStatusCode } from 'axios';
 
-// interface User {
-//   createdAt: string;
-//   updatedAt: string;
-//   user_id: string;
-//   login: string;
-//   email: string ;
-//   hash: string;
-//   rtHash: string;
-//   fA: string ;
-//   faEnabled: string ;
-//   avatar: string;
-//   status: string ;
-//   totalFriends: number;
-//   totalBlockedFriends: number ;
-//   totalMatches: number ;
-//   totalWins: number ;
-//   totalLoss: number ;
-//   level: number ;
-//   rank: number ;
-//   FriendSuggestions: any[]; // ou spécifiez un type approprié ici
-// }
 @Injectable()
 export class FriendshipService {
   constructor(private prisma: PrismaService, private userServ: UserService) {}
 
   async requestFriendship(senderId: string, receiverId: string) {
     const sender = await this.userServ.searchUser(senderId);
-    const existingRequest = await this.prisma.friendRequest.findFirst({
-      where: {
-        AND: [{ senderId: senderId }, { receiverId: receiverId }],
-      },
-    });
-
-    if (existingRequest) {
-      console.log('Friend request already exists!');
-      return;
-    } else {
-      await this.prisma.friendRequest.create({
-        data: {
-          sender: {
-            connect: { login: senderId },
-          },
-          receiver: {
-            connect: { login: receiverId },
-          },
-          status: 'PENDING',
-          SenderAv: sender.avatar,
+    if (sender) {
+      const existingRequest = await this.prisma.friendRequest.findFirst({
+        where: {
+          AND: [{ senderId: senderId }, { receiverId: receiverId }],
         },
       });
+      if (existingRequest) {
+        console.log('Friend request already exists!');
+        return;
+      }
+      try {
+        const newReq = await this.prisma.friendRequest.create({
+          data: {
+            sender: {
+              connect: { login: senderId },
+            },
+            receiver: {
+              connect: { login: receiverId },
+            },
+            status: 'PENDING',
+            SenderAv: sender.avatar,
+          },
+        });
+        return newReq;
+      } catch (e) {
+        console.log('i got here ??');
+        return null;
+      }
     }
   }
 
@@ -68,6 +54,7 @@ export class FriendshipService {
       return users;
     } catch (e) {
       console.log(e);
+      return e;
     }
   }
 
@@ -88,82 +75,79 @@ export class FriendshipService {
   }
 
   async getAllFriends(userLogin: string) {
-    try {
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: {
-          login: userLogin,
-        },
-        include: {
-          friends: true,
-          friendOf: true,
-          blocked: true,
-        },
-      });
-      if (user) {
-        const allFriends = user.friends.concat(user.friendOf);
-        allFriends.forEach((e) => {
-          // console.log('All friends ', e.login)
-        });
-        const blockedFriends = user.blocked;
-        const onlyFriends = allFriends.filter(
-          (el) => !blockedFriends.some((obj) => obj.login === el.login),
-        );
-        return onlyFriends;
-      }
-    } catch (e) {
-      console.log(e);
+    const user = await this.prisma.user.findUnique({
+      where: {
+        login: userLogin,
+      },
+      include: {
+        friends: true,
+        friendOf: true,
+        blocked: true,
+      },
+    });
+    if (user) {
+      const allFriends = user.friends.concat(user.friendOf);
+      const blockedFriends = user.blocked;
+      const onlyFriends = allFriends.filter(
+        (el) => !blockedFriends.some((obj) => obj.login === el.login),
+      );
+      return onlyFriends;
+    } else {
+      throw new HttpException('No user found', HttpStatusCode.Forbidden);
     }
   }
 
   async getAllBlockedFriends(userLogin: string) {
-    try {
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: {
-          login: userLogin,
-        },
-        include: {
-          blocked: true,
-          blockedBy: true,
-        },
-      });
-      if (user) {
-        return user.blocked;
-      }
-    } catch (e) {
-      console.log(e);
+    const user = await this.prisma.user.findUnique({
+      where: {
+        login: userLogin,
+      },
+      include: {
+        blocked: true,
+        blockedBy: true,
+      },
+    });
+    if (user) {
+      return user.blocked;
     }
+    return null;
   }
 
   async getFriendSuggestions(nick: string) {
     const toDelete: Array<string> = [];
-    const toDisplay: Array<string> = [];
+    let filteredUsers: User[];
+
     const userConcerned = await this.userServ.searchUser(nick);
-    // console.log('le user ', userConcerned.login)
+    if (!userConcerned) throw new ForbiddenException('No user Found');
     const requestedFriends = userConcerned.FriendRequestSent;
     const friendsThatRequested = userConcerned.FriendRequestReceived;
     const friends = userConcerned.friends;
     const friendOf = userConcerned.friendOf;
-    requestedFriends.map((e) => toDelete.push(e.receiverId));
-    friendsThatRequested.map((e) => toDelete.push(e.senderId));
-    friends.map((e) => toDelete.push(e.login));
-    friendOf.map((e) => toDelete.push(e.login));
+    if (requestedFriends) {
+      requestedFriends.map((e) => toDelete.push(e.receiverId));
+    }
+    if (friendsThatRequested)
+      friendsThatRequested.map((e) => toDelete.push(e.senderId));
+    if (friends) friends.map((e) => toDelete.push(e.login));
+    if (friendOf) friendOf.map((e) => toDelete.push(e.login));
     toDelete.push(userConcerned.login);
-    // console.log('toDelete ', toDelete)
     const allUsers = await this.userServ.findAll();
-    const filteredUsers: User[] = allUsers.filter(
-      (obj) => !toDelete.includes(obj.login),
-    );
+
+    if (allUsers) {
+      filteredUsers = allUsers.filter((obj) => !toDelete.includes(obj.login));
+    }
     // console.log('suggestions ', filteredUsers)
     return filteredUsers;
   }
 
   async ismyfriend(body) {
+    let isUserInFriendsArray;
     const resultat = {
       isMyfriend: false,
       myBlockedFriend: false,
       thoseWhoBlockedMe: false,
     };
-    const user = await this.prisma.user.findUniqueOrThrow({
+    const user = await this.prisma.user.findUnique({
       where: {
         login: body.me,
       },
@@ -186,16 +170,37 @@ export class FriendshipService {
         },
       },
     });
-    const isUserInFriendsArray =
-      user?.friends.length > 0 || user?.friendOf.length > 0;
-    resultat.isMyfriend = isUserInFriendsArray;
-    if (isUserInFriendsArray) {
-      const iBlocked = await this.prisma.user.findUniqueOrThrow({
+    if (user) {
+      isUserInFriendsArray =
+        user.friends.length > 0 || user.friendOf.length > 0;
+      resultat.isMyfriend = isUserInFriendsArray;
+      if (isUserInFriendsArray) {
+        const iBlocked = await this.prisma.user.findUnique({
+          where: {
+            login: body.me,
+          },
+          select: {
+            blocked: {
+              select: {
+                login: true,
+              },
+              where: {
+                login: body.him,
+              },
+            },
+          },
+        });
+        if (iBlocked) {
+          const isUserBlockedArray = iBlocked?.blocked.length > 0;
+          resultat.myBlockedFriend = isUserBlockedArray;
+        }
+      }
+      const theyBlocked = await this.prisma.user.findUnique({
         where: {
           login: body.me,
         },
         select: {
-          blocked: {
+          blockedBy: {
             select: {
               login: true,
             },
@@ -205,80 +210,71 @@ export class FriendshipService {
           },
         },
       });
-      const isUserBlockedArray = iBlocked?.blocked.length > 0;
-      resultat.myBlockedFriend = isUserBlockedArray;
+      if (theyBlocked) {
+        const amInBlockedArray = theyBlocked.blockedBy.length > 0;
+        resultat.thoseWhoBlockedMe = amInBlockedArray;
+      }
     }
-    const theyBlocked = await this.prisma.user.findUniqueOrThrow({
-      where: {
-        login: body.me,
-      },
-      select: {
-        blockedBy: {
-          select: {
-            login: true,
-          },
-          where: {
-            login: body.him,
-          },
-        },
-      },
-    });
-    const amInBlockedArray = theyBlocked?.blockedBy.length > 0;
-    resultat.thoseWhoBlockedMe = amInBlockedArray;
     return resultat;
   }
 
   async acceptFriend(senderId: string, recId: string): Promise<User> {
+    let user = null;
     try {
       const reqId = await this.prisma.friendRequest.findFirst({
         where: {
           AND: [{ senderId: recId }, { receiverId: senderId }],
         },
       });
-      await this.prisma.friendRequest.delete({
-        where: { id: reqId.id },
-      });
-      const user = await this.prisma.user.update({
-        where: { login: senderId },
-        data: {
-          friends: {
-            connect: { login: recId },
+      if (reqId) {
+        await this.prisma.friendRequest.delete({
+          where: { id: reqId.id },
+        });
+        user = await this.prisma.user.update({
+          where: { login: senderId },
+          data: {
+            friends: {
+              connect: { login: recId },
+            },
+            totalFriends: { increment: 1 }, // ne marche pas
           },
-          totalFriends: { increment: 1 }, // ne marche pas
-        },
-        include: {
-          friends: true,
-          FriendRequestReceived: true,
-        },
-      });
+          include: {
+            friends: true,
+            FriendRequestReceived: true,
+          },
+        });
+      }
       console.log('le user depuis acceptance ', user.login);
       return user;
     } catch (e) {
-      console.log(e);
+      return null;
     }
   }
 
   async denyFriend(senderId: string, recId: string): Promise<User> {
+    let user = null;
     try {
       const reqId = await this.prisma.friendRequest.findFirst({
         where: {
           AND: [{ senderId: senderId }, { receiverId: recId }],
         },
       });
-      await this.prisma.friendRequest.delete({
-        where: { id: reqId.id },
-      });
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: { login: senderId },
-        include: {
-          friends: true,
-          FriendRequestReceived: true,
-          FriendRequestSent: true,
-        },
-      });
-      return user;
+      if (reqId) {
+        await this.prisma.friendRequest.delete({
+          where: { id: reqId.id },
+        });
+        user = await this.prisma.user.findUniqueOrThrow({
+          where: { login: senderId },
+          include: {
+            friends: true,
+            FriendRequestReceived: true,
+            FriendRequestSent: true,
+          },
+        });
+        return user;
+      }
     } catch (e) {
-      console.log(e);
+      return null;
     }
   }
 
