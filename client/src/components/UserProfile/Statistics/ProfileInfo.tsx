@@ -81,12 +81,28 @@ export default function ProfileInfo(props: Myprops) {
                     <Tab
                         label="Statistics"
                         {...a11yProps(0)}
-                        sx={{ backgroundColor: "#07457E" }}
+                        sx={(theme)=> ({
+                            fontSize: {
+                                xs: 8,
+                                sm: 10,
+                                md: 15,
+                                lg: 18,
+                            },
+                            background: '#07457E',
+                        })}
                     />
                     <Tab
                         label="Matches History"
                         {...a11yProps(1)}
-                        sx={{ backgroundColor: "#07457E" }}
+                        sx={(theme)=> ({
+                            fontSize: {
+                                xs: 8,
+                                sm: 10,
+                                md: 15,
+                                lg: 18,
+                            },
+                            background: '#07457E',
+                        })}
                     />
                 </Tabs>
             </AppBar>

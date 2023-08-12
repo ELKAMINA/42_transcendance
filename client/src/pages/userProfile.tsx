@@ -54,7 +54,7 @@ const UserProfile = () => {
             </Box>
             <Box sx={{
                 marginTop: 3.5,
-            }}className="userprofile-middle">
+            }} className="userprofile-middle">
                 <UserProfileHeader
                     name={userToStalk.login}
                     status={userToStalk.status}

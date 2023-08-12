@@ -36,7 +36,7 @@ const Statistics = (props: Myprops) => {
             // overflowY: 'auto',
             display: 'flex',
             justifyContent: 'center',
-            // margin: 1,
+            margin: 2,
             alignItems: 'center',
             })
         }>
@@ -61,15 +61,25 @@ const Statistics = (props: Myprops) => {
                     flexDirection:'column',
                     alignItems: 'center',
                     fontSize: {
-                        xs: 8,
-                        sm: 10,
-                        md: 80,
-                        lg: 200,
+                        xs: 12,
+                        sm: 20,
+                        md: 30,
+                        lg: 30,
                     },
                     color: '#07457E'
                     })}>
                     {props.data}
-                    {props.name === 'Rank' && <div className= 'statistics-outof'> out of {totalPlayers}</div>}
+                    {props.name === 'Rank' && <Typography sx={(theme)=> ({
+                        fontSize: {
+                            xs: 6,
+                            sm: 8,
+                            md: 10,
+                            lg: 12,
+                        },
+                        fontWeight: 'italic',
+                        color: '#6495ED'
+                        })}
+                    > out of {totalPlayers}</Typography>}
                 </Typography>
             </CardContent>
         </Card>
