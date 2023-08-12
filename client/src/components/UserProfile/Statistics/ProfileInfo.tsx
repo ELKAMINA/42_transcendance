@@ -123,8 +123,8 @@ export default function ProfileInfo(props: Myprops) {
             </TabPanel>
             <TabPanel value={value} index={1} dir={theme.direction}>
                 {/* remplacer par le tableau de match joués et recuperer les infos */}
-                {matches.map((e: any) => (
-                    <MatchHistory us={e} />
+                {matches.map((e: any, index) => (
+                    <MatchHistory key={index} us={e} />
                 ))}
             </TabPanel>
         </Box>
