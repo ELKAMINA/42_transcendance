@@ -4,15 +4,16 @@
 
 version: "3.9"
 services:
+#======= Server =========#
   server:
     container_name: backend
     restart: always
-    ports:
-      - 4001:4001
-      - 4003:4003
-      - 4006:4006
-      - 4010:4010
-      - 5555:5555
+    expose:
+      - "4001"
+      - "4003"
+      - "4006"
+      - "4010"
+      - "5555"
     env_file:
       - ./server/.env
     build:
@@ -22,20 +23,21 @@ services:
       - ./server:/server
       - /server/node_modules
       - /server/prisma
-    environment:
-      - CHOKIDAR_USEPOLLING=true
     depends_on:
-      - dev-db
+      database:
+        condition: service_healthy
     networks:
       - transcendance
-  dev-db:
+
+#======= Database =========#
+  database:
     image: postgres:14
-    container_name: trans_pgres
+    container_name: db
     restart: always
     volumes:
       - data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
+    expose:
+      - "5432"
     env_file:
       - ./server/.env
     environment:
@@ -44,6 +46,16 @@ services:
       POSTGRES_DB: trans
     networks:
       - transcendance
+#As the server and the client depends on the database. We need to launch the  
+#server/client being sure that database is up. Healthchek : If the command succeeds,  
+#the container is considered healthy. If it fails, Docker will retry 
+#the healthcheck every 0.5s until a maximum of 100 retries.
+    healthcheck:
+      test: ["CMD-SHELL", "psql trans -U postgres -c 'SELECT 1' || exit 1"]
+      interval: 0.5s
+      retries: 100
+
+#======= Client =========#
   client:
     container_name: frontend
     restart: always
@@ -52,31 +64,37 @@ services:
     build:
       context: client
       dockerfile: Dockerfile
-    volumes:
+    volumes: # specifies how directories in the host machine should be mounted in the container
       - ./client:/app/client
-      - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+      - /app/node_modules #telling docker to use the app/nodes_modules that was installed in the Dockerfile when we npm i and not the one from host machine. No bind mount from the host machine!! This is an isolated bind mount
     links:
       - server
     depends_on:
-      - server
+      database:
+        condition: service_healthy
     networks:
       - transcendance
-  # nginx:
-  #   image: nginx:alpine
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #   ports:
-  #     - "8080:80"
-  #   depends_on:
-  #     - client
-  #     - server
-  #   networks:
-  #     - transcendance
-
-volumes:
-  data:
-
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: nginx
+    restart: always
+    ports: 
+      - "8000:80"
+    networks:
+      - transcendance
+    depends_on:
+      - server
+      - client
+#======= Networks =========#
 networks:
   transcendance:
+
+#======= Volumes =========#
+volumes:
+  data: #internal label to identify volumes in docker compose
+    driver: local
+    name: dbase #this is the name of the volume persisted for the app on the host machine (docker host system)
+
