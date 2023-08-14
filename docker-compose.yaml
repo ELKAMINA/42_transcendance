@@ -8,12 +8,14 @@ services:
   server:
     container_name: backend
     restart: always
-    expose:
-      - "4001"
-      - "4003"
-      - "4006"
-      - "4010"
-      - "5555"
+    # expose:
+    #   - "4001"
+    #   - "4003"
+    #   - "4006"
+    #   - "4010"
+    #   - "5555"
+    ports:
+      - "4001:4001"
     env_file:
       - ./server/.env
     build:
@@ -36,8 +38,8 @@ services:
     restart: always
     volumes:
       - data:/var/lib/postgresql/data
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
     env_file:
       - ./server/.env
     environment:
@@ -67,8 +69,8 @@ services:
     volumes: # specifies how directories in the host machine should be mounted in the container
       - ./client:/app/client
       - /app/node_modules #telling docker to use the app/nodes_modules that was installed in the Dockerfile when we npm i and not the one from host machine. No bind mount from the host machine!! This is an isolated bind mount
-    links:
-      - server
+    # links:
+    #   - server
     depends_on:
       database:
         condition: service_healthy
