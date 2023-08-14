@@ -174,7 +174,7 @@ export class AuthService {
   async signin(dto: AuthDto, res: Response): Promise<object> {
     try {
       // console.log('DTOOOO ', dto);
-      const us = await this.prisma.user.findUnique({
+      const us = await this.prisma.user.findUniqueOrThrow({
         where: {
           login: dto.nickname,
         },

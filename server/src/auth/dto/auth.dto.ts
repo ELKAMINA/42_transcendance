@@ -18,5 +18,24 @@ export class AuthDto {
   avatar: string;
 
   @IsOptional()
-  type: string
+  type: string;
+}
+
+export class SignInDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  nickname: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  password: string;
+
+  @IsString()
+  @ApiProperty()
+  avatar: string;
+
+  @IsOptional()
+  type: string;
 }
