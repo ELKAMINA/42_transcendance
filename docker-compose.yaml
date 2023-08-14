@@ -16,6 +16,10 @@ services:
     #   - "5555"
     ports:
       - "4001:4001"
+      - "4003:4003"
+      - "4006:4006"
+      - "4010:4010"
+      - "5555:5555"
     env_file:
       - ./server/.env
     build:
@@ -74,6 +78,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      server:
+        condition: service_started
     networks:
       - transcendance
   nginx:
@@ -83,13 +89,15 @@ services:
       dockerfile: Dockerfile
     image: nginx
     restart: always
-    ports: 
+    ports:
+      - "443:443"
       - "8000:80"
     networks:
       - transcendance
     depends_on:
       - server
       - client
+      - database
 #======= Networks =========#
 networks:
   transcendance:
