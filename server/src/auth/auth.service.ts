@@ -190,7 +190,7 @@ export class AuthService {
       }
       if (dto.type === 'notTfa') {
         if (us && (await argon.verify(us.hash, dto.password)) === false) {
-          return new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
+          throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
         }
       }
       if (us.avatar !== dto.avatar && dto.avatar !== '') {
@@ -216,9 +216,9 @@ export class AuthService {
       return { faEnabled: us.faEnabled, tokens, avatar: us.avatar };
     } catch (e: any) {
       if (e.code === 'P2025') {
-        return new HttpException('No user found', HttpStatus.FORBIDDEN);
+        throw new HttpException('No user found', HttpStatus.FORBIDDEN);
       }
-      return e;
+      throw e;
     }
   }
 

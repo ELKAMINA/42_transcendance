@@ -111,15 +111,22 @@ export default function Sign(props: Signing){
                     if (user.faEnabled)
                     {
                         dispatch(setNick(nickname))
-                        await checkPwd({ nickname, password}).unwrap()
-                        return (navigate('/tfa'))
+                        await checkPwd({ nickname, password}).unwrap().then(()=> {
+                            navigate('/tfa')
+                        })
                     }
                     else {
-                        userData = await signin({ nickname, password, avatar, type: 'notTfa' }).unwrap();
+                        userData = await signin({ nickname, password, avatar, type: 'notTfa' }).unwrap().then((userData: any)=> {
+                            dispatch(setSignCredentials({...userData, nickname}))
+                            navigate('/welcome')
+                        });
                     }
                 }
-                catch(e){
-                    setErrMsg('No user found');
+                catch(err: any){
+                    if (err.data && err.data.message && typeof err.data.message === 'string' ){
+                        setErrMsg(err.data.message);
+                    }
+                    else setErrMsg('No user found');
                     navigate('/')
 
                 }

@@ -12,7 +12,7 @@ import {
 import { Response } from 'express';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { AuthDto } from './dto/auth.dto';
+import { AuthDto, SignInDto } from './dto/auth.dto';
 import { Public } from '../decorators/public.decorator';
 import { AuthService } from './auth.service';
 import { RtGuard } from '../guards/rt-guard';
@@ -46,7 +46,7 @@ export default class AuthController {
   @Post('Signin')
   @ApiOkResponse({ type: Tokens })
   signin(
-    @Body() dto: AuthDto,
+    @Body() dto: SignInDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<object> {
     return this.authService.signin(dto, res);
