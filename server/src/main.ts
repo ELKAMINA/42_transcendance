@@ -4,13 +4,14 @@ import * as cookieParser from 'cookie-parser';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import AppModule from './app.module';
 import { ValidationError } from 'class-validator';
 
 // main.ts file = entrypoint for the app's process. The bootstrap method creates the Nest application and initializes it.
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule); // Nest container
+  const app = await NestFactory.create<NestExpressApplication>(AppModule); // Nest container
 
   /* Communications layer: Début  */
   app.useGlobalPipes(
@@ -25,9 +26,12 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.enableCors({
     origin: [
+      'https://localhost',
       'http://localhost:3000',
+      'https://localhost:3000',
       'http://0.0.0.0:4001',
       'http://localhost:4001',
+      'https://localhost:4001',
       '*',
     ],
     credentials: true,
@@ -35,7 +39,7 @@ async function bootstrap() {
   });
   app.useWebSocketAdapter(new IoAdapter(app));
   // app.useGlobalFilters(new ValidationExceptionFilter());
-
+  app.enable('trust proxy');
   /* Communications layer : FIN */
 
   // For Swagger

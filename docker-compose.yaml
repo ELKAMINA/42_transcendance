@@ -8,14 +8,9 @@ services:
   server:
     container_name: backend
     restart: always
-    # expose:
-    #   - "4001"
-    #   - "4003"
-    #   - "4006"
-    #   - "4010"
-    #   - "5555"
     ports:
       - "4001:4001"
+      - "4002:4002"
       - "4003:4003"
       - "4006:4006"
       - "4010:4010"
@@ -83,17 +78,19 @@ services:
     networks:
       - transcendance
   nginx:
+    # image: nginx
     container_name: nginx
     build:
       context: ./nginx
       dockerfile: Dockerfile
-    image: nginx
     restart: always
     ports:
+      - "80:80"
       - "443:443"
-      - "8000:80"
     networks:
       - transcendance
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - server
       - client

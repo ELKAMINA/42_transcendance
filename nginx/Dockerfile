@@ -8,10 +8,9 @@ RUN apk add openssl \
 		-sha256						\
 		-days 365					\
 		-nodes						\ 
-        #-nodes : means no encryption with a passphrase
 		-out /etc/nginx/cert.crt	\
 		-keyout /etc/nginx/cert.key	\
-		-subj "/C=FR/ST=France/L=Paris/O=42/CN=transcendance"
+		-subj "/C=FR/ST=France/L=Paris/O=42/CN=localhost"
 
 # C: Country
 # ST: State or Province
