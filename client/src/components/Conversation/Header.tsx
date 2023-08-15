@@ -66,9 +66,10 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	// the name of the channel should be the name of 
 	// the channel member that is not the current user
 	if (isPrivateConv) {
+		console.log('channel.members[0].login = ', channel.members[0].login)
 		if (channel.members[0].login === currentUser) {
-			channelName = channel.createdBy.login;
-			channelAvatar = channel.createdBy.avatar
+			channelName = channel.members[1].login;
+			channelAvatar = channel.members[1].avatar
 		}
 		else {
 			channelName = channel.members[0].login;
