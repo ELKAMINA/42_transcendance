@@ -93,8 +93,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					}
 				})
 		.then((res) => {
-			const params = new URLSearchParams(res.data).toString()
-			navigate(`/userprofile?data=${params}`)})
+			navigate(`/userprofile?data`, { state: { data: res.data } })
+		})
 		.catch((e) => {
 			console.log('ERROR from request with params ', e)
 		})

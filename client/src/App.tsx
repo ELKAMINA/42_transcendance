@@ -7,6 +7,7 @@ import Game from './pages/game'
 import Chat from "./pages/chat";
 import HomePage  from "./pages/home";
 import Layout from './components/Layout';
+import NotFoundPage from './pages/notFound';
 import UserProfile from './pages/userProfile';
 import AuthContainer from "./containers/Auth/Auth";
 import RequireAuth from './components/RequireAuth';
@@ -14,6 +15,7 @@ import { useAppDispatch } from './utils/redux-hooks';
 import { setTokens } from './redux-features/auth/authSlice';
 import SettingsContainer from './containers/Settings/Settings';
 import FriendshipContainer from './containers/Friendship/Friendship';
+
 
 
 const App = () => {
@@ -44,6 +46,7 @@ const App = () => {
             <Route path="/settings" element={<SettingsContainer />}/>
             <Route path="/game" element={<Game />}/>
           </Route>
+          <Route path="*" element={<NotFoundPage/>} />
         </Route>
       </Routes>
     </div>

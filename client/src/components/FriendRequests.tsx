@@ -8,11 +8,13 @@ import {
 import { useState } from "react";
 import { Button } from "@mui/material";
 import Paper from '@mui/material/Paper';
+import { useNavigate } from "react-router-dom";
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
+import api from "../utils/Axios-config/Axios";
 import {socket} from '../components/AllFriendship'
 import { useAppSelector } from "../utils/redux-hooks";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
@@ -29,6 +31,7 @@ type FriendshipProps = {
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type, bgColor}) => {
     // const [avt, setAvtr] = useState('')
     const sender = useAppSelector(selectCurrentUser);
+    const navigate = useNavigate();
     const [buttonColor, setButtonColor] = useState('red'); // State to track the button color
     const [blockBgColor, setBlockBgColor] = useState('yellowgreen');
 
@@ -64,6 +67,21 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
         setBlockBgColor('grey')
     }
 
+    const handleProfile = async (name: string) => {
+		await api
+		.get('http://localhost:4001/user/userprofile', {
+				params: {
+						ProfileName: name,
+					}
+				})
+		.then((res) => {
+			navigate(`/userprofile?data`, { state: { data: res.data } })
+		})
+		.catch((e) => {
+			console.log('ERROR from request with params ', e)
+		})
+	}
+
     return (
         <>
             <CssBaseline/>
@@ -94,7 +112,9 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
                     zeroMinWidth
                     >
                         <Grid item>
-                            <Avatar src={avatar} sx={{ width: 40, height: 40 }}/>
+                        <Button onClick={() => handleProfile(login)}>
+                            <Avatar src={avatar} sx={{ width: 40, height: 40 }} />
+                        </Button>
                         </Grid>
                         <Grid item>
                             <Typography gutterBottom component="div" noWrap={true} sx={{

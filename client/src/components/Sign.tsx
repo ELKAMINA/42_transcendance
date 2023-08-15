@@ -19,6 +19,7 @@ import { resetChannelType } from '../redux-features/chat/createChannel/channelTy
 import { useSignupMutation, useSigninMutation, useCheckPwdMutation} from '../app/api/authApiSlice';
 import { resetChannelName, resetChannelNameStore } from '../redux-features/chat/createChannel/channelNameSlice';
 import { setSignCredentials, setAvatar, setNick, resetAuthStore } from '../redux-features/auth/authSlice';
+import { resetFriendshipStore } from '../redux-features/friendship/friendshipSlice';
 
 
 interface Signing {
@@ -43,6 +44,7 @@ export default function Sign(props: Signing){
 
     React.useEffect(() => {
         dispatch(resetAuthStore())
+        dispatch(resetFriendshipStore())
         dispatch(resetChannelType())
         dispatch(resetChannelName())
         dispatch(resetChannelStore())
@@ -97,26 +99,42 @@ export default function Sign(props: Signing){
             if (selectedImage)
             {
                 dispatch(setAvatar(selectedImage));
-                // setAr(selectedImage)
                 avatar = selectedImage;
             }
             if (props.type === "Sign up"){
                 userData = await signup({ nickname, password, avatar, type: 'notTfa' }).unwrap() // unwrap extracts the payload of a fulfilled action or to throw either the error
             }
             else{
-                const user: UserModel = await FetchUserByName(nickname)
-                if (user.faEnabled)
-                {
-                    dispatch(setNick(nickname))
-                    await checkPwd({ nickname, password}).unwrap()
-                    return (navigate('/tfa'))
+                let user: UserModel;
+                try{
+                    user = await FetchUserByName(nickname)
+                    if (user.faEnabled)
+                    {
+                        dispatch(setNick(nickname))
+                        await checkPwd({ nickname, password}).unwrap().then(()=> {
+                            navigate('/tfa')
+                        })
+                    }
+                    else {
+                        userData = await signin({ nickname, password, avatar, type: 'notTfa' }).unwrap().then((userData: any)=> {
+                            dispatch(setSignCredentials({...userData, nickname}))
+                            navigate('/welcome')
+                        });
+                    }
                 }
-                else {
-                    userData = await signin({ nickname, password, avatar, type: 'notTfa' }).unwrap()
+                catch(err: any){
+                    if (err.data && err.data.message && typeof err.data.message === 'string' ){
+                        setErrMsg(err.data.message);
+                    }
+                    else setErrMsg('No user found');
+                    navigate('/')
+
                 }
             }
-            dispatch(setSignCredentials({...userData, nickname}))
-            navigate('/welcome')
+            if (userData){
+                dispatch(setSignCredentials({...userData, nickname}))
+                navigate('/welcome')
+            }
         } catch (err: any) {
             if (err){
                 // console.log('error ', err);
@@ -127,6 +145,7 @@ export default function Sign(props: Signing){
                 else if (err.data && err.data.message && typeof err.data.message === 'string' ){
                     setErrMsg(err.data.message);
                 }
+                else setErrMsg('No user found');
             }
             if (!err)
                 setErrMsg('No Server Response');
@@ -137,7 +156,6 @@ export default function Sign(props: Signing){
         setPwd('')
         // setAr('')
     }
-    
     const content = (
         <Container>
             <CssBaseline/>

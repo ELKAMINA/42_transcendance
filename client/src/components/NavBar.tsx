@@ -18,6 +18,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
 import api from '../utils/Axios-config/Axios';
+import { EClientPlayType } from "../enum/EClientGame";
 import { useLogOutMutation } from '../app/api/authApiSlice';
 import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
 import {FetchActualUser} from '../redux-features/friendship/friendshipSlice';
@@ -99,13 +100,21 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     };
 
     const play = () => {
-        navigate("/game");
+        navigate(`/game?data`, {
+            state: {
+                data: {
+                    type: EClientPlayType.RANDOM,
+                    sender: "",
+                    receiver: "",
+                },
+            },
+        });
     };
 
     useEffect(() => {
         dispatch(FetchActualUser());
         return () => {};
-    }, [dispatch]);
+    }, []);
 
     const srcAvatar = useAppSelector(selectCurrentAvatar);
 

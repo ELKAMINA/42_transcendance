@@ -66,25 +66,59 @@ function UserProfileHeader(props: myProps) {
     sx={{
       width: '90vw',
       height: '20vh',
-      backgroundColor: '#20B2AA',
+      background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 70%)',
       borderRadius:'10px',
     }}>
       <Box display="flex" flexDirection="row" alignItems="center">
         <Avatar src={props.srcAvatar} alt="User Avatar"
-        sx={{
-          width: '150px',
-          height: '150px',
-          marginRight:'5px',
-        }}/>
-        <Typography component='div' variant="h3">{props.name}</Typography>
+          sx={(theme) => ({
+            width: {
+                xs: 70,
+                sm: 90,
+                md: 100,
+                lg: 120,
+            },
+            height: {
+              xs: 70,
+              sm: 90,
+              md: 100,
+              lg: 120,
+          },
+          margin: 3,
+        })}
+      />
+        <Typography sx={(theme)=> ({
+            fontSize: {
+                xs: 30,
+                sm: 40,
+                md: 80,
+                lg: 88,
+            },
+            letterSpacing: 2,
+            fontFamily: 'Press Start 2P',
+            color: 'white',
+            opacity: '0.9',
+            textShadow:   '0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #0ff, 0 0 70px #0ff, 0 0 80px #0ff, 0 0 100px #0ff, 0 0 150px #0ff',
+            '&:hover': {
+                textShadow: '0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #ff0, 0 0 30px #ff0, 0 0 40px #f0f',
+            },
+        })} 
+        component='div' variant="h3">{props.name}</Typography>
       </Box>
-        <Box ml={2} display="flex" flexDirection='row' justifyContent='space-between' flexWrap='wrap'>
+        <Box  display="flex" flexDirection='row' justifyContent='space-between' flexWrap='wrap'>
           <StyledBadge
+            sx={{
+              margin: 10,
+            }}
             overlap="circular"
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             variant="dot"
           >
-          <Typography component='div' variant="body1" color="textSecondary">
+          <Typography 
+          sx={{
+            margin: 0.5,
+          }}
+          component='div' variant="body1" color="textSecondary">
               {props.status}
           </Typography>
           </StyledBadge>
@@ -92,7 +126,7 @@ function UserProfileHeader(props: myProps) {
         <Box ml={2} display="flex" flexDirection='row' justifyContent='space-between' flexWrap='wrap'>
         {props.friendship.myBlockedFriend && <div className='userprof-header'>Not friends - Blocked by you</div> }
         {props.friendship.thoseWhoBlockedMe && <div className='userprof-header'> Not friends - Blocked you</div> }
-        {props.friendship.isMyfriend && <div className='userprof-header'>Friend</div> }
+        {props.friendship.isMyfriend && <div className='userprof-header'>Friends</div> }
         {!props.friendship.isMyfriend && !props.friendship.thoseWhoBlockedMe && !props.friendship.myBlockedFriend && props.name !== user  && <div className='userprof-header'>Not Friends</div>}
         </Box> 
   </Box>
@@ -100,30 +134,3 @@ function UserProfileHeader(props: myProps) {
 }
 
 export default UserProfileHeader;
-
-
-
-
-
-// const pages = ['Products', 'Pricing', 'Blog'];
-// const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
-// function ResponsiveAppBar() {
-//   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-//   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
-//   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-//     setAnchorElNav(event.currentTarget);
-//   };
-//   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-//     setAnchorElUser(event.currentTarget);
-//   };
-
-//   const handleCloseNavMenu = () => {
-//     setAnchorElNav(null);
-//   };
-
-//   const handleCloseUserMenu = () => {
-//     setAnchorElUser(null);
-//   };
-// export default ResponsiveAppBar;

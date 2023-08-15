@@ -1,42 +1,46 @@
-# Stage 1 : Building the image
+#===================== Stage 1 : Building the image for production =====================
 
-FROM node:18-alpine AS builder
+FROM node:19-alpine AS builder
 
-WORKDIR /app/server
+WORKDIR /app
+
+RUN apk update && \
+    apk add openssl
 
 COPY package*.json ./
 
 COPY prisma ./prisma/
 
-RUN npm install
-
 COPY tsconfig*.json ./
 
-COPY start.sh .
+COPY start.prod.sh .
 
-RUN chmod +x start.sh
+RUN chmod +x start.prod.sh
 
 COPY . .
 # To add our source code into the image
 
+#for installing only production dependencies(and not dev dependencies)
+RUN npm ci 
 
-EXPOSE 4001 
-#Port inside the container. Only informational
+COPY --chown=node:node . .
+
+USER node
+
+
+#===================== Stage 2 : Running the container (This is Runtime) =====================
+
+FROM node:19-alpine
+
+WORKDIR /app
+
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+
+COPY --chown=node:node --from=builder /app/package*.json ./
+COPY --chown=node:node --from=builder /app/tsconfig*.json ./
+COPY --from=builder /app/prisma ./prisma
+COPY --chown=node:node --from=builder /app/ ./
 
 RUN npm run build
 
-# Stage 2 : Running the container (This is Runtime) 
-
-FROM node:18-alpine
-
-COPY --from=builder /app/server/node_modules ./node_modules
-COPY --from=builder /app/server/package*.json ./
-COPY --from=builder /app/server/tsconfig*.json ./
-COPY --from=builder /app/server/dist ./dist
-# 👇 copy prisma directory
-COPY --from=builder /app/server/prisma ./prisma
-COPY --from=builder /app/server/ ./
-
-EXPOSE 4001 4003 4006 4010 5555
-
-CMD ["sh", "./start.sh"]
+CMD ["sh", "./start.prod.sh"]
