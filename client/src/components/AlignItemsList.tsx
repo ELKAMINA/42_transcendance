@@ -35,9 +35,9 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	
 	const channels = useAppSelector(selectUserChannels) as Channel[];
-	const channelsRef = React.useRef<Channel[]>([]);
+	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]);
 	React.useEffect(() => {
-		channelsRef.current = channels.map((channel) => {
+		const modifiedChannels = channels.map((channel) => {
 			const modifiedChannel = { ...channel };
 			if (channel.type === 'privateConv') { // if the channel is a private conv
 				if (channel.members[0].login === currentUser) {
@@ -50,7 +50,12 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			}
 			return channel;
 		})
+		setchannelsForDisplay(modifiedChannels)
 	}, [channels, currentUser])
+
+	React.useEffect(() => {
+		console.log('channelsForDisplay = ', channelsForDisplay)
+	}, [channelsForDisplay])
 
 	// React.useEffect(() => {
 	// 	console.log('User channels = ', channels);
@@ -148,7 +153,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
-			{channelsRef.current.map((element, index) => {
+			{channelsForDisplay.map((element, index) => {
 				return (
 					<Stack key={index}>
 						<Divider variant="inset" component="li" />
