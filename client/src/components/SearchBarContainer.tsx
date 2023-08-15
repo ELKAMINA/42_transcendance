@@ -108,9 +108,11 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 			login : currentUserName, 
 		};
 
+		const convName = `${createdBy.login}${Date.now()}`;
+
 		await api
 		.post ('http://localhost:4001/channel/creation', {
-			name: `${createdBy.login}${Date.now()}`,
+			name: convName,
 			channelId: Date.now(),	
 			type: 'privateConv',
 			createdBy: createdBy,
@@ -124,7 +126,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 		.then ((response) => {
 			// console.log('this channel has been added to the database = ', response);
 			AppDispatch(fetchUserChannels());
-			AppDispatch(fetchDisplayedChannel(`${createdBy.login}${Date.now()}`));
+			AppDispatch(fetchDisplayedChannel(convName));
 		})
 		.catch ((error) => {
 			console.log('error while creating private conv from search bar = ', error);
