@@ -29,7 +29,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	useEffect(() => {
 		AppDispatch(FetchAllFriends())
 		AppDispatch(fetchAllChannelsInDatabase())
-	}, []); // get the friends and channels from database
+	}, [currentUserName]); // get the friends and channels from database
 
 	const friends = useAppSelector(selectFriends) as UserModel[];
 	let filteredFriends : UserModel[] = [];
@@ -42,36 +42,66 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	// so I filter all the private channels and privateConv channels of which I am not a member or
 	// a creator.
     useEffect(() => {
+		// console.log('friends = ', friends);
+		// console.log('channels = ', channels);
+
+		// remove the friends that already have an open conversation with the current user to avoid duplicates
+		// I need to check if the channel is of type 'privateConv'
+		// Then I need to check if the friend and I are the two members
+		// I this is true : filter out
+		filteredFriends = friends.filter((friend) => {
+			// Find channels where the current user and the friend are members and the type is 'privateConv'
+			let existingChannels = channels.filter((channel) => {
+				return (
+					channel.type === 'privateConv' &&
+					channel.members.some(member => member.login === currentUserName) &&
+					channel.members.some(member => member.login === friend.login)
+				);
+			});
 		
-        // remove the friends that already have an open conversation with the current user to avoid duplicates
-        filteredFriends = friends.filter((friend) => {
-            return channels.every((channel) => channel.name !== friend.login);
-        });
+			// If no existing channels were found, keep the friend in the list
+			return existingChannels.length === 0;
+		});
 
 		// console.log('filteredFriends = ', filteredFriends);
 
-        if (channels.length > 0) {
-            filteredChannels = channels.filter((channel) => {
-                if (channel.type === 'privateConv' || channel.type === 'private') {
-                    return (
-                        channel.members.some(
-                            (member) => member?.login === currentUserName
-                        ) ||
-                        channel.createdBy?.login === currentUserName
-                    );
-                }
-                return true;
-            });
+		if (channels.length > 0) {
 
-        }
+			// #1 : we filter out all the private channels and privateConvs that don't have currentUser as a member
+			filteredChannels = channels
+			.filter((channel) => { 
+				if (channel.type === 'privateConv' || channel.type === 'private') {
+					return (
+						channel.members.some((member) => member?.login === currentUserName)  // checks if there's at least one member in the members array of the channel whose login property matches the currentUserName
+					);
+				}
+				return true;
+			})
+			// #2 : we change the name of the channels for a correct display
+			.map((channel) => {
+				if (channel.type === 'privateConv') { // if the channel is of type privateConv
+					if (channel.members[0].login === currentUserName) { // if currentUser correspond to members[0], display members[1]'s login
+						return { ...channel, name: channel.members[1].login };
+					} else {
+						return { ...channel, name: channel.members[0].login }; // and vice versa
+					}
+				}
+				return channel; // For other channel types or conditions, keep the channel as is
+			  });
+		}
 
+		console.log("filteredChannels = ", filteredChannels);
 		// Update usersAndChannels after filtering channels and friends
 		setUsersAndChannels([...filteredFriends, ...filteredChannels]);
 
     }, [channels, friends, currentUserName]);
 
+	// useEffect(() => {
+		// console.log('usersAndChannels = ', usersAndChannels);
+	// }, [usersAndChannels])
+
 	// State to hold the selected option
-	const [selectedOption, setSelectedOption] = useState<Channel | UserModel | null >(null);
+	const [selectedOption, setSelectedOption] = useState<Channel | UserModel | null>(null);
 
 	async function createPrivateConv(friend : UserModel) {
 
@@ -81,7 +111,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 
 		await api
 		.post ('http://localhost:4001/channel/creation', {
-			name: friend.login,
+			name: `${createdBy.login}${Date.now()}`,
 			channelId: Date.now(),	
 			type: 'privateConv',
 			createdBy: createdBy,
@@ -95,10 +125,10 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 		.then ((response) => {
 			// console.log('this channel has been added to the database = ', response);
 			AppDispatch(fetchUserChannels());
-			AppDispatch(fetchDisplayedChannel(friend.login));
+			AppDispatch(fetchDisplayedChannel(`${createdBy.login}${Date.now()}`));
 		})
 		.catch ((error) => {
-			console.log('error = ', error);
+			console.log('error while creating private conv from search bar = ', error);
 		})
 	}
 
