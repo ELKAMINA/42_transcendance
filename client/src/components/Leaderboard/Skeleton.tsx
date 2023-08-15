@@ -1,11 +1,14 @@
 
 import * as React from "react";
 import { Grid } from "@mui/material";
+import { Button } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Avatar from "@mui/material/Avatar";
 import {CssBaseline} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 
+import api from "../../utils/Axios-config/Axios";
 import { useAppSelector } from "../../utils/redux-hooks";
 import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 
@@ -21,7 +24,24 @@ interface Myprops {
 
 const LeaderboardRow = (props: Myprops) => {
     const user = useAppSelector(selectCurrentUser)
+    const navigate = useNavigate();
     React.useEffect(() => {}, []);
+
+    const handleProfile = async (name: string) => {
+		await api
+		.get('http://localhost:4001/user/userprofile', {
+				params: {
+						ProfileName: name,
+					}
+				})
+		.then((res) => {
+			navigate(`/userprofile?data`, { state: { data: res.data } })
+		})
+		.catch((e) => {
+			console.log('ERROR from request with params ', e)
+		})
+	}
+
     return (
         <>
         <CssBaseline/>
@@ -37,7 +57,9 @@ const LeaderboardRow = (props: Myprops) => {
         >
             <Grid container spacing={1}>
                 <Grid item>
-                    <Avatar src={props.avatar} sx={{ width: 50, height: 50 }} />
+                    <Button onClick={() => handleProfile(props.login)}>
+                        <Avatar src={props.avatar} sx={{ width: 50, height: 50 }} />
+                    </Button>
                 </Grid>
                 <Grid item sm container>
                     <Grid item xs container direction="column" spacing={2}>
