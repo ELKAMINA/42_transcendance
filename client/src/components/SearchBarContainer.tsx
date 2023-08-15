@@ -32,37 +32,43 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	}, []); // get the friends and channels from database
 
 	const friends = useAppSelector(selectFriends) as UserModel[];
+	let filteredFriends : UserModel[] = [];
 	let channels = useAppSelector((state) => selectAllChannels(state)) as Channel[];
 	channels = channels.filter(channel => channel.name !== 'WelcomeChannel'); // remove 'WelcomeChannel'
 	let filteredChannels : Channel[] = [];
 	
-	// if the channel is of type 'private'or 'privateConv' and the current user is not a member,
+	// if the channel is of type 'private' or 'privateConv' and the current user is not a member,
 	// we won't display it.
 	// so I filter all the private channels and privateConv channels of which I am not a member or
 	// a creator.
-	useEffect(() => {
+    useEffect(() => {
+		
+        // remove the friends that already have an open conversation with the current user to avoid duplicates
+        filteredFriends = friends.filter((friend) => {
+            return channels.every((channel) => channel.name !== friend.login);
+        });
 
-		if (channels.length > 0) {
-			filteredChannels = channels.filter((channel) => {
-				if (channel.type === 'privateConv' || channel.type === 'private') {
-					return (
-						channel.members.some(
-							(member) => member?.login === currentUserName
-						) ||
-						channel.createdBy?.login === currentUserName
-					);
-				}
-				return true;
-			});
+		// console.log('filteredFriends = ', filteredFriends);
 
-			// remove the friends that already have an open conversion with current user to avoid duplicates
-			const filteredFriends = friends.filter((friend) => {
-				return channels.every((channel) => channel.name !== friend.login); // If any match is found, the every method will return false, and the friend will be excluded from the filteredFriends array.
-			})
+        if (channels.length > 0) {
+            filteredChannels = channels.filter((channel) => {
+                if (channel.type === 'privateConv' || channel.type === 'private') {
+                    return (
+                        channel.members.some(
+                            (member) => member?.login === currentUserName
+                        ) ||
+                        channel.createdBy?.login === currentUserName
+                    );
+                }
+                return true;
+            });
 
-			setUsersAndChannels([...filteredFriends, ...filteredChannels]); // join friends and channels
-		}
-	}, [channels]);
+        }
+
+		// Update usersAndChannels after filtering channels and friends
+		setUsersAndChannels([...filteredFriends, ...filteredChannels]);
+
+    }, [channels, friends, currentUserName]);
 
 	// State to hold the selected option
 	const [selectedOption, setSelectedOption] = useState<Channel | UserModel | null >(null);
