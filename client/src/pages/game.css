@@ -1,5 +1,11 @@
-.app.game {
-    background-color: black;
+.game {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        #07457e 0%,
+        rgba(0, 181, 160, 0.59) 90%
+    );
 }
 
 .pongWrapper {
@@ -93,6 +99,18 @@
     width: 100%;
     height: 100%;
     position: absolute;
+}
+
+.endGameWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    justify-self: center;
+    color: white;
+    border: 10px solid black;
 }
 
 /* .wrapper {
