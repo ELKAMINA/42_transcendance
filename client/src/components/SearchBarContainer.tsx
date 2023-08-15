@@ -139,11 +139,16 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	const handleOptionSelect = (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
 		if (value) {
 			setSelectedOption(value);
-			if ('name' in value && value.type !== 'privateConv' && value.members.some((member) => member.login === currentUserName)) { // if it is a channel && if it's not a private conv, and if current user is not already a member
-				// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
-				setPickedChannel(value);
-				// open EnterChannelConfirmationDialog
-				setOpenConfirmationDialog(true);
+			if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
+				if (value.members.some((member) => member.login === currentUserName)) { // and if current user is already a member
+					setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
+				}
+				else {
+					// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
+					setPickedChannel(value);
+					// open EnterChannelConfirmationDialog
+					setOpenConfirmationDialog(true);
+				}
 				if (isConfirmed) { // if the user do want to enter the channel
 					if (value.key !== '') { // if channel is protected by a password
 						setAlertDialogSlideOpen(true); // open password check dialog slide
