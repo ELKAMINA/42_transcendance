@@ -34,7 +34,8 @@ function Conversation() {
 	
 	
 	useEffect(() => {
-		if (selectedChannel.name === 'WelcomeChannel') // if roomId is 'WelcomeChannel'
+		console.log("selectedChannel.name = ", selectedChannel.name);
+		if (selectedChannel.name === 'WelcomeChannel' || selectedChannel.name === 'empty channel') // if roomId is 'WelcomeChannel'
 			return ; // exit the function immediatly
 		socketRef.current = socketIOClient("http://localhost:4002", {
 			query: {roomId}
