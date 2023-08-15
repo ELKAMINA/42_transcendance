@@ -37,6 +37,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const channels = useAppSelector(selectUserChannels) as Channel[];
 	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]);
 	React.useEffect(() => {
+		// console.log('channels = ', channels);
 		const modifiedChannels = channels.map((channel) => {
 			const modifiedChannel = { ...channel };
 			if (channel.type === 'privateConv') { // if the channel is a private conv
@@ -53,9 +54,9 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 		setchannelsForDisplay(modifiedChannels)
 	}, [channels, currentUser])
 
-	React.useEffect(() => {
-		console.log('channelsForDisplay = ', channelsForDisplay)
-	}, [channelsForDisplay])
+	// React.useEffect(() => {
+		// console.log('channelsForDisplay = ', channelsForDisplay)
+	// }, [channelsForDisplay])
 
 	// React.useEffect(() => {
 	// 	console.log('User channels = ', channels);
