@@ -100,7 +100,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 		})
 	}
 	
-	return (Con	
+	return (
 		<Box 
 			p={2}
 			sx={{

@@ -13,7 +13,7 @@ export class UserService {
 
   async searchUser(nick: string) {
     try {
-      const user = await this.prisma.user.findUniqueOrThrow({
+      const user = await this.prisma.user.findUnique({
         where: {
           login: nick,
         },
@@ -30,7 +30,7 @@ export class UserService {
       });
       return user;
     } catch (e) {
-      //   console.log(e);
+      return null;
     }
   }
 
@@ -40,7 +40,7 @@ export class UserService {
       //   console.log('all the users ', users);
       return users;
     } catch (e) {
-      console.log(e);
+      return null;
     }
   }
 

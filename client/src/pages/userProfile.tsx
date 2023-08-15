@@ -52,7 +52,9 @@ const UserProfile = () => {
             <Box className="userprofile-header">
                 <Navbar currentRoute={currentRoute} />
             </Box>
-            <Box className="userprofile-middle">
+            <Box sx={{
+                marginTop: 3.5,
+            }} className="userprofile-middle">
                 <UserProfileHeader
                     name={userToStalk.login}
                     status={userToStalk.status}

@@ -64,9 +64,6 @@ export default function ProfileInfo(props: Myprops) {
                 Date.parse(b.createdAt.toString()) -
                 Date.parse(a.createdAt.toString())
         );
-    // console.log("login  ", props.interestProfile.login);
-    // console.log("tous lesmatches ", matches);
-    // console.log("les p1 ", props.interestProfile.p1);
     return (
         <Box sx={{ bgcolor: "background.paper", width: "90vw" }}>
             <AppBar position="static">
@@ -81,12 +78,28 @@ export default function ProfileInfo(props: Myprops) {
                     <Tab
                         label="Statistics"
                         {...a11yProps(0)}
-                        sx={{ backgroundColor: "#07457E" }}
+                        sx={(theme)=> ({
+                            fontSize: {
+                                xs: 8,
+                                sm: 10,
+                                md: 15,
+                                lg: 18,
+                            },
+                            background: '#07457E',
+                        })}
                     />
                     <Tab
                         label="Matches History"
                         {...a11yProps(1)}
-                        sx={{ backgroundColor: "#07457E" }}
+                        sx={(theme)=> ({
+                            fontSize: {
+                                xs: 8,
+                                sm: 10,
+                                md: 15,
+                                lg: 18,
+                            },
+                            background: '#07457E',
+                        })}
                     />
                 </Tabs>
             </AppBar>
@@ -98,6 +111,7 @@ export default function ProfileInfo(props: Myprops) {
                         justifyContent: "space-around",
                         alignContent: "center",
                         flexWrap: "wrap",
+                        // height: '100vh',
                     }}
                 >
                     <Rank him={props.interestProfile} />
@@ -109,8 +123,8 @@ export default function ProfileInfo(props: Myprops) {
             </TabPanel>
             <TabPanel value={value} index={1} dir={theme.direction}>
                 {/* remplacer par le tableau de match joués et recuperer les infos */}
-                {matches.map((e: any) => (
-                    <MatchHistory us={e} />
+                {matches.map((e: any, index) => (
+                    <MatchHistory key={index} us={e} />
                 ))}
             </TabPanel>
         </Box>

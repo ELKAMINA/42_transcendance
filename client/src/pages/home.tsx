@@ -70,12 +70,12 @@ function HomePage() {
             <Box sx={(theme) => ({
                 display: 'flex',
                 flexDirection: 'column',
-                // width: '100%',
                 height: '100vh',
                 overflow: 'hidden',
                 alignItems: 'center',
                 p: 4,
                 background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)',
+                justifyContent: 'center',
                 [theme.breakpoints.up('md')]: {
                     alignItems: 'center', // center alignment for larger screens
                     padding: theme.spacing(8), // more padding for larger screens
@@ -91,8 +91,8 @@ function HomePage() {
             })}>
                 <Typography sx={(theme)=> ({
                     fontSize: {
-                        xs: 40,
-                        sm: 70,
+                        xs: 60,
+                        sm: 110,
                         md: 150,
                         lg: 200,
                     },
@@ -100,6 +100,7 @@ function HomePage() {
                     fontFamily: 'Press Start 2P',
                     color: '#07457E',
                     opacity: '0.4',
+                    margin: 3,
                     textShadow:   '0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #0ff, 0 0 70px #0ff, 0 0 80px #0ff, 0 0 100px #0ff, 0 0 150px #0ff',
                     '&:hover': {
                         textShadow: '0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #ff0, 0 0 30px #ff0, 0 0 40px #f0f',

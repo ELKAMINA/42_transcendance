@@ -166,13 +166,14 @@ export class AuthService {
           throw new ForbiddenException('Credentials taken');
         }
       }
+      console.log('la ????');
       throw error;
     } // PrismaClientKnownRequestError to catch the unique prisma duplicate error (for instance for the email that is duplicated )
   }
 
   async signin(dto: AuthDto, res: Response): Promise<object> {
     try {
-      // console.log("DTOOOO ", dto)
+      // console.log('DTOOOO ', dto);
       const us = await this.prisma.user.findUniqueOrThrow({
         where: {
           login: dto.nickname,
@@ -252,7 +253,7 @@ export class AuthService {
   }
 
   async validateUser(details: UserDetails) {
-    const us = await this.prisma.user.findUniqueOrThrow({
+    const us = await this.prisma.user.findUnique({
       where: {
         login: details.login,
       },

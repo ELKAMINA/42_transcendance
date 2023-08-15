@@ -92,8 +92,12 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
-    await this.friends.requestFriendship(body.sender, body.receiver.nickname);
-    this.io.emit('friendAdded', '');
+    const newReq = await this.friends.requestFriendship(
+      body.sender,
+      body.receiver.nickname,
+    );
+    console.log('oui 2');
+    this.io.emit('friendAdded', newReq);
   }
 
   @SubscribeMessage('acceptFriend')
