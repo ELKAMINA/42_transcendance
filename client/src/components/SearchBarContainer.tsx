@@ -90,7 +90,6 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 			  });
 		}
 
-		console.log("filteredChannels = ", filteredChannels);
 		// Update usersAndChannels after filtering channels and friends
 		setUsersAndChannels([...filteredFriends, ...filteredChannels]);
 
