@@ -1,18 +1,22 @@
 import { Socket } from "socket.io-client"
 import socketIOClient from 'socket.io-client';
-import { Box, Stack, Typography } from "@mui/material"
+import { TableBody } from "material-ui/Table";
+import { useNavigate } from "react-router-dom";
+import { Box, Stack, Typography, fabClasses } from "@mui/material"
 import React, { useEffect, useRef, useState } from "react"
 
 import Header from "./Header"
 import Footer from "./Footer"
 import Message from "./Message"
 import { RootState } from "../../app/store"
+import GameSuggestion from '../Game/GameSuggestion'
 import { emptyChannel } from "../../data/emptyChannel"
-import { useAppSelector } from "../../utils/redux-hooks"
+import { EClientPlayType } from "../../enum/EClientGame";
 import { ChatMessage } from "../../types/chat/messageType"
 import { ChannelModel } from "../../types/chat/channelTypes"
 import { selectCurrentUser } from "../../redux-features/auth/authSlice"
-import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
+import { useAppSelector, useAppDispatch } from "../../utils/redux-hooks"
+import { selectDisplayedChannel, selectGameDialog, setGameDialog } from "../../redux-features/chat/channelsSlice"
 
 	// export const socket = io('http://localhost:4002', {
 	// 	withCredentials: true,
@@ -21,6 +25,17 @@ import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
 	// 	autoConnect: false,
 	// 	// reconnection: true,
 	// })
+export interface dialogInfo {
+	sender: string,
+	receiver: string,
+	content: string,
+	waiting: boolean, // false means it's the user who we suggested to
+}
+interface gameSugg {
+	from: string,
+	to: string,
+
+}
 
 function Conversation() {
 
@@ -31,13 +46,20 @@ function Conversation() {
 	const socketRef = useRef<Socket>(); // by using useRef, the reference to the socket instance is preserved across re-renders of the component. 
 	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
-	
+	const dispatch = useAppDispatch();
+	const gameDialog = useAppSelector(selectGameDialog);
+	const [open, setOpen] = useState<boolean>(false);
+	const [gameDialogInfo, setGameDialogInfo] = useState<dialogInfo>({
+		sender: '', receiver: '', content: '', waiting: false
+	});
+	const navigate = useNavigate()
 	
 	useEffect(() => {
 		if (selectedChannel.name === 'WelcomeChannel') // if roomId is 'WelcomeChannel'
 			return ; // exit the function immediatly
 		socketRef.current = socketIOClient("http://localhost:4002", {
-			query: {roomId}
+			query: {roomId},
+			reconnection: false,
 		})
 
 		socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
@@ -52,7 +74,8 @@ function Conversation() {
 		})
 
 		return () => {
-			socketRef.current?.disconnect()
+			// socketRef.current?.disconnect()
+			dispatch(setGameDialog(false));
 		}
 	}, [selectedChannel])
 
@@ -79,13 +102,77 @@ function Conversation() {
 		scrollMessageContainerToBottom(); // scroll to bottom when the component is rendered
 	}, []);
 
+	const suggestGame = (gameSuggestionInfo: gameSugg) => {
+		socketRef.current?.emit('suggestingGame', gameSuggestionInfo)
+	}
+
+	socketRef.current?.off('respondingGame').on('respondingGame', (gameSuggestionInfo: gameSugg)=> {
+				// console.log(gameSuggestionInfo);
+		if (gameSuggestionInfo.to !== currentUser){
+			setGameDialogInfo({
+				sender: gameSuggestionInfo.from,
+				receiver: gameSuggestionInfo.to,
+				content: `Waiting for ${gameSuggestionInfo.to} to accept the game`,
+				waiting: true,
+			})
+		}
+		else if (gameSuggestionInfo.to === currentUser){
+			setGameDialogInfo({
+				sender: gameSuggestionInfo.from,
+				receiver: gameSuggestionInfo.to,
+				content: `${gameSuggestionInfo.from} wanna play with you`,
+				waiting: false,
+			})
+		}
+		setOpen(true)
+		dispatch(setGameDialog(true))
+	})
+
+	socketRef.current?.off('serverPrivateGame').on('serverPrivateGame', (gameAcceptance)=> {
+		navigate(`/game?data`, {
+            state: {
+                data: {
+                    type: EClientPlayType.ONETOONE,
+                    sender: gameAcceptance.sender,
+                    receiver: gameAcceptance.receiver,
+                },
+            },
+        });
+	})
+
+	socketRef.current?.off('gameDenied').on('gameDenied', ()=> {
+		setOpen(false)
+		dispatch(setGameDialog(false))
+	})
+
+	socketRef.current?.off('gameCancelled').on('gameCancelled', ()=> {
+		setOpen(false)
+		dispatch(setGameDialog(false))
+	})
+
+	const handleClose = () => {
+		setOpen(false)
+	}
+
+	const acceptGame = (gameAcceptance: any) => {
+		socketRef.current?.emit('privateGame', gameAcceptance)
+	}
+
+	const denyGame = () => {
+		socketRef.current?.emit('denyGame')
+	}
+
+	const cancelGame = () => {
+		socketRef.current?.emit('cancelGame')
+	}
+
 	return (
 		<Stack
 			height={'100%'} 
 			maxHeight={'100vh'}
 			width={'auto'}
 		>
-			{isWelcomeChannel && (
+			{isWelcomeChannel && gameDialog === false && (
 				<Stack direction={'column'} justifyContent={'center'}>
 					<Box
 						sx={{
@@ -101,9 +188,9 @@ function Conversation() {
 					</Box>
 				</Stack>
 			)}
-			{!isWelcomeChannel && (
+			{!isWelcomeChannel && gameDialog === false && (
 				<React.Fragment>
-					<Header socketRef={socketRef}/>
+					<Header onSuggestGame={suggestGame} socketRef={socketRef}/>
 					<Box
 						width={'100%'}
 						sx={{
@@ -118,6 +205,7 @@ function Conversation() {
 					<Footer send = {send} />
 				</React.Fragment>
 			)}
+			{gameDialog === true && <GameSuggestion open={open} handleClose={handleClose} dialogContent={gameDialogInfo} onAcceptingGame={acceptGame} onDeny={denyGame} onCancel={cancelGame}/>}
 		</Stack>
 	)
 }

@@ -17,6 +17,7 @@ export interface ChannelSlice {
 	userPrivateChannels : ChannelModel[],
 	userPublicChannels : ChannelModel[],
 	userPrivateConvs : ChannelModel[],
+	gameDialog: boolean,
 
 }
 
@@ -32,6 +33,7 @@ const initialState : ChannelSlice = {
 	userPrivateChannels : [],
 	userPublicChannels : [],
 	userPrivateConvs : [],
+	gameDialog: false,
 
 };
 
@@ -116,9 +118,12 @@ export const channelsSlice = createSlice({
 				userPrivateConvs : action.payload
 			}
 		},
+		setGameDialog: (state, action: PayloadAction<boolean>) => {
+			state.gameDialog = action.payload
+		},
 		resetChannelStore : (state) => {
             return initialState;
-        }
+        },
 	}
 })
 
@@ -329,6 +334,7 @@ export const {
 	updatePublicChannels,
 	updatePrivateConvs,
 	resetChannelStore,
+	setGameDialog,
 } = channelsSlice.actions;
 
 export default channelsSlice.reducer
@@ -344,3 +350,4 @@ export const selectUserPrivateConvs = (state : RootState) => state.persistedRedu
 export const selectPrivateChannels= (state : RootState) => state.persistedReducer.channels.privateChannels
 export const selectPublicChannels = (state : RootState) => state.persistedReducer.channels.publicChannels
 export const selectPrivateConvs = (state : RootState) => state.persistedReducer.channels.privateConvs
+export const selectGameDialog = (state : RootState) => state.persistedReducer.channels.gameDialog

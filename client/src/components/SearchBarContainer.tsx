@@ -64,7 +64,6 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
             });
 
         }
-
 		// Update usersAndChannels after filtering channels and friends
 		setUsersAndChannels([...filteredFriends, ...filteredChannels]);
 
