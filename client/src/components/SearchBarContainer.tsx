@@ -28,6 +28,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 			socket?.disconnect()
 		}
 	}, [socket])
+
 	const [usersAndChannels, setUsersAndChannels] = useState<(Channel | UserModel)[]>([]);
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = useState(false);
 

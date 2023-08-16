@@ -12,8 +12,6 @@ type BlockUserProps = {
 };
 
 const BlockUser = ({open , handleClose, /*socketRef,*/ sender, receiver} : BlockUserProps ) => {
-
-	// console.log("socketRef in block user = ", socketRef?.current?.id);
 	const socket = useSocket();
 	React.useEffect(() => {
 		if (!socket)
@@ -22,6 +20,7 @@ const BlockUser = ({open , handleClose, /*socketRef,*/ sender, receiver} : Block
 			socket?.disconnect()
 		}
 	}, [socket])
+
 	// to give the slide effect
 	const Transition = React.forwardRef(function Transition(
 		props: TransitionProps & {
