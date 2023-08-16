@@ -35,7 +35,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	
 	const channels = useAppSelector(selectUserChannels) as Channel[];
-	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]);
+	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]); // this is a state for the formated channels, aka with private convs names updated according to current user
 	React.useEffect(() => {
 		// console.log('channels = ', channels);
 		const modifiedChannels = channels.map((channel) => {
@@ -99,6 +99,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 		.then((response) => {
 			AppDispatch(fetchUserChannels());
 			AppDispatch(fetchDisplayedChannel('WelcomeChannel'))
+			getSelectedItem('WelcomeChannel');
 		})
 		.catch((error) => console.log('error while deleting channel', error));
 	}
