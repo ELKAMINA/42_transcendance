@@ -31,9 +31,32 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const [alertError, setAlertError] = React.useState<boolean>(false);
 
 	const AppDispatch = useAppDispatch();
-	const channels = useAppSelector(selectUserChannels) as Channel[];
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
+	
+	const channels = useAppSelector(selectUserChannels) as Channel[];
+	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]);
+	React.useEffect(() => {
+		// console.log('channels = ', channels);
+		const modifiedChannels = channels.map((channel) => {
+			const modifiedChannel = { ...channel };
+			if (channel.type === 'privateConv') { // if the channel is a private conv
+				if (channel.members[0].login === currentUser) {
+					modifiedChannel.name = channel.members[1].login;
+				}
+				else {
+					modifiedChannel.name = channel.members[0].login;
+				}
+				return modifiedChannel;
+			}
+			return channel;
+		})
+		setchannelsForDisplay(modifiedChannels)
+	}, [channels, currentUser])
+
+	// React.useEffect(() => {
+		// console.log('channelsForDisplay = ', channelsForDisplay)
+	// }, [channelsForDisplay])
 
 	// React.useEffect(() => {
 	// 	console.log('User channels = ', channels);
@@ -131,7 +154,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 
 	return (
 		<List sx={{ width: '100%', bgcolor: 'transparent', color: 'white' }}>
-			{channels.map((element, index) => {
+			{channelsForDisplay.map((element, index) => {
 				return (
 					<Stack key={index}>
 						<Divider variant="inset" component="li" />

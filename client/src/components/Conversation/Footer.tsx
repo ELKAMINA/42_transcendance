@@ -80,7 +80,8 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		if (selectedChannel.type !== 'PrivateConv') {
 			try {
 				// get most recent selectedChannel version from db
-				await appDispatch(fetchDisplayedChannel(selectedChannel.name));
+				if (selectedChannel.name !== 'empty channel')
+					await appDispatch(fetchDisplayedChannel(selectedChannel.name));
 				// check its muted property array to see if currentUser is in it
 				if (selectedChannel.muted.some(muted => muted.login === currentUser))
 					return true;

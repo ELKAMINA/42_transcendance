@@ -157,7 +157,7 @@ export function fetchCreatedByUserChannels() {
 			dispatch(updateCreatedChannels(response.data));
 
 		} catch (error) {
-			console.log('error while getting ccreated by user channels from database', error);
+			console.log('error while getting created by user channels from database', error);
 		}
 	};
 }
@@ -204,7 +204,7 @@ export function fetchDisplayedChannel(name : string) {
 			dispatch(updateDisplayedChannel(response.data));
 
 		} catch (error) {
-			console.log('error while getting displayed channel from database', error);
+			console.log(`error while getting displayed channel ${requestBody.name} from database`, error);
 		}
 	};
 }
