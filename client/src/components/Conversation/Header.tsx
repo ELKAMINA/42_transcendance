@@ -12,13 +12,13 @@ import ChannelMenu from '../ChannelMenu';
 import api from '../../utils/Axios-config/Axios';
 import GiveOwnership from '../GiveOwnership';
 import { emptyChannel } from '../../data/emptyChannel';
-import { useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
-import { selectDisplayedChannel, } from '../../redux-features/chat/channelsSlice';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
-	"& .MuiBadge-badge": {
+	"& .MuiBadge-badge": { 
 	  backgroundColor: "#44b700",
 	  color: "#44b700",
 	  boxShadow: `0 0 0 2px ${"white"}`,
@@ -48,10 +48,12 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
   type HeaderProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
+	onSuggestGame: (gameSuggestionInfos: any) => void;
   };
   
-  function Header({ socketRef }: HeaderProps) {
+  function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	let channelName : string = 'error';
 	let channelAvatar : string | undefined = 'error';
@@ -135,7 +137,11 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					</Stack>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} spacing={3}>
-					<IconButton sx={{color: '#07457E'}}>
+					<IconButton sx={{color: '#07457E'}} 
+						onClick={() => onSuggestGame({
+							from: currentUser,
+							to: channel.members[0].login === currentUser ? channel.members[1].login: channel.members[0].login,
+						})}>
 						<SportsEsportsIcon />
 					</IconButton>
 					{isPrivateConv &&
