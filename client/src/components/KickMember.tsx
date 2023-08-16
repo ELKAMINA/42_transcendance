@@ -109,7 +109,12 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 				</DialogContentText>
 				<UserList 
 					usersSet={membersOptions} 
-					initialUsers={selectedChannel.members} 
+					/*** ISSUE 88 ***/
+					// SET initialUsers TO EMPTY ARRAY TO ENSURE UPDATING OF setUpdatedUsers
+					// OTHERWISE THE ADMIN MUST UNTOGGLE AND RETOGGLE THE USER TO BE KICKED
+					// REASON: NO ARRAY OF KICKED MEMBERS IN THE BACK END
+					// initialUsers={selectedChannel.members}
+					initialUsers={[]}
 					setUpdatedUsers={setUpdatedKicked} 
 				/>
 			</DialogContent>
