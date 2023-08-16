@@ -12,6 +12,7 @@ import { ChatService } from '../chat.service';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { FriendshipService } from '../../friendship/friendship.service';
+import { UserWithTime } from 'src/channel/channel.controller';
 
 @WebSocketGateway(4002, { cors: '*' }) // we want every front and client to be able to connect with our gateway
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -60,10 +61,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() body: any,
   ): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    //   this.server.to(roomId).emit('FriendBlocked', user)
-    // const [socketId, room] = socket.rooms;
-    // console.log('la room ', sockets.rooms);
-    // console.log('le body de la requete ', body);
     this.server.to(roomId).emit('respondingGame', body);
   }
 
@@ -73,31 +70,31 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() body: any,
   ): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    //   this.server.to(roomId).emit('FriendBlocked', user)
-    // const [socketId, room] = socket.rooms;
-    // console.log('la room ', sockets.rooms);
-    // console.log('le body de la requete ', body);
     this.server.to(roomId).emit('serverPrivateGame', body);
   }
 
   @SubscribeMessage('denyGame')
   async handleDenyGame(@ConnectedSocket() socket: Socket): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    //   this.server.to(roomId).emit('FriendBlocked', user)
-    // const [socketId, room] = socket.rooms;
-    // console.log('la room ', sockets.rooms);
-    // console.log('le body de la requete ', body);
     this.server.to(roomId).emit('gameDenied');
   }
 
   @SubscribeMessage('cancelGame')
   async handleCancelGame(@ConnectedSocket() socket: Socket): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    //   this.server.to(roomId).emit('FriendBlocked', user)
-    // const [socketId, room] = socket.rooms;
-    // console.log('la room ', sockets.rooms);
-    // console.log('le body de la requete ', body);
     this.server.to(roomId).emit('gameCancelled');
+  }
+
+  @SubscribeMessage('userMutedByAdmin')
+  async handleUserMuted(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: any,
+  ): Promise<void> {
+    const roomId = socket.handshake.query.roomId as string;
+    console.log('la roomId ', roomId);
+    this.server
+      .to(roomId)
+      .emit('userHasBeenMuted', { mutedUser: body, channelName: roomId });
   }
 
   handleConnection(socket: Socket) {
@@ -108,5 +105,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(socket: Socket) {
     const roomId = socket.handshake.query.roomId as string;
     socket.leave(roomId);
+  }
+
+  async notifyWhenUnmuted(user: string, channelConcerned: string) {
+    // console.log('channel concerné ', channelConcerned);
+    // console.log('user concerné ', user);
+    const userWithTime = new Array<UserWithTime>();
+    userWithTime.push({ login: user, ExpiryTime: null })
+    this.server.to(channelConcerned).emit('UserUnmutedAfterExpiry', {
+      mutedUser: userWithTime,
+      channelName: channelConcerned,
+    });
   }
 }

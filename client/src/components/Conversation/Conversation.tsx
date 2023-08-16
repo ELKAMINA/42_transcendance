@@ -202,7 +202,7 @@ function Conversation() {
 					>
 						<Message messages = {messages} />
 					</Box>
-					<Footer send = {send} />
+					<Footer send = {send} socketRef={socketRef}/>
 				</React.Fragment>
 			)}
 			{gameDialog === true && <GameSuggestion open={open} handleClose={handleClose} dialogContent={gameDialogInfo} onAcceptingGame={acceptGame} onDeny={denyGame} onCancel={cancelGame}/>}
