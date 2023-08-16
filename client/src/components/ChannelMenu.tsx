@@ -20,11 +20,11 @@ import ManagePasswordDialog from './ManagePasswordDialog';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
-export type ChannelMenuProps = {
-	socketRef: React.MutableRefObject<Socket | undefined>;
-}
+// export type ChannelMenuProps = {
+	// socketRef: React.MutableRefObject<Socket | undefined>;
+// }
 
-export default function ChannelMenu({socketRef} : ChannelMenuProps) {
+export default function ChannelMenu() {
 	const [open, setOpen] = React.useState<boolean>(false);
 	const [openAdminDialog, setOpenAdminDialog] = React.useState<boolean>(false);
 	const [openAddMembers, setOpenAddMembers] = React.useState<boolean>(false);
@@ -162,7 +162,7 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 			<AddMembersDialog openDialog={openAddMembers} setOpenDialog={setOpenAddMembers}/>
 			<ManagePasswordDialog openDialog={openManagePassword} setOpenDialog={setOpenManagePassword}/>
 			<ChannelInfoDialog openDialog={openChannelInfo} setOpenDialog={setOpenChannelInfo}/>
-			<LeaveChannelDialog socketRef={socketRef} openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/>
+			<LeaveChannelDialog openDialog={openLeaveChannel} setOpenDialog={setOpenLeaveChannel}/>
 		</React.Fragment>
 
 	);

@@ -36,9 +36,31 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
   }
 
-  @SubscribeMessage('LeavingChannel')
-  handleUserLeavingChannel(socket: Socket, dto: MessageDto): void {
-    const roomId = socket.handshake.query.roomId as string;
+	@SubscribeMessage('NotifNewPrivateConv')
+	handleNewPrivateConvCreated(socket: Socket, dto: MessageDto): void {
+	  const roomId = socket.handshake.query.roomId as string;
+	  this.ChatService.createMessage(dto);
+	  this.server.to(roomId).emit('NotifNewPrivateConv:' + roomId, dto);
+	}
+
+	@SubscribeMessage('LeavingChannel')
+	handleUserLeavingChannel(socket: Socket, dto: MessageDto): void {
+	  const roomId = socket.handshake.query.roomId as string;
+	  
+	  this.ChatService.createMessage(dto);
+	  this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
+	}
+  
+	@SubscribeMessage('blockUser')
+	async handleBlockUser(socket: Socket, @MessageBody() body: any,
+	): Promise<void> {
+		// const roomId = socket.handshake.query.roomId as string;
+		const user = await this.friends.blockFriend(
+			body.sender,
+			body.receiver,
+		  );
+		//   this.server.to(roomId).emit('FriendBlocked', user)
+	}
 
     this.ChatService.createMessage(dto);
     this.server.to(roomId).emit('ServerToChat:' + roomId, dto);

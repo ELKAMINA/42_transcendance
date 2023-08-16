@@ -1,20 +1,27 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide } from '@mui/material'
 import React from 'react'
 import { TransitionProps } from '@mui/material/transitions';
-import { Socket } from 'socket.io-client';
+import { useSocket } from '../../socket/SocketManager';
 
 type BlockUserProps = {
 	open: boolean;
 	sender: string;
 	receiver: string;
 	handleClose: React.Dispatch<React.SetStateAction<boolean>>
-	socketRef: React.MutableRefObject<Socket | undefined>;
+	// socketRef: React.MutableRefObject<Socket | undefined>;
 };
 
-const BlockUser = ({open , handleClose, socketRef, sender, receiver} : BlockUserProps ) => {
+const BlockUser = ({open , handleClose, /*socketRef,*/ sender, receiver} : BlockUserProps ) => {
 
 	// console.log("socketRef in block user = ", socketRef?.current?.id);
-
+	const socket = useSocket();
+	React.useEffect(() => {
+		if (!socket)
+			return ;
+		return () => {
+			socket?.disconnect()
+		}
+	}, [socket])
 	// to give the slide effect
 	const Transition = React.forwardRef(function Transition(
 		props: TransitionProps & {
@@ -31,7 +38,7 @@ const BlockUser = ({open , handleClose, socketRef, sender, receiver} : BlockUser
 	
 	const handleBlock = () => {
 		handleClose(true); // Pass true to indicate block
-		socketRef.current?.emit('blockUser', {
+		socket?.emit('blockUser', {
 			sender: sender,
 			receiver: receiver,
 		})
