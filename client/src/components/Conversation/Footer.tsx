@@ -56,9 +56,19 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
     }, [selectedChannel])
 
 	async function userIsBlocked() : Promise<boolean> {
+		// console.log('selectedChannel.name = ', selectedChannel.name)
 		if (selectedChannel.type === 'privateConv') {
 			try {
-				const UserToCheck : any = await FetchUserByName(selectedChannel.name)
+				let talkingWith : string = '';
+				if (selectedChannel.members[0].login === currentUser) {
+					talkingWith = selectedChannel.members[1].login;
+				}
+				else {
+					talkingWith = selectedChannel.members[0].login;
+				}
+				const UserToCheck : any = await FetchUserByName(talkingWith)
+				// console.log('userToCheck = ', UserToCheck)
+
 				if (((UserToCheck.blockedBy).find((bl: any) => bl.login === currentUser)) || ((UserToCheck.blocked).find((bl: any) => bl.login === currentUser)) )
 				{
 					setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
