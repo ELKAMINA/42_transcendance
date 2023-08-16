@@ -1,9 +1,14 @@
-.app.game {
-    background-color: black;
+.game {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        #07457e 0%,
+        rgba(0, 181, 160, 0.59) 90%
+    );
 }
 
 .pongWrapper {
-    padding: 0;
     width: 100%;
     height: 100%;
 }
@@ -11,38 +16,80 @@
 .pongBanner {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
-    margin: 5px;
-    padding: 5px;
-    border: 1px solid black;
-    background-color: aqua;
+    background: linear-gradient(
+        180deg,
+        #07457e 0%,
+        rgba(0, 181, 160, 0.59) 90%
+    );
+    color: white;
+    /* background: linear-gradient(
+            180deg,
+            #ffd700 0%,
+            rgba(0, 181, 160, 0.19) 50%
+        ); */
 }
 
-.pongBannerPlayer {
+.pongBannerPlayerScore {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
     height: 100%;
     margin: 5px;
     padding: 5px;
+    text-align: center;
+    font-size: large;
+    font-family: "Press Start 2P";
+    letter-spacing: 3;
+    opacity: 0.9;
+    /* text-shadow: 0 0 10px #ff00f2, 0 0 20px #000000; */
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #0ff;
 }
 
 .pongBannerVersus {
-    display: flex;
-    flex-direction: row;
-    margin: 5px;
-    padding: 5px;
+    font-size: xx-large;
     text-align: center;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #0ff;
 }
 
-.pongBannerPlayerName,
-.pongBannerPlayerScore {
+.pongBannerPlayerScore1 {
+    text-align: left;
+}
+
+.pongBannerPlayerScore2 {
+    text-align: right;
+}
+
+.pongBannerPlayerName {
     width: 100%;
     height: 100%;
-    margin: 5px;
-    padding: 5px;
-    text-align: center;
+    font-size: xx-large;
+    font-family: "Press Start 2P";
+    letter-spacing: 3;
+    opacity: 0.9;
+    /* text-shadow: 0 0 10px #ff00f2, 0 0 20px #000000; */
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #0ff;
+}
+
+.pongBannerPlayerName1 {
+    text-align: left;
+    padding-left: 10%;
+}
+
+.pongBannerPlayerName2 {
+    text-align: right;
+    padding-right: 10%;
+}
+
+.pongBannerPlayerNameCurrent {
+    text-shadow: 0 0 10px #ff0000, 0 0 20px #000000, 0 0 30px #000,
+        0 0 40px #fff, 0 0 70px #fff, 0 0 80px #fff, 0 0 100px rgb(255, 234, 0),
+        0 0 150px rgb(255, 234, 0);
 }
 
 .pongGameCanvas {
@@ -52,6 +99,18 @@
     width: 100%;
     height: 100%;
     position: absolute;
+}
+
+.endGameWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    justify-self: center;
+    color: white;
+    border: 10px solid black;
 }
 
 /* .wrapper {

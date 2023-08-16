@@ -143,7 +143,7 @@ function Game() {
     }, []);
 
     console.log("[Game]", "onGamePage: ", onGamePage);
-    return <div>{renderGameComponent()}</div>;
+    return <div className="game">{renderGameComponent()}</div>;
 }
 
 export default Game;
