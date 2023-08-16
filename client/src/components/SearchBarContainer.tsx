@@ -12,15 +12,22 @@ import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllFriends, selectFriends } from '../redux-features/friendship/friendshipSlice';
 import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
-import { io } from "socket.io-client";
-import socket from "../socket/SocketManager";
+import { useSocket } from "../socket/SocketManager";
 
 export type SearchBarContainerProps = {
 	getSelectedItem: (item: string) => void;
 }
 
 export default function SearchBarContainer({getSelectedItem} : SearchBarContainerProps) {
+	const socket = useSocket();
 
+	React.useEffect(() => {
+		if (!socket)
+			return ;
+		return () => {
+			socket?.disconnect()
+		}
+	}, [socket])
 	const [usersAndChannels, setUsersAndChannels] = useState<(Channel | UserModel)[]>([]);
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = useState(false);
 
@@ -104,10 +111,10 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	// State to hold the selected option
 	const [selectedOption, setSelectedOption] = useState<Channel | UserModel | null>(null);
 	
-	socket.on('NotifNewPrivateConv', () => {
-		AppDispatch(fetchUserChannels);
-		console.log('Un anneau pour les gouverner tous');
-	})
+	// socket?.on('NotifNewPrivateConv', () => {
+		// AppDispatch(fetchUserChannels);
+		// console.log('Un anneau pour les gouverner tous');
+	// })
 
 	async function createPrivateConv(friend : UserModel) {
 		const createdBy : UserByLogin = {
@@ -133,18 +140,18 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 			// console.log('this channel has been added to the database = ', response);
 			AppDispatch(fetchUserChannels());
 			AppDispatch(fetchDisplayedChannel(convName));
-			socket.emit('NotifNewPrivateConv', {
-				sentBy: currentUserName,
-				sentById: currentUserName,
-				senderSocketId: socket.id,
-				message: `${currentUserName} has started a new private conversation with you`,
-				sentAt: new Date(),
-				subtype: 'InfoMsg',
-				incoming: true,
-				outgoing: false,
-				channel: convName,
-				channelById: convName,
-			})
+			// socket?.emit('NotifNewPrivateConv', {
+				// sentBy: currentUserName,
+				// sentById: currentUserName,
+				// senderSocketId: socket?.id,
+				// message: `${currentUserName} has started a new private conversation with you`,
+				// sentAt: new Date(),
+				// subtype: 'InfoMsg',
+				// incoming: true,
+				// outgoing: false,
+				// channel: convName,
+				// channelById: convName,
+			// })
 		})
 		.catch ((error) => {
 			console.log('error while creating private conv from search bar = ', error);

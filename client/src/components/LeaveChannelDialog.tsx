@@ -15,15 +15,25 @@ import { ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { useSocket } from '../socket/SocketManager';
 
 export type LeaveChannelDialogProps = {
-	socketRef: React.MutableRefObject<Socket | undefined>,
+	// socketRef: React.MutableRefObject<Socket | undefined>,
 	openDialog : boolean, 
 	setOpenDialog : (arg0 : boolean) => void
 }
 
-export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog} : LeaveChannelDialogProps) {
-
+export default function LeaveChannelDialog({openDialog, setOpenDialog} : LeaveChannelDialogProps) {
+	const socket = useSocket();
+	
+	React.useEffect(() => {
+		if (!socket)
+			return ;
+		return () => {
+			socket?.disconnect()
+		}
+	}, [socket])
+	
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
@@ -53,11 +63,11 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 					AppDispatch(fetchDisplayedChannel(emptyChannel.name));
 
 				// emit goodbye message
-				socketRef.current?.emit('LeavingChannel', {
+				socket?.emit('LeavingChannel', {
 					sentBy: currentUser,
 					message :  `${currentUser} has left the channel!`,
 					sentAt: new Date(),
-					senderSocketId: socketRef.current.id,
+					senderSocketId: socket.id,
 					incoming: true,
 					outgoing: false,
 					subtype: 'InfoMsg',

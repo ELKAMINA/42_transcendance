@@ -16,14 +16,17 @@ import { useAppSelector } from '../utils/redux-hooks';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { UserByLogin, UserModel } from '../types/users/userType';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { useSocket } from '../socket/SocketManager';
 
 export type KickMemberProps = {
-	socketRef: React.MutableRefObject<Socket | undefined>,
+	// socketRef: React.MutableRefObject<Socket | undefined>,
 	openDialog : boolean, 
 	setOpenDialog : (arg0 : boolean) => void
 }
 
-export default function KickMember({socketRef, openDialog, setOpenDialog} : KickMemberProps) {
+export default function KickMember({/*socketRef,*/ openDialog, setOpenDialog} : KickMemberProps) {
+	const socket = useSocket();
+
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
@@ -38,6 +41,14 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 		console.log('filteredMembers = ', filteredMembers);
 		KickMemberOut(filteredMembers);
 	}
+
+	React.useEffect(() => {
+		if (!socket)
+			return ;
+		return () => {
+			socket?.disconnect()
+		}
+	}, [socket])
 	  
 	async function KickMemberOut(updatedMember : UserByLogin[]) {
 		await api
@@ -48,11 +59,11 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 		.then((response) => {
 			updatedKicked.map(kickedMember => {
 				// emit user has been kick out message
-				socketRef.current?.emit('LeavingChannel', {
+				socket?.emit('LeavingChannel', {
 					sentBy: kickedMember.login,
 					message :`${kickedMember.login} has been kicked out of the channel!`,
 					sentAt: new Date(),
-					senderSocketId: socketRef.current.id,
+					senderSocketId: socket.id,
 					incoming: true,
 					outgoing: false,
 					subtype: 'InfoMsg',

@@ -13,14 +13,7 @@ import { ChatMessage } from "../../types/chat/messageType"
 import { ChannelModel } from "../../types/chat/channelTypes"
 import { selectCurrentUser } from "../../redux-features/auth/authSlice"
 import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
-
-	// export const socket = io('http://localhost:4002', {
-	// 	withCredentials: true,
-	// 	transports: ['websocket'],
-	// 	upgrade: false,
-	// 	autoConnect: false,
-	// 	// reconnection: true,
-	// })
+import { useSocket } from "../../socket/SocketManager";
 
 function Conversation() {
 
@@ -28,19 +21,17 @@ function Conversation() {
 	const isWelcomeChannel = selectedChannel.name === 'WelcomeChannel' ? true : false;
 	const roomId = selectedChannel.name;
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
-	const socketRef = useRef<Socket>(); // by using useRef, the reference to the socket instance is preserved across re-renders of the component. 
 	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
-	
-	
-	useEffect(() => {
-		if (selectedChannel.name === 'WelcomeChannel' || selectedChannel.name === 'empty channel') // if roomId is 'WelcomeChannel'
-			return ; // exit the function immediatly
-		socketRef.current = socketIOClient("http://localhost:4002", {
-			query: {roomId}
-		})
+	const socket = useSocket();
 
-		socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+	useEffect(() => {
+		if (!socket) {
+			return; // Exit if socket is not available
+		}
+
+		socket?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+			// console.log('triggered!');
 			const incomingMessage : ChatMessage = {
 				...message,
 				// outgoing: message.senderSocketId === socketRef.current?.id,
@@ -52,15 +43,15 @@ function Conversation() {
 		})
 
 		return () => {
-			socketRef.current?.disconnect()
+			socket?.disconnect()
 		}
-	}, [selectedChannel])
+	}, [selectedChannel, socket])
 
 	const send = (value : ChatMessage) => {
-		if (socketRef.current) {
-			value.senderSocketId = socketRef.current.id
+		if (socket) {
+			value.senderSocketId = socket.id
 		}
-		socketRef.current?.emit('ChatToServer', value)
+		socket?.emit('ChatToServer', value)
 	}
 
 	// scroll the Box element to the bottom by setting the scrollTop property to the scrollHeight hehe
@@ -103,7 +94,7 @@ function Conversation() {
 			)}
 			{!isWelcomeChannel && (
 				<React.Fragment>
-					<Header socketRef={socketRef}/>
+					<Header />
 					<Box
 						width={'100%'}
 						sx={{
