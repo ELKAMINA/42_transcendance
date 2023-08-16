@@ -27,11 +27,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('LeavingChannel')
-	handleUserLeavingChannel(socket: Socket, dto: MessageDto): void {
+	handleUserLeavingChannel(socket: Socket, body: {dto: MessageDto, userName: string} ): void {
 	  const roomId = socket.handshake.query.roomId as string;
 	  
-	  this.ChatService.createMessage(dto);
-	  this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
+	  console.log("[Chat GATEWAY - LeavingChannel]", "body.dto: ", body.dto, "body.userName: ", body.userName);
+	  this.ChatService.createMessage(body.dto);
+	  this.server.to(roomId).emit('ServerToChat:' + roomId, body.dto);
+	  this.server.to(roomId).emit('ServerToChatForKicking', body.userName);
 	}
   
 	@SubscribeMessage('blockUser')
@@ -48,10 +50,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	handleConnection(socket: Socket) {
 	  	const roomId = socket.handshake.query.roomId as string;
 	  	socket.join(roomId);
+		  console.log("[CHAT GATEWAY - handleConnection]", socket);
 	}
   
 	handleDisconnect(socket: Socket) {
 		const roomId = socket.handshake.query.roomId as string;
 	  	socket.leave(roomId);
+		console.log("[CHAT GATEWAY - handleDisconnect]", socket);
 	}
 }

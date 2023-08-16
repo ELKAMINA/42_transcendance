@@ -16,6 +16,8 @@ import { useAppSelector } from '../utils/redux-hooks';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { UserByLogin, UserModel } from '../types/users/userType';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { RootState } from "../app/store"
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
 
 export type KickMemberProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>,
@@ -28,6 +30,7 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	const [updatedKicked, setUpdatedKicked] = React.useState<UserModel[]>([]);
+	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
 	// const AppDispatch = useAppDispatch();
 
 	function filterKickedMembersFromChannel() {
@@ -40,6 +43,8 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 	}
 	  
 	async function KickMemberOut(updatedMember : UserByLogin[]) {
+		console.warn("TEST:" , currentUser);
+
 		await api
 		.post('http://localhost:4001/channel/replaceMembers', {
 			channelName : {name : selectedChannel.name},
@@ -47,21 +52,32 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 		})
 		.then((response) => {
 			updatedKicked.map(kickedMember => {
-				// emit user has been kick out message
-				socketRef.current?.emit('LeavingChannel', {
-					sentBy: kickedMember.login,
+				/*** ISSUE 88 ***/
+				// CREATE SEPARATE OBJECT TO SEND THE MESSAGE INTO THE ROOM FOR
+				// EVERY CLIENT AND ALSO SEND TO THE SERVER THE USERNAME ONLY OF
+				// THE PERSON WHO MUST BNE KICKED
+				let dto: any = {
+					// sentBy: kickedMember.login,
+					sentBy: currentUser,
 					message :`${kickedMember.login} has been kicked out of the channel!`,
 					sentAt: new Date(),
-					senderSocketId: socketRef.current.id,
+					senderSocketId: socketRef.current?.id,
 					incoming: true,
 					outgoing: false,
 					subtype: 'InfoMsg',
 					channel: selectedChannel.name,
 					channelById: selectedChannel.name,
-				});
+				};
+				const userName = kickedMember.login;
+				
+				// emit user has been kick out message
+				/*** ISSUE 88 ***/
+				// EMIT AN OBJECT TO THE MESSAGE TO HANDLE THE MESSAGE DTO AND THE PERSON TO BE KICKED
+				socketRef.current?.emit('LeavingChannel', {dto, userName});
 			})
 		})
 		.catch((error) => console.log('error while updating members : ', error))
+
 	}
 
 	const handleClose = () => {

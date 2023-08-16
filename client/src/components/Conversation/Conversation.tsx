@@ -8,11 +8,11 @@ import Footer from "./Footer"
 import Message from "./Message"
 import { RootState } from "../../app/store"
 import { emptyChannel } from "../../data/emptyChannel"
-import { useAppSelector } from "../../utils/redux-hooks"
+import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks"
 import { ChatMessage } from "../../types/chat/messageType"
 import { ChannelModel } from "../../types/chat/channelTypes"
 import { selectCurrentUser } from "../../redux-features/auth/authSlice"
-import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from "../../redux-features/chat/channelsSlice"
 
 	// export const socket = io('http://localhost:4002', {
 	// 	withCredentials: true,
@@ -30,9 +30,18 @@ function Conversation() {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const socketRef = useRef<Socket>(); // by using useRef, the reference to the socket instance is preserved across re-renders of the component. 
 	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
+
+	const AppDispatch = useAppDispatch();
 	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
 	
-	
+	socketRef.current?.on('ServerToChatForKicking', (userName: string) => {
+		console.log("currentUser: ", currentUser, "userName to be kicked: ", userName);
+		if (currentUser === userName) {
+			AppDispatch(fetchUserChannels());
+			AppDispatch(fetchDisplayedChannel('WelcomeChannel'));
+		}
+	})
+
 	useEffect(() => {
 		if (selectedChannel.name === 'WelcomeChannel' || selectedChannel.name === 'empty channel') // if roomId is 'WelcomeChannel'
 			return ; // exit the function immediatly
