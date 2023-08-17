@@ -14,7 +14,11 @@ import { ChannelModel } from "../../types/chat/channelTypes"
 import { selectCurrentUser } from "../../redux-features/auth/authSlice"
 import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
 
-function Conversation() {
+type ConvProps = {
+	socketRef: React.MutableRefObject<Socket | undefined>;
+};
+
+function Conversation({socketRef} : ConvProps) {
 
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	const isWelcomeChannel = selectedChannel.name === 'WelcomeChannel' ? true : false;
@@ -22,7 +26,8 @@ function Conversation() {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
-	const socketRef = useRef<Socket>();
+	
+	// const socketRef = useRef<Socket>();
 
 	// useEffect(() => {
 	// 	console.log('[A larrivée sur Conversation : selectedChannels] ', selectedChannel)
@@ -30,35 +35,17 @@ function Conversation() {
 	// 	console.log('[A larrivée sur Conversation : CurrentUser] ', currentUser)
 	// }, []);
 	
-	useEffect(() => {
-		// console.log('[A larrivée sur Conversation] ', selectedChannel)
-		// console.log('[A larrivée sur Conversation - roomId] ', roomId)
-
-		if (selectedChannel.name === 'WelcomeChannel' || selectedChannel.name === 'empty channel') // if roomId is 'WelcomeChannel'
-			return ; // exit the function immediatly
-		socketRef.current = socketIOClient("http://localhost:4002", {
-			query: {roomId},
-			withCredentials: true,
-		})
-
-		socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
-			const incomingMessage : ChatMessage = {
-				...message,
-				// outgoing: message.senderSocketId === socketRef.current?.id,
-				// incoming: message.senderSocketId !== socketRef.current?.id,
-				outgoing: message.sentBy === currentUser,
-				incoming: message.sentBy !== currentUser,
-			}
-			// console.log('[From Messages : all Messages ]: ', messages)
-			setMessages((messages) => [incomingMessage])
-		})
-
-		return () => {
-			// console.log('[Unmounted Component Conversation] ', selectedChannel)
-			if (socketRef.current?.connected)
-				socketRef.current?.disconnect()
+	socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+		const incomingMessage : ChatMessage = {
+			...message,
+			// outgoing: message.senderSocketId === socketRef.current?.id,
+			// incoming: message.senderSocketId !== socketRef.current?.id,
+			outgoing: message.sentBy === currentUser,
+			incoming: message.sentBy !== currentUser,
 		}
-	}, [roomId])
+		// console.log('[From Messages : all Messages ]: ', messages)
+		setMessages((messages) => [...messages, incomingMessage])
+	})
 
 	const send = (value : ChatMessage) => {
 		if (socketRef.current) {
