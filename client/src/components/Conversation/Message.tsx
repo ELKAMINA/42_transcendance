@@ -39,6 +39,8 @@ const Message = ({ messages }: { messages : ChatMessage[] }) => {
 		);
 	}
 
+	console.log(`[FROM MESSAGES.TSX --- HISTORY   : ${selectedChannel} && Chat history : ${selectedChannel.chatHistory})`)
+	console.log(`[FROM MESSAGES.TSX --- MESSAGES  : ${selectedChannel} && Chat history : ${selectedChannel.chatHistory})`)
 	const chat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
 
 	return (	

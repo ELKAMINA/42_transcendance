@@ -32,12 +32,20 @@ function Conversation() {
 	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
 	
+
+	// useEffect(() => {
+	// 	console.log('[A larrivée sur Conversation : selectedChannels] ', selectedChannel)
+	// 	console.log('[A larrivée sur Conversation : Welcome Channel] ', isWelcomeChannel)
+	// 	console.log('[A larrivée sur Conversation : CurrentUser] ', currentUser)
+	// }, []);
 	
 	useEffect(() => {
+		console.log('[A larrivée sur Conversation] ', selectedChannel)
 		if (selectedChannel.name === 'WelcomeChannel' || selectedChannel.name === 'empty channel') // if roomId is 'WelcomeChannel'
 			return ; // exit the function immediatly
 		socketRef.current = socketIOClient("http://localhost:4002", {
-			query: {roomId}
+			query: {roomId},
+			withCredentials: true,
 		})
 
 		socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
@@ -48,13 +56,16 @@ function Conversation() {
 				outgoing: message.sentBy === currentUser,
 				incoming: message.sentBy !== currentUser,
 			}
-			setMessages((messages) => [...messages, incomingMessage])
+			console.log('[From Messages : all Messages ]: ', messages)
+			// setMessages((messages) => [...messages, incomingMessage])
+			setMessages((messages) => [incomingMessage])
 		})
 
 		return () => {
+			console.log('[Unmounted Component Conversation] ', selectedChannel)
 			socketRef.current?.disconnect()
 		}
-	}, [selectedChannel])
+	}, [roomId])
 
 	const send = (value : ChatMessage) => {
 		if (socketRef.current) {
@@ -73,6 +84,7 @@ function Conversation() {
 
 	useEffect(() => {
 		scrollMessageContainerToBottom();
+		console.log('[IN THE USEEFFECT -- From Messages: all Messages ]: ', messages)
 	}, [messages]); // call the function when messages change
 
 	useEffect(() => {
