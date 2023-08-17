@@ -26,11 +26,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
 	}
 
+	/*** ISSUE 88 ***/
+	// CHANGE THE PAYLOAD STRUCTURE TO HANDLE:
+	// - MESSAGE DTO (AS BEFORE THE FIX)
+	// - THE USER WHO MUST BE KICKED
+	// THEN ADDING NEW EMIT EVENT TO REQUEST KICK OF THE DEDICATED USER
 	@SubscribeMessage('LeavingChannel')
 	handleUserLeavingChannel(socket: Socket, body: {dto: MessageDto, userName: string} ): void {
 	  const roomId = socket.handshake.query.roomId as string;
-	  
-	  console.log("[Chat GATEWAY - LeavingChannel]", "body.dto: ", body.dto, "body.userName: ", body.userName);
+	  console.log("[Chat GATEWAY - LeavingChannel]", "roomId: ", roomId);
+	  console.log("[Chat GATEWAY - LeavingChannel]", "body.dto: ", body.dto);
+	  console.log("[Chat GATEWAY - LeavingChannel]", "body.userName: ", body.userName);
 	  this.ChatService.createMessage(body.dto);
 	  this.server.to(roomId).emit('ServerToChat:' + roomId, body.dto);
 	  this.server.to(roomId).emit('ServerToChatForKicking', body.userName);

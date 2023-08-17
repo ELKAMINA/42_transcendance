@@ -43,7 +43,7 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 	}
 	  
 	async function KickMemberOut(updatedMember : UserByLogin[]) {
-		console.warn("TEST:" , currentUser);
+		console.log("[Chat - KickMemberOut]" , "currentUser: ", currentUser);
 
 		await api
 		.post('http://localhost:4001/channel/replaceMembers', {
@@ -53,10 +53,11 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 		.then((response) => {
 			updatedKicked.map(kickedMember => {
 				/*** ISSUE 88 ***/
-				// CREATE SEPARATE OBJECT TO SEND THE MESSAGE INTO THE ROOM FOR
-				// EVERY CLIENT AND ALSO SEND TO THE SERVER THE USERNAME ONLY OF
-				// THE PERSON WHO MUST BNE KICKED
+				// CHANGE THE PAYLOAD STRUCTURE TO SEND MESSAGE DTO AND 
+				// THE USERNAME WHO MUST BE KICKED
 				let dto: any = {
+					// WRONG sendBy DATA, SHOULD BE THE currentUser WHO HAS EXECUTED
+					// THE KICK ACTION
 					// sentBy: kickedMember.login,
 					sentBy: currentUser,
 					message :`${kickedMember.login} has been kicked out of the channel!`,
@@ -71,8 +72,6 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 				const userName = kickedMember.login;
 				
 				// emit user has been kick out message
-				/*** ISSUE 88 ***/
-				// EMIT AN OBJECT TO THE MESSAGE TO HANDLE THE MESSAGE DTO AND THE PERSON TO BE KICKED
 				socketRef.current?.emit('LeavingChannel', {dto, userName});
 			})
 		})
@@ -126,7 +125,7 @@ export default function KickMember({socketRef, openDialog, setOpenDialog} : Kick
 				<UserList 
 					usersSet={membersOptions} 
 					/*** ISSUE 88 ***/
-					// SET initialUsers TO EMPTY ARRAY TO ENSURE UPDATING OF setUpdatedUsers
+					// SET initialUsers TO EMPTY ARRAY TO ENSURE UPDATING OF setUpdatedUsers (TRIGGER)
 					// OTHERWISE THE ADMIN MUST UNTOGGLE AND RETOGGLE THE USER TO BE KICKED
 					// REASON: NO ARRAY OF KICKED MEMBERS IN THE BACK END
 					// initialUsers={selectedChannel.members}
