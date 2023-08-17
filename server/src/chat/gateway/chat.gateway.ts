@@ -12,7 +12,7 @@ import { ChatService } from '../chat.service';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { FriendshipService } from '../../friendship/friendship.service';
-import { UserWithTime } from 'src/channel/channel.controller';
+import { UserWithTime } from '../../channel/channel.controller';
 
 @WebSocketGateway(4002, { cors: '*' }) // we want every front and client to be able to connect with our gateway
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -108,13 +108,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async notifyWhenUnmuted(user: string, channelConcerned: string) {
-    // console.log('channel concerné ', channelConcerned);
-    // console.log('user concerné ', user);
+    console.log('channel concerné ', channelConcerned);
+    console.log('user concerné ', user);
+    const channelsNameArr = channelConcerned.split(',');
+    console.log('when a lot of channels ', channelsNameArr);
     const userWithTime = new Array<UserWithTime>();
-    userWithTime.push({ login: user, ExpiryTime: null })
-    this.server.to(channelConcerned).emit('UserUnmutedAfterExpiry', {
-      mutedUser: userWithTime,
-      channelName: channelConcerned,
-    });
+    userWithTime.push({ login: user, ExpiryTime: null });
+    if (channelsNameArr.length > 1) {
+      channelsNameArr.map((chan) => {
+        this.server.to(chan).emit('UserUnmutedAfterExpiry', {
+          mutedUser: userWithTime,
+          channelName: chan,
+        });
+      });
+    } else {
+      this.server.to(channelConcerned).emit('UserUnmutedAfterExpiry', {
+        mutedUser: userWithTime,
+        channelName: channelConcerned,
+      });
+    }
   }
 }
