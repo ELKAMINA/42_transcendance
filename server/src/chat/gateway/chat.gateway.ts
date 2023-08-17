@@ -7,22 +7,28 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+
 import { MessageDto } from '../dto/messagePayload.dto';
 import { ChatService } from '../chat.service';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { FriendshipService } from '../../friendship/friendship.service';
 
-@WebSocketGateway(4002, { cors: '*' }) // we want every front and client to be able to connect with our gateway
+@WebSocketGateway(4002, {
+  cors: {
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  },
+})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	@WebSocketServer() server: Server;
+  @WebSocketServer() server: Server;
 
-	constructor(
-		private ChatService: ChatService,
-		private friends: FriendshipService,
-	) {}
+  constructor(
+    private ChatService: ChatService,
+    private friends: FriendshipService,
+  ) {}
 
-	private logger: Logger = new Logger('ChatGateway');
+  private logger: Logger = new Logger('ChatGateway');
 
 	afterInit(server: any) {
 		this.logger.log('Initialized!');
@@ -36,20 +42,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
 	}
 
-		@SubscribeMessage('NotifNewPrivateConv')
-		handleNewPrivateConvCreated(socket: Socket, dto: MessageDto): void {
-		const roomId = socket.handshake.query.roomId as string;
-		this.ChatService.createMessage(dto);
-		this.server.to(roomId).emit('NotifNewPrivateConv:' + roomId, dto);
-		}
+	@SubscribeMessage('NotifNewPrivateConv')
+	handleNewPrivateConvCreated(socket: Socket, dto: MessageDto): void {
+	const roomId = socket.handshake.query.roomId as string;
+	this.ChatService.createMessage(dto);
+	this.server.to(roomId).emit('NotifNewPrivateConv:' + roomId, dto);
+	}
 
-		@SubscribeMessage('LeavingChannel')
-		handleUserLeavingChannel(socket: Socket, dto: MessageDto): void {
-		const roomId = socket.handshake.query.roomId as string;
-		
-		this.ChatService.createMessage(dto);
-		this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
-		}
+	@SubscribeMessage('LeavingChannel')
+	handleUserLeavingChannel(socket: Socket, dto: MessageDto): void {
+	const roomId = socket.handshake.query.roomId as string;
+	
+	this.ChatService.createMessage(dto);
+	this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
+	}
 
 
 	@SubscribeMessage('blockUser')
@@ -108,13 +114,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.to(roomId).emit('gameCancelled');
 	}
 
-	handleConnection(socket: Socket) {
-		const roomId = socket.handshake.query.roomId as string;
-		socket.join(roomId);
-	}
+  handleConnection(socket: Socket) {
+    console.log('CONNECTED ', socket.id);
+    const roomId = socket.handshake.query.roomId as string;
+    socket.join(roomId);
+  }
 
-	handleDisconnect(socket: Socket) {
-		const roomId = socket.handshake.query.roomId as string;
-		socket.leave(roomId);
-	}
+  handleDisconnect(socket: Socket) {
+    console.log('disconnec ', socket.id);
+    const roomId = socket.handshake.query.roomId as string;
+    socket.leave(roomId);
+  }
 }

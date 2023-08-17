@@ -12,22 +12,12 @@ import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllFriends, selectFriends } from '../redux-features/friendship/friendshipSlice';
 import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
-import { useSocket } from "../socket/SocketManager";
 
 export type SearchBarContainerProps = {
 	getSelectedItem: (item: string) => void;
 }
 
 export default function SearchBarContainer({getSelectedItem} : SearchBarContainerProps) {
-	const socket = useSocket();
-
-	React.useEffect(() => {
-		if (!socket)
-			return ;
-		return () => {
-			socket?.disconnect()
-		}
-	}, [socket])
 
 	const [usersAndChannels, setUsersAndChannels] = useState<(Channel | UserModel)[]>([]);
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = useState(false);
@@ -111,52 +101,37 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 
 	// State to hold the selected option
 	const [selectedOption, setSelectedOption] = useState<Channel | UserModel | null>(null);
-	
-	// socket?.on('NotifNewPrivateConv', () => {
-		// AppDispatch(fetchUserChannels);
-		// console.log('Un anneau pour les gouverner tous');
-	// })
 
 	async function createPrivateConv(friend : UserModel) {
+
 		const createdBy : UserByLogin = {
 			login : currentUserName, 
 		};
 
 		const convName = `${createdBy.login}${Date.now()}`;
+		
+		try {
+			await api
+			.post ('http://localhost:4001/channel/creation', {
+				name: convName,
+				channelId: Date.now(),	
+				type: 'privateConv',
+				createdBy: createdBy,
+				admins: [createdBy],
+				protected_by_password: false,
+				key: '',
+				members: [friend, createdBy],
+				avatar: friend?.avatar,
+				chatHistory: [],
+			})
 
-		await api
-		.post ('http://localhost:4001/channel/creation', {
-			name: convName,
-			channelId: Date.now(),	
-			type: 'privateConv',
-			createdBy: createdBy,
-			admins: [createdBy],
-			protected_by_password: false,
-			key: '',
-			members: [friend, createdBy],
-			avatar: friend?.avatar,
-			chatHistory: [],
-		})
-		.then ((response) => {
 			// console.log('this channel has been added to the database = ', response);
-			AppDispatch(fetchUserChannels());
-			AppDispatch(fetchDisplayedChannel(convName));
-			// socket?.emit('NotifNewPrivateConv', {
-				// sentBy: currentUserName,
-				// sentById: currentUserName,
-				// senderSocketId: socket?.id,
-				// message: `${currentUserName} has started a new private conversation with you`,
-				// sentAt: new Date(),
-				// subtype: 'InfoMsg',
-				// incoming: true,
-				// outgoing: false,
-				// channel: convName,
-				// channelById: convName,
-			// })
-		})
-		.catch ((error) => {
+			await AppDispatch(fetchUserChannels());
+			console.log("convName = ", convName);
+			await AppDispatch(fetchDisplayedChannel(convName));
+		} catch (error : any) {
 			console.log('error while creating private conv from search bar = ', error);
-		})
+		}
 	}
 
 	const [openConfirmationDialog, setOpenConfirmationDialog] = useState<boolean>(false);
@@ -164,7 +139,7 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 	const [isConfirmed, setIsConfirmed] = useState<boolean>();
 
 	// Event handler to log the selected option
-	const handleOptionSelect = (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
+	const handleOptionSelect = async (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
 		if (value) {
 			setSelectedOption(value);
 			if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
@@ -182,16 +157,19 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 						setAlertDialogSlideOpen(true); // open password check dialog slide
 					}
 					else {
-						AppDispatch(fetchDisplayedChannel(value.name));
+						await AppDispatch(fetchDisplayedChannel(value.name));
+						// add channel to the list of userChannels
+						// getSelectedItem(value.name);
 					}
 				}
 			}
 			else if ('login' in value) { // if selected value is a user
 				if (!userChannels.some(channel => channel.name === value.login)) {
-					createPrivateConv(value);
+					await createPrivateConv(value);
 				}
 				else {
-					AppDispatch(fetchDisplayedChannel(value.login));
+					await AppDispatch(fetchDisplayedChannel(value.login));
+					// getSelectedItem(value.name);
 				}
 			}
 		}

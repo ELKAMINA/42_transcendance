@@ -117,7 +117,7 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 
 
 	async function sendMessage() {
-		if (await userIsBlocked() === false && isMuted === false) {
+		if (await userIsBlocked() === false && isMuted === false && value != "") {
 			const messageToBeSent = {
 				sentBy: authState.nickname,
 				sentById: authState.nickname,

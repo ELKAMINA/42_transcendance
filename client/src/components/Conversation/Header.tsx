@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
+import { Socket } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
@@ -46,11 +47,12 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   }));
 
   type HeaderProps = {
-	// socketRef: React.MutableRefObject<Socket | undefined>;
+	socketRef: React.MutableRefObject<Socket | undefined>;
 	onSuggestGame: (gameSuggestionInfos: any) => void;
   };
   
-function Header({ /*socketRef,*/ onSuggestGame }: HeaderProps) {
+  
+function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	const navigate = useNavigate();
 	// const dispatch = useAppDispatch();
 	const currentUser : string = useAppSelector(selectCurrentUser);
@@ -153,14 +155,14 @@ function Header({ /*socketRef,*/ onSuggestGame }: HeaderProps) {
 					{isPrivateConv === false &&
 						<Stack direction={'row'} spacing={2}>
 							<Divider orientation="vertical" flexItem />
-							<ChannelMenu />
-							{isAdmin && <AdminMenu />}
+							<ChannelMenu socketRef={socketRef}/>
+							{isAdmin && <AdminMenu socketRef={socketRef}/>}
 							{isOwner && <GiveOwnership />}
 						</Stack>
 					}
 				</Stack>
 			</Stack>
-			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} sender={currentUser} receiver={channel.name}/>}
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
 		</Box>
 		)
 }

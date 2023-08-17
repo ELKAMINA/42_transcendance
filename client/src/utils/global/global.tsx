@@ -17,3 +17,11 @@ export async function FetchUserByName(name: string): Promise<UserModel> {
         });
     return result;
 }
+
+export function wait(milliseconds: number): Promise<void> {
+	return new Promise(resolve => {
+	  setTimeout(() => {
+		resolve();
+	  }, milliseconds);
+	});
+  }

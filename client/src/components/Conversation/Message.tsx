@@ -25,9 +25,20 @@ function renderSwitchComponent(el : ChatMessage, index: number) {
 	}
 }
 
-const Message = ({ messages }: { messages : ChatMessage[] }) => {
+const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessages: (arg0: ChatMessage[]) => void }) => {
 
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
+
+	React.useEffect(()=> {
+		// console.log(`[FROM MESSAGES.TSX --- HISTORY   : ${selectedChannel.name} && Chat history : `)
+		// console.log('%o',selectedChannel.chatHistory )
+		// console.log(`[FROM MESSAGES.TSX --- MESSAGES  : ${selectedChannel.name} && messages : `)
+		// console.log('%o',messages )
+		return () => {
+			setMessages([]);
+		}
+	}, [selectedChannel])
+
 
 	if (!selectedChannel || !selectedChannel.chatHistory) {
 		return (
