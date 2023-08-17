@@ -40,7 +40,8 @@ function Conversation() {
 	// }, []);
 	
 	useEffect(() => {
-		console.log('[A larrivée sur Conversation] ', selectedChannel)
+		// console.log('[A larrivée sur Conversation] ', selectedChannel)
+		// console.log('[A larrivée sur Conversation - roomId] ', roomId)
 		if (selectedChannel.name === 'WelcomeChannel' || selectedChannel.name === 'empty channel') // if roomId is 'WelcomeChannel'
 			return ; // exit the function immediatly
 		socketRef.current = socketIOClient("http://localhost:4002", {
@@ -62,7 +63,7 @@ function Conversation() {
 		})
 
 		return () => {
-			console.log('[Unmounted Component Conversation] ', selectedChannel)
+			// console.log('[Unmounted Component Conversation] ', selectedChannel)
 			socketRef.current?.disconnect()
 		}
 	}, [roomId])
@@ -84,7 +85,7 @@ function Conversation() {
 
 	useEffect(() => {
 		scrollMessageContainerToBottom();
-		console.log('[IN THE USEEFFECT -- From Messages: all Messages ]: ', messages)
+		// console.log('[IN THE USEEFFECT -- From Messages: all Messages ]: ', messages)
 	}, [messages]); // call the function when messages change
 
 	useEffect(() => {
@@ -125,7 +126,7 @@ function Conversation() {
 						}}
 						ref={messageContainerRef}
 					>
-						<Message messages = {messages} />
+						<Message messages = {messages} setMessages={setMessages}/>
 					</Box>
 					<Footer send = {send} />
 				</React.Fragment>

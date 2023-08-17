@@ -38,13 +38,14 @@ function Chat () {
 	
 	useEffect(() => {
 		if (selectedChannel !== '') {
+			// console.log('[ From Chat.tsx - useEffect is trigerred ', selectedChannel)
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
 			AppDispatch(fetchUserChannels());
 		}
 	}, [selectedChannel]);
 
 	function handleSelectChannel (channelName : string) {
-		console.log('[From Chat.tsx : selectedItem ]: ', channelName)
+		// console.log('[From Chat.tsx : selectedItem ]: ', channelName)
 		setSelectedChannel(channelName);
 	}
 
