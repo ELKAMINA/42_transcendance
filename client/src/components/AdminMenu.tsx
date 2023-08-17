@@ -15,11 +15,11 @@ import ManageMutedDialog from './ManageMutedDialog';
 import ManageBannedDialog from './ManageBannedDialog';
 
 
-// export type AdminMenuProps = {
-	// socketRef: React.MutableRefObject<Socket | undefined>;
-// }
+export type AdminMenuProps = {
+	socketRef: React.MutableRefObject<Socket | undefined>;
+}
 
-export default function AdminMenu(/*{socketRef} : AdminMenuProps*/) {
+export default function AdminMenu({socketRef} : AdminMenuProps) {
 	const [open, setOpen] = React.useState<boolean>(false);
 	const [openBannedDialog, setOpenBannedDialog] = React.useState<boolean>(false);
 	const [openMutedDialog, setOpenMutedDialog] = React.useState<boolean>(false);
@@ -140,7 +140,7 @@ export default function AdminMenu(/*{socketRef} : AdminMenuProps*/) {
 		</Stack>
 			<ManageBannedDialog openDialog={openBannedDialog} setOpenDialog={setOpenBannedDialog}/>
 			<ManageMutedDialog openDialog={openMutedDialog} setOpenDialog={setOpenMutedDialog}/>
-			<KickMember openDialog={openKickMemberDialog} setOpenDialog={setOpenKickMemberDialog}/>
+			<KickMember socketRef={socketRef} openDialog={openKickMemberDialog} setOpenDialog={setOpenKickMemberDialog}/>
 		</React.Fragment>
 
 	);

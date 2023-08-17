@@ -5,9 +5,9 @@ import { MuteSchedulerService } from './MuteSchedulerService';
 import { BannedSchedulerService } from './BannedSchedulerService';
 
 @Module({
-	imports: [], 
-	providers: [ChannelService, MuteSchedulerService, BannedSchedulerService],
-	controllers: [channelController],
+  imports: [],
+  providers: [ChannelService, MuteSchedulerService, BannedSchedulerService],
+  controllers: [channelController],
 })
 export default class channelModule {}
 export class MuteSchedulerModule {}

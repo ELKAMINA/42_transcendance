@@ -28,15 +28,24 @@ function Chat () {
 			return displayedChannel.name;
 		}
 	})
+
+	// useEffect(() => {
+	// 	console.log('[A larrivée sur Chat : Channels] ', channels)
+	// 	console.log('[A larrivée sur Chat : displayedChannels] ', displayedChannel)
+	// 	console.log('[A larrivée sur Chat : CurrentUser] ', currentUser)
+	// 	console.log('[A larrivée sur Chat : selectedChannels] ', selectedChannel)
+	// }, []);
 	
 	useEffect(() => {
 		if (selectedChannel !== '') {
+			// console.log('[ From Chat.tsx - useEffect is trigerred ', selectedChannel)
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
 			AppDispatch(fetchUserChannels());
 		}
 	}, [selectedChannel]);
 
 	function handleSelectChannel (channelName : string) {
+		// console.log('[From Chat.tsx : selectedItem ]: ', channelName)
 		setSelectedChannel(channelName);
 	}
 

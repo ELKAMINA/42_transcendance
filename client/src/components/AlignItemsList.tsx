@@ -115,6 +115,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			setAlertDialogSlideOpen(true);
 		} else {
 			// if no password protection, update 'displayedChannel' slice through prop 'getSelectedItem'
+			// console.log('[From AlignItems Component :  clickedItem.name]', clickedItem.name)
 			getSelectedItem(clickedItem.name);
 		}
 	};

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
+import { Socket } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
@@ -45,11 +46,11 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	},
   }));
 
-//   type HeaderProps = {
-	// socketRef: React.MutableRefObject<Socket | undefined>;
-//   };
+  type HeaderProps = {
+	socketRef: React.MutableRefObject<Socket | undefined>;
+  };
   
-  function Header() {
+  function Header({ socketRef }: HeaderProps) {
 	const navigate = useNavigate();
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	let channelName : string = 'error';
@@ -147,14 +148,14 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					{isPrivateConv === false &&
 						<Stack direction={'row'} spacing={2}>
 							<Divider orientation="vertical" flexItem />
-							<ChannelMenu />
-							{isAdmin && <AdminMenu />}
+							<ChannelMenu socketRef={socketRef}/>
+							{isAdmin && <AdminMenu socketRef={socketRef}/>}
 							{isOwner && <GiveOwnership />}
 						</Stack>
 					}
 				</Stack>
 			</Stack>
-			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} sender={currentUser} receiver={channel.name}/>}
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
 		</Box>
 		)
 }
