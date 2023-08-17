@@ -27,25 +27,41 @@ function Conversation({socketRef} : ConvProps) {
 	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
 	
-	// const socketRef = useRef<Socket>();
-
 	// useEffect(() => {
-	// 	console.log('[A larrivée sur Conversation : selectedChannels] ', selectedChannel)
-	// 	console.log('[A larrivée sur Conversation : Welcome Channel] ', isWelcomeChannel)
-	// 	console.log('[A larrivée sur Conversation : CurrentUser] ', currentUser)
+		// console.log('[A larrivée sur Conversation : selectedChannels] ', selectedChannel)
+		// console.log('[A larrivée sur Conversation : Welcome Channel] ', isWelcomeChannel)
+		// console.log('[A larrivée sur Conversation : CurrentUser] ', currentUser)
 	// }, []);
-	
-	socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+
+	socketRef.current?.off('ServerToChat:' + roomId).on('ServerToChat:' + roomId, (message : ChatMessage) => {
 		const incomingMessage : ChatMessage = {
 			...message,
-			// outgoing: message.senderSocketId === socketRef.current?.id,
-			// incoming: message.senderSocketId !== socketRef.current?.id,
 			outgoing: message.sentBy === currentUser,
 			incoming: message.sentBy !== currentUser,
 		}
 		// console.log('[From Messages : all Messages ]: ', messages)
 		setMessages((messages) => [...messages, incomingMessage])
 	})
+
+// --- OTHER SOLUTION ----
+	// useEffect(() => {
+	// 	const messageListener = (message: ChatMessage) => {
+	// 		const incomingMessage: ChatMessage = {
+	// 			...message,
+	// 			outgoing: message.sentBy === currentUser,
+	// 			incoming: message.sentBy !== currentUser,
+	// 		};
+	// 		setMessages((prevMessages) => [...prevMessages, incomingMessage]);
+	// 	};
+	
+	// 	socketRef.current?.on('ServerToChat:' + roomId, messageListener);
+	
+	// 	return () => {
+	// 		socketRef.current?.off('ServerToChat:' + roomId, messageListener);
+	// 	};
+	// }, [selectedChannel, currentUser]);
+
+// --- END OF OTHER SOLUTION ----
 
 	const send = (value : ChatMessage) => {
 		if (socketRef.current) {
