@@ -10,15 +10,18 @@ import { MuiColorInput } from "mui-color-input";
 import DialogTitle from "@mui/material/DialogTitle";
 import { socket } from "../../pages/game";
 import { IRoomInfo } from "../../interface/IClientGame";
+import Navbar from "../../components/NavBar";
 
 interface SettingsProps {
     clickPlay: IRoomInfo;
 }
 
 const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
+    const currentRoute = window.location.pathname;
     const navigate = useNavigate();
     const defaultBoardColor = "#000000";
     const defaultGameObjectColor = "#FFFFFF";
+    const maxPoint = 2000;
     const [points, setTotalPoints] = useState("2");
     const [boardColor, setBoardColor] = useState(defaultBoardColor);
     const [netColor, setNetColor] = useState(defaultGameObjectColor);
@@ -44,7 +47,7 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
         const value = event.target.value;
         const numValue = parseInt(value, 10);
 
-        if (isNaN(numValue) || numValue <= 0 || numValue >= 20) {
+        if (isNaN(numValue) || numValue <= 0 || numValue > maxPoint) {
             setPointsError(true);
             setTotalPoints("");
         } else {
@@ -141,6 +144,7 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
 
     return (
         <div>
+            <Navbar currentRoute={currentRoute} />
             <Box
                 sx={{
                     height: "100vh",
@@ -199,7 +203,7 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
                                             transition: "all 0.3s ease",
                                         }}
                                     >
-                                        Total points
+                                        Total points (1 &ge; x &le; {maxPoint})
                                     </Typography>
                                     <Input
                                         sx={{
