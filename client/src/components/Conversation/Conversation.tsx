@@ -49,14 +49,14 @@ function Conversation() {
 				outgoing: message.sentBy === currentUser,
 				incoming: message.sentBy !== currentUser,
 			}
-			console.log('[From Messages : all Messages ]: ', messages)
-			// setMessages((messages) => [...messages, incomingMessage])
+			// console.log('[From Messages : all Messages ]: ', messages)
 			setMessages((messages) => [incomingMessage])
 		})
 
 		return () => {
 			// console.log('[Unmounted Component Conversation] ', selectedChannel)
-			socketRef.current?.disconnect()
+			if (socketRef.current?.connected)
+				socketRef.current?.disconnect()
 		}
 	}, [roomId])
 
