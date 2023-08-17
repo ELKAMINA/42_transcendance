@@ -13,6 +13,7 @@ import { ChatMessage } from "../../types/chat/messageType"
 import { ChannelModel } from "../../types/chat/channelTypes"
 import { selectCurrentUser } from "../../redux-features/auth/authSlice"
 import { selectDisplayedChannel } from "../../redux-features/chat/channelsSlice"
+import { wait } from "../../utils/global/global";
 
 type ConvProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
@@ -32,16 +33,25 @@ function Conversation({socketRef} : ConvProps) {
 		// console.log('[A larrivée sur Conversation : Welcome Channel] ', isWelcomeChannel)
 		// console.log('[A larrivée sur Conversation : CurrentUser] ', currentUser)
 	// }, []);
+	
+	// async function waitforme() {
+		// await wait(2000);
+		// console.log('error 2');
+	// }
 
-	socketRef.current?.off('ServerToChat:' + roomId).on('ServerToChat:' + roomId, (message : ChatMessage) => {
-		const incomingMessage : ChatMessage = {
-			...message,
-			outgoing: message.sentBy === currentUser,
-			incoming: message.sentBy !== currentUser,
-		}
-		// console.log('[From Messages : all Messages ]: ', messages)
-		setMessages((messages) => [...messages, incomingMessage])
-	})
+	useEffect(() => {
+		socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+			const incomingMessage : ChatMessage = {
+				...message,
+				outgoing: message.sentBy === currentUser,
+				incoming: message.sentBy !== currentUser,
+			}
+			// console.log('[From Messages : all Messages ]: ', messages)
+			setMessages((messages) => [...messages, incomingMessage])
+		})
+
+	}, [roomId])
+
 
 // --- OTHER SOLUTION ----
 	// useEffect(() => {
