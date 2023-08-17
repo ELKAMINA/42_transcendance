@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import Button from "@mui/material/Button";
 import { Box, Grid, Typography, Stack } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import Input from "@mui/joy/Input";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import { MuiColorInput } from "mui-color-input";
 import DialogTitle from "@mui/material/DialogTitle";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { socket } from "../../pages/game";
 import { IRoomInfo } from "../../interface/IClientGame";
 
@@ -19,32 +17,90 @@ interface SettingsProps {
 
 const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
     const navigate = useNavigate();
+    const defaultBoardColor = "#000000";
+    const defaultGameObjectColor = "#FFFFFF";
     const [points, setTotalPoints] = useState("2");
-    const [boardColor, setBoardColor] = useState("#000000");
-    const [netColor, setNetColor] = useState("#FFFFFF");
-    const [scoreColor, setScoreColor] = useState("#FFFFFF");
-    const [paddleColor, setPaddleColor] = useState("#FFFFFF");
-    const [ballColor, setBallColor] = useState("#FFFFFF");
+    const [boardColor, setBoardColor] = useState(defaultBoardColor);
+    const [netColor, setNetColor] = useState(defaultGameObjectColor);
+    const [scoreColor, setScoreColor] = useState(defaultGameObjectColor);
+    const [paddleColor, setPaddleColor] = useState(defaultGameObjectColor);
+    const [ballColor, setBallColor] = useState(defaultGameObjectColor);
     const [open, setOpen] = useState(true);
+    const [pointsError, setPointsError] = useState(false);
+    const [boardColorError, setBoardColorError] = useState(false);
+    const [netColorError, setNetColorError] = useState(false);
+    const [scoreColorError, setScoreColorError] = useState(false);
+    const [paddleColorError, setPaddleColorError] = useState(false);
+    const [ballColorError, setBallColorError] = useState(false);
+
+    const isHexColor = (value: string): boolean => {
+        if (!value || value.length !== 7 || value.at(0) !== "#") {
+            return false;
+        }
+        return true;
+    };
+
+    const handleScore = (event: any) => {
+        const value = event.target.value;
+        const numValue = parseInt(value, 10);
+
+        if (isNaN(numValue) || numValue <= 0 || numValue >= 20) {
+            setPointsError(true);
+            setTotalPoints("");
+        } else {
+            setPointsError(false);
+            setTotalPoints(value);
+        }
+    };
 
     const handleBoardColor = (newValue: string) => {
-        setBoardColor(newValue);
+        if (isHexColor(newValue) === false) {
+            setBoardColorError(true);
+            setBoardColor(defaultBoardColor);
+        } else {
+            setBoardColorError(false);
+            setBoardColor(newValue);
+        }
     };
 
     const handleNetColor = (newValue: string) => {
-        setNetColor(newValue);
+        if (isHexColor(newValue) === false) {
+            setNetColorError(true);
+            setNetColor(defaultGameObjectColor);
+        } else {
+            setNetColorError(false);
+            setNetColor(newValue);
+        }
     };
 
     const handleScoreColor = (newValue: string) => {
-        setScoreColor(newValue);
+        if (isHexColor(newValue) === false) {
+            setScoreColorError(true);
+            setScoreColor(defaultGameObjectColor);
+        } else {
+            setScoreColorError(false);
+            setScoreColor(newValue);
+        }
     };
 
     const handlePaddleColor = (newValue: string) => {
-        setPaddleColor(newValue);
+        if (isHexColor(newValue) === false) {
+            setPaddleColorError(true);
+            setPaddleColor(defaultGameObjectColor);
+        } else {
+            setPaddleColorError(false);
+            setPaddleColor(newValue);
+        }
     };
 
     const handleBallColor = (newValue: string) => {
-        setBallColor(newValue);
+        if (isHexColor(newValue) === false) {
+            setBallColorError(true);
+            setBallColor(defaultGameObjectColor);
+        } else {
+            setBallColorError(false);
+            setBallColor(newValue);
+        }
     };
 
     const sendCancel = () => {
@@ -53,6 +109,16 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
     };
 
     const sendSettings = () => {
+        if (
+            pointsError ||
+            boardColorError ||
+            netColorError ||
+            scoreColorError ||
+            paddleColorError ||
+            ballColorError
+        ) {
+            return;
+        }
         // console.log("[Settings] Button 'submit' clicked");
         socket.emit("RequestGameSettings", {
             roomInfo: clickPlay,
@@ -66,35 +132,55 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
         setOpen(false);
     };
 
-    const handleCancel = () => {
-        setOpen(false);
+    // HANDLE CANCEL ONLY BY CLINKING ON "CANCEL" BUTTON
+    const handleCancel = (event: object, reason: string) => {
+        if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+            setOpen(false);
+        }
     };
 
     return (
         <div>
-            <Box sx={{
-                height: '100vh',
-                alignItems: 'center',
-                background: 'linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)'
-            }}>
-                <Dialog fullScreen={false} maxWidth={'sm'} open={open} onClose={handleCancel}>
+            <Box
+                sx={{
+                    height: "100vh",
+                    alignItems: "center",
+                    background:
+                        "linear-gradient(180deg, #07457E 0%, rgba(0, 181, 160, 0.69) 97%)",
+                }}
+            >
+                <Dialog
+                    fullScreen={false}
+                    maxWidth={"sm"}
+                    open={open}
+                    onClose={handleCancel}
+                    disableEscapeKeyDown={true}
+                >
                     <DialogTitle>
-                        <Typography align='center' sx={{
-                            fontSize: 50,
-                            margin: 1,
-                            color: '#07457E',
-                            textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-                            transition: 'all 0.3s ease',
-                        }}>
+                        <Typography
+                            align="center"
+                            sx={{
+                                fontSize: 50,
+                                margin: 1,
+                                color: "#07457E",
+                                textShadow:
+                                    "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                transition: "all 0.3s ease",
+                            }}
+                        >
                             Customize the Game
                         </Typography>
-                        <Typography align='center' sx={{
-                            fontSize: 20,
-                            margin: 1,
-                            color: '#07457E',
-                            textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-                            transition: 'all 0.3s ease',
-                        }}>
+                        <Typography
+                            align="center"
+                            sx={{
+                                fontSize: 20,
+                                margin: 1,
+                                color: "#07457E",
+                                textShadow:
+                                    "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                transition: "all 0.3s ease",
+                            }}
+                        >
                             (room owner only)
                         </Typography>
                     </DialogTitle>
@@ -102,12 +188,17 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
                         <DialogContent>
                             <Grid container spacing={2} columns={24}>
                                 <Grid item xs={12}>
-                                    <Typography align='left' component="div" sx={{
-                                        margin: 1,
-                                        color: '#07457E',
-                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-                                        transition: 'all 0.3s ease',
-                                    }}>
+                                    <Typography
+                                        align="left"
+                                        component="div"
+                                        sx={{
+                                            margin: 1,
+                                            color: "#07457E",
+                                            textShadow:
+                                                "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
                                         Total points
                                     </Typography>
                                     <Input
@@ -117,112 +208,147 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
                                             borderRadius: "4px",
                                         }}
                                         value={points}
-                                        type="Total points"
                                         size="lg"
                                         placeholder="Total points"
-                                        onChange={(e: any) =>
-                                            setTotalPoints(e.target.value)
-                                        }
+                                        required={true}
+                                        error={pointsError}
+                                        type="number"
+                                        onChange={handleScore}
                                     ></Input>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Typography align='left' component="div" sx={{
-                                        margin: 1,
-                                        color: '#07457E',
-                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-                                        transition: 'all 0.3s ease',
-                                    }}>
+                                    <Typography
+                                        align="left"
+                                        component="div"
+                                        sx={{
+                                            margin: 1,
+                                            color: "#07457E",
+                                            textShadow:
+                                                "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
                                         Board color
                                     </Typography>
                                     <MuiColorInput
                                         format="hex"
                                         value={boardColor}
+                                        required={true}
+                                        error={boardColorError}
                                         onChange={handleBoardColor}
                                     ></MuiColorInput>
                                 </Grid>
 
                                 <Grid item xs={12}>
-                                <Typography align='left' component="div" sx={{
-                                        margin: 1,
-                                        color: '#07457E',
-                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-                                        transition: 'all 0.3s ease',
-                                    }}>
+                                    <Typography
+                                        align="left"
+                                        component="div"
+                                        sx={{
+                                            margin: 1,
+                                            color: "#07457E",
+                                            textShadow:
+                                                "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
                                         Net color
                                     </Typography>
                                     <MuiColorInput
                                         format="hex"
                                         value={netColor}
+                                        required={true}
+                                        error={netColorError}
                                         onChange={handleNetColor}
                                     ></MuiColorInput>
                                 </Grid>
 
                                 <Grid item xs={12}>
-                                <Typography align='left' component="div" sx={{
-                                        margin: 1,
-                                        color: '#07457E',
-                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-                                        transition: 'all 0.3s ease',
-                                    }}>
+                                    <Typography
+                                        align="left"
+                                        component="div"
+                                        sx={{
+                                            margin: 1,
+                                            color: "#07457E",
+                                            textShadow:
+                                                "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
                                         Score color
                                     </Typography>
                                     <MuiColorInput
                                         format="hex"
                                         value={scoreColor}
+                                        required={true}
+                                        error={scoreColorError}
                                         onChange={handleScoreColor}
                                     ></MuiColorInput>
                                 </Grid>
 
                                 <Grid item xs={12}>
-                                <Typography align='left' component="div" sx={{
-                                        margin: 1,
-                                        color: '#07457E',
-                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-                                        transition: 'all 0.3s ease',
-                                    }}>
+                                    <Typography
+                                        align="left"
+                                        component="div"
+                                        sx={{
+                                            margin: 1,
+                                            color: "#07457E",
+                                            textShadow:
+                                                "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
                                         Paddle color
                                     </Typography>
                                     <MuiColorInput
                                         format="hex"
                                         value={paddleColor}
+                                        required={true}
+                                        error={paddleColorError}
                                         onChange={handlePaddleColor}
                                     ></MuiColorInput>
                                 </Grid>
                                 <Grid item xs={12}>
-                                <Typography align='left' component="div" sx={{
-                                        margin: 1,
-                                        color: '#07457E',
-                                        textShadow: '0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff',
-                                        transition: 'all 0.3s ease',
-                                    }}>
+                                    <Typography
+                                        align="left"
+                                        component="div"
+                                        sx={{
+                                            margin: 1,
+                                            color: "#07457E",
+                                            textShadow:
+                                                "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
                                         Ball color
                                     </Typography>
                                     <MuiColorInput
                                         format="hex"
                                         value={ballColor}
+                                        required={true}
+                                        error={ballColorError}
                                         onChange={handleBallColor}
                                     ></MuiColorInput>
                                 </Grid>
                             </Grid>
                         </DialogContent>
                         <DialogActions>
-                        <Button
-                            variant="contained"
-                            size="medium"
-                            autoFocus
-                            onClick={sendCancel}
-                        >
-                            CANCEL
-                        </Button>
-                        <Button
-                            variant="contained"
-                            size="medium"
-                            autoFocus
-                            onClick={sendSettings}
-                        >
-                            SUBMIT
-                        </Button>
-                    </DialogActions>
+                            <Button
+                                variant="contained"
+                                size="medium"
+                                autoFocus
+                                onClick={sendCancel}
+                            >
+                                CANCEL
+                            </Button>
+                            <Button
+                                variant="contained"
+                                size="medium"
+                                autoFocus
+                                onClick={sendSettings}
+                            >
+                                SUBMIT
+                            </Button>
+                        </DialogActions>
                     </Stack>
                 </Dialog>
             </Box>
