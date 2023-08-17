@@ -59,13 +59,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleConnection(socket: Socket) {
-    console.log('Une nouvelle socket sest connectée ', socket.id);
+    console.log('CONNECTED ', socket.id);
     const roomId = socket.handshake.query.roomId as string;
     socket.join(roomId);
   }
 
   handleDisconnect(socket: Socket) {
-    console.log('Une nouvelle socket sest déconnectée ', socket.id);
+    console.log('disconnec ', socket.id);
     const roomId = socket.handshake.query.roomId as string;
     socket.leave(roomId);
   }
