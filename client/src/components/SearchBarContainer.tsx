@@ -31,14 +31,13 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	useEffect(() => {
 		AppDispatch(FetchAllFriends())
 		AppDispatch(fetchAllChannelsInDatabase())
-	}, [currentUserName]); // get the friends and channels from database
+	}, []); // get the friends and channels from database
 
 	const friends = useAppSelector(selectFriends) as UserModel[];
 	let filteredFriends : UserModel[] = [];
 	let channels = useAppSelector((state) => selectAllChannels(state)) as Channel[];
-	channels = channels.filter(channel => channel.name !== 'WelcomeChannel'); // remove 'WelcomeChannel'
 	let filteredChannels : Channel[] = [];
-	
+
 	// if the channel is of type 'private' or 'privateConv' and the current user is not a member,
 	// we won't display it.
 	// so I filter all the private channels and privateConv channels of which I am not a member or
@@ -77,6 +76,8 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 						channel.members.some((member) => member?.login === currentUserName)  // checks if there's at least one member in the members array of the channel whose login property matches the currentUserName
 					);
 				}
+				if (channel.name === 'WelcomeChannel')
+					return false;
 				return true;
 			})
 			// #2 : we change the name of the channels for a correct display
@@ -92,14 +93,12 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 			  });
 		}
 
+		// console.log('filteredChannels = ', filteredChannels);
+
 		// Update usersAndChannels after filtering channels and friends
 		setUsersAndChannels([...filteredFriends, ...filteredChannels]);
 
-    }, [channels, friends, currentUserName]);
-
-	// useEffect(() => {
-		// console.log('usersAndChannels = ', usersAndChannels);
-	// }, [usersAndChannels])
+    }, [friends, channels]);
 
 	// State to hold the selected option
 	const [selectedOption, setSelectedOption] = useState<Channel | UserModel | null>(null);
@@ -127,9 +126,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 				chatHistory: [],
 			})
 
-			// console.log('this channel has been added to the database = ', response);
 			await AppDispatch(fetchUserChannels());
-			// console.log("convName = ", convName);
 			await AppDispatch(fetchDisplayedChannel(convName));
 
 			newChannelCreated.current = true;
@@ -148,11 +145,26 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	const handleOptionSelect = async (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
 		if (value) {
 			setSelectedOption(value);
-			if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
-				if (value.members.some((member) => member.login === currentUserName)) { // and if current user is already a member
+
+			if ('name' in value && value.type === 'privateConv') { // if value is a private conv
+				const conv : ChannelModel | undefined = userChannels.find((channel) => {
+					const memberLogin0 = channel.members[0].login;
+					const memberLogin1 = channel.members[1].login;
+					return ((memberLogin0 === currentUserName && memberLogin1 === value.name) 
+						|| (memberLogin0 === value.name && memberLogin1 === currentUserName)) 
+				})
+
+				// console.log("[SearchBarContainer] channelName = ", conv?.name);
+				if (conv) {
+					AppDispatch(fetchDisplayedChannel(conv.name))
+					// getSelectedItem(conv.name);
+				}
+			}
+			else if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
+				if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
 					setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
 				}
-				else {
+				else { // if current user is not a member of the picked channel
 					// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
 					setPickedChannel(value);
 					// open EnterChannelConfirmationDialog
@@ -162,20 +174,23 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 					if (value.key !== '') { // if channel is protected by a password
 						setAlertDialogSlideOpen(true); // open password check dialog slide
 					}
-					else {
-						await AppDispatch(fetchDisplayedChannel(value.name));
-						// add channel to the list of userChannels
+					else { // if the channel is not protected by a password
 						// getSelectedItem(value.name);
+						AppDispatch(fetchDisplayedChannel(value.name))
 					}
 				}
 			}
 			else if ('login' in value) { // if selected value is a user
-				if (!userChannels.some(channel => channel.name === value.login)) {
+				if (!userChannels.some(channel => { // check if there is no privateConv for which the user is a member
+					return channel.type === 'privateConv' &&
+						channel.members.some(member => member.login === value.login);
+				})) {
 					await createPrivateConv(value);
 				}
 				else {
-					await AppDispatch(fetchDisplayedChannel(value.login));
-					// getSelectedItem(value.name);
+					console.log("YOU SHOULD NOT EVER SEE THIS");
+					AppDispatch(fetchDisplayedChannel(value.login))
+					// getSelectedItem(value.login);
 				}
 			}
 		}

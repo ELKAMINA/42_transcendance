@@ -210,6 +210,7 @@ export function fetchUserIsAMemberChannels() {
 }
 
 export function fetchAllChannelsInDatabase() {
+	// console.log("[channelSlice] fetching all channels from db", )
 	return async (dispatch: any, getState: any) => {
 		try {
 			const response = await api.post("http://localhost:4001/channel/all",);

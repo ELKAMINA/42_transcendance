@@ -13,7 +13,7 @@ import CreateUsersList from "./createUsersList";
 import api from '../../utils/Axios-config/Axios' 
 import { UserByLogin } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
-import { fetchDisplayedChannel, fetchUserChannels } from "../../redux-features/chat/channelsSlice";
+import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels } from "../../redux-features/chat/channelsSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { FetchUsersDb, selectFriends } from "../../redux-features/friendship/friendshipSlice";
@@ -66,9 +66,9 @@ function CreateChannel(props : CreateChannelProps) {
 				chatHistory: [],
 			})
 
-			// if channel is successfully added to the database, execute this
+			// if channel is successfully added to the database, execute this :
 			await appDispatch(fetchUserChannels());
-			// await appDispatch(fetchDisplayedChannel(newName));
+			await appDispatch(fetchAllChannelsInDatabase()); // to update the searchbar options
 			props.getSelectedItem(newName);
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
@@ -77,7 +77,7 @@ function CreateChannel(props : CreateChannelProps) {
 			props.newChannelCreated.current = true;
 
 		} catch (error : any) {
-			console.log('error = ', error);
+			console.log('error while creating channel = ', error);
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
 			dispatch(resetChannelUser());

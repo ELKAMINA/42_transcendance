@@ -62,6 +62,7 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 	// React.useEffect(() => {
 	// 	console.log('User channels = ', channels);
 	// }, [channels])
+	const getSelectedChannelIndex = () => channels.findIndex(channel => channel.name === selectedChannel.name);
 
 	React.useEffect(() => {
 		// console.log('selectedChannel camembert = ', selectedChannel);
@@ -69,12 +70,17 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 			setSelectedIndex(-1); // dont select any item
 			return ;
 		}
+
+		const index = getSelectedChannelIndex();
+		setSelectedIndex(index);
+		
 	}, [selectedChannel])
+
 
 	React.useEffect(() => { 
 		AppDispatch(fetchUserChannels());
 		// console.log('user channels = ', channels);
-		if (channels.findIndex(channel => channel.name === selectedChannel.name) === -1) // when refreshing the page, if the selectedChannel is not in the list of channels anymore, sent index to 0 (aka first item in the list) 
+		if (getSelectedChannelIndex() === -1) // when refreshing the page, if the selectedChannel is not in the list of channels anymore, sent index to 0 (aka first item in the list) 
 			setSelectedIndex(0);
 	}, []);
 

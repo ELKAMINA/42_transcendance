@@ -11,13 +11,20 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 export type HandlePwdFunction = (pwd: string) => void;
 
 interface PasswordFieldProps {
+	isOpen?: boolean,
 	passwordFieldId: string;
   	handlePwd: HandlePwdFunction;
 	isPwdCorrect?: boolean;
 }
 
-export default function PasswordField({ handlePwd,  passwordFieldId, isPwdCorrect}: PasswordFieldProps) {
+export default function PasswordField({isOpen, handlePwd,  passwordFieldId, isPwdCorrect}: PasswordFieldProps) {
 	const [showPassword, setShowPassword] = React.useState(false);
+	const [value, setValue] = React.useState('');
+
+
+	React.useEffect(() => {
+		setValue(''); // Reset the value
+	}, [isOpen]);
 
 	const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -26,8 +33,9 @@ export default function PasswordField({ handlePwd,  passwordFieldId, isPwdCorrec
 	};
 
 	function handleChange(e : React.ChangeEvent<HTMLInputElement>) {
-		const value = e.target.value
-		handlePwd(value);
+		const newValue = e.target.value;
+		setValue(newValue); // Update the value state
+		handlePwd(newValue);
 	}
 
 	return (
@@ -51,6 +59,7 @@ export default function PasswordField({ handlePwd,  passwordFieldId, isPwdCorrec
 					</InputAdornment>
 					}
 					label="Password"
+					value={value} // Bind the input value to the state
 					sx={{
 						'& input': {
 							backgroundColor: 'transparent',
