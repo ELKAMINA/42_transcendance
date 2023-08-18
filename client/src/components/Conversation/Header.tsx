@@ -138,13 +138,14 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 					</Stack>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} spacing={3}>
-					<IconButton sx={{color: '#07457E'}} 
-						onClick={() => onSuggestGame({
-							from: currentUser,
-							to: channel.members[0].login === currentUser ? channel.members[1].login: channel.members[0].login,
-						})}>
-						<SportsEsportsIcon />
-					</IconButton>
+					{isPrivateConv && 
+						<IconButton sx={{color: '#07457E'}} 
+							onClick={() => onSuggestGame({
+								from: currentUser,
+								to: channel.members[0].login === currentUser ? channel.members[1].login: channel.members[0].login,
+							})}>
+							<SportsEsportsIcon />
+						</IconButton>}
 					{isPrivateConv &&
 						<Tooltip title='block user'>
 							<IconButton sx={{color: '#4DC8BC'}} onClick={() => {setOpenBlock(true)}}>
