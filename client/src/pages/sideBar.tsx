@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { MutableRefObject, useState } from 'react';
 import { Box, Button, Stack, } from '@mui/material';
 import CreateChannel from './createChannel/createChannel.tsx';
 import AlignItemsList from '../components/AlignItemsList.tsx';
 
 import "./sideBar.css"
 import SearchBarContainer from '../components/SearchBarContainer.tsx';
+import { Socket } from 'socket.io-client';
 
 type handleSelectItemFunction = (pwd: string) => void;
 
 interface SideBarProps {
-  handleSelectItem: handleSelectItemFunction;
+  	handleSelectItem: handleSelectItemFunction;
+	socketRef: React.MutableRefObject<Socket | undefined>;
+	newChannelCreated: MutableRefObject<boolean>;
 }
 
-function SideBar({handleSelectItem} : SideBarProps) {
+function SideBar({handleSelectItem, socketRef, newChannelCreated} : SideBarProps) {
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 
 	function getSelectedItem (selectedItem : string) {
@@ -45,11 +48,11 @@ function SideBar({handleSelectItem} : SideBarProps) {
 				>
 					CREATE CHANNEL
 				</Button>
-				<CreateChannel trigger = {buttonPopup} setTrigger={setButtonPopup} />
+				<CreateChannel newChannelCreated={newChannelCreated} getSelectedItem={getSelectedItem} trigger = {buttonPopup} setTrigger={setButtonPopup} />
 			</Box>
 		</Stack>
 		<Stack className='alignItemsListContainer'>
-			<AlignItemsList getSelectedItem={getSelectedItem} />
+			<AlignItemsList getSelectedItem={getSelectedItem} socketRef={socketRef} />
 		</Stack>
 	</Box>
 	);
