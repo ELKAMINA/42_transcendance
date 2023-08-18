@@ -60,6 +60,7 @@ export default function SearchBarHighlights({myOptions, handleOptionSelect} : Se
 				}
 				return false;
 			}}
+		/* Amina : Fin */
 			getOptionLabel={(result) => {
 				let title: string | undefined;
 				if ('login' in result) {
