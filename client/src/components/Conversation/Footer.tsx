@@ -162,6 +162,9 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 			if (user !== -1){
 				appDispatch(fetchDisplayedChannel(selectedChannel.name))
 			}
+			else {
+				setIsMuted(false)
+			}
 		}
 
 	})
