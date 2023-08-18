@@ -36,14 +36,16 @@ interface gameSugg {
 
 type ConvProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
+	messages: ChatMessage[];
+	setMessages: (arg0 : ChatMessage[]) => void;
 };
 
-function Conversation({socketRef} : ConvProps) {
+function Conversation({socketRef, messages, setMessages} : ConvProps) {
 
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	const isWelcomeChannel = selectedChannel.name === 'WelcomeChannel' ? true : false;
 	const roomId = selectedChannel.name;
-	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	// const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 	const currentUser = useAppSelector((state : RootState) => selectCurrentUser(state));
 	
@@ -67,25 +69,27 @@ function Conversation({socketRef} : ConvProps) {
 	// }
 
 	useEffect(() => {
-		socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
-			const incomingMessage : ChatMessage = {
-				...message,
-				outgoing: message.sentBy === currentUser,
-				incoming: message.sentBy !== currentUser,
-			}
-			// console.log('[From Messages : all Messages ]: ', messages)
-			setMessages((messages) => [...messages, incomingMessage])
-		})
+		// console.log("[conversation] - roomId = ", roomId);
+
+		// socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+		// 	const incomingMessage : ChatMessage = {
+		// 		...message,
+		// 		outgoing: message.sentBy === currentUser,
+		// 		incoming: message.sentBy !== currentUser,
+		// 	}
+		// 	// console.log('[From Messages : all Messages ]: ', messages)
+		// 	setMessages((messages) => [...messages, incomingMessage])
+		// })
 
 		return () => {
-			// socketRef.current?.disconnect();
-			dispatch(setGameDialog(false)); // A VERIFIER AVEC AMINA
+			dispatch(setGameDialog(false));
 		}
 	}, [roomId])
 
 
 // --- OTHER SOLUTION ----
 	// useEffect(() => {
+	// 	console.log("[conversation] - selectedChannel = ", selectedChannel.name);
 	// 	const messageListener = (message: ChatMessage) => {
 	// 		const incomingMessage: ChatMessage = {
 	// 			...message,
@@ -98,9 +102,10 @@ function Conversation({socketRef} : ConvProps) {
 	// 	socketRef.current?.on('ServerToChat:' + roomId, messageListener);
 	
 	// 	return () => {
+	// 		console.log('[conversation] = returning')
 	// 		socketRef.current?.off('ServerToChat:' + roomId, messageListener);
 	// 	};
-	// }, [selectedChannel, currentUser]);
+	// }, [selectedChannel]);
 
 // --- END OF OTHER SOLUTION ----
 
