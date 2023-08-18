@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import AlertDialogSlide from './AlertDialogSlide';
 import EnterPassword from './EnterPassword';
 import FullScreenAlert from './FullScreenAlert';
@@ -54,8 +54,10 @@ function AskForPassword({element, AlertDialogSlideOpen, setAlertDialogSlideOpen,
 			getSelectedItem(element.name);
 			setAlertSuccess(true);
 		} else {
+			getSelectedItem("WelcomeChannel")
 			setAlertError(true);
 		}
+		setIsPasswordCorrect(false);
 		setAlertDialogSlideOpen(false);
  	};
 
@@ -69,7 +71,7 @@ function AskForPassword({element, AlertDialogSlideOpen, setAlertDialogSlideOpen,
 			<AlertDialogSlide 
 				handleClose={handleClose}
 				open={AlertDialogSlideOpen}
-				dialogContent={<EnterPassword handlepwd={handlepwd} passwordFieldId={'passwordfield'} isPwdCorrect={isPasswordCorrect} />} />
+				dialogContent={<EnterPassword isOpen={AlertDialogSlideOpen} handlepwd={handlepwd} passwordFieldId={'passwordfield'} isPwdCorrect={isPasswordCorrect} />} />
 			<Box>
 				{ alertError &&
 					<FullScreenAlert severity='error' alertTitle='Error' normalTxt='incorrect password --' 

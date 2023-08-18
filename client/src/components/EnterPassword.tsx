@@ -3,13 +3,14 @@ import PasswordField from "./PasswordField";
 import {HandlePwdFunction} from "./PasswordField"
 
 interface EnterPasswordProps {
+	isOpen: boolean,
 	handlepwd : HandlePwdFunction,
 	passwordFieldId: string;
 	isPwdCorrect: boolean;
 }
 
 function EnterPassword (props: EnterPasswordProps) {
-	const {handlepwd, passwordFieldId, isPwdCorrect} = props;
+	const {handlepwd, passwordFieldId, isPwdCorrect, isOpen} = props;
 
 	return (
 		<Box>
@@ -18,7 +19,7 @@ function EnterPassword (props: EnterPasswordProps) {
           		<DialogContentText id="alert-dialog-slide-description">
 					This channel is protected by a password.
 				</DialogContentText>
-				<PasswordField handlePwd={handlepwd} passwordFieldId={passwordFieldId} isPwdCorrect={isPwdCorrect}/>
+				<PasswordField isOpen={isOpen} handlePwd={handlepwd} passwordFieldId={passwordFieldId} isPwdCorrect={isPwdCorrect}/>
         	</DialogContent>
 		</Box>
 	)
