@@ -25,7 +25,7 @@ function SideBar({handleSelectItem, socketRef, newChannelCreated, channelDeleted
 
 	return (
 	<Box className='sideBar'>
-		<SearchBarContainer getSelectedItem={getSelectedItem} />
+		<SearchBarContainer getSelectedItem={getSelectedItem} newChannelCreated={newChannelCreated}/>
 		{/* <Divider variant='middle' flexItem  sx={{bgcolor: '#dde5ed'}}/> */}
 		<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} spacing={4}>
 			<Box >
