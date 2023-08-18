@@ -78,7 +78,7 @@ function Conversation({socketRef} : ConvProps) {
 		})
 
 		return () => {
-			socketRef.current?.disconnect();
+			// socketRef.current?.disconnect();
 			dispatch(setGameDialog(false)); // A VERIFIER AVEC AMINA
 		}
 	}, [roomId])
