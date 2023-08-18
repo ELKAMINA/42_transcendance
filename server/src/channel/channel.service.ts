@@ -528,7 +528,7 @@ export class ChannelService {
 		try 
 		{
 			const { channelName, muted } = requestBody;
-			console.log('muted = ', muted);
+			// console.log('muted = ', muted);
 
 			// Find the channel by name
 			const channel = await this.prisma.channel.findUnique({

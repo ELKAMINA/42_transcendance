@@ -18,6 +18,7 @@ export interface ChannelSlice {
 	userPublicChannels : ChannelModel[],
 	userPrivateConvs : ChannelModel[],
 	gameDialog: boolean,
+	isMuted: MutingInfo[],
 
 }
 
@@ -34,8 +35,14 @@ const initialState : ChannelSlice = {
 	userPublicChannels : [],
 	userPrivateConvs : [],
 	gameDialog: false,
+	isMuted: [],
 
 };
+
+export type MutingInfo = {
+	channelName: string;
+	muted: boolean;
+  };
 
 // this is an array of channels
 export const channelsSlice = createSlice({
@@ -119,7 +126,22 @@ export const channelsSlice = createSlice({
 			}
 		},
 		setGameDialog: (state, action: PayloadAction<boolean>) => {
-			state.gameDialog = action.payload
+			return {
+				...state,
+				gameDialog : action.payload
+			}
+		},
+		setIsMuted: (state, action: PayloadAction<MutingInfo>) => {
+			// console.log('je rentre ici ou pas ?', action.payload)
+			const channelIndex = state.isMuted.findIndex(el => el.channelName === action.payload.channelName);
+			if (channelIndex !== -1) {
+				// The channel's mute info is already present. Update it.
+				// console.log("identification du chan ", state.isMuted[channelIndex])
+				// console.log("Le payload  ", action.payload.muted)
+				state.isMuted[channelIndex].muted = action.payload.muted;
+			  } else {
+				state.isMuted.push(action.payload)
+			  }
 		},
 		resetChannelStore : (state) => {
             return initialState;
@@ -335,6 +357,7 @@ export const {
 	updatePrivateConvs,
 	resetChannelStore,
 	setGameDialog,
+	setIsMuted,
 } = channelsSlice.actions;
 
 export default channelsSlice.reducer
@@ -351,3 +374,4 @@ export const selectPrivateChannels= (state : RootState) => state.persistedReduce
 export const selectPublicChannels = (state : RootState) => state.persistedReducer.channels.publicChannels
 export const selectPrivateConvs = (state : RootState) => state.persistedReducer.channels.privateConvs
 export const selectGameDialog = (state : RootState) => state.persistedReducer.channels.gameDialog
+export const selectIsMuted = (state : RootState) => state.persistedReducer.channels.isMuted

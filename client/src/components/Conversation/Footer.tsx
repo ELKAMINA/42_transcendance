@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import * as React from 'react';
+import { Socket } from 'socket.io-client';
 import { Box, Stack, IconButton, TextField, InputAdornment } from '@mui/material'
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import SendIcon from '@mui/icons-material/Send';
@@ -16,7 +17,15 @@ import MicOffIcon from '@mui/icons-material/MicOff';
 
 import './Footer.css';
 
+interface mutes {
+	login: string,
+	ExpiryTime: Date | null,
+}
 // import { FetchUserByName } from '../../redux-features/friendship/friendshipSlice';
+interface mutedInfos {
+	mutedUser: mutes[],
+	channelName: string,
+}
 
 const StyledInput = styled(TextField)(({ theme }) => ({
 	backgroundColor: 'transparent',
@@ -34,7 +43,7 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 
 
 
-const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
+const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketRef : React.MutableRefObject<Socket | undefined>} ) => {
 	const currentUser = useAppSelector(selectCurrentUser)
 	const blockRef = React.useRef<HTMLInputElement>(null)
 	const [blockMsg, setBlockMsg] = React.useState('')
@@ -51,9 +60,34 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		setValue(input);
 	}
 
-	React.useEffect(() => {
-        setBlockMsg('')
+	React.useEffect( () => {
+		setBlockMsg('')
+		if (selectedChannel.type !== 'PrivateConv') {				// get most recent selectedChannel version from db
+			if (selectedChannel.name !== 'empty channel')
+			// check its muted property array to see if currentUser is in it
+			if (selectedChannel.muted.map((user) => {
+				if (user.login === currentUser){
+					setIsMuted(true);
+					return true;
+				}
+				return false;
+			})){
+			}
+			else
+				setIsMuted(false);
+		}
+		return () => {
+			// console.log('jannule le state ', selectedChannel)
+			setIsMuted(false);
+		}
     }, [selectedChannel])
+
+	// useEffect(() => {
+	// 	return () => {
+	// 		console.log('jannule le state ')
+	// 		setIsMuted(false);
+	// 	}
+	// }, [])
 
 	async function userIsBlocked() : Promise<boolean> {
 		// console.log('selectedChannel.name = ', selectedChannel.name)
@@ -86,38 +120,64 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		} 	
 	}
 
-	async function userIsMuted() : Promise<boolean> {
-		if (selectedChannel.type !== 'PrivateConv') {
-			try {
-				// get most recent selectedChannel version from db
-				if (selectedChannel.name !== 'empty channel')
-					await appDispatch(fetchDisplayedChannel(selectedChannel.name));
-				// check its muted property array to see if currentUser is in it
-				if (selectedChannel.muted.some(muted => muted.login === currentUser))
-					return true;
-				else
-					return false;
-			}
-			catch (error : any) {
-				console.log('error while checking if user is muted = ', error);
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+	/* ==== This block of code has been commented by Amina === */
+	// async function userIsMuted() : Promise<boolean> {
+	// 	if (selectedChannel.type !== 'PrivateConv') {
+	// 		try {
+	// 			// get most recent selectedChannel version from db
+	// 			if (selectedChannel.name !== 'empty channel')
+	// 				await appDispatch(fetchDisplayedChannel(selectedChannel.name));
+	// 			// check its muted property array to see if currentUser is in it
+	// 			if (selectedChannel.muted.some(muted => muted.login === currentUser)){
+	// 				return true;
+	// 			}
+	// 			else
+	// 				return false;
+	// 		}
+	// 		catch (error : any) {
+	// 			console.log('error while checking if user is muted = ', error);
+	// 			return false;
+	// 		}
+	// 	} else {
+	// 		return false;
+	// 	}
+	// }
 
-	useEffect(() => {
-		(async () => {
-		  const mutedStatus = await userIsMuted();
-		  setIsMuted(mutedStatus);
-		//   console.log('is muted ? ', mutedStatus);
-		})();
-	}, []);
+	/* ==== This block of code has been commented by Amina === */
+	// useEffect(() => {
+	// 	(async () => {
+	// 	  const mutedStatus = await userIsMuted();
+	// 	  setIsMuted(mutedStatus);
+	// 	//   console.log('is muted ? ', mutedStatus);
+	// 	})();
+	// }, []);
+
+	/* Block added by Amina to handle real time muted users and update of the footer */
+	socketRef.current?.on('userHasBeenMuted', async (infos: mutedInfos) => {
+		if (infos.mutedUser.length === 0){
+			setIsMuted(false);
+		}
+		else {
+			const user = infos.mutedUser.findIndex(user => user.login === currentUser)
+			if (user !== -1){
+				appDispatch(fetchDisplayedChannel(selectedChannel.name))
+			}
+			else {
+				setIsMuted(false)
+			}
+		}
+
+	})
+
+	socketRef.current?.off('UserUnmutedAfterExpiry').on('UserUnmutedAfterExpiry', async (user: string) => {
+		if (user === currentUser){
+			appDispatch(fetchDisplayedChannel(selectedChannel.name))
+		}
+	})
 
 
 	async function sendMessage() {
-		if (await userIsBlocked() === false && isMuted === false && value != "") {
+		if (await userIsBlocked() === false && isMuted === false && value !== "") {
 			const messageToBeSent = {
 				sentBy: authState.nickname,
 				sentById: authState.nickname,

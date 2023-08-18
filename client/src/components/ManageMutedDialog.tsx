@@ -1,21 +1,23 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
+import { Socket } from 'socket.io-client';
 import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
+import { useTheme } from '@mui/material/styles';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+
 import UserList, { UserWithTime } from './UserList';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 import api from '../utils/Axios-config/Axios';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { UserModel } from '../types/users/userType';
-import SendIcon from '@mui/icons-material/Send';
 
-export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
+export default function ManageMutedDialog({socketRef, openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void, socketRef : React.MutableRefObject<Socket | undefined>}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
@@ -41,7 +43,7 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 			return updatedMutedWithTime[existingUserIndex];
 		});
 		
-		// console.log('updatedMutedWithNullTime = ', updatedMutedWithNullTime);
+		console.log('updatedMutedWithNullTime = ', updatedMutedWithNullTime);
 		
 		// send request to be the backend
 		updateMuted(updatedMutedWithNullTime);
@@ -54,7 +56,8 @@ export default function ManageMutedDialog({openDialog, setOpenDialog} : {openDia
 				muted : readyToBeSendMuted,
 			})
 			.then((response) => {
-				// console.log("response = ", response)
+				// console.log('ReadyToBeSendMuted ==== ', readyToBeSendMuted)
+				socketRef.current?.emit('userMutedByAdmin', readyToBeSendMuted)
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})

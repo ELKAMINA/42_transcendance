@@ -63,7 +63,6 @@ export default function AdminMenu({socketRef} : AdminMenuProps) {
 		}
 	};
 	  
-
 	function handleListKeyDown(event: React.KeyboardEvent) {
 		if (event.key === 'Tab') {
 			event.preventDefault();
@@ -139,7 +138,7 @@ export default function AdminMenu({socketRef} : AdminMenuProps) {
 		</div>
 		</Stack>
 			<ManageBannedDialog openDialog={openBannedDialog} setOpenDialog={setOpenBannedDialog}/>
-			<ManageMutedDialog openDialog={openMutedDialog} setOpenDialog={setOpenMutedDialog}/>
+			<ManageMutedDialog socketRef={socketRef} openDialog={openMutedDialog} setOpenDialog={setOpenMutedDialog}/>
 			<KickMember socketRef={socketRef} openDialog={openKickMemberDialog} setOpenDialog={setOpenKickMemberDialog}/>
 		</React.Fragment>
 

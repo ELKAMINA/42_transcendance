@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
+import { ChatMessage } from '../types/chat/messageType';
 
 
 function Chat () {
@@ -35,6 +36,7 @@ function Chat () {
 	
 	const socketRef = useRef<Socket>();
 	const roomId = selectedChannel;
+	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
 		// console.log('[Chat] - roomId = ', roomId)
@@ -57,6 +59,16 @@ function Chat () {
 			socketRef.current?.emit('channelDeleted');
 			channelDeleted.current = false;
 		}
+
+		socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
+			const incomingMessage : ChatMessage = {
+				...message,
+				outgoing: message.sentBy === currentUser,
+				incoming: message.sentBy !== currentUser,
+			}
+			// console.log('[From Messages : all Messages ]: ', messages)
+			setMessages((messages) => [...messages, incomingMessage])
+		})
 
 		return () => {
 			// console.log('[Unmounted Component Conversation] ', selectedChannel)
@@ -105,7 +117,7 @@ function Chat () {
 				<div className='chat-wrapper'>
 				<SideBar handleSelectItem={handleSelectChannel} socketRef={socketRef} newChannelCreated={newChannelCreated} channelDeleted={channelDeleted}/>
 				<div className='chat'>
-					{isBanned === false && <Conversation socketRef={socketRef} />}
+					{isBanned === false && <Conversation socketRef={socketRef} messages={messages} setMessages={setMessages}/>}
 					{isBanned === true && <Banned />}
 				</div>
 				</div>
