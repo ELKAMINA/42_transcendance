@@ -76,10 +76,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() body: any,
   ): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    //   this.server.to(roomId).emit('FriendBlocked', user)
-    // const [socketId, room] = socket.rooms;
-    // console.log('la room ', sockets.rooms);
-    // console.log('le body de la requete ', body);
     this.server.to(roomId).emit('respondingGame', body);
   }
 
@@ -89,42 +85,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() body: any,
   ): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    //   this.server.to(roomId).emit('FriendBlocked', user)
-    // const [socketId, room] = socket.rooms;
-    // console.log('la room ', sockets.rooms);
-    // console.log('le body de la requete ', body);
     this.server.to(roomId).emit('serverPrivateGame', body);
   }
 
   @SubscribeMessage('denyGame')
   async handleDenyGame(@ConnectedSocket() socket: Socket): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    //   this.server.to(roomId).emit('FriendBlocked', user)
-    // const [socketId, room] = socket.rooms;
-    // console.log('la room ', sockets.rooms);
-    // console.log('le body de la requete ', body);
     this.server.to(roomId).emit('gameDenied');
   }
 
   @SubscribeMessage('cancelGame')
   async handleCancelGame(@ConnectedSocket() socket: Socket): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    //   this.server.to(roomId).emit('FriendBlocked', user)
-    // const [socketId, room] = socket.rooms;
-    // console.log('la room ', sockets.rooms);
-    // console.log('le body de la requete ', body);
     this.server.to(roomId).emit('gameCancelled');
-  }
-
-  @SubscribeMessage('shut')
-  async handleShut(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() body: any,
-  ): Promise<void> {
-    const roomId = socket.handshake.query.roomId as string;
-    console.log('From Shut ==== la roomId ', roomId);
-    this.shut += 1;
-    this.server.to(roomId).emit('newShut', this.shut);
   }
 
   @SubscribeMessage('userMutedByAdmin')
@@ -133,7 +106,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() body: any,
   ): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    console.log('From userMutedBy Admin ===== la roomId ', roomId);
+    // console.log('From userMutedBy Admin ===== la roomId ', roomId);
     this.server
       .to(roomId)
       .emit('userHasBeenMuted', { mutedUser: body, channelName: roomId });
@@ -152,38 +125,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async notifyWhenUnmuted(user: string, channelConcerned: string) {
-    // console.log('channel concerné ', channelConcerned);
-    // console.log('user concerné ', user);
-    const channelsNameArr = channelConcerned.split(',');
-    // console.log('when a lot of channels ', channelsNameArr);
-    const userWithTime = new Array<UserWithTime>();
-    userWithTime.push({ login: user, ExpiryTime: null });
-    if (channelsNameArr.length > 1) {
-      channelsNameArr.map((chan) => {
-        this.server.to(chan).emit('UserUnmutedAfterExpiry', {
-          mutedUser: userWithTime,
-          channelName: chan,
-        });
-      });
-    } else {
-      this.server.to(channelConcerned).emit('UserUnmutedAfterExpiry', {
-        mutedUser: userWithTime,
-        channelName: channelConcerned,
-      });
-    }
-  }
+    // console.log('channelConcerned ', channelConcerned);
+    let channelsNameArr = new Array<string>();
+    channelsNameArr = channelConcerned.split(',');
+    // console.log('ARRAY', channelsNameArr);
 
-  async unshut(user: string, channelConcerned: string) {
-    const channelsNameArr = channelConcerned.split(',');
-    // console.log('when a lot of channels ', channelsNameArr);
-    const userWithTime = new Array<UserWithTime>();
-    userWithTime.push({ login: user, ExpiryTime: null });
-    if (channelsNameArr.length > 1) {
-      channelsNameArr.map((chan) => {
-        this.server.to(chan).emit('unshut');
+    if (channelsNameArr.length > 0) {
+      channelsNameArr.map((chan: string) => {
+        this.server.to(chan).emit('UserUnmutedAfterExpiry', user);
       });
-    } else {
-      this.server.to(channelConcerned).emit('unshut');
     }
   }
 }

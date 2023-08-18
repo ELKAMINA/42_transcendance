@@ -43,7 +43,7 @@ export default function ManageMutedDialog({socketRef, openDialog, setOpenDialog}
 			return updatedMutedWithTime[existingUserIndex];
 		});
 		
-		// console.log('updatedMutedWithNullTime = ', updatedMutedWithNullTime);
+		console.log('updatedMutedWithNullTime = ', updatedMutedWithNullTime);
 		
 		// send request to be the backend
 		updateMuted(updatedMutedWithNullTime);
@@ -56,10 +56,8 @@ export default function ManageMutedDialog({socketRef, openDialog, setOpenDialog}
 				muted : readyToBeSendMuted,
 			})
 			.then((response) => {
-				console.log('ReadyToBeSendMuted ==== ', readyToBeSendMuted)
-				socketRef.current?.emit('shut')
+				// console.log('ReadyToBeSendMuted ==== ', readyToBeSendMuted)
 				socketRef.current?.emit('userMutedByAdmin', readyToBeSendMuted)
-				// console.log("response = ", response)
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})

@@ -7,7 +7,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { fetchDisplayedChannel, selectDisplayedChannel, selectIsMuted, setIsMuted } from '../../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
@@ -17,12 +17,11 @@ import MicOffIcon from '@mui/icons-material/MicOff';
 
 import './Footer.css';
 
-// import { FetchUserByName } from '../../redux-features/friendship/friendshipSlice';
 interface mutes {
 	login: string,
 	ExpiryTime: Date | null,
 }
-
+// import { FetchUserByName } from '../../redux-features/friendship/friendshipSlice';
 interface mutedInfos {
 	mutedUser: mutes[],
 	channelName: string,
@@ -49,38 +48,46 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 	const blockRef = React.useRef<HTMLInputElement>(null)
 	const [blockMsg, setBlockMsg] = React.useState('')
 	const [value, setValue] = useState("");
-	let isMuted: boolean | undefined;
-	const [plusShut, setPlusShut] = useState<number>(0);
+	const [isMuted, setIsMuted] = useState<boolean>(false);
 	const appDispatch = useAppDispatch();
-	
+
 	// record message
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 	const selectedChannel: ChannelModel = useAppSelector(selectDisplayedChannel);
-	
-	const isMutedRedux = useAppSelector(selectIsMuted)
-
-	useEffect(() => {
-		if (isMutedRedux !== null || isMutedRedux !== undefined){
-			isMuted = isMutedRedux.find(el => el.channelName === selectedChannel.name)?.muted;
-		}
-	}, [selectedChannel])
-	
-	// console.log("is Muted ", isMuted)
 
 	function handleChange(e : React.ChangeEvent<HTMLInputElement>) {
 		const input = e.target.value;
 		setValue(input);
 	}
 
-	React.useEffect(() => {
-        setBlockMsg('')
+	React.useEffect( () => {
+		setBlockMsg('')
+		if (selectedChannel.type !== 'PrivateConv') {				// get most recent selectedChannel version from db
+			if (selectedChannel.name !== 'empty channel')
+			// check its muted property array to see if currentUser is in it
+			if (selectedChannel.muted.map((user) => {
+				if (user.login === currentUser){
+					setIsMuted(true);
+					return true;
+				}
+				return false;
+			})){
+			}
+			else
+				setIsMuted(false);
+		}
+		return () => {
+			// console.log('jannule le state ', selectedChannel)
+			setIsMuted(false);
+		}
     }, [selectedChannel])
 
-	// React.useEffect(() => {
-	// 	return ()=> {
-	// 		appDispatch(setIsMuted(false))
+	// useEffect(() => {
+	// 	return () => {
+	// 		console.log('jannule le state ')
+	// 		setIsMuted(false);
 	// 	}
-	// })
+	// }, [])
 
 	async function userIsBlocked() : Promise<boolean> {
 		// console.log('selectedChannel.name = ', selectedChannel.name)
@@ -113,76 +120,61 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		} 	
 	}
 
-	async function userIsMuted(infos: mutedInfos, muting: boolean) : Promise<boolean> {
-		// console.log('selected channel ', selectedChannel)
-		if (selectedChannel.type !== 'PrivateConv') {
-			try {
-				// get most recent selectedChannel version from db
-				console.log('ici... ');
+	/* ==== This block of code has been commented by Amina === */
+	// async function userIsMuted() : Promise<boolean> {
+	// 	if (selectedChannel.type !== 'PrivateConv') {
+	// 		try {
+	// 			// get most recent selectedChannel version from db
+	// 			if (selectedChannel.name !== 'empty channel')
+	// 				await appDispatch(fetchDisplayedChannel(selectedChannel.name));
+	// 			// check its muted property array to see if currentUser is in it
+	// 			if (selectedChannel.muted.some(muted => muted.login === currentUser)){
+	// 				return true;
+	// 			}
+	// 			else
+	// 				return false;
+	// 		}
+	// 		catch (error : any) {
+	// 			console.log('error while checking if user is muted = ', error);
+	// 			return false;
+	// 		}
+	// 	} else {
+	// 		return false;
+	// 	}
+	// }
 
-				if (selectedChannel.name !== 'empty channel')
-					await appDispatch(fetchDisplayedChannel(selectedChannel.name));
-			/* ====== Amina adds ===== 
-				Here i check if the actual user exists in the array "muted users " of the room. If so, we toggle the isMuted state
-			*/
-				// if (selectedChannel.name === infos.channelName) {
-					console.log('infos ', infos);
-					infos.mutedUser.map((user) => {
-						if (user.login === currentUser) {
-							const newInfos = {channelName: selectedChannel.name, muted: muting}
-							appDispatch(setIsMuted(newInfos));
-							return true;
-						}
-							return false;
-						}
-						)
-					return true;
-				// }
-				// else
-				// 	return false;
-			}
-			catch (error : any) {
-				console.log('error while checking if user is muted = ', error);
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	/* ====== Amina adds ===== 
-		In this component, i added a props which is the socket related to chat
-		When an admin is muting members, he emits an event to the room (for all members to be informed) sending the muted memebers and the name of the room
-		All the members are listening to the event (userHasBeenMuted), individually, and when it's trigerred,
-		the "userIsmuted" function, to see if the currentUser is actually concerned. That's why i changed the prototype of the function, adding to it the args "infos" which is containing (the roomId and the users muted in the room)
-	*/
-	// socketRef.current?.off('userHasBeenMuted').on('userHasBeenMuted', async (infos: mutedInfos) => {
-	// 	await userIsMuted(infos, true);
-
-	// })
-	socketRef.current?.on('newShut', async (shutValue: number) => {
-		setPlusShut(shutValue)
-	})
-	
-	// const [lessShut, setLessShut] = useState<number>(plusShut);
-	
-	socketRef.current?.off('userHasBeenMuted').on('userHasBeenMuted', async (infos: mutedInfos) => {
-		console.log('Awouuu')
-		await userIsMuted(infos, true);
-	})
+	/* ==== This block of code has been commented by Amina === */
 	// useEffect(() => {
-	// 	console.log('plusShut ', plusShut)
-	// }, [plusShut])
+	// 	(async () => {
+	// 	  const mutedStatus = await userIsMuted();
+	// 	  setIsMuted(mutedStatus);
+	// 	//   console.log('is muted ? ', mutedStatus);
+	// 	})();
+	// }, []);
 
-	socketRef.current?.off('UserUnmutedAfterExpiry').on('UserUnmutedAfterExpiry', async (infos: mutedInfos) => {
-		console.log('After expiry ', infos);
-		await userIsMuted(infos, false);
+	/* Block added by Amina to handle real time muted users and update of the footer */
+	socketRef.current?.on('userHasBeenMuted', async (infos: mutedInfos) => {
+		if (infos.mutedUser.length === 0){
+			setIsMuted(false);
+		}
+		else {
+			const user = infos.mutedUser.findIndex(user => user.login === currentUser)
+			if (user !== -1){
+				appDispatch(fetchDisplayedChannel(selectedChannel.name))
+			}
+		}
 
+	})
+
+	socketRef.current?.off('UserUnmutedAfterExpiry').on('UserUnmutedAfterExpiry', async (user: string) => {
+		if (user === currentUser){
+			appDispatch(fetchDisplayedChannel(selectedChannel.name))
+		}
 	})
 
 
 	async function sendMessage() {
-		if (await userIsBlocked() === false && ((isMuted === false || isMuted === undefined) && value !== "")) {
+		if (await userIsBlocked() === false && isMuted === false && value !== "") {
 			const messageToBeSent = {
 				sentBy: authState.nickname,
 				sentById: authState.nickname,
@@ -211,7 +203,7 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		sendMessage();
 		setValue('');
 	}
-	// console.log("is Muted ", isMuted)
+
 	return (
 		<Box
 			p={2}
@@ -247,7 +239,7 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 					height: 48, width: 48, backgroundColor: '#07457E', borderRadius: 1.5
 				}}>
 					<Stack sx={{height:'100%', width:'100%',}} alignItems={'center'} justifyContent={'center'}>
-						{(isMuted === false || isMuted === undefined) && 
+						{isMuted === false && 
 							<IconButton onClick={handleClick}>
 								<SendIcon fontSize="medium" sx={{color: 'white'}}/>
 							</IconButton>
