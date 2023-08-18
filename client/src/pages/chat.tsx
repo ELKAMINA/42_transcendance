@@ -39,7 +39,7 @@ function Chat () {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
-		console.log('[Chat] - roomId = ', roomId)
+		// console.log('[Chat] - roomId = ', roomId)
 
 		if (selectedChannel === 'empty channel') // if roomId is 'WelcomeChannel'
 			return ; // exit the function immediatly
