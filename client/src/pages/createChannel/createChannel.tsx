@@ -1,6 +1,6 @@
 import "./createChannel.css"
 
-import React from "react";
+import React, { MutableRefObject } from "react";
 import { IconButton } from "@mui/material";
 import { Box, Button, Stack } from "@mui/material";
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,16 +13,20 @@ import CreateUsersList from "./createUsersList";
 import api from '../../utils/Axios-config/Axios' 
 import { UserByLogin } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
-import { fetchUserChannels } from "../../redux-features/chat/channelsSlice";
+import { fetchDisplayedChannel, fetchUserChannels } from "../../redux-features/chat/channelsSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { FetchUsersDb, selectFriends } from "../../redux-features/friendship/friendshipSlice";
 import { ChannelTypeState, resetChannelType } from '../../redux-features/chat/createChannel/channelTypeSlice';
+import { Socket } from 'socket.io-client';
 
 interface CreateChannelProps {
 	trigger: boolean;
 	setTrigger: (value: boolean) => void;
 	children?: React.ReactNode;
+	// socketRef: React.MutableRefObject<Socket | undefined>;
+	getSelectedItem: (item: string) => void;
+	newChannelCreated: MutableRefObject<boolean>;
 }
   
 function CreateChannel(props : CreateChannelProps) {
@@ -47,32 +51,37 @@ function CreateChannel(props : CreateChannelProps) {
 
 		const updatedChannelUsersList = [...channelUsersList, createdBy];
 
-		await api
-		.post ('http://localhost:4001/channel/creation', {
-			name: newName,
-			channelId: Date.now(),
-			type: channelType.type,
-			createdBy: createdBy,
-			admins: [createdBy],
-			protected_by_password: channelType.protected_by_password,
-			key: channelType.key,
-			members: updatedChannelUsersList,
-			avatar: currentUser.avatar,
-			chatHistory: [],
-		})
-		.then ((response) => {
-			// console.log('this channel has been added to the database = ', response);
-			appDispatch(fetchUserChannels());
+		try {
+			await api
+			.post ('http://localhost:4001/channel/creation', {
+				name: newName,
+				channelId: Date.now(),
+				type: channelType.type,
+				createdBy: createdBy,
+				admins: [createdBy],
+				protected_by_password: channelType.protected_by_password,
+				key: channelType.key,
+				members: updatedChannelUsersList,
+				avatar: currentUser.avatar,
+				chatHistory: [],
+			})
+
+			// if channel is successfully added to the database, execute this
+			await appDispatch(fetchUserChannels());
+			// await appDispatch(fetchDisplayedChannel(newName));
+			props.getSelectedItem(newName);
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
 			dispatch(resetChannelUser());
-		})
-		.catch ((error) => {
+
+			props.newChannelCreated.current = true;
+
+		} catch (error : any) {
 			console.log('error = ', error);
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
 			dispatch(resetChannelUser());
-		})
+		}
 	}
 
 	function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
