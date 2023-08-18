@@ -24,6 +24,8 @@ import { UserWithTime } from '../../channel/channel.controller';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
+  private shut = 0;
+
   constructor(
     private ChatService: ChatService,
     private friends: FriendshipService,
@@ -114,35 +116,46 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(roomId).emit('gameCancelled');
   }
 
+  @SubscribeMessage('shut')
+  async handleShut(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: any,
+  ): Promise<void> {
+    const roomId = socket.handshake.query.roomId as string;
+    console.log('From Shut ==== la roomId ', roomId);
+    this.shut += 1;
+    this.server.to(roomId).emit('newShut', this.shut);
+  }
+
   @SubscribeMessage('userMutedByAdmin')
   async handleUserMuted(
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ): Promise<void> {
     const roomId = socket.handshake.query.roomId as string;
-    console.log('la roomId ', roomId);
+    console.log('From userMutedBy Admin ===== la roomId ', roomId);
     this.server
       .to(roomId)
       .emit('userHasBeenMuted', { mutedUser: body, channelName: roomId });
   }
 
   handleConnection(socket: Socket) {
-    console.log('CONNECTED ', socket.id);
+    // console.log('CONNECTED ', socket.id);
     const roomId = socket.handshake.query.roomId as string;
     socket.join(roomId);
   }
 
   handleDisconnect(socket: Socket) {
-    console.log('disconnec ', socket.id);
+    // console.log('disconnec ', socket.id);
     const roomId = socket.handshake.query.roomId as string;
     socket.leave(roomId);
   }
 
   async notifyWhenUnmuted(user: string, channelConcerned: string) {
-    console.log('channel concerné ', channelConcerned);
-    console.log('user concerné ', user);
+    // console.log('channel concerné ', channelConcerned);
+    // console.log('user concerné ', user);
     const channelsNameArr = channelConcerned.split(',');
-    console.log('when a lot of channels ', channelsNameArr);
+    // console.log('when a lot of channels ', channelsNameArr);
     const userWithTime = new Array<UserWithTime>();
     userWithTime.push({ login: user, ExpiryTime: null });
     if (channelsNameArr.length > 1) {
@@ -157,6 +170,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         mutedUser: userWithTime,
         channelName: channelConcerned,
       });
+    }
+  }
+
+  async unshut(user: string, channelConcerned: string) {
+    const channelsNameArr = channelConcerned.split(',');
+    // console.log('when a lot of channels ', channelsNameArr);
+    const userWithTime = new Array<UserWithTime>();
+    userWithTime.push({ login: user, ExpiryTime: null });
+    if (channelsNameArr.length > 1) {
+      channelsNameArr.map((chan) => {
+        this.server.to(chan).emit('unshut');
+      });
+    } else {
+      this.server.to(channelConcerned).emit('unshut');
     }
   }
 }

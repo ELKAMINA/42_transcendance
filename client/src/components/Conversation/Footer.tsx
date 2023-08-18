@@ -49,13 +49,21 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 	const blockRef = React.useRef<HTMLInputElement>(null)
 	const [blockMsg, setBlockMsg] = React.useState('')
 	const [value, setValue] = useState("");
-	// const [isMuted, setIsMuted] = useState<boolean>(false);
+	let isMuted: boolean | undefined;
+	const [plusShut, setPlusShut] = useState<number>(0);
 	const appDispatch = useAppDispatch();
 	
 	// record message
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
 	const selectedChannel: ChannelModel = useAppSelector(selectDisplayedChannel);
+	
+	const isMutedRedux = useAppSelector(selectIsMuted)
 
+	useEffect(() => {
+		if (isMutedRedux !== null || isMutedRedux !== undefined){
+			isMuted = isMutedRedux.find(el => el.channelName === selectedChannel.name)?.muted;
+		}
+	}, [selectedChannel])
 	
 	// console.log("is Muted ", isMuted)
 
@@ -110,12 +118,14 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		if (selectedChannel.type !== 'PrivateConv') {
 			try {
 				// get most recent selectedChannel version from db
+				console.log('ici... ');
+
 				if (selectedChannel.name !== 'empty channel')
 					await appDispatch(fetchDisplayedChannel(selectedChannel.name));
 			/* ====== Amina adds ===== 
 				Here i check if the actual user exists in the array "muted users " of the room. If so, we toggle the isMuted state
 			*/
-				if (selectedChannel.name === infos.channelName) {
+				// if (selectedChannel.name === infos.channelName) {
 					console.log('infos ', infos);
 					infos.mutedUser.map((user) => {
 						if (user.login === currentUser) {
@@ -127,9 +137,9 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 						}
 						)
 					return true;
-				}
-				else
-					return false;
+				// }
+				// else
+				// 	return false;
 			}
 			catch (error : any) {
 				console.log('error while checking if user is muted = ', error);
@@ -146,10 +156,23 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		All the members are listening to the event (userHasBeenMuted), individually, and when it's trigerred,
 		the "userIsmuted" function, to see if the currentUser is actually concerned. That's why i changed the prototype of the function, adding to it the args "infos" which is containing (the roomId and the users muted in the room)
 	*/
-	socketRef.current?.off('userHasBeenMuted').on('userHasBeenMuted', async (infos: mutedInfos) => {
-		await userIsMuted(infos, true);
+	// socketRef.current?.off('userHasBeenMuted').on('userHasBeenMuted', async (infos: mutedInfos) => {
+	// 	await userIsMuted(infos, true);
 
+	// })
+	socketRef.current?.on('newShut', async (shutValue: number) => {
+		setPlusShut(shutValue)
 	})
+	
+	// const [lessShut, setLessShut] = useState<number>(plusShut);
+	
+	socketRef.current?.off('userHasBeenMuted').on('userHasBeenMuted', async (infos: mutedInfos) => {
+		console.log('Awouuu')
+		await userIsMuted(infos, true);
+	})
+	// useEffect(() => {
+	// 	console.log('plusShut ', plusShut)
+	// }, [plusShut])
 
 	socketRef.current?.off('UserUnmutedAfterExpiry').on('UserUnmutedAfterExpiry', async (infos: mutedInfos) => {
 		console.log('After expiry ', infos);
@@ -188,8 +211,6 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		sendMessage();
 		setValue('');
 	}
-	const isMutedRedux = useAppSelector(selectIsMuted)
-	let isMuted = isMutedRedux.find(el => el.channelName === selectedChannel.name)?.muted;
 	// console.log("is Muted ", isMuted)
 	return (
 		<Box

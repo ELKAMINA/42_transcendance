@@ -56,6 +56,8 @@ export default function ManageMutedDialog({socketRef, openDialog, setOpenDialog}
 				muted : readyToBeSendMuted,
 			})
 			.then((response) => {
+				console.log('ReadyToBeSendMuted ==== ', readyToBeSendMuted)
+				socketRef.current?.emit('shut')
 				socketRef.current?.emit('userMutedByAdmin', readyToBeSendMuted)
 				// console.log("response = ", response)
 				AppDispatch(fetchUserChannels());

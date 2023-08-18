@@ -71,6 +71,11 @@ export class MuteSchedulerService {
             .join(', ')}.`,
         );
 
+        this.chatGateway.unshut(
+          user.login,
+          channelsToUnmuteUser.map((channel) => channel.name).join(', '),
+        );
+
         this.chatGateway.notifyWhenUnmuted(
           user.login,
           channelsToUnmuteUser.map((channel) => channel.name).join(', '),

@@ -24,6 +24,7 @@ function Chat () {
 	const displayedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	
+	
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0) {
 			return 'WelcomeChannel';
