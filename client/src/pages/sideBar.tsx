@@ -13,9 +13,10 @@ interface SideBarProps {
   	handleSelectItem: handleSelectItemFunction;
 	socketRef: React.MutableRefObject<Socket | undefined>;
 	newChannelCreated: MutableRefObject<boolean>;
+	channelDeleted: MutableRefObject<boolean>;
 }
 
-function SideBar({handleSelectItem, socketRef, newChannelCreated} : SideBarProps) {
+function SideBar({handleSelectItem, socketRef, newChannelCreated, channelDeleted} : SideBarProps) {
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 
 	function getSelectedItem (selectedItem : string) {
@@ -48,11 +49,16 @@ function SideBar({handleSelectItem, socketRef, newChannelCreated} : SideBarProps
 				>
 					CREATE CHANNEL
 				</Button>
-				<CreateChannel newChannelCreated={newChannelCreated} getSelectedItem={getSelectedItem} trigger = {buttonPopup} setTrigger={setButtonPopup} />
+				<CreateChannel 
+					newChannelCreated={newChannelCreated}
+					getSelectedItem={getSelectedItem} 
+					trigger = {buttonPopup} 
+					setTrigger={setButtonPopup}
+					/>
 			</Box>
 		</Stack>
 		<Stack className='alignItemsListContainer'>
-			<AlignItemsList getSelectedItem={getSelectedItem} />
+			<AlignItemsList getSelectedItem={getSelectedItem} channelDeleted={channelDeleted} />
 		</Stack>
 	</Box>
 	);

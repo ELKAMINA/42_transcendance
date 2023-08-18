@@ -24,6 +24,7 @@ function Chat () {
 	const displayedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const newChannelCreated = useRef<boolean>(false);
+	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0) {
 			return 'WelcomeChannel';
@@ -52,6 +53,11 @@ function Chat () {
 			newChannelCreated.current = false;
 		}
 
+		if (channelDeleted.current) {
+			socketRef.current?.emit('channelDeleted');
+			channelDeleted.current = false;
+		}
+
 		return () => {
 			// console.log('[Unmounted Component Conversation] ', selectedChannel)
 			if (socketRef.current?.connected)
@@ -60,6 +66,12 @@ function Chat () {
 	}, [roomId])
 
 	socketRef.current?.off('newChannelNotif').on('newChannelNotif', () => {
+		// console.log('[chat] - new channel has been created, and you are a member!');
+		// console.log('[chat] - current user = ', currentUser);
+		AppDispatch(fetchUserChannels());
+	})
+
+	socketRef.current?.off('channelDeletedNotif').on('channelDeletedNotif', () => {
 		// console.log('[chat] - new channel has been created, and you are a member!');
 		// console.log('[chat] - current user = ', currentUser);
 		AppDispatch(fetchUserChannels());
@@ -84,7 +96,7 @@ function Chat () {
 			<div className='chat-container'>
 				<Navbar currentRoute={currentRoute} />
 				<div className='chat-wrapper'>
-				<SideBar handleSelectItem={handleSelectChannel} socketRef={socketRef} newChannelCreated={newChannelCreated}/>
+				<SideBar handleSelectItem={handleSelectChannel} socketRef={socketRef} newChannelCreated={newChannelCreated} channelDeleted={channelDeleted}/>
 				<div className='chat'>
 					{isBanned === false && <Conversation socketRef={socketRef} />}
 					{isBanned === true && <Banned />}
