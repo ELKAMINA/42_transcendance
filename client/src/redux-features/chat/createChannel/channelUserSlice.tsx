@@ -11,10 +11,12 @@ export const channelUserSlice = createSlice({
 	reducers: {
 		addChannelUser: (state, action) => {
 			// action.payload is an array of UserByLogin
-			state.push(...action.payload);
+			// console.log("action.payload = ", action.payload);
+			return action.payload; // Replace the state with action.payload
 		},
 		deleteChannelUser: (state, action) => {
-			state = state.filter(user => user.login !== action.payload);
+			// state = state.filter(user => user.login !== action.payload);
+			return state.filter(user => user.login !== action.payload);
 		},
 		resetChannelUser: () => initialState,
 		resetChannelUserStore : (state) => {
