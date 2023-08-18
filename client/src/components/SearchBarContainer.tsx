@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useSelector } from "react-redux";
-import React, { useEffect, useState } from 'react'
+import React, { MutableRefObject, useEffect, useState } from 'react'
 import SearchBarHighlights from "./SearchBarHighlight";
 import EnterChannelConfirmationDialog from "./EnterChannelConfirmationDialog";
 
@@ -15,9 +15,11 @@ import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, s
 
 export type SearchBarContainerProps = {
 	getSelectedItem: (item: string) => void;
+	newChannelCreated: MutableRefObject<boolean>;
+
 }
 
-export default function SearchBarContainer({getSelectedItem} : SearchBarContainerProps) {
+export default function SearchBarContainer({getSelectedItem, newChannelCreated} : SearchBarContainerProps) {
 
 	const [usersAndChannels, setUsersAndChannels] = useState<(Channel | UserModel)[]>([]);
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = useState(false);
@@ -127,8 +129,12 @@ export default function SearchBarContainer({getSelectedItem} : SearchBarContaine
 
 			// console.log('this channel has been added to the database = ', response);
 			await AppDispatch(fetchUserChannels());
-			console.log("convName = ", convName);
+			// console.log("convName = ", convName);
 			await AppDispatch(fetchDisplayedChannel(convName));
+
+			newChannelCreated.current = true;
+			getSelectedItem(convName);
+
 		} catch (error : any) {
 			console.log('error while creating private conv from search bar = ', error);
 		}

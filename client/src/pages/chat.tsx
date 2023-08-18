@@ -23,8 +23,8 @@ function Chat () {
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 	const displayedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 	const currentUser : string = useAppSelector(selectCurrentUser);
-	
-	
+	const newChannelCreated = useRef<boolean>(false);
+	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0) {
 			return 'WelcomeChannel';
@@ -37,15 +37,26 @@ function Chat () {
 	const roomId = selectedChannel;
 
 	useEffect(() => {
-		// console.log('[A larrivée sur Chat] ', selectedChannel)
-		// console.log('[A larrivée sur Chat - roomId] ', roomId)
+		// console.log('[Chat] - roomId = ', roomId)
 
-		if (selectedChannel === 'WelcomeChannel' || selectedChannel === 'empty channel') // if roomId is 'WelcomeChannel'
+		if (selectedChannel === 'empty channel') // if roomId is 'WelcomeChannel'
 			return ; // exit the function immediatly
+		
+		// create socket connection
 		socketRef.current = socketIOClient("http://localhost:4002", {
 			query: {roomId},
 			withCredentials: true,
 		})
+
+		if (newChannelCreated.current) {
+			socketRef.current?.emit('newChannelCreated');
+			newChannelCreated.current = false;
+		}
+
+		if (channelDeleted.current) {
+			socketRef.current?.emit('channelDeleted');
+			channelDeleted.current = false;
+		}
 
 		return () => {
 			// console.log('[Unmounted Component Conversation] ', selectedChannel)
@@ -54,18 +65,22 @@ function Chat () {
 		}
 	}, [roomId])
 
-	// useEffect(() => {
-		// console.log('[A larrivée sur Chat : Channels] ', channels)
-		// console.log('[A larrivée sur Chat : displayedChannels] ', displayedChannel)
-		// console.log('[A larrivée sur Chat : CurrentUser] ', currentUser)
-		// console.log('[A larrivée sur Chat : selectedChannel] ', selectedChannel)
-	// }, []);
+	socketRef.current?.off('newChannelNotif').on('newChannelNotif', () => {
+		// console.log('[chat] - new channel has been created, and you are a member!');
+		// console.log('[chat] - current user = ', currentUser);
+		AppDispatch(fetchUserChannels());
+	})
+
+	socketRef.current?.off('channelDeletedNotif').on('channelDeletedNotif', () => {
+		// console.log('[chat] - new channel has been created, and you are a member!');
+		// console.log('[chat] - current user = ', currentUser);
+		AppDispatch(fetchUserChannels());
+	})
 	
 	useEffect(() => {
 		if (selectedChannel !== '') {
 			// console.log('[ From Chat.tsx - useEffect is trigerred ', selectedChannel)
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
-			AppDispatch(fetchUserChannels());
 		}
 	}, [selectedChannel]);
 
@@ -81,7 +96,7 @@ function Chat () {
 			<div className='chat-container'>
 				<Navbar currentRoute={currentRoute} />
 				<div className='chat-wrapper'>
-				<SideBar handleSelectItem={handleSelectChannel} />
+				<SideBar handleSelectItem={handleSelectChannel} socketRef={socketRef} newChannelCreated={newChannelCreated} channelDeleted={channelDeleted}/>
 				<div className='chat'>
 					{isBanned === false && <Conversation socketRef={socketRef} />}
 					{isBanned === true && <Banned />}

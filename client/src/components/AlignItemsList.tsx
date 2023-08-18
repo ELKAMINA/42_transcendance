@@ -23,9 +23,10 @@ import AskForPassword from './AskForPassword';
 
 type alignItemsProps = {
 	getSelectedItem: (item: string) => void;
+	channelDeleted: React.MutableRefObject<boolean>;
 }
 
-export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
+export default function AlignItemsList({ getSelectedItem, channelDeleted }: alignItemsProps) {
 	const [showIcons, setShowIcons] = React.useState(true);
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = React.useState(false);
 	const [alertError, setAlertError] = React.useState<boolean>(false);
@@ -78,6 +79,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	}, []);
 
 	async function deleteChannel(channelToDelete: string) {
+
 	await api
 		.post('http://localhost:4001/channel/deleteChannelByName', { name: channelToDelete })
 		.then((response) => {
@@ -85,6 +87,8 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			AppDispatch(fetchDisplayedChannel('WelcomeChannel'))
 			AppDispatch(fetchAllChannelsInDatabase())
 			getSelectedItem('WelcomeChannel');
+
+			channelDeleted.current = true;
 		})
 		.catch((error) => console.log('error while deleting channel', error));
 	}
