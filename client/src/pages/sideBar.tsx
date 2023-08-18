@@ -52,7 +52,7 @@ function SideBar({handleSelectItem, socketRef, newChannelCreated} : SideBarProps
 			</Box>
 		</Stack>
 		<Stack className='alignItemsListContainer'>
-			<AlignItemsList getSelectedItem={getSelectedItem} socketRef={socketRef} />
+			<AlignItemsList getSelectedItem={getSelectedItem} />
 		</Stack>
 	</Box>
 	);
