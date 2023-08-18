@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks"
 import { ChatMessage } from "../../types/chat/messageType"
 import { ChannelModel } from "../../types/chat/channelTypes"
 import { selectCurrentUser } from "../../redux-features/auth/authSlice"
-import { selectDisplayedChannel, selectGameDialog, setGameDialog } from "../../redux-features/chat/channelsSlice"
+import { selectDisplayedChannel, selectGameDialog, setGameDialog, fetchDisplayedChannel, fetchUserChannels } from "../../redux-features/chat/channelsSlice"
 
 import GameSuggestion from '../Game/GameSuggestion'
 import { EClientPlayType } from "../../enum/EClientGame";
@@ -54,7 +54,17 @@ function Conversation({socketRef} : ConvProps) {
 		sender: '', receiver: '', content: '', waiting: false
 	});
 	const navigate = useNavigate();
-	
+
+	/*** ISSUE 88 ***/
+	// HANDLE SERVER MESSAGE TO REQUEST KICK OF USER
+	socketRef.current?.on('ServerToChatForKicking', (userName: string) => {
+		console.log("[Chat - on ServerToChatForKicking]" , "currentUser: ", currentUser , "userName to be kicked: ", userName);
+		if (currentUser === userName) {
+			dispatch(fetchUserChannels());
+			dispatch(fetchDisplayedChannel('WelcomeChannel'));
+		}
+	})
+
 	// useEffect(() => {
 		// console.log('[A larrivée sur Conversation : selectedChannels] ', selectedChannel)
 		// console.log('[A larrivée sur Conversation : Welcome Channel] ', isWelcomeChannel)

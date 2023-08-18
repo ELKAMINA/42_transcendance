@@ -76,6 +76,13 @@ function Chat () {
 		// console.log('[chat] - current user = ', currentUser);
 		AppDispatch(fetchUserChannels());
 	})
+
+	/*** ISSUE 88 ***/
+	socketRef.current?.off('channelKickNotif').on('channelKickNotif', () => {
+		// console.log('[chat - on channelKickNotif]', 'A member has been kicked');
+		// console.log('[chat - on channelKickNotif]', 'currentUser: ', currentUser);
+		AppDispatch(fetchUserChannels());
+	})
 	
 	useEffect(() => {
 		if (selectedChannel !== '') {
