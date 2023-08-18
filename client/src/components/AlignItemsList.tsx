@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LockIcon from '@mui/icons-material/Lock';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
@@ -35,7 +35,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	
 	const channels = useAppSelector(selectUserChannels) as Channel[];
-	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]);
+	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]); // this is a state for the formated channels, aka with private convs names updated according to current user
 	React.useEffect(() => {
 		// console.log('channels = ', channels);
 		const modifiedChannels = channels.map((channel) => {
@@ -68,22 +68,6 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			setSelectedIndex(-1); // dont select any item
 			return ;
 		}
-
-		// // set index accordingly to most resent selectedChannel update
-		// const tmp = channels.findIndex(channel => channel.name === selectedChannel.name);
-		// // console.log('selectedChannel = ', selectedChannel.name);
-		// // console.log('tmp = ', tmp);
-		// // console.log('selectedIndex = ', selectedIndex);
-		// if (tmp && tmp != selectedIndex) {// if selectedChannel is in the list AND different from current index
-		// 	console.log('chips au vinaigre')
-		// 	setSelectedIndex(tmp); // set index to match selectedChannel
-		// }
-		// else if (tmp === -1) { // if selectedChannel is not in the list
-		// 	setSelectedIndex(0);
-		// 	getSelectedItem('WelcomeChannel'); // display welcome channel
-		// 	console.log('schweppes agrume');
-		// }
-
 	}, [selectedChannel])
 
 	React.useEffect(() => { 
@@ -99,6 +83,8 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 		.then((response) => {
 			AppDispatch(fetchUserChannels());
 			AppDispatch(fetchDisplayedChannel('WelcomeChannel'))
+			AppDispatch(fetchAllChannelsInDatabase())
+			getSelectedItem('WelcomeChannel');
 		})
 		.catch((error) => console.log('error while deleting channel', error));
 	}
@@ -129,6 +115,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			setAlertDialogSlideOpen(true);
 		} else {
 			// if no password protection, update 'displayedChannel' slice through prop 'getSelectedItem'
+			// console.log('[From AlignItems Component :  clickedItem.name]', clickedItem.name)
 			getSelectedItem(clickedItem.name);
 		}
 	};

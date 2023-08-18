@@ -75,6 +75,7 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 	// })
 
 	async function userIsBlocked() : Promise<boolean> {
+		// console.log('selectedChannel.name = ', selectedChannel.name)
 		if (selectedChannel.type === 'privateConv') {
 			try {
 				let talkingWith : string = '';
@@ -85,6 +86,8 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 					talkingWith = selectedChannel.members[0].login;
 				}
 				const UserToCheck : any = await FetchUserByName(talkingWith)
+				// console.log('userToCheck = ', UserToCheck)
+
 				if (((UserToCheck.blockedBy).find((bl: any) => bl.login === currentUser)) || ((UserToCheck.blocked).find((bl: any) => bl.login === currentUser)) )
 				{
 					setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
@@ -156,7 +159,7 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 
 
 	async function sendMessage() {
-		if (await userIsBlocked() === false && (isMuted === false || isMuted === undefined)) {
+		if (await userIsBlocked() === false && ((isMuted === false || isMuted === undefined) && value !== "")) {
 			const messageToBeSent = {
 				sentBy: authState.nickname,
 				sentById: authState.nickname,

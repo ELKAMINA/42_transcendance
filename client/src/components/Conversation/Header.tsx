@@ -51,9 +51,10 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	onSuggestGame: (gameSuggestionInfos: any) => void;
   };
   
-  function Header({ socketRef, onSuggestGame }: HeaderProps) {
+  
+function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	const navigate = useNavigate();
-	const dispatch = useAppDispatch();
+	// const dispatch = useAppDispatch();
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	let channelName : string = 'error';
 	let channelAvatar : string | undefined = 'error';
