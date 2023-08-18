@@ -37,13 +37,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log('Initialized!');
   }
 
-  @SubscribeMessage('ChatToServer')
-  handleNewChatMessage(socket: Socket, dto: MessageDto): void {
-    // console.log('Depuis chat Servver ', socket);
-    const roomId = socket.handshake.query.roomId as string;
-    this.ChatService.createMessage(dto);
-    this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
-  }
+	@SubscribeMessage('ChatToServer')
+	handleNewChatMessage(socket: Socket, dto: MessageDto): void {
+		const roomId = socket.handshake.query.roomId as string;
+		this.ChatService.createMessage(dto);
+		this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
+	}
 
   @SubscribeMessage('NotifNewPrivateConv')
   handleNewPrivateConvCreated(socket: Socket, dto: MessageDto): void {
