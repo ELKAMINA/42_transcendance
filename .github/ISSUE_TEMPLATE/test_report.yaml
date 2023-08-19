@@ -15,10 +15,7 @@ body:
       description: Please walk us through it step by step.
       placeholder: Lets Rock Baby
       value: |
-      1.
-      2.
-      3.
-      ...
+      Desribe as much as possible the steps
     validations:
       required: true
   - type: textarea
