@@ -15,7 +15,10 @@ body:
       description: Please walk us through it step by step.
       placeholder: Lets Rock Baby
       value: |
-      Desribe as much as possible the steps
+        1. 
+        2. 
+        3. 
+        ...
     validations:
       required: true
   - type: textarea
@@ -25,7 +28,7 @@ body:
       description: Please describre the expected result
       placeholder: Expected result details
       value: |
-      What a beautiful result...
+        What a beautiful result...
     validations:
       required: true
   - type: textarea
@@ -35,9 +38,9 @@ body:
       description: Please write the issue number
       placeholder: Expected result details
       value: |
-      - [ ]
-      - [ ]
-      - [ ]
-      ...
+        - [ ]
+        - [ ]
+        - [ ]
+        ...
     validations:
       required: true
