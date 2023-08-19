@@ -9,6 +9,16 @@ body:
       value: |
         Please fill the test report to be able to test the features correctly
   - type: textarea
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please describe prerequisites.
+      placeholder: Write your feeling baby
+      value: |
+        N/A
+    validations:
+      required: true
+  - type: textarea
     id: step-by-step
     attributes:
       label: Validation steps
@@ -38,6 +48,6 @@ body:
       description: Please write the issue number
       placeholder: Write '#' following by the issue id
       value: |
-        - #IssueNumber
+        N/A
     validations:
       required: false
