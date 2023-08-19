@@ -151,7 +151,9 @@ function Friends () {
 
     // dispatch(FetchAllFriends());
     return () => {
-      socket.disconnect()  // cleanUp function when component unmount
+      if(socket.connected){
+        socket.disconnect()  // cleanUp function when component unmount
+      }
       // dispatch(setSelectedItem(''))
     }
   }, [dispatch])

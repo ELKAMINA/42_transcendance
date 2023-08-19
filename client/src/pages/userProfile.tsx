@@ -45,7 +45,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         friendship();
-    });
+    }, []);
 
     return (
         <Box className="userprofile-container">

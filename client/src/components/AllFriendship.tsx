@@ -19,7 +19,7 @@ export const socket = io('http://localhost:4006', {
   transports: ['websocket'],
   upgrade: false,
   autoConnect: false,
-  reconnection: true,
+  // reconnection: true,
 })
 interface Myprops {
   items: string[];
@@ -57,7 +57,9 @@ export default function FriendshipComponent(props: Myprops) {
       return () => {
         // dispatch(setFriendshipError(0))
         setSelectedIndex(0)
-        socket.disconnect()
+        if (socket.connected){
+          socket.disconnect()
+        }
       }
     })
 

@@ -48,7 +48,9 @@ export function PersonalInformation () {
 
         })
         return () => {  // cleanUp function when component unmount
-            sock.disconnect()
+            if (sock.connected){
+                sock.disconnect()
+            }
         }
       }, [])
 
@@ -246,8 +248,9 @@ export function Security () {
         sock.on('connect', () => {
 
         })
-        return () => {  // cleanUp function when component unmount
-            sock.disconnect()
+        return () => {
+            if (sock.connected)  // cleanUp function when component unmount
+                sock.disconnect()
         }
       }, [dispatch])
     const actualUser = useAppSelector(selectActualUser)
