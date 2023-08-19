@@ -9,6 +9,14 @@ body:
       value: |
         Please fill the test report to be able to test the features correctly
   - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please describe the test.
+      placeholder: Write a short description of the test
+    validations:
+      required: true
+  - type: textarea
     id: prerequisites
     attributes:
       label: Prerequisites
@@ -17,7 +25,7 @@ body:
       value: |
         N/A
     validations:
-      required: true
+      required: false
   - type: textarea
     id: step-by-step
     attributes:
