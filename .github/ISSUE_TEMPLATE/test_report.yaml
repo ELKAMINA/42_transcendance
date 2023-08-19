@@ -1,6 +1,6 @@
 name: Test report
 description: File about test report
-title: "[Test]: "
+title: "[Test Report] "
 labels: ["Test_Report"]
 assignees: ["Alicia-bites", "BarrierAntho", "ELKAMINA"]
 body:
@@ -36,11 +36,8 @@ body:
     attributes:
       label: Issues relation
       description: Please write the issue number
-      placeholder: Expected result details
+      placeholder: Write '#' following by the issue id
       value: |
-        - [ ]
-        - [ ]
-        - [ ]
-        ...
+        - #IssueNumber
     validations:
-      required: true
+      required: false
