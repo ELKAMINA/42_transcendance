@@ -11,7 +11,7 @@ import Conversation from '../components/Conversation/Conversation';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectIsMember, selectUserChannels, setIsMember } from '../redux-features/chat/channelsSlice';
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
@@ -25,6 +25,8 @@ function Chat () {
 	const displayedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const newChannelCreated = useRef<boolean>(false);
+	const isNewMemberNotif = useAppSelector(selectIsMember)
+
 	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0) {
@@ -39,6 +41,11 @@ function Chat () {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
+		AppDispatch(setIsMember(false));
+	}, [])
+
+
+	useEffect(() => {
 		// console.log('[Chat] - roomId = ', roomId)
 
 		if (selectedChannel === 'empty channel') // if roomId is 'WelcomeChannel'
@@ -50,9 +57,10 @@ function Chat () {
 			withCredentials: true,
 		})
 
-		if (newChannelCreated.current) {
+		if (newChannelCreated.current || isNewMemberNotif) {
 			socketRef.current?.emit('newChannelCreated');
 			newChannelCreated.current = false;
+			AppDispatch(setIsMember(false));
 		}
 
 		if (channelDeleted.current) {
@@ -75,7 +83,7 @@ function Chat () {
 			if (socketRef.current?.connected)
 				socketRef.current?.disconnect()
 		}
-	}, [roomId])
+	}, [roomId, isNewMemberNotif])
 
 	socketRef.current?.off('newChannelNotif').on('newChannelNotif', () => {
 		// console.log('[chat] - new channel has been created, and you are a member!');
