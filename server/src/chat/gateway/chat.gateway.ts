@@ -23,7 +23,7 @@ import {
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() server: Server;
   
-	private shut = 0;
+	private shut = 0
   
 	constructor(
 	  private ChatService: ChatService,
@@ -36,12 +36,12 @@ import {
 	  this.logger.log('Initialized!');
 	}
   
-	  @SubscribeMessage('ChatToServer')
-	  handleNewChatMessage(socket: Socket, dto: MessageDto): void {
-		  const roomId = socket.handshake.query.roomId as string;
-		  this.ChatService.createMessage(dto);
-		  this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
-	  }
+	@SubscribeMessage('ChatToServer')
+	handleNewChatMessage(socket: Socket, dto: MessageDto): void {
+		const roomId = socket.handshake.query.roomId as string;
+		this.ChatService.createMessage(dto);
+		this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
+	}
   
 	@SubscribeMessage('NotifNewPrivateConv')
 	handleNewPrivateConvCreated(socket: Socket, dto: MessageDto): void {
@@ -72,9 +72,9 @@ import {
 	@SubscribeMessage('LeavingChannel')
 	handleUserLeavingChannel(socket: Socket, body: {dto: MessageDto, userName: string} ): void {
 	  const roomId = socket.handshake.query.roomId as string;
-	  console.log("[Chat GATEWAY - LeavingChannel]", "roomId: ", roomId);
-	  console.log("[Chat GATEWAY - LeavingChannel]", "body.dto: ", body.dto);
-	  console.log("[Chat GATEWAY - LeavingChannel]", "body.userName: ", body.userName);
+	//   console.log("[Chat GATEWAY - LeavingChannel]", "roomId: ", roomId);
+	//   console.log("[Chat GATEWAY - LeavingChannel]", "body.dto: ", body.dto);
+	//   console.log("[Chat GATEWAY - LeavingChannel]", "body.userName: ", body.userName);
 	  this.ChatService.createMessage(body.dto);
 	  this.server.to(roomId).emit('ServerToChat:' + roomId, body.dto);
 	  this.server.to(roomId).emit('ServerToChatForKicking', body.userName);
