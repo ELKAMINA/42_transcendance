@@ -1,49 +1,46 @@
-name: "Test report"
-description: "File about test report"
+name: Test report
+description: File about test report
 title: "[Test]: "
 labels: ["Test_Report"]
-assignees:
-  - Alicia-bites
-  - BarrierAntho
-  - ELKAMINA
+assignees: ["Alicia-bites", "BarrierAntho", "ELKAMINA"]
 body:
   - type: markdown
     attributes:
       value: |
-        "Please fill the test report to be able to test the features correctly"
-- type: textarea
-  id: steps
-  attributes:
-    label: "Validation steps"
-    description: "Please walk us through it step by step."
-    placeholder: "Lets Rock Baby"
-    value: |
+        Please fill the test report to be able to test the features correctly
+  - type: textarea
+    id: step-by-step
+    attributes:
+      label: Validation steps
+      description: Please walk us through it step by step.
+      placeholder: Lets Rock Baby
+      value: |
       1.
       2.
       3.
       ...
-    render: markdown
-  validations:
-    required: true
-- type: textarea
-  id: result
-  attributes:
-    label: "Expected result"
-    description: "Please describre the expected result"
-    placeholder: "Expected result"
-    render: markdown
-  validations:
-    required: true
-- type: markdown
-  id: relation
-  attributes:
-    label: "Issues relation"
-    description: "Please write the issue number"
-    value: |
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected result
+      description: Please describre the expected result
+      placeholder: Expected result details
+      value: |
+      What a beautiful result...
+    validations:
+      required: true
+  - type: textarea
+    id: issue-relation
+    attributes:
+      label: Issues relation
+      description: Please write the issue number
+      placeholder: Expected result details
+      value: |
       - [ ]
       - [ ]
       - [ ]
       ...
-    render: markdown
-  validations:
-    required: false
+    validations:
+      required: true
