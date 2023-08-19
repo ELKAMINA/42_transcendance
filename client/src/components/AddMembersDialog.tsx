@@ -14,7 +14,7 @@ import { UserByLogin, UserModel } from '../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import MultipleSelectChip from '../pages/createChannel/createUsersList';
 import { selectFriends } from '../redux-features/friendship/friendshipSlice';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectIsMember, setIsMember } from '../redux-features/chat/channelsSlice';
 
 export default function AddMembersDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 
@@ -53,6 +53,7 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 				// console.log("response = ", response)
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
+				AppDispatch(setIsMember(true));
 			})
 			.catch((error) => console.log('error while updating members : ', error))
 	}
