@@ -1,5 +1,5 @@
-name: Test report
-description: File about test report
+name: "Test report"
+description: "File about test report"
 title: "[Test]: "
 labels: ["Test_Report"]
 assignees:
@@ -10,11 +10,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        Please fill the test report to be able to test the features correctly
+        "Please fill the test report to be able to test the features correctly"
 - type: textarea
   id: steps
   attributes:
-    label: Validation steps
+    label: "Validation steps"
     description: "Please walk us through it step by step."
     placeholder: "Lets Rock Baby"
     value: |
@@ -28,7 +28,7 @@ body:
 - type: textarea
   id: result
   attributes:
-    label: Expected result
+    label: "Expected result"
     description: "Please describre the expected result"
     placeholder: "Expected result"
     render: markdown
@@ -37,7 +37,7 @@ body:
 - type: markdown
   id: relation
   attributes:
-    label: Issues relation
+    label: "Issues relation"
     description: "Please write the issue number"
     value: |
       - [ ]
