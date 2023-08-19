@@ -252,7 +252,8 @@ export function Security () {
             if (sock.connected)  // cleanUp function when component unmount
                 sock.disconnect()
         }
-      }, [dispatch])
+      }, [])
+    
     const actualUser = useAppSelector(selectActualUser)
     const tfa = async () => {
         await api
