@@ -19,6 +19,7 @@ export interface ChannelSlice {
 	userPrivateConvs : ChannelModel[],
 	gameDialog: boolean,
 	isMember: boolean,
+	isBanned: boolean,
 	isMuted: MutingInfo[],
 }
 
@@ -35,8 +36,9 @@ const initialState : ChannelSlice = {
 	userPublicChannels : [],
 	userPrivateConvs : [],
 	gameDialog: false,
-	isMuted: [],
 	isMember: false,
+	isBanned: false,
+	isMuted: [],
 };
 
 export type MutingInfo = {
@@ -144,8 +146,10 @@ export const channelsSlice = createSlice({
 			  }
 		},
 		setIsMember: (state, action: PayloadAction<boolean>) => {
-			console.log("[channelSlice] isMember payload = ", action.payload);
 			state.isMember = action.payload;
+		},
+		setIsBanned: (state, action: PayloadAction<boolean>) => {
+			state.isBanned = action.payload;
 		},
 		resetChannelStore : (state) => {
             return initialState;
@@ -364,6 +368,7 @@ export const {
 	setGameDialog,
 	setIsMuted,
 	setIsMember,
+	setIsBanned,
 } = channelsSlice.actions;
 
 export default channelsSlice.reducer
@@ -382,3 +387,4 @@ export const selectPrivateConvs = (state : RootState) => state.persistedReducer.
 export const selectGameDialog = (state : RootState) => state.persistedReducer.channels.gameDialog
 export const selectIsMuted = (state : RootState) => state.persistedReducer.channels.isMuted
 export const selectIsMember = (state : RootState) => state.persistedReducer.channels.isMember
+export const selectIsBanned = (state : RootState) => state.persistedReducer.channels.isBanned

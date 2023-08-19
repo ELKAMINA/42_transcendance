@@ -22,9 +22,7 @@ import {
   })
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() server: Server;
-  
-	private shut = 0
-  
+    
 	constructor(
 	  private ChatService: ChatService,
 	  private friends: FriendshipService,
@@ -55,6 +53,13 @@ import {
 	  // const roomId = socket.handshake.query.roomId as string;
 	  // console.log("[chatGateway] roomId = ", roomId);
 	  this.server.emit('newChannelNotif');
+	}
+
+	@SubscribeMessage('justBanned')
+	handleJustBannedNotif(socket: Socket): void {
+	  // const roomId = socket.handshake.query.roomId as string;
+	  // console.log("[chatGateway] roomId = ", roomId);
+	  this.server.emit('justBannedNotif');
 	}
   
 	@SubscribeMessage('channelDeleted')
