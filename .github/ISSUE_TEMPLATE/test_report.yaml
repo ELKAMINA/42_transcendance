@@ -1,11 +1,8 @@
 name: "Test report"
 description: "File about test report"
-title: "[Test]: "
+assignees: ["Alicia-bites", "BarrierAntho", "ELKAMINA"]
 labels: ["Test_Report"]
-assignees:
-  - Alicia-bites
-  - BarrierAntho
-  - ELKAMINA
+title: "[Test]: "
 body:
   - type: markdown
     attributes:
@@ -31,10 +28,12 @@ body:
     label: "Expected result"
     description: "Please describre the expected result"
     placeholder: "Expected result"
+    value: |
+      What a beautiful result...
     render: markdown
   validations:
     required: true
-- type: markdown
+- type: textarea
   id: relation
   attributes:
     label: "Issues relation"
