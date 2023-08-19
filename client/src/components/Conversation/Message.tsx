@@ -7,6 +7,7 @@ import areDifferentDays from '../../utils/areDifferentDays';
 import { ChannelModel } from '../../types/chat/channelTypes';
 import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { DocMsg, InfoMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
+import { selectActualUser } from '../../redux-features/friendship/friendshipSlice';
 
 function renderSwitchComponent(el : ChatMessage, index: number) {
 	switch (el.subtype) {
@@ -27,6 +28,7 @@ function renderSwitchComponent(el : ChatMessage, index: number) {
 
 const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessages: (arg0: ChatMessage[]) => void }) => {
 
+	const currentUser = useAppSelector(selectActualUser);
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 
 	React.useEffect(()=> {
@@ -34,6 +36,9 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 		// console.log('%o',selectedChannel.chatHistory )
 		// console.log(`[FROM MESSAGES.TSX --- MESSAGES  : ${selectedChannel.name} && messages : `)
 		// console.log('%o',messages )
+		console.log("[message] currentUser = ", currentUser.login);
+		console.log("[message] currentUser.blocked = ", currentUser.blocked);
+
 		return () => {
 			setMessages([]);
 		}
