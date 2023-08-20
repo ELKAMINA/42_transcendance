@@ -8,6 +8,7 @@ import { ChannelModel } from '../../types/chat/channelTypes';
 import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { DocMsg, InfoMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
 import { selectActualUser } from '../../redux-features/friendship/friendshipSlice';
+import { UserModel } from '../../types/users/userType';
 
 function renderSwitchComponent(el : ChatMessage, index: number) {
 	switch (el.subtype) {
@@ -28,7 +29,7 @@ function renderSwitchComponent(el : ChatMessage, index: number) {
 
 const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessages: (arg0: ChatMessage[]) => void }) => {
 
-	const currentUser = useAppSelector(selectActualUser);
+	const currentUser = useAppSelector(selectActualUser) as UserModel;
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 
 	React.useEffect(()=> {
@@ -36,7 +37,7 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 		// console.log('%o',selectedChannel.chatHistory )
 		// console.log(`[FROM MESSAGES.TSX --- MESSAGES  : ${selectedChannel.name} && messages : `)
 		// console.log('%o',messages )
-		console.log("[message] currentUser = ", currentUser.login);
+		// console.log("[message] currentUser = ", currentUser.login);
 		console.log("[message] currentUser.blocked = ", currentUser.blocked);
 
 		return () => {
@@ -62,6 +63,7 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 			<Stack spacing={3}>
 				{chat
 				.filter((el) => el.channelById === selectedChannel.name)
+				.filter((el) => !currentUser.blocked.some((blockedUser) => blockedUser.login === el.sentBy)) // check if message has been sent by user blocked by currentUser
 				.map((el, index) => {
 					if (index === 0 || areDifferentDays(el.sentAt, chat[index - 1].sentAt)) {
 					return (
