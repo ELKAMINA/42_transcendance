@@ -4,6 +4,10 @@ import { User } from '@prisma/client';
 import { UserService } from '../user/user.service';
 import { HttpStatusCode } from 'axios';
 
+export enum BlockingStatus {
+  BLOCKED = 1,
+  UNBLOCKED = 2,
+}
 @Injectable()
 export class FriendshipService {
   constructor(private prisma: PrismaService, private userServ: UserService) {}
@@ -278,22 +282,49 @@ export class FriendshipService {
     }
   }
 
-  async blockFriend(senderId: string, recId: string) {
+  async blockFriend(senderId: string, recId: string): Promise<BlockingStatus> {
     try {
       //   console.log('sender ', senderId);
       //   console.log('rec ', recId);
-      const user = await this.prisma.user.update({
-        where: { login: senderId },
-        data: {
-          blocked: { connect: { login: recId } },
-          totalFriends: { decrement: 1 },
-          totalBlockedFriends: { increment: 1 },
+      const usAndAllBlockedFriend = await this.prisma.user.findUnique({
+        where: {
+          login: senderId,
         },
         include: {
           blocked: true,
         },
       });
-      return user;
+      if (usAndAllBlockedFriend) {
+        const isBlocked = usAndAllBlockedFriend.blocked.some(
+          (fr) => fr.login === recId,
+        );
+        if (isBlocked) {
+          await this.prisma.user.update({
+            where: { login: senderId },
+            data: {
+              blocked: {
+                disconnect: {
+                  login: recId,
+                },
+              },
+            },
+          });
+          return BlockingStatus.UNBLOCKED;
+        } else {
+          await this.prisma.user.update({
+            where: { login: senderId },
+            data: {
+              blocked: { connect: { login: recId } },
+              totalFriends: { decrement: 1 },
+              totalBlockedFriends: { increment: 1 },
+            },
+            include: {
+              blocked: true,
+            },
+          });
+          return BlockingStatus.BLOCKED;
+        }
+      }
     } catch (e) {
       console.log(e);
     }
