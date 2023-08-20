@@ -26,6 +26,7 @@ export class UserService {
           FriendRequestSent: true,
           p1: true,
           p2: true,
+          adminChannels: true,
         },
       });
       return user;

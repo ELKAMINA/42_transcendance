@@ -1,20 +1,24 @@
 import { Body, Get, Post } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
 import { Public } from '../decorators';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 
-import { ChannelService } from '../channel/channel.service';
 import { Channel, User } from '@prisma/client';
+import { RolesGuard } from 'src/guards/roles.guards';
+import { Roles } from 'src/decorators/roles.decorators';
+import { ChannelService } from '../channel/channel.service';
 
 type DateTime = Date;
 
 export type UserWithTime = {
-    login: string;
-    ExpiryTime: string | null;
+  login: string;
+  ExpiryTime: string | null;
 };
 
+@UseGuards(RolesGuard)
 @Controller('channel')
 @ApiTags('channel')
 export class channelController {
@@ -26,7 +30,7 @@ export class channelController {
   @Post('/creation')
   @Public() // TODO - remove public
   createChannel(@Body() dto: ChannelDto): Promise<object> {
-	// console.log('dto = ', dto);
+    // console.log('dto = ', dto);
     return this.ChannelService.createChannel(dto);
   }
 
@@ -96,6 +100,7 @@ export class channelController {
     return this.ChannelService.getAllPrivateConvsInDatabase();
   }
 
+  @Roles('admin')
   @Post('/deleteChannelByName')
   @Public() // TODO - remove public
   deleteChannelByName(
@@ -129,16 +134,24 @@ export class channelController {
   @Post('/updateBanned')
   @Public() // TODO - remove public
   updateBanned(
-    @Body() requestBody: { channelName: { name: string }; banned: UserWithTime[] },
+    @Body()
+    requestBody: {
+      channelName: { name: string };
+      banned: UserWithTime[];
+    },
   ): Promise<Channel> {
     return this.ChannelService.updateBanned(requestBody);
   }
 
-
+  @Roles('admin')
   @Post('/updateMuted')
   @Public() // TODO - remove public
   updateMuted(
-    @Body() requestBody: { channelName: { name: string }; muted: UserWithTime[] },
+    @Body()
+    requestBody: {
+      channelName: { name: string };
+      muted: UserWithTime[];
+    },
   ): Promise<Channel> {
     return this.ChannelService.updateMuted(requestBody);
   }
