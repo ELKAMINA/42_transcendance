@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material'
 
 import { useAppSelector } from '../../utils/redux-hooks';
@@ -33,15 +33,8 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 
 	React.useEffect(()=> {
-		// console.log(`[FROM MESSAGES.TSX --- HISTORY   : ${selectedChannel.name} && Chat history : `)
-		// console.log('%o',selectedChannel.chatHistory )
-		// console.log(`[FROM MESSAGES.TSX --- MESSAGES  : ${selectedChannel.name} && messages : `)
-		// console.log('%o',messages )
-		// console.log("[message] currentUser = ", currentUser.login);
-		console.log("[message] currentUser.blocked = ", currentUser.blocked);
-
 		return () => {
-			setMessages([]);
+			setMessages([]); // reset messages state every time we change channel
 		}
 	}, [selectedChannel])
 
@@ -58,14 +51,17 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 
 	const chat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
 	chat.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()); // sort messages from oldest to most recent
-	// console.log("[messages] chat = ", chat);
 
 	return (	
 		<Box p={3}>
 			<Stack spacing={3}>
 				{chat
 				.filter((el) => el.channelById === selectedChannel.name)
-				.filter((el) => !currentUser.blocked.some((blockedUser) => blockedUser.login === el.sentBy)) // check if message has been sent by user blocked by currentUser
+				// .filter((el) => !currentUser.blocked.some((blockedUser) => blockedUser.login === el.sentById)) // check if message has been sent by user blocked by currentUser
+				.filter((el) => 
+					selectedChannel.type === 'privateConv' || // if it is NOT a private conv, filter messages from blocked users
+					!currentUser.blocked.some((blockedUser) => blockedUser.login === el.sentById)
+				)
 				.map((el, index) => {
 					if (index === 0 || areDifferentDays(el.sentAt, chat[index - 1].sentAt)) {
 						return (
