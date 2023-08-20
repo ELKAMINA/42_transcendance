@@ -57,6 +57,8 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 	}
 
 	const chat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
+	chat.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()); // sort messages from oldest to most recent
+	// console.log("[messages] chat = ", chat);
 
 	return (	
 		<Box p={3}>
@@ -66,12 +68,12 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 				.filter((el) => !currentUser.blocked.some((blockedUser) => blockedUser.login === el.sentBy)) // check if message has been sent by user blocked by currentUser
 				.map((el, index) => {
 					if (index === 0 || areDifferentDays(el.sentAt, chat[index - 1].sentAt)) {
-					return (
-						<React.Fragment key={`timeline-${index}`}>
-							<Timeline key={`timeline-${index}`} date={el.sentAt} />
-								{renderSwitchComponent(el, index)}
-						</React.Fragment>
-					);
+						return (
+							<React.Fragment key={`timeline-${index}`}>
+								<Timeline key={`timeline-${index}`} date={el.sentAt} />
+									{renderSwitchComponent(el, index)}
+							</React.Fragment>
+						);
 					}
 					return renderSwitchComponent(el, index);
 				})}
