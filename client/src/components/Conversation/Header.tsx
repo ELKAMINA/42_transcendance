@@ -16,7 +16,7 @@ import { emptyChannel } from '../../data/emptyChannel';
 import { UserModel } from '../../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
-import { fetchDisplayedChannel, selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel , selectDisplayedChannel, selectIsPopupOpen, setIsPopupOpen } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -34,6 +34,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 		animation: "ripple 1.2s infinite ease-in-out",
 		border: "1px solid currentColor",
 		content: '""',
+		zIndex: 0,
 	  },
 	},
 	"@keyframes ripple": {
@@ -63,6 +64,7 @@ enum Blockados {
 function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	const navigate = useNavigate();
 	// const dispatch = useAppDispatch();
+	const isCreateChannelWindowOpen = useAppSelector(selectIsPopupOpen);
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	let channelName : string = 'error';
 	let channelAvatar : string | undefined = 'error';
@@ -227,6 +229,11 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 
 	}, [displayBlockIcon])
 	
+	const AppDispatch = useAppDispatch();
+	useEffect(() => {
+		AppDispatch(setIsPopupOpen(false));
+	}, []) // reset isCreateChannelWindowOpen if refresh
+		
 	return (
 		<Box 
 			p={2}
@@ -239,7 +246,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 			<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} sx={{width: '100%', height: '100%',}}>
 				<Stack direction={'row'} spacing={2}>
 					<Box>
-						<StyledBadge
+						{!isCreateChannelWindowOpen && <StyledBadge
 							overlap="circular"
 							anchorOrigin={{
 								vertical: "bottom",
@@ -247,14 +254,18 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 							}}
 							variant="dot"
 						>
-							<Button onClick={() => handleProfile(channelName)}>
+							<Button 
+								// disabled
+								onClick={() => handleProfile(channelName)}
+								// sx={{zIndex: "0"}}
+							>
 							<Avatar
 								alt={channelName}
 								src={channelAvatar}
 								sx={{ bgcolor: '#fcba03' }}
 							/>
 							</Button>
-						</StyledBadge>
+						</StyledBadge>}
 					</Box>
 					<Stack spacing={0.2}>
 							<Typography variant="subtitle2">{channelName}</Typography>
@@ -262,7 +273,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 					</Stack>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} spacing={3}>
-					{isPrivateConv && 
+					{isPrivateConv  && !isCreateChannelWindowOpen && 
 						<IconButton sx={{color: '#07457E'}} 
 							onClick={() => onSuggestGame({
 								from: currentUser,
@@ -270,7 +281,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 							})}>
 							<SportsEsportsIcon />
 						</IconButton>}
-					{isPrivateConv && displayBlockIcon &&
+					{isPrivateConv &&  displayBlockIcon && !isCreateChannelWindowOpen && 
 						<Tooltip title='block user'>
 							<IconButton sx={{color: '#4DC8BC'}} onClick= {handleBlockingUnblocking}>
 								<RemoveCircleIcon />
@@ -280,9 +291,9 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 					{isPrivateConv === false &&
 						<Stack direction={'row'} spacing={2}>
 							<Divider orientation="vertical" flexItem />
-							<ChannelMenu socketRef={socketRef}/>
-							{isAdmin && <AdminMenu socketRef={socketRef}/>}
-							{isOwner && <GiveOwnership />}
+							{!isCreateChannelWindowOpen && <ChannelMenu socketRef={socketRef}/>}
+							{isAdmin && !isCreateChannelWindowOpen && <AdminMenu socketRef={socketRef}/>}
+							{isOwner && !isCreateChannelWindowOpen && <GiveOwnership />}
 						</Stack>
 					}
 				</Stack>

@@ -11,7 +11,7 @@ import Conversation from '../components/Conversation/Conversation';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectIsBanned, selectIsMember, selectUserChannels, setIsBanned, setIsMember } from '../redux-features/chat/channelsSlice';
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
@@ -23,8 +23,11 @@ function Chat () {
 
 	const channels = useAppSelector((state) => selectUserChannels(state)) as Channel[];
 	const displayedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
+	const userChannels : ChannelModel[] = useAppSelector(selectUserChannels);
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const newChannelCreated = useRef<boolean>(false);
+	const isNewMemberNotif = useAppSelector(selectIsMember)
+	const justBeenBannedNotif = useAppSelector(selectIsBanned);
 	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0) {
@@ -39,6 +42,11 @@ function Chat () {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
+		AppDispatch(setIsMember(false));
+		AppDispatch(setIsBanned(false));
+	}, [])
+
+	useEffect(() => {
 		// console.log('[Chat] - roomId = ', roomId)
 
 		if (selectedChannel === 'empty channel') // if roomId is 'WelcomeChannel'
@@ -50,9 +58,16 @@ function Chat () {
 			withCredentials: true,
 		})
 
-		if (newChannelCreated.current) {
+		if (newChannelCreated.current || isNewMemberNotif || justBeenBannedNotif) {
 			socketRef.current?.emit('newChannelCreated');
 			newChannelCreated.current = false;
+			AppDispatch(setIsMember(false));
+			AppDispatch(setIsBanned(false));
+		}
+
+		if (justBeenBannedNotif) {
+			socketRef.current?.emit('justBanned');
+			AppDispatch(setIsBanned(false));
 		}
 
 		if (channelDeleted.current) {
@@ -70,12 +85,18 @@ function Chat () {
 			setMessages((messages) => [...messages, incomingMessage])
 		})
 
+		socketRef.current?.on('justBannedNotif', () => {
+			// console.log('[chat] - BANNED!');
+			// console.log('[chat] - current user = ', currentUser);
+			AppDispatch(fetchDisplayedChannel(roomId));
+		})
+
 		return () => {
 			// console.log('[Unmounted Component Conversation] ', selectedChannel)
 			if (socketRef.current?.connected)
 				socketRef.current?.disconnect()
 		}
-	}, [roomId])
+	}, [roomId, isNewMemberNotif, justBeenBannedNotif])
 
 	socketRef.current?.off('newChannelNotif').on('newChannelNotif', () => {
 		// console.log('[chat] - new channel has been created, and you are a member!');
@@ -108,8 +129,14 @@ function Chat () {
 		setSelectedChannel(channelName);
 	}
 
-	const isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list 
-
+	let isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
+	useEffect(() => {
+		// console.log("[Chat] displayedChannel.name = ", displayedChannel.name);
+		// console.log("[Chat] displayedChannel.banned = ", displayedChannel.banned);
+		isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
+		// console.log("[Chat] isBanned = ", isBanned);
+	}, [userChannels, displayedChannel]) // when the channels for which the user is a member are modified, re-check if he is now banned from any of them
+// 
 	return (
 		<Provider store={store}>
 			<div className='chat-container'>

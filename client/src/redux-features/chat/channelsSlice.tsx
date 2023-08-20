@@ -18,7 +18,10 @@ export interface ChannelSlice {
 	userPublicChannels : ChannelModel[],
 	userPrivateConvs : ChannelModel[],
 	gameDialog: boolean,
+	isMember: boolean,
+	isBanned: boolean,
 	isMuted: MutingInfo[],
+	isPopupOpen: boolean,
 
 }
 
@@ -35,8 +38,10 @@ const initialState : ChannelSlice = {
 	userPublicChannels : [],
 	userPrivateConvs : [],
 	gameDialog: false,
+	isMember: false,
+	isBanned: false,
 	isMuted: [],
-
+	isPopupOpen: false,
 };
 
 export type MutingInfo = {
@@ -142,6 +147,15 @@ export const channelsSlice = createSlice({
 			  } else {
 				state.isMuted.push(action.payload)
 			  }
+		},
+		setIsMember: (state, action: PayloadAction<boolean>) => {
+			state.isMember = action.payload;
+		},
+		setIsBanned: (state, action: PayloadAction<boolean>) => {
+			state.isBanned = action.payload;
+		},
+		setIsPopupOpen: (state, action: PayloadAction<boolean>) => {
+			state.isPopupOpen = action.payload;
 		},
 		resetChannelStore : (state) => {
             return initialState;
@@ -359,6 +373,9 @@ export const {
 	resetChannelStore,
 	setGameDialog,
 	setIsMuted,
+	setIsMember,
+	setIsBanned,
+	setIsPopupOpen,
 } = channelsSlice.actions;
 
 export default channelsSlice.reducer
@@ -376,3 +393,6 @@ export const selectPublicChannels = (state : RootState) => state.persistedReduce
 export const selectPrivateConvs = (state : RootState) => state.persistedReducer.channels.privateConvs
 export const selectGameDialog = (state : RootState) => state.persistedReducer.channels.gameDialog
 export const selectIsMuted = (state : RootState) => state.persistedReducer.channels.isMuted
+export const selectIsMember = (state : RootState) => state.persistedReducer.channels.isMember
+export const selectIsBanned = (state : RootState) => state.persistedReducer.channels.isBanned
+export const selectIsPopupOpen = (state : RootState) => state.persistedReducer.channels.isPopupOpen

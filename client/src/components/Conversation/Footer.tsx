@@ -80,7 +80,7 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 
 	React.useEffect( () => {
 		setBlockMsg('')
-		if (selectedChannel.type !== 'PrivateConv') {				// get most recent selectedChannel version from db
+		if (selectedChannel.type !== 'PrivateConv') {
 			if (selectedChannel.name !== 'empty channel')
 			// check its muted property array to see if currentUser is in it
 			if (selectedChannel.muted.map((user) => {

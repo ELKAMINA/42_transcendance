@@ -13,7 +13,7 @@ import CreateUsersList from "./createUsersList";
 import api from '../../utils/Axios-config/Axios' 
 import { UserByLogin } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
-import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels } from "../../redux-features/chat/channelsSlice";
+import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, setIsPopupOpen } from "../../redux-features/chat/channelsSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { FetchUsersDb, selectFriends } from "../../redux-features/friendship/friendshipSlice";
@@ -90,6 +90,7 @@ function CreateChannel(props : CreateChannelProps) {
 		// Submit the form data
 		channelCreation();
 		props.setTrigger(false);
+		appDispatch(setIsPopupOpen(false))
 	}
 
 
@@ -98,6 +99,7 @@ function CreateChannel(props : CreateChannelProps) {
 		dispatch(resetChannelName());
 		dispatch(resetChannelUser());
 		props.setTrigger(false);
+		appDispatch(setIsPopupOpen(false))
 	}
 	
 	return (props.trigger) ? (
