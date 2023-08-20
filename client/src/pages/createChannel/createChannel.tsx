@@ -13,12 +13,11 @@ import CreateUsersList from "./createUsersList";
 import api from '../../utils/Axios-config/Axios' 
 import { UserByLogin } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
-import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, setIsPopupOpen } from "../../redux-features/chat/channelsSlice";
+import { fetchAllChannelsInDatabase, fetchUserChannels, setIsPopupOpen } from "../../redux-features/chat/channelsSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { FetchUsersDb, selectFriends } from "../../redux-features/friendship/friendshipSlice";
 import { ChannelTypeState, resetChannelType } from '../../redux-features/chat/createChannel/channelTypeSlice';
-import { Socket } from 'socket.io-client';
 
 interface CreateChannelProps {
 	trigger: boolean;
