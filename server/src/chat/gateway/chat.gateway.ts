@@ -1,3 +1,4 @@
+import { UserService } from 'src/user/user.service';
 import {
   ConnectedSocket,
   MessageBody,
@@ -23,10 +24,9 @@ import { FriendshipService } from '../../friendship/friendship.service';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
-  private shut = 0;
-
   constructor(
     private ChatService: ChatService,
+    private userService: UserService,
     private friends: FriendshipService,
   ) {}
 
@@ -88,15 +88,38 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(roomId).emit('channelKickNotif');
   }
 
-  @SubscribeMessage('blockUser')
-  async handleBlockUser(
-    socket: Socket,
-    @MessageBody() body: any,
+  @SubscribeMessage('blockOrUnblockUser')
+  async handleBlockOrUnblock(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody()
+    body: { sender: string; receiver: string; channelName: string },
   ): Promise<void> {
     console.log('le body ', body);
     // const roomId = socket.handshake.query.roomId as string;
-    const user = await this.friends.blockFriend(body.sender, body.receiver);
+    const user = await this.userService.searchUser(body.sender);
+    if (user) {
+      const check = user.blocked.find((e) => e.login === body.receiver);
+      if (check) {
+        this.server.to(socket.id).emit('blockStatus', 'unblock');
+      } else this.server.to(socket.id).emit('blockStatus', 'block');
+    }
+  }
+
+  @SubscribeMessage('blockUser')
+  async handleBlockUser(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: any,
+  ): Promise<void> {
+    console.log('le body ', body);
+    const roomId = socket.handshake.query.roomId as string;
+    const blockedFriends = await this.friends.blockFriend(
+      body.sender,
+      body.receiver,
+    );
     //   this.server.to(roomId).emit('FriendBlocked', user)
+    this.server
+      .to(roomId)
+      .emit('FriendBlocked', { senderReceiver: body, status: blockedFriends });
   }
 
   @SubscribeMessage('suggestingGame')

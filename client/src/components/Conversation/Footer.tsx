@@ -16,6 +16,7 @@ import { FetchUserByName } from '../../utils/global/global';
 import MicOffIcon from '@mui/icons-material/MicOff';
 
 import './Footer.css';
+import UnblockBlock from './UnblockBlock';
 
 interface mutes {
 	login: string,
@@ -25,6 +26,14 @@ interface mutes {
 interface mutedInfos {
 	mutedUser: mutes[],
 	channelName: string,
+}
+
+export interface blockUnblock {
+	senderReceiver: {
+		sender: string,
+		receiver: string,
+	},
+	status: number,
 }
 
 const StyledInput = styled(TextField)(({ theme }) => ({
@@ -50,6 +59,15 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 	const [value, setValue] = useState("");
 	const [isMuted, setIsMuted] = useState<boolean>(false);
 	const appDispatch = useAppDispatch();
+	const [blockStatus, setStatus] = useState<blockUnblock>({
+		senderReceiver: {
+			sender: "",
+			receiver: "",
+		},
+		status: 0,
+	});
+	const [openBlock, setOpenBlock] = useState<boolean>(false);
+	
 
 	// record message
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
@@ -105,7 +123,7 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 
 				if (((UserToCheck.blockedBy).find((bl: any) => bl.login === currentUser)) || ((UserToCheck.blocked).find((bl: any) => bl.login === currentUser)) )
 				{
-					setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
+					setOpenBlock(true);
 					return true;
 				}
 				else {
@@ -175,6 +193,11 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		}
 	})
 
+	socketRef.current?.on('FriendBlocked', async (info: blockUnblock) => {
+		setStatus(info)
+		setOpenBlock(true)
+	})
+
 
 	async function sendMessage() {
 		if (await userIsBlocked() === false && isMuted === false && value !== "") {
@@ -207,6 +230,11 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		setValue('');
 	}
 
+	const handleCloseBlock = () => {
+		setOpenBlock(false);
+	}
+
+
 	return (
 		<Box
 			p={2}
@@ -217,14 +245,8 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 				boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)'
 			}}
 		>
+			{openBlock && <UnblockBlock open={openBlock} handleClose={handleCloseBlock} info={blockStatus}/>}
 			<Stack direction={'row'} alignItems={'center'} spacing={3}>
-				<div 
-					// trigger={<div>TFA</div>}
-					ref={blockRef} className={blockMsg ? "blockmsg" : "offscreen"} 
-						aria-live="assertive"
-				>
-					{blockMsg}
-				</div>
 				<StyledInput
 					onChange = {handleChange}
 					onKeyDown= {handleKeyDown}
