@@ -94,7 +94,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     body: { sender: string; receiver: string; channelName: string },
   ): Promise<void> {
-    console.log('le body ', body);
+    // console.log('le body ', body);
     // const roomId = socket.handshake.query.roomId as string;
     const user = await this.userService.searchUser(body.sender);
     if (user) {
@@ -110,7 +110,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ): Promise<void> {
-    console.log('le body ', body);
+    // console.log('le body ', body);
     const roomId = socket.handshake.query.roomId as string;
     const blockedFriends = await this.friends.blockFriend(
       body.sender,

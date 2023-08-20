@@ -88,7 +88,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 		dispatch(fetchDisplayedChannel(channel.name))
 	}, [])
 
-	channel = useAppSelector(selectDisplayedChannel)
+	channel = useAppSelector(selectDisplayedChannel) || emptyChannel;
 
 	useEffect(() => {
 		if (channel !== emptyChannel){
