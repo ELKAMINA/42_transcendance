@@ -39,19 +39,19 @@ const UnblockBlock = ({open , handleClose, info} : BlockUserProps ) => {
 		<DialogTitle>{"From Hate to Love, there is only one step"}</DialogTitle>
 		<DialogContent>
 			<DialogContentText id="alert-dialog-slide-description">
-				{(user === info.senderReceiver.sender) && (info.status === 1) && <Typography>
-                    You blocked {info.senderReceiver.receiver}, you can't talk to him anymore
+				{(user === info.senderReceiver.sender) && (info.status === 1) && <Typography component="span">
+                    You blocked {info.senderReceiver.receiver}, you can't talk to each other anymore
                     </Typography>}
-                {(user === info.senderReceiver.receiver) && (info.status === 1) && <Typography>
-                    {info.senderReceiver.sender} blocked you, you can't talk to him anymore
+                {(user === info.senderReceiver.receiver) && (info.status === 1) && <Typography component="span">
+                    {info.senderReceiver.sender} blocked you, you can't talk to each other anymore
                     </Typography>}
-                {(user === info.senderReceiver.receiver) && (info.status === 2) && <Typography>
+                {(user === info.senderReceiver.receiver) && (info.status === 2) && <Typography component="span">
                 {info.senderReceiver.sender} unblocked you, you can now talk 
                 </Typography>}
-                {(user === info.senderReceiver.sender) && (info.status === 2) && <Typography>
+                {(user === info.senderReceiver.sender) && (info.status === 2) && <Typography component="span">
                     You unblocked {info.senderReceiver.receiver}, you can now talk
                 </Typography>}
-				{info.senderReceiver.receiver === '' && <Typography>
+				{info.senderReceiver.receiver === '' && <Typography component="span">
 					You cant talk to each other. BLOCKED CONVERSATION
                 </Typography>}
 			</DialogContentText>

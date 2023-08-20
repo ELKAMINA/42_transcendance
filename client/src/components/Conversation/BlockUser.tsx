@@ -15,9 +15,8 @@ type BlockUserProps = {
 };
 
 const BlockUser = ({open , handleClose, socketRef, sender, receiver, blocks} : BlockUserProps ) => {
-	const currentUser = useAppSelector(selectCurrentUser);
-	console.log("current user ", currentUser);
-	console.log("blocks ", blocks);
+	// console.log("current user ", currentUser);
+	// console.log("blocks ", blocks);
 
 	// to give the slide effect
 	const Transition = React.forwardRef(function Transition(

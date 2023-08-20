@@ -205,7 +205,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	}
 	
 	socketRef.current?.on('blockStatus', (status: string) => {
-		console.log('status ', status)
+		// console.log('status ', status)
 		setBlock(status);
 	})
 
