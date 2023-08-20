@@ -14,7 +14,7 @@ import GiveOwnership from '../GiveOwnership';
 import { emptyChannel } from '../../data/emptyChannel';
 import { ChannelModel } from '../../types/chat/channelTypes';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
-import { selectDisplayedChannel, selectIsPopupOpen } from '../../redux-features/chat/channelsSlice';
+import { selectDisplayedChannel, selectIsPopupOpen, setIsPopupOpen } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -104,6 +104,11 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 			console.log('ERROR from request with params ', e)
 		})
 	}
+
+	const AppDispatch = useAppDispatch();
+	useEffect(() => {
+		AppDispatch(setIsPopupOpen(false));
+	}, []) // reset isCreateChannelWindowOpen if refresh
 		
 	return (
 		<Box 
