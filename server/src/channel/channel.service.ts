@@ -48,13 +48,11 @@ export class ChannelService {
       // we return the newly created channel
       return channel;
     } catch (error: any) {
-      throw error;
+      console.error(error);
     }
   }
 
-  async deleteChannelByName(requestBody: {
-    name: string | string[];
-  }): Promise<void> {
+  async deleteChannelByName(requestBody: { name: string }): Promise<void> {
     try {
       const channelNames = Array.isArray(requestBody.name)
         ? requestBody.name
@@ -70,36 +68,7 @@ export class ChannelService {
         await this.prisma.channel.delete({ where: { name: name } });
       }
     } catch (error: any) {
-      throw error;
-    }
-  }
-
-  // deletes only the channels created by the user which nickname is passed as a parameter
-  async deleteAllChannels(requestBody: { createdBy: string }): Promise<void> {
-    try {
-      const channelsToDelete = await this.prisma.channel.findMany({
-        where: {
-          createdById: requestBody.createdBy,
-        },
-      });
-
-      // delete all the associated messages
-      for (const channel of channelsToDelete) {
-        await this.prisma.message.deleteMany({
-          where: {
-            channelById: channel.name,
-          },
-        });
-      }
-
-      // delete all the channels that match the 'createdBy' string
-      await this.prisma.channel.deleteMany({
-        where: {
-          createdById: requestBody.createdBy,
-        },
-      });
-    } catch (error: any) {
-      throw error;
+      console.error(error);
     }
   }
 
@@ -635,7 +604,7 @@ export class ChannelService {
       // console.log('updatedChannel = ', updatedChannel.ownedById);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 
@@ -686,16 +655,17 @@ export class ChannelService {
       // console.log('[MEMBERS] updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 
   async replaceMembers(requestBody: {
     channelName: { name: string };
     members: User[];
+    action: string;
   }): Promise<Channel> {
     try {
-      const { channelName, members } = requestBody;
+      const { channelName, members, action } = requestBody;
       // Find the channel by name
       const channel = await this.prisma.channel.findUnique({
         where: {
@@ -704,7 +674,9 @@ export class ChannelService {
       });
 
       if (!channel) {
-        throw new Error(`Channel with name '${channelName.name}' not found.`);
+        throw new Error(
+          `Channel with ${action} name '${channelName.name}' not found.`,
+        );
       }
 
       // Extract the new member IDs from the request
@@ -725,7 +697,7 @@ export class ChannelService {
       // console.log('[MEMBERS] updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 
@@ -761,7 +733,7 @@ export class ChannelService {
       });
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 }

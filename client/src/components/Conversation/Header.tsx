@@ -165,6 +165,10 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 
 	const checkIfUserIsBlocked = (currentUser: string, channel: ChannelModel ) => {
 		let check;
+
+		if (channel.members.length < 2)
+			return ;
+
 		// console.log('FROM CHECK FUNCTION Member 0 ', channel.members[0].login);
 		// console.log('FROM CHECK FUNCTION Member 1 ', channel.members[1].login);
 		if (channel.members.length <= 1)
