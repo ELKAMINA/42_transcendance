@@ -233,9 +233,7 @@ export function PersonalInformation () {
 
 export function Security () {
     const user = useAppSelector(selectCurrentUser)
-    const afterSub = useAppSelector(selectAfterSub)
     const twofa = useAppSelector(selectTfaState)
-    const checked = useAppSelector(selectTfaAuth)
     const qrcode = useAppSelector(selectQrCode)
     let [TfaCode, setTfaCode] = React.useState('')
     const [confMsg, setConfMsg] = React.useState('')
@@ -245,16 +243,24 @@ export function Security () {
 	React.useEffect(() => {
 		dispatch(FetchActualUser())
         sock.connect()
-        sock.on('connect', () => {
-
+        sock.on('newUserConnected', (faEnabled: boolean) => {
+            dispatch(setAfterSub(true))
+            dispatch(setTfaAuth(faEnabled))
+            if (faEnabled){
+                dispatch(setTfaState('Two Factor authentication is ON'))
+            }
+            else
+                dispatch(setTfaState('Two Factor authentication is OFF'))
         })
         return () => {
             if (sock.connected)  // cleanUp function when component unmount
                 sock.disconnect()
+            dispatch(setAfterSub(true))
         }
       }, [])
     
     const actualUser = useAppSelector(selectActualUser)
+
     const tfa = async () => {
         await api
         .post("http://0.0.0.0:4001/auth/2fa/generate", actualUser)
@@ -269,16 +275,21 @@ export function Security () {
         .catch((e) => {console.log("error ", e)});
     }
 
+
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log('event ', event.target.checked)
         dispatch(setTfaAuth(event.target.checked))
-        if (checked === false){
-            dispatch(setTfaState('Two Factor authentication is On'))
+        if (event.target.checked){
+            dispatch(setTfaState('Two Factor authentication is ON'))
+            dispatch(setAfterSub(false))
             tfa();
         }
         else {
-            dispatch(setTfaState('Two Factor authentication is Off'))
+            dispatch(setTfaState('Two Factor authentication is OFF'))
             dispatch(setQrCode(''))
             setTfaCode('')
+            dispatch(setAfterSub(true))
             cancelTfa();
         }
       };
@@ -299,6 +310,9 @@ export function Security () {
         setTfaCode(newValue);
     }
 
+    const afterSub = useAppSelector(selectAfterSub)
+    const checked = useAppSelector(selectTfaAuth)
+    // console.log('After Sub ', afterSub)
     return (
         <Container sx={{
             width: '40%',
