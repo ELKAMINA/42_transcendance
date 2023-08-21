@@ -211,17 +211,15 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 
 	const handleBlockingUnblocking = () => {
 		socketRef.current?.emit('blockOrUnblockUser', {sender: currentUser, receiver: currentUser === channel.members[0].login ? channel.members[1].login : channel.members[0].login, channelName: channel.name })
-		dispatch(FetchActualUser());
 		setOpenBlock(true);
 	}
 	
-	socketRef.current?.on('blockStatus', (status: string) => {
-		// console.log('status ', status)
+	socketRef.current?.off('blockStatus').on('blockStatus', (status: string) => { // DEBUB : replace .off by useEffect
 		setBlock(status);
 	})
 
-
-	socketRef.current?.on('FriendBlocked', async (info: blockUnblock) => {
+	socketRef.current?.off('FriendBlocked').on('FriendBlocked', async (info: blockUnblock) => {
+		dispatch(FetchActualUser());
 		if (info.status === 1){
 			if (info.senderReceiver.receiver === currentUser){
 				setDisplayblockIcon(false)
@@ -236,7 +234,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	
 	useEffect(() => {
 
-	}, [displayBlockIcon])
+	}, [displayBlockIcon]) // DEBUG 
 	
 	useEffect(() => {
 		dispatch(setIsPopupOpen(false));

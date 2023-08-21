@@ -28,18 +28,13 @@ function renderSwitchComponent(el : ChatMessage, index: number) {
 }
 
 const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessages: (arg0: ChatMessage[]) => void }) => {
-
 	const currentUser = useAppSelector(selectActualUser) as UserModel;
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
-	// const [chat, setChat] = useState<ChatMessage[]>([]);
+	const [chat, setChat] = useState<ChatMessage[]>([]);
 	const AppDispatch = useAppDispatch();
 
-	/* Modifié par Amina : AppDispatch(FecthActualUser() était dans le scope global du component,ce qui faisait que le component re-renderait plus de 6000 fois et donc faisait le fetch et ca ralentissait énormément les ressources. 
-	Solution appliquée : Le foutre dans un useEffect)
-	*/
-	useEffect(() => {
+	React.useEffect(() => {
 		AppDispatch(FetchActualUser());
-
 	}, [])
 
 	React.useEffect(()=> {
@@ -48,20 +43,23 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 		}
 	}, [selectedChannel])
 
-	// // Use a useEffect to update chat messages whenever selectedChannel and messages changes
-    // useEffect(() => {
-	// 	// console.log("[messages] = ", selectedChannel.name);
-    //     if (selectedChannel && selectedChannel.chatHistory) {
-    //         const newChat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
-	// 		const sortedChat : ChatMessage[] = newChat.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()); // sort messages from oldest to most recent
-	// 		const filteredBlockedUsersChat : ChatMessage[] = sortedChat.filter((el) => 
-	// 			selectedChannel.type === 'privateConv' || // if it is NOT a private conv, filter messages from blocked users
-	// 			!currentUser.blocked.some((blockedUser) => blockedUser.login === el.sentById)
-	// 		) 
-	// 		// console.log('filteredBlockedUsersChat = ', filteredBlockedUsersChat);
-    //         setChat(filteredBlockedUsersChat);
-    //     }
-    // }, [selectedChannel, messages]);
+	// Use a useEffect to update chat messages whenever selectedChannel and messages changes
+    useEffect(() => {
+		// console.log("[messages] = ", selectedChannel.name);
+		
+		console.log("[messages] currentUser.blocked = ", currentUser.blocked);
+
+		if (selectedChannel && selectedChannel.chatHistory) {
+            const newChat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
+			const sortedChat : ChatMessage[] = newChat.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()); // sort messages from oldest to most recent
+			const filteredBlockedUsersChat : ChatMessage[] = sortedChat.filter((el) => 
+				selectedChannel.type === 'privateConv' || // if it is NOT a private conv, filter messages from blocked users
+				!currentUser.blocked.some((blockedUser) => blockedUser.login === el.sentById)
+			) 
+			// console.log('filteredBlockedUsersChat = ', filteredBlockedUsersChat);
+            setChat(filteredBlockedUsersChat);
+        }
+    }, [selectedChannel, messages]);
 
 	if (!selectedChannel || !selectedChannel.chatHistory) {
 		return (
@@ -73,8 +71,8 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 		);
 	}
 
-	const chat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
-	chat.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()); // sort messages from oldest to most recent
+	// const chat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
+	// chat.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()); // sort messages from oldest to most recent
 
 	return (	
 		<Box p={3}>
