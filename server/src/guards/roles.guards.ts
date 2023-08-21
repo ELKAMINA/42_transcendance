@@ -16,17 +16,25 @@ export class RolesGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
-      ROLES_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    let requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
     console.log('Required roles ', requiredRoles);
-    if (!requiredRoles) {
+    const request = context.switchToHttp().getRequest();
+    console.log('request ', request);
+    if (!requiredRoles && !request.orginialUrl.includes('/replaceMembers')) {
       // Step 5
       // console.log('Required roles CONDITION ', requiredRoles);
       return true;
+    } else if (
+      !requiredRoles &&
+      request.orginialUrl.includes('/replaceMembers')
+    ) {
+      const { action } = request.body;
+      if (action === 'leave') requiredRoles = ['member'];
+      else requiredRoles = ['admin'];
     }
-    const request = context.switchToHttp().getRequest();
     // console.log('Requests ', request);
     let concernedchannel;
 
