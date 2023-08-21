@@ -68,6 +68,7 @@ export default class AuthController {
     @GetCurrentUserId() userNick: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
   ) {
+    console.log('userNick ', userNick);
     return this.authService.refresh(userNick, refreshToken);
   }
   /* ******************** */
@@ -158,7 +159,7 @@ export default class AuthController {
     this.authService.cancelTfa(body.nickname);
   }
 
-  @Public()
+  // @Public()
   @Post('update-cookie')
   updateCookie(@Body() newCookie, @Res({ passthrough: true }) res: Response) {
     this.authService.setCookie(newCookie, res);

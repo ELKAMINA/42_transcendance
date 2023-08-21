@@ -10,6 +10,9 @@ const RequireAuth = () => {
   const a_token = useAppSelector(selectCurrentAccessToken)
   const location = useLocation()
 
+  // console.log('Acces_token ', a_token)
+  // console.log('dou je viens ', location.pathname)
+
   return (
     a_token
      ? <Outlet />

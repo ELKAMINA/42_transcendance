@@ -37,10 +37,10 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 	/* Modifié par Amina : AppDispatch(FecthActualUser() était dans le scope global du component,ce qui faisait que le component re-renderait plus de 6000 fois et donc faisait le fetch et ca ralentissait énormément les ressources. 
 	Solution appliquée : Le foutre dans un useEffect)
 	*/
-	useEffect(() => {
-		AppDispatch(FetchActualUser());
+	// useEffect(() => {
+	// 	AppDispatch(FetchActualUser());
 
-	}, [])
+	// }, [])
 
 	React.useEffect(()=> {
 		return () => {

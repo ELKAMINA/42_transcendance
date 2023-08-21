@@ -23,12 +23,13 @@ export class RolesGuard implements CanActivate {
     // console.log('Required roles ', requiredRoles);
     if (!requiredRoles) {
       // Step 5
-      //   console.log('Required roles CONDITION ', requiredRoles);
+      // console.log('Required roles CONDITION ', requiredRoles);
       return true;
     }
     const request = context.switchToHttp().getRequest();
-    console.log('Requests ', request);
+    // console.log('Requests ', request);
     let concernedchannel;
+
     if (request.body.channelName)
       concernedchannel = request.body.channelName.name;
     else if (request.body.name) {
@@ -39,7 +40,8 @@ export class RolesGuard implements CanActivate {
     const userFromCookie = this.getUserInfoFromSocket(request.headers.cookie);
 
     const userFromDB = await this.userServ.searchUser(userFromCookie.nickname);
-    let isAdmin: boolean;
+
+    let isAdmin = false;
     if (userFromDB) {
       if (concernedchannel) {
         isAdmin = userFromDB.adminChannels.some(

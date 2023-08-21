@@ -109,6 +109,7 @@ export class channelController {
     return this.ChannelService.deleteChannelByName(requestBody);
   }
 
+  // A supprimer ?
   @Post('/deleteAllChannels')
   @Public() // TODO - remove public
   deleteAllChannels(@Body() requestBody: { createdBy: string }): Promise<void> {
@@ -123,6 +124,7 @@ export class channelController {
     return this.ChannelService.checkPwd(requestBody);
   }
 
+  @Roles('admin')
   @Post('/updateAdmins')
   @Public() // TODO - remove public
   updateAdmins(
@@ -131,6 +133,7 @@ export class channelController {
     return this.ChannelService.updateAdmins(requestBody);
   }
 
+  @Roles('admin')
   @Post('/updateBanned')
   @Public() // TODO - remove public
   updateBanned(
@@ -156,6 +159,7 @@ export class channelController {
     return this.ChannelService.updateMuted(requestBody);
   }
 
+  @Roles('admin')
   @Post('/updateOwner')
   @Public() // TODO - remove public
   updateOwner(
@@ -172,6 +176,7 @@ export class channelController {
     return this.ChannelService.addMembers(requestBody);
   }
 
+  @Roles('admin')
   @Post('/replaceMembers')
   @Public() // TODO - remove public
   replaceMembers(
@@ -180,6 +185,7 @@ export class channelController {
     return this.ChannelService.replaceMembers(requestBody);
   }
 
+  @Roles('admin')
   @Post('/updatePassword')
   @Public() // TODO - remove public
   updatePassword(

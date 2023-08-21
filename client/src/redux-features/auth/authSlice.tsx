@@ -61,9 +61,9 @@ const authSlice = createSlice({
         },
         setOnlyTokens: (state, action) => {
             // console.log("Action ", action.payload)
-            const {accessToken, refreshToken} = action.payload
-            state.access_token = accessToken
-            state.refresh_token = refreshToken
+            const {access_token, refresh_token} = action.payload
+            state.access_token = access_token
+            state.refresh_token = refresh_token
         },
         logOut: (state, action) => {
             state.access_token = ""

@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
 import { fetchDisplayedChannel , selectDisplayedChannel, selectIsPopupOpen, setIsPopupOpen } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { FetchActualUser } from '../../redux-features/friendship/friendshipSlice';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": { 
@@ -213,6 +214,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 
 
 	socketRef.current?.on('FriendBlocked', async (info: blockUnblock) => {
+		AppDispatch(FetchActualUser())
 		if (info.status === 1){
 			if (info.senderReceiver.receiver === currentUser){
 				setDisplayblockIcon(false)
