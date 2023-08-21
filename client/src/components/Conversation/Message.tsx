@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material'
 
 import { useAppSelector } from '../../utils/redux-hooks';
@@ -31,6 +31,7 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 
 	const currentUser = useAppSelector(selectActualUser) as UserModel;
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
+	// const [chat, setChat] = useState<ChatMessage[]>([]);
 
 	React.useEffect(()=> {
 		return () => {
@@ -38,6 +39,20 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 		}
 	}, [selectedChannel])
 
+	// Use a useEffect to update chat messages whenever selectedChannel and messages changes
+	// useEffect(() => {
+	// 	// console.log("[messages] = ", selectedChannel.name);
+	// 	if (selectedChannel && selectedChannel.chatHistory) {
+	// 		const newChat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
+	// 		const sortedChat : ChatMessage[] = newChat.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()); // sort messages from oldest to most recent
+	// 		const filteredBlockedUsersChat : ChatMessage[] = sortedChat.filter((el) => 
+	// 			selectedChannel.type === 'privateConv' || // if it is NOT a private conv, filter messages from blocked users
+	// 			!currentUser.blocked.some((blockedUser) => blockedUser.login === el.sentById)
+	// 		) 
+	// 		// console.log('filteredBlockedUsersChat = ', filteredBlockedUsersChat);
+	// 		setChat(filteredBlockedUsersChat);
+	// 	}
+	// }, [selectedChannel, messages]);
 
 	if (!selectedChannel || !selectedChannel.chatHistory) {
 		return (
