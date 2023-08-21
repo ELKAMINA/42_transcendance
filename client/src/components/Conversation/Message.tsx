@@ -33,9 +33,9 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 	const [chat, setChat] = useState<ChatMessage[]>([]);
 	const AppDispatch = useAppDispatch();
 
-	React.useEffect(() => {
-		AppDispatch(FetchActualUser());
-	}, [])
+	// React.useEffect(() => {
+		// AppDispatch(FetchActualUser());
+	// }, [])
 
 	React.useEffect(()=> {
 		return () => {
@@ -47,7 +47,7 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
     useEffect(() => {
 		// console.log("[messages] = ", selectedChannel.name);
 		
-		console.log("[messages] currentUser.blocked = ", currentUser.blocked);
+		// console.log("[messages] currentUser.blocked = ", currentUser.blocked);
 
 		if (selectedChannel && selectedChannel.chatHistory) {
             const newChat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);

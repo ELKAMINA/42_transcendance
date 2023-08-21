@@ -11,7 +11,7 @@ import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllFriends, selectFriends } from '../redux-features/friendship/friendshipSlice';
-import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectAllChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchPublicChannels, fetchDisplayedChannel, fetchUserChannels, selectPublicChannels, selectUserChannels } from '../redux-features/chat/channelsSlice';
 
 export type SearchBarContainerProps = {
 	getSelectedItem: (item: string) => void;
@@ -25,33 +25,36 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = useState(false);
 
 	const AppDispatch = useAppDispatch();
-	const userChannels : ChannelModel[] = useSelector(selectUserChannels);
+	// const userChannels : ChannelModel[] = useSelector(selectUserChannels);
 	const currentUserName : string = useAppSelector(selectCurrentUser); // get the current user nickname
 
 	useEffect(() => {
 		AppDispatch(FetchAllFriends())
-		AppDispatch(fetchAllChannelsInDatabase())
+		AppDispatch(fetchPublicChannels())
 	}, []); // get the friends and channels from database
 
 	const friends = useAppSelector(selectFriends) as UserModel[];
 	let filteredFriends : UserModel[] = [];
-	let channels = useAppSelector((state) => selectAllChannels(state)) as Channel[];
+	const publicChannels = useAppSelector(selectPublicChannels) as Channel[];
+	const userChannels = useAppSelector(selectUserChannels) as Channel[];
+	
 	let filteredChannels : Channel[] = [];
 
-	// if the channel is of type 'private' or 'privateConv' and the current user is not a member,
-	// we won't display it.
-	// so I filter all the private channels and privateConv channels of which I am not a member or
-	// a creator.
     useEffect(() => {
-		// console.log('friends = ', friends);
-		// console.log('channels = ', channels);
-
-		// remove the friends that already have an open conversation with the current user to avoid duplicates
-		// I need to check if the channel is of type 'privateConv'
-		// Then I need to check if the friend and I are the two members
-		// I this is true : filter out
+		// STEP #1 ------------------------------------------------------------------------------------------------------------
+		// Filter out channels from publicChannels that also exist in userChannels
+		const filteredPublicChannels = publicChannels.filter(publicChannel =>
+			!userChannels.some(userChannel => publicChannel.name === userChannel.name)
+		);
+		// concatenate public channels and user channels
+	  	const channels: Channel[] = [...filteredPublicChannels, ...userChannels];
+		// console.log("[searchBar] PRINTING CHANNELS : ")
+		// channels.map((channels) => console.log(channels.name))
+		
+		// STEP #2 ------------------------------------------------------------------------------------------------------------
+		// remove the friends that already have an open conversation with the current user
 		filteredFriends = friends.filter((friend) => {
-			// Find channels where the current user and the friend are members and the type is 'privateConv'
+			// Find privateConvs where the current user and the friend are the 2 members
 			let existingChannels = channels.filter((channel) => {
 				return (
 					channel.type === 'privateConv' &&
@@ -63,24 +66,15 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 			// If no existing channels were found, keep the friend in the list
 			return existingChannels.length === 0;
 		});
-
-		// console.log('filteredFriends = ', filteredFriends);
-
+		// console.log("[searchBar] PRINTING FILTERED FRIENDS : ");
+		// filteredFriends.map((filteredFriend) => console.log(filteredFriend.login));
+		
+		// STEP #3 ------------------------------------------------------------------------------------------------------------
 		if (channels.length > 0) {
-
-			// #1 : we filter out all the private channels and privateConvs that don't have currentUser as a member
+		// 	// #1 : get rid of 'WelcomeChannel'
 			filteredChannels = channels
-			.filter((channel) => { 
-				if (channel.type === 'privateConv' || channel.type === 'private') {
-					return (
-						channel.members.some((member) => member?.login === currentUserName)  // checks if there's at least one member in the members array of the channel whose login property matches the currentUserName
-					);
-				}
-				if (channel.name === 'WelcomeChannel')
-					return false;
-				return true;
-			})
-			// #2 : we change the name of the channels for a correct display
+			.filter((channel) => channel.name !== 'WelcomeChannel')
+		// 	// #2 : we change the name of the channels for a correct display
 			.map((channel) => {
 				if (channel.type === 'privateConv') { // if the channel is of type privateConv
 					if (channel.members[0].login === currentUserName) { // if currentUser correspond to members[0], display members[1]'s login
@@ -98,7 +92,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 		// Update usersAndChannels after filtering channels and friends
 		setUsersAndChannels([...filteredFriends, ...filteredChannels]);
 
-    }, [friends, channels]);
+    }, [publicChannels, userChannels, friends]);
 
 	// State to hold the selected option
 	const [selectedOption, setSelectedOption] = useState<Channel | UserModel | null>(null);
@@ -147,7 +141,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 			setSelectedOption(value);
 
 			if ('name' in value && value.type === 'privateConv') { // if value is a private conv
-				const conv : ChannelModel | undefined = userChannels.find((channel) => {
+				const conv : Channel | undefined = userChannels.find((channel) => {
 					const memberLogin0 = channel.members[0].login;
 					const memberLogin1 = channel.members[1].login;
 					return ((memberLogin0 === currentUserName && memberLogin1 === value.name) 
