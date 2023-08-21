@@ -17,6 +17,11 @@ export interface ChannelSlice {
 	userPrivateChannels : ChannelModel[],
 	userPublicChannels : ChannelModel[],
 	userPrivateConvs : ChannelModel[],
+	gameDialog: boolean,
+	isMember: boolean,
+	isBanned: boolean,
+	isMuted: MutingInfo[],
+	isPopupOpen: boolean,
 
 }
 
@@ -32,8 +37,17 @@ const initialState : ChannelSlice = {
 	userPrivateChannels : [],
 	userPublicChannels : [],
 	userPrivateConvs : [],
-
+	gameDialog: false,
+	isMember: false,
+	isBanned: false,
+	isMuted: [],
+	isPopupOpen: false,
 };
+
+export type MutingInfo = {
+	channelName: string;
+	muted: boolean;
+  };
 
 // this is an array of channels
 export const channelsSlice = createSlice({
@@ -116,9 +130,36 @@ export const channelsSlice = createSlice({
 				userPrivateConvs : action.payload
 			}
 		},
+		setGameDialog: (state, action: PayloadAction<boolean>) => {
+			return {
+				...state,
+				gameDialog : action.payload
+			}
+		},
+		setIsMuted: (state, action: PayloadAction<MutingInfo>) => {
+			// console.log('je rentre ici ou pas ?', action.payload)
+			const channelIndex = state.isMuted.findIndex(el => el.channelName === action.payload.channelName);
+			if (channelIndex !== -1) {
+				// The channel's mute info is already present. Update it.
+				// console.log("identification du chan ", state.isMuted[channelIndex])
+				// console.log("Le payload  ", action.payload.muted)
+				state.isMuted[channelIndex].muted = action.payload.muted;
+			  } else {
+				state.isMuted.push(action.payload)
+			  }
+		},
+		setIsMember: (state, action: PayloadAction<boolean>) => {
+			state.isMember = action.payload;
+		},
+		setIsBanned: (state, action: PayloadAction<boolean>) => {
+			state.isBanned = action.payload;
+		},
+		setIsPopupOpen: (state, action: PayloadAction<boolean>) => {
+			state.isPopupOpen = action.payload;
+		},
 		resetChannelStore : (state) => {
             return initialState;
-        }
+        },
 	}
 })
 
@@ -183,6 +224,7 @@ export function fetchUserIsAMemberChannels() {
 }
 
 export function fetchAllChannelsInDatabase() {
+	// console.log("[channelSlice] fetching all channels from db", )
 	return async (dispatch: any, getState: any) => {
 		try {
 			const response = await api.post("http://localhost:4001/channel/all",);
@@ -329,6 +371,11 @@ export const {
 	updatePublicChannels,
 	updatePrivateConvs,
 	resetChannelStore,
+	setGameDialog,
+	setIsMuted,
+	setIsMember,
+	setIsBanned,
+	setIsPopupOpen,
 } = channelsSlice.actions;
 
 export default channelsSlice.reducer
@@ -344,3 +391,8 @@ export const selectUserPrivateConvs = (state : RootState) => state.persistedRedu
 export const selectPrivateChannels= (state : RootState) => state.persistedReducer.channels.privateChannels
 export const selectPublicChannels = (state : RootState) => state.persistedReducer.channels.publicChannels
 export const selectPrivateConvs = (state : RootState) => state.persistedReducer.channels.privateConvs
+export const selectGameDialog = (state : RootState) => state.persistedReducer.channels.gameDialog
+export const selectIsMuted = (state : RootState) => state.persistedReducer.channels.isMuted
+export const selectIsMember = (state : RootState) => state.persistedReducer.channels.isMember
+export const selectIsBanned = (state : RootState) => state.persistedReducer.channels.isBanned
+export const selectIsPopupOpen = (state : RootState) => state.persistedReducer.channels.isPopupOpen

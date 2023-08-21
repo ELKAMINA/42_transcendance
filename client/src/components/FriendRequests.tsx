@@ -27,6 +27,10 @@ type FriendshipProps = {
     bgColor: string,
   };
 
+export enum BlockingStatus {
+    BLOCKED = 1,
+    UNBLOCKED = 2,
+  }
 
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type, bgColor}) => {
     // const [avt, setAvtr] = useState('')
@@ -58,14 +62,30 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
         })
     }
     const block = () => {
-        // console.log('je bloque ??')
+        console.log('je bloque ?? sender ', sender)
+        console.log('je bloque ?? receiver ', receiver)
         socket.emit('blockFriend', {
             sender: sender,
             receiver: receiver,
         })
-        setButtonColor('grey')
-        setBlockBgColor('grey')
+
     }
+
+    socket.on('blockedFriend', (status: BlockingStatus) => {
+        if (status === 1){
+            setButtonColor('grey')
+            setBlockBgColor('grey')
+        }
+        else {
+            // console.log('status ', status);
+            setButtonColor('red')
+            setBlockBgColor('#AFEEEE')
+        }
+    })
+
+    React.useEffect(()=> {
+
+    }, [buttonColor])
 
     const handleProfile = async (name: string) => {
 		await api

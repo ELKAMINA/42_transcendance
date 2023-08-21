@@ -90,8 +90,8 @@ function Requests () {
 
     socket.off('friendAdded').on('friendAdded', (data: any) => {
       console.log('oui 3')
-      if (data != null) dispatch(FetchAllFriendRequests());
-      else dispatch(setFriendshipError(2))
+     dispatch(FetchAllFriendRequests());
+      // else dispatch(setFriendshipError(2))
  
      })
     socket.off('acceptedFriend').on('acceptedFriend', (data: any) => {
@@ -151,7 +151,9 @@ function Friends () {
 
     // dispatch(FetchAllFriends());
     return () => {
-      socket.disconnect()  // cleanUp function when component unmount
+      if(socket.connected){
+        socket.disconnect()  // cleanUp function when component unmount
+      }
       // dispatch(setSelectedItem(''))
     }
   }, [dispatch])

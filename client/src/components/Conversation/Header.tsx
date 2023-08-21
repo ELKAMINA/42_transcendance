@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Socket } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
@@ -8,17 +8,19 @@ import { Box, Stack, Typography, Avatar, Badge, IconButton, Divider, Button, Too
 
 import BlockUser from './BlockUser';
 import AdminMenu from '../AdminMenu';
+import { blockUnblock } from './Footer';
 import ChannelMenu from '../ChannelMenu';
 import api from '../../utils/Axios-config/Axios';
 import GiveOwnership from '../GiveOwnership';
 import { emptyChannel } from '../../data/emptyChannel';
-import { useAppSelector } from '../../utils/redux-hooks';
+import { UserModel } from '../../types/users/userType';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
-import { selectDisplayedChannel, } from '../../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel , selectDisplayedChannel, selectIsPopupOpen, setIsPopupOpen } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
-	"& .MuiBadge-badge": {
+	"& .MuiBadge-badge": { 
 	  backgroundColor: "#44b700",
 	  color: "#44b700",
 	  boxShadow: `0 0 0 2px ${"white"}`,
@@ -32,6 +34,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 		animation: "ripple 1.2s infinite ease-in-out",
 		border: "1px solid currentColor",
 		content: '""',
+		zIndex: 0,
 	  },
 	},
 	"@keyframes ripple": {
@@ -48,23 +51,81 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
   type HeaderProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
+	onSuggestGame: (gameSuggestionInfos: any) => void;
   };
+
+enum Blockados {
+	Member0BlockedMember1,
+	Member1BlockedMember0,
+	NoOneIsBlocked,
+}
   
-  function Header({ socketRef }: HeaderProps) {
+  
+function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	const navigate = useNavigate();
+	// const dispatch = useAppDispatch();
+	const isCreateChannelWindowOpen = useAppSelector(selectIsPopupOpen);
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	let channelName : string = 'error';
 	let channelAvatar : string | undefined = 'error';
+	let channel: ChannelModel = useAppSelector(selectDisplayedChannel) || emptyChannel;
+	channelName = channel.name;
+	const [blockOrUnblock, setBlock] = useState<string>('block')
+	const [displayBlockIcon, setDisplayblockIcon] = useState<boolean>(true)
+	const [blockStatus, setStatus] = useState<blockUnblock>({
+		senderReceiver: {
+			sender: "",
+			receiver: "",
+		},
+		status: 0,
+	});
 
-	const channel: ChannelModel = useAppSelector(selectDisplayedChannel) || emptyChannel;
 	const isPrivateConv : boolean = channel.members?.length === 2 && channel.type === 'privateConv' ? true : false;
 
 	const isAdmin : boolean = channel.admins.some(admin => admin.login === currentUser) || currentUser === channel.ownedById;
 	const isOwner : boolean = currentUser === channel.ownedById;
+	const dispatch = useAppDispatch();
 
+	useEffect(()=> {
+		dispatch(fetchDisplayedChannel(channel.name))
+	}, [])
+
+	channel = useAppSelector(selectDisplayedChannel) || emptyChannel;
+
+	useEffect(() => {
+		if (channel !== emptyChannel){
+			// console.log('CurrentUsser', currentUser);
+			// console.log('Member 0 ', channel.members[0].login);
+			// console.log('Member 1 ', channel.members[1].login);
+			const blockingStatus = checkIfUserIsBlocked(currentUser, channel);
+			// console.log('Resultat ', blockingStatus);
+			if (blockingStatus === Blockados.Member0BlockedMember1){
+				if (currentUser === channel.members[0].login){
+					// console.log('je rentre ici 1', currentUser);
+					setDisplayblockIcon(true)
+				}
+				else if (currentUser === channel.members[1].login){
+					// console.log('je rentre ici 2', currentUser);
+					setDisplayblockIcon(false)
+				}
+			}
+			else if (blockingStatus === Blockados.Member1BlockedMember0){
+				if (currentUser === channel.members[0].login){
+					// console.log('je rentre ici 3', currentUser);
+					setDisplayblockIcon(false)
+				}
+				else if (currentUser === channel.members[1].login){
+					// console.log('je rentre ici 4', currentUser);
+					setDisplayblockIcon(true)
+				}
+			}
+			else setDisplayblockIcon(true)
+		}
+	}, [channelName])
 	// if the conversation is private, 
 	// the name of the channel should be the name of 
 	// the channel member that is not the current user
+
 	if (isPrivateConv) {
 		if (channel.members[0].login === currentUser) {
 			channelName = channel.members[1].login;
@@ -99,7 +160,80 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 			console.log('ERROR from request with params ', e)
 		})
 	}
+
+	const checkIfUserIsBlocked = (currentUser: string, channel: ChannelModel ) => {
+		let check;
+		// console.log('FROM CHECK FUNCTION Member 0 ', channel.members[0].login);
+		// console.log('FROM CHECK FUNCTION Member 1 ', channel.members[1].login);
+		if (currentUser === channel.members[0].login){
+			check = channel.members[0].blockedBy.find((e: UserModel) => e.login === channel.members[1].login)
+			// console.log('MEMBERS 0 blockedBy friends ', channel.members[0].blocked)
+			// console.log('Here check ', check)
+			// console.log('FROM CHECK FUNCTION --CHECK 1', check);
+			if (check){
+				return Blockados.Member1BlockedMember0;
+			}
+			check = channel.members[0].blocked.find((e: UserModel) => e.login === channel.members[1].login)
+			// console.log('MEMBERS 0 blocked friends ', channel.members[0].blocked)
+			// console.log('Here check ', check)
+			if (check){
+
+				return Blockados.Member0BlockedMember1;
+			}
+		}
+		else {
+			check = channel.members[1].blockedBy.find((e: UserModel) => e.login === channel.members[0].login)
+			// console.log('FROM CHECK FUNCTION --CHECK 2', check);
+			// console.log('MEMBERS 1 blockedBy friends ', channel.members[0].blocked)
+			// console.log('Here check ', check)
+			if (check){
+				return Blockados.Member0BlockedMember1;
+			}
+			check = channel.members[1].blocked.find((e: UserModel) => e.login === channel.members[0].login)
+			// console.log('MEMBERS 1 blocked friends ', channel.members[1].blocked)
+			// console.log('Here check ', check)
+			if (check){
+				// console.log('Here check ', Blockados.Member1BlockedMember0)
+				return Blockados.Member1BlockedMember0;
+			}
+
+		}
+		return Blockados.NoOneIsBlocked;
+	}
+
+	const handleBlockingUnblocking = () => {
+		socketRef.current?.emit('blockOrUnblockUser', {sender: currentUser, receiver: currentUser === channel.members[0].login ? channel.members[1].login : channel.members[0].login, channelName: channel.name })
+		setOpenBlock(true);
+	}
 	
+	socketRef.current?.on('blockStatus', (status: string) => {
+		// console.log('status ', status)
+		setBlock(status);
+	})
+
+
+	socketRef.current?.on('FriendBlocked', async (info: blockUnblock) => {
+		if (info.status === 1){
+			if (info.senderReceiver.receiver === currentUser){
+				setDisplayblockIcon(false)
+			}
+		}
+		else {
+			if (info.senderReceiver.receiver === currentUser){
+				setDisplayblockIcon(true)
+			}
+		}
+	})
+	
+	useEffect(() => {
+
+	}, [displayBlockIcon])
+	
+	const AppDispatch = useAppDispatch();
+	useEffect(() => {
+		AppDispatch(setIsPopupOpen(false));
+	}, []) // reset isCreateChannelWindowOpen if refresh
+		
 	return (
 		<Box 
 			p={2}
@@ -112,7 +246,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 			<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} sx={{width: '100%', height: '100%',}}>
 				<Stack direction={'row'} spacing={2}>
 					<Box>
-						<StyledBadge
+						{!isCreateChannelWindowOpen && <StyledBadge
 							overlap="circular"
 							anchorOrigin={{
 								vertical: "bottom",
@@ -120,14 +254,18 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 							}}
 							variant="dot"
 						>
-							<Button onClick={() => handleProfile(channelName)}>
+							<Button 
+								// disabled
+								onClick={() => handleProfile(channelName)}
+								// sx={{zIndex: "0"}}
+							>
 							<Avatar
 								alt={channelName}
 								src={channelAvatar}
 								sx={{ bgcolor: '#fcba03' }}
 							/>
 							</Button>
-						</StyledBadge>
+						</StyledBadge>}
 					</Box>
 					<Stack spacing={0.2}>
 							<Typography variant="subtitle2">{channelName}</Typography>
@@ -135,12 +273,17 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					</Stack>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} spacing={3}>
-					<IconButton sx={{color: '#07457E'}}>
-						<SportsEsportsIcon />
-					</IconButton>
-					{isPrivateConv &&
+					{isPrivateConv  && !isCreateChannelWindowOpen && 
+						<IconButton sx={{color: '#07457E'}} 
+							onClick={() => onSuggestGame({
+								from: currentUser,
+								to: channel.members[0].login === currentUser ? channel.members[1].login: channel.members[0].login,
+							})}>
+							<SportsEsportsIcon />
+						</IconButton>}
+					{isPrivateConv &&  displayBlockIcon && !isCreateChannelWindowOpen && 
 						<Tooltip title='block user'>
-							<IconButton sx={{color: '#4DC8BC'}} onClick={() => {setOpenBlock(true)}}>
+							<IconButton sx={{color: '#4DC8BC'}} onClick= {handleBlockingUnblocking}>
 								<RemoveCircleIcon />
 							</IconButton>
 						</Tooltip>
@@ -148,14 +291,14 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 					{isPrivateConv === false &&
 						<Stack direction={'row'} spacing={2}>
 							<Divider orientation="vertical" flexItem />
-							<ChannelMenu socketRef={socketRef}/>
-							{isAdmin && <AdminMenu socketRef={socketRef}/>}
-							{isOwner && <GiveOwnership />}
+							{!isCreateChannelWindowOpen && <ChannelMenu socketRef={socketRef}/>}
+							{isAdmin && !isCreateChannelWindowOpen && <AdminMenu socketRef={socketRef}/>}
+							{isOwner && !isCreateChannelWindowOpen && <GiveOwnership />}
 						</Stack>
 					}
 				</Stack>
 			</Stack>
-			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.name}/>}
+			{openBlock && <BlockUser open={openBlock} handleClose={handleCloseBlock} socketRef={socketRef} sender={currentUser} receiver={channel.members[0].login === currentUser ? channel.members[1].login : channel.members[0].login} blocks={blockOrUnblock}/>}
 		</Box>
 		)
 }

@@ -2,6 +2,8 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import React from 'react'
 import { TransitionProps } from '@mui/material/transitions';
 import { Socket } from 'socket.io-client';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 
 type BlockUserProps = {
 	open: boolean;
@@ -9,11 +11,12 @@ type BlockUserProps = {
 	receiver: string;
 	handleClose: React.Dispatch<React.SetStateAction<boolean>>
 	socketRef: React.MutableRefObject<Socket | undefined>;
+	blocks: string,
 };
 
-const BlockUser = ({open , handleClose, socketRef, sender, receiver} : BlockUserProps ) => {
-
-	// console.log("socketRef in block user = ", socketRef?.current?.id);
+const BlockUser = ({open , handleClose, socketRef, sender, receiver, blocks} : BlockUserProps ) => {
+	// console.log("current user ", currentUser);
+	// console.log("blocks ", blocks);
 
 	// to give the slide effect
 	const Transition = React.forwardRef(function Transition(
@@ -35,7 +38,13 @@ const BlockUser = ({open , handleClose, socketRef, sender, receiver} : BlockUser
 			sender: sender,
 			receiver: receiver,
 		})
+
 	};
+
+	// React.useEffect(() => {
+	// 	return () => {
+	// 	}
+	// }, [])
 
 	return (
 	<Dialog
@@ -45,10 +54,14 @@ const BlockUser = ({open , handleClose, socketRef, sender, receiver} : BlockUser
 		onClose={handleClose}
 		aria-describedby="alert-dialog-slide-description"
 		>
-		<DialogTitle>{"Block this user"}</DialogTitle>
+		<DialogTitle>
+			{blocks === 'block' && "Block this user ?"}
+			{blocks === 'unblock' && "Unblock this user ?"}
+		</DialogTitle>
 		<DialogContent>
 			<DialogContentText id="alert-dialog-slide-description">
-				Are you sure you want to block this user?
+				{ blocks === 'block' && "Are you sure you want to block this user ?"}
+				{ blocks === 'unblock' && "Are you sure you want to unblock this user ?"}
 			</DialogContentText>
 		</DialogContent>
 		<DialogActions>

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import * as React from 'react';
+import { Socket } from 'socket.io-client';
 import { Box, Stack, IconButton, TextField, InputAdornment } from '@mui/material'
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import SendIcon from '@mui/icons-material/Send';
@@ -15,8 +16,25 @@ import { FetchUserByName } from '../../utils/global/global';
 import MicOffIcon from '@mui/icons-material/MicOff';
 
 import './Footer.css';
+import UnblockBlock from './UnblockBlock';
 
+interface mutes {
+	login: string,
+	ExpiryTime: Date | null,
+}
 // import { FetchUserByName } from '../../redux-features/friendship/friendshipSlice';
+interface mutedInfos {
+	mutedUser: mutes[],
+	channelName: string,
+}
+
+export interface blockUnblock {
+	senderReceiver: {
+		sender: string,
+		receiver: string,
+	},
+	status: number,
+}
 
 const StyledInput = styled(TextField)(({ theme }) => ({
 	backgroundColor: 'transparent',
@@ -34,13 +52,22 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 
 
 
-const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
+const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketRef : React.MutableRefObject<Socket | undefined>} ) => {
 	const currentUser = useAppSelector(selectCurrentUser)
 	const blockRef = React.useRef<HTMLInputElement>(null)
 	const [blockMsg, setBlockMsg] = React.useState('')
 	const [value, setValue] = useState("");
 	const [isMuted, setIsMuted] = useState<boolean>(false);
 	const appDispatch = useAppDispatch();
+	const [blockStatus, setStatus] = useState<blockUnblock>({
+		senderReceiver: {
+			sender: "",
+			receiver: "",
+		},
+		status: 0,
+	});
+	const [openBlock, setOpenBlock] = useState<boolean>(false);
+	
 
 	// record message
 	const authState = useSelector((state : RootState) => state.persistedReducer.auth)
@@ -51,17 +78,52 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		setValue(input);
 	}
 
-	React.useEffect(() => {
-        setBlockMsg('')
+	React.useEffect( () => {
+		setBlockMsg('')
+		if (selectedChannel.type !== 'PrivateConv') {
+			if (selectedChannel.name !== 'empty channel')
+			// check its muted property array to see if currentUser is in it
+			if (selectedChannel.muted.map((user) => {
+				if (user.login === currentUser){
+					setIsMuted(true);
+					return true;
+				}
+				return false;
+			})){
+			}
+			else
+				setIsMuted(false);
+		}
+		return () => {
+			// console.log('jannule le state ', selectedChannel)
+			setIsMuted(false);
+		}
     }, [selectedChannel])
 
+	// useEffect(() => {
+	// 	return () => {
+	// 		console.log('jannule le state ')
+	// 		setIsMuted(false);
+	// 	}
+	// }, [])
+
 	async function userIsBlocked() : Promise<boolean> {
+		// console.log('selectedChannel.name = ', selectedChannel.name)
 		if (selectedChannel.type === 'privateConv') {
 			try {
-				const UserToCheck : any = await FetchUserByName(selectedChannel.name)
+				let talkingWith : string = '';
+				if (selectedChannel.members[0].login === currentUser) {
+					talkingWith = selectedChannel.members[1].login;
+				}
+				else {
+					talkingWith = selectedChannel.members[0].login;
+				}
+				const UserToCheck : any = await FetchUserByName(talkingWith)
+				// console.log('userToCheck = ', UserToCheck)
+
 				if (((UserToCheck.blockedBy).find((bl: any) => bl.login === currentUser)) || ((UserToCheck.blocked).find((bl: any) => bl.login === currentUser)) )
 				{
-					setBlockMsg("Maaaaan, You can't talk to each other. BLOCKED")
+					setOpenBlock(true);
 					return true;
 				}
 				else {
@@ -76,38 +138,69 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		} 	
 	}
 
-	async function userIsMuted() : Promise<boolean> {
-		if (selectedChannel.type !== 'PrivateConv') {
-			try {
-				// get most recent selectedChannel version from db
-				if (selectedChannel.name !== 'empty channel')
-					await appDispatch(fetchDisplayedChannel(selectedChannel.name));
-				// check its muted property array to see if currentUser is in it
-				if (selectedChannel.muted.some(muted => muted.login === currentUser))
-					return true;
-				else
-					return false;
-			}
-			catch (error : any) {
-				console.log('error while checking if user is muted = ', error);
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+	/* ==== This block of code has been commented by Amina === */
+	// async function userIsMuted() : Promise<boolean> {
+	// 	if (selectedChannel.type !== 'PrivateConv') {
+	// 		try {
+	// 			// get most recent selectedChannel version from db
+	// 			if (selectedChannel.name !== 'empty channel')
+	// 				await appDispatch(fetchDisplayedChannel(selectedChannel.name));
+	// 			// check its muted property array to see if currentUser is in it
+	// 			if (selectedChannel.muted.some(muted => muted.login === currentUser)){
+	// 				return true;
+	// 			}
+	// 			else
+	// 				return false;
+	// 		}
+	// 		catch (error : any) {
+	// 			console.log('error while checking if user is muted = ', error);
+	// 			return false;
+	// 		}
+	// 	} else {
+	// 		return false;
+	// 	}
+	// }
 
-	useEffect(() => {
-		(async () => {
-		  const mutedStatus = await userIsMuted();
-		  setIsMuted(mutedStatus);
-		//   console.log('is muted ? ', mutedStatus);
-		})();
-	}, []);
+	/* ==== This block of code has been commented by Amina === */
+	// useEffect(() => {
+	// 	(async () => {
+	// 	  const mutedStatus = await userIsMuted();
+	// 	  setIsMuted(mutedStatus);
+	// 	//   console.log('is muted ? ', mutedStatus);
+	// 	})();
+	// }, []);
+
+	/* Block added by Amina to handle real time muted users and update of the footer */
+	socketRef.current?.on('userHasBeenMuted', async (infos: mutedInfos) => {
+		if (infos.mutedUser.length === 0){
+			setIsMuted(false);
+		}
+		else {
+			const user = infos.mutedUser.findIndex(user => user.login === currentUser)
+			if (user !== -1){
+				appDispatch(fetchDisplayedChannel(selectedChannel.name))
+			}
+			else {
+				setIsMuted(false)
+			}
+		}
+
+	})
+
+	socketRef.current?.off('UserUnmutedAfterExpiry').on('UserUnmutedAfterExpiry', async (user: string) => {
+		if (user === currentUser){
+			appDispatch(fetchDisplayedChannel(selectedChannel.name))
+		}
+	})
+
+	socketRef.current?.on('FriendBlocked', async (info: blockUnblock) => {
+		setStatus(info)
+		setOpenBlock(true)
+	})
 
 
 	async function sendMessage() {
-		if (await userIsBlocked() === false && isMuted === false) {
+		if (await userIsBlocked() === false && isMuted === false && value !== "") {
 			const messageToBeSent = {
 				sentBy: authState.nickname,
 				sentById: authState.nickname,
@@ -137,6 +230,11 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 		setValue('');
 	}
 
+	const handleCloseBlock = () => {
+		setOpenBlock(false);
+	}
+
+
 	return (
 		<Box
 			p={2}
@@ -147,14 +245,8 @@ const Footer = ({ send, }: { send: (val: ChatMessage) => void} ) => {
 				boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)'
 			}}
 		>
+			{openBlock && <UnblockBlock open={openBlock} handleClose={handleCloseBlock} info={blockStatus}/>}
 			<Stack direction={'row'} alignItems={'center'} spacing={3}>
-				<div 
-					// trigger={<div>TFA</div>}
-					ref={blockRef} className={blockMsg ? "blockmsg" : "offscreen"} 
-						aria-live="assertive"
-				>
-					{blockMsg}
-				</div>
 				<StyledInput
 					onChange = {handleChange}
 					onKeyDown= {handleKeyDown}

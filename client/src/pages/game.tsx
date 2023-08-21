@@ -37,23 +37,6 @@ function Game() {
     const [socketId, setSocketId] = useState("");
     const playButtonInfo = useRef(location.state.data);
 
-    const testPlayButtonInfo = () => {
-        let ptype = prompt(
-            "Type of the room: 0 (RANDOM) or 1 (ONE TO ONE)",
-            "0"
-        );
-        if (!ptype) {
-            ptype = "0";
-        }
-        const type = parseInt(ptype);
-        const sender = prompt("Sender: ael-khat | Anthony", user);
-        const receiver = prompt("Sender: ael-khat | Anthony");
-        console.warn(type, sender, receiver);
-        return { type, sender, receiver };
-    };
-
-    // let playButtonInfo = location.state.data;
-    console.log("playButtonInfo:", playButtonInfo);
 
     const [gameSettings, setGameSettings] = useState<IRoomInfo>({
         id: "",
@@ -135,9 +118,7 @@ function Game() {
             if (onGamePage === 0) {
                 console.log("[Game]", "on connect", "onGamePage: ", onGamePage);
                 dispatch(updateOnGamePage(1));
-                playButtonInfo.current = testPlayButtonInfo(); // FOR TEST
                 socket.emit("initPlayground", playButtonInfo.current);
-                // console.log("[GATEWAY] playButtonInfo:", playButtonInfo);
             } else if (onGamePage === 1) {
                 // REFRESH OR RECONNECTION OF THE USER
                 console.warn(

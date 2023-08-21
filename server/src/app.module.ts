@@ -26,6 +26,7 @@ import { HomeService } from './profile/home.service';
 import { FriendshipService } from './friendship/friendship.service';
 import { GameModule } from './game/game.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     FriendshipModule,
     GlobalModule,
     GameModule,
+    ChatModule,
   ],
   controllers: [GlobalController],
   providers: [
@@ -54,7 +56,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MuteSchedulerModule,
     BannedSchedulerModule,
     JwtService,
-    ChatGateway,
+    // ChatGateway,
     ProfileGateway,
     ChatService,
     HomeService,

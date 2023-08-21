@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LockIcon from '@mui/icons-material/Lock';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
@@ -23,9 +23,10 @@ import AskForPassword from './AskForPassword';
 
 type alignItemsProps = {
 	getSelectedItem: (item: string) => void;
+	channelDeleted: React.MutableRefObject<boolean>;
 }
 
-export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
+export default function AlignItemsList({ getSelectedItem, channelDeleted }: alignItemsProps) {
 	const [showIcons, setShowIcons] = React.useState(true);
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = React.useState(false);
 	const [alertError, setAlertError] = React.useState<boolean>(false);
@@ -35,7 +36,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
 	
 	const channels = useAppSelector(selectUserChannels) as Channel[];
-	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]);
+	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]); // this is a state for the formated channels, aka with private convs names updated according to current user
 	React.useEffect(() => {
 		// console.log('channels = ', channels);
 		const modifiedChannels = channels.map((channel) => {
@@ -61,6 +62,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 	// React.useEffect(() => {
 	// 	console.log('User channels = ', channels);
 	// }, [channels])
+	const getSelectedChannelIndex = () => channels.findIndex(channel => channel.name === selectedChannel.name);
 
 	React.useEffect(() => {
 		// console.log('selectedChannel camembert = ', selectedChannel);
@@ -69,36 +71,30 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			return ;
 		}
 
-		// // set index accordingly to most resent selectedChannel update
-		// const tmp = channels.findIndex(channel => channel.name === selectedChannel.name);
-		// // console.log('selectedChannel = ', selectedChannel.name);
-		// // console.log('tmp = ', tmp);
-		// // console.log('selectedIndex = ', selectedIndex);
-		// if (tmp && tmp != selectedIndex) {// if selectedChannel is in the list AND different from current index
-		// 	console.log('chips au vinaigre')
-		// 	setSelectedIndex(tmp); // set index to match selectedChannel
-		// }
-		// else if (tmp === -1) { // if selectedChannel is not in the list
-		// 	setSelectedIndex(0);
-		// 	getSelectedItem('WelcomeChannel'); // display welcome channel
-		// 	console.log('schweppes agrume');
-		// }
-
+		const index = getSelectedChannelIndex();
+		setSelectedIndex(index);
+		
 	}, [selectedChannel])
+
 
 	React.useEffect(() => { 
 		AppDispatch(fetchUserChannels());
 		// console.log('user channels = ', channels);
-		if (channels.findIndex(channel => channel.name === selectedChannel.name) === -1) // when refreshing the page, if the selectedChannel is not in the list of channels anymore, sent index to 0 (aka first item in the list) 
+		if (getSelectedChannelIndex() === -1) // when refreshing the page, if the selectedChannel is not in the list of channels anymore, sent index to 0 (aka first item in the list) 
 			setSelectedIndex(0);
 	}, []);
 
 	async function deleteChannel(channelToDelete: string) {
+
 	await api
 		.post('http://localhost:4001/channel/deleteChannelByName', { name: channelToDelete })
 		.then((response) => {
 			AppDispatch(fetchUserChannels());
 			AppDispatch(fetchDisplayedChannel('WelcomeChannel'))
+			AppDispatch(fetchAllChannelsInDatabase())
+			getSelectedItem('WelcomeChannel');
+
+			channelDeleted.current = true;
 		})
 		.catch((error) => console.log('error while deleting channel', error));
 	}
@@ -129,6 +125,7 @@ export default function AlignItemsList({ getSelectedItem }: alignItemsProps) {
 			setAlertDialogSlideOpen(true);
 		} else {
 			// if no password protection, update 'displayedChannel' slice through prop 'getSelectedItem'
+			// console.log('[From AlignItems Component :  clickedItem.name]', clickedItem.name)
 			getSelectedItem(clickedItem.name);
 		}
 	};
