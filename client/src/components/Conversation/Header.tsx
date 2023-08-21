@@ -166,6 +166,8 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 		let check;
 		// console.log('FROM CHECK FUNCTION Member 0 ', channel.members[0].login);
 		// console.log('FROM CHECK FUNCTION Member 1 ', channel.members[1].login);
+		if (channel.members.length <= 1)
+			return ; // added by alicia
 		if (currentUser === channel.members[0].login){
 			check = channel.members[0].blockedBy.find((e: UserModel) => e.login === channel.members[1].login)
 			// console.log('MEMBERS 0 blockedBy friends ', channel.members[0].blocked)
