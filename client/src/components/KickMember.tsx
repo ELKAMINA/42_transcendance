@@ -67,6 +67,7 @@ export default function KickMember({
             .post("http://localhost:4001/channel/replaceMembers", {
                 channelName: { name: selectedChannel.name },
                 members: updatedMember,
+                action: 'kick',
             })
             .then((response) => {
                 updatedKicked.map((kickedMember) => {

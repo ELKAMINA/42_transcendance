@@ -40,6 +40,7 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 			.post('http://localhost:4001/channel/replaceMembers', {
 				channelName : {name : selectedChannel.name},
 				members : updatedMembers,
+				action: 'leave',
 			})
 			.then((response) => {
 				// update the state of the user channels
