@@ -27,6 +27,8 @@ export class UserService {
           p1: true,
           p2: true,
           adminChannels: true,
+          channels: true,
+          createdChannels: true,
         },
       });
       return user;

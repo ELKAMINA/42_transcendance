@@ -15,6 +15,7 @@ import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selec
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
+import { emptyChannel } from '../data/emptyChannel';
 
 
 function Chat () {

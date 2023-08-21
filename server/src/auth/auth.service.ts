@@ -135,6 +135,7 @@ export class AuthService {
           avatar: dto.avatar,
           status: 'Online',
           rank: nbUsers + 1,
+          provider: 'not42',
         },
       });
       if (dto.avatar === '') {
@@ -342,6 +343,7 @@ export class AuthService {
     await this.setTwoFactorAuthenticationSecret(secret, {
       login: user.login,
       id: user.user_id,
+      provider: user.provider,
     });
     const qrCode = await this.generateQrCodeDataURL(otpauthUrl);
     return qrCode;

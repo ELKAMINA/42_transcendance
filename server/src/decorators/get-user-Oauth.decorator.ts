@@ -9,6 +9,7 @@ export const GetCurrentUserOAuth = createParamDecorator(
       login: request.user.login,
       email: request.user.email,
       avatar: request.user.avatar,
+      provider: request.user.provider,
     };
     if (request.user) return infos;
     return request;

@@ -3,19 +3,19 @@ import { ChatMessage } from "./messageType"
 
 export type Channel = {
 
-	name: string
-	channelId?: number
+	name: string,
+	channelId?: number,
 	members: UserByLogin[],
 	createdBy: UserByLogin,
 	ownedBy: UserByLogin,
 	admins: UserByLogin[],
 	banned?: UserByLogin[],
 	muted?: UserByLogin[],
-	protected_by_password?: boolean
-	type?: string
-	key?: string
+	protected_by_password?: boolean,
+	type?: string,
+	key?: string,
 	chatHistory?: ChatMessage[],
-	avatar?: string
+	avatar?: string,
 
 }
 

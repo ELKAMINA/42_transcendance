@@ -8,6 +8,7 @@ import {
   Post,
   HttpStatus,
   HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -91,6 +92,13 @@ export default class AuthController {
     @Res({ passthrough: true }) res: Response,
     /* The passthrough: true make possible to use tha library-specific &&& the built-in concepts to manipulate the responses we define : Ref = https://docs.nestjs.com/controllers */
   ) {
+    if (userInfo.provider === 'not42') {
+      const error = 'error';
+      res.redirect(`http://localhost:3000/?error=${error}`);
+      return;
+    }
+    // console.log('user Info ', userInfo);
+
     await this.authService.findUser(userInfo, res);
   }
   /* ******************** */
@@ -147,7 +155,7 @@ export default class AuthController {
         return payload;
       }
     } catch (e) {
-      console.log('validation Ko'); // Mettre un message d'erreur côté Froonts
+      console.error('validation Ko'); // Mettre un message d'erreur côté Froonts
       return e;
     }
   }

@@ -7,7 +7,6 @@ export class FtOauthGuard extends AuthGuard('42') {
   async canActivate(context: ExecutionContext) {
     const activate = (await super.canActivate(context)) as boolean;
     context.switchToHttp().getRequest();
-
     // console.log('La requete de 42 OAuthguard', request);
     return activate;
   }

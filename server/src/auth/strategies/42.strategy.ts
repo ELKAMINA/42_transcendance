@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { BadRequestException } from '@nestjs/common';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
 import { UserService } from '../../user/user.service';
 import { AuthService } from '../auth.service';
@@ -29,7 +30,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     profile: Profile, // Profile is an object with all the user informations
     cb: VerifyCallback, // a callback function where we will pass the user object and use it later to register it in the database and sign the JWT
   ): Promise<any> {
-    // console.log("je rentre ici 5 ??", accessToken)
+    // console.log('profile', profile);
     const userDet = {
       provider: profile.provider,
       providerId: profile.id,
@@ -45,7 +46,10 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
       },
     });
     if (lolo) {
-      //   console.log(' maybe je rentre ici ');
+      // console.log('Lolo ', lolo);
+      if (lolo.provider === 'not42') {
+        return cb(null, lolo); // or use any other suitable exception class
+      }
       lolo = await this.prisma.user.update({
         where: {
           login: userDet.login,
@@ -62,6 +66,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         avatar: userDet.picture,
         faEnabled: false,
         status: 'Online',
+        provider: userDet.provider,
       },
     });
     return cb(null, newUser);

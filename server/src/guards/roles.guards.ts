@@ -20,7 +20,7 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
-    // console.log('Required roles ', requiredRoles);
+    console.log('Required roles ', requiredRoles);
     if (!requiredRoles) {
       // Step 5
       // console.log('Required roles CONDITION ', requiredRoles);
@@ -30,6 +30,7 @@ export class RolesGuard implements CanActivate {
     // console.log('Requests ', request);
     let concernedchannel;
 
+    let activate = false;
     if (request.body.channelName)
       concernedchannel = request.body.channelName.name;
     else if (request.body.name) {
@@ -38,20 +39,33 @@ export class RolesGuard implements CanActivate {
     // console.log('concerned Channel ', concernedchannel);
 
     const userFromCookie = this.getUserInfoFromSocket(request.headers.cookie);
-
     const userFromDB = await this.userServ.searchUser(userFromCookie.nickname);
-
-    let isAdmin = false;
-    if (userFromDB) {
-      if (concernedchannel) {
-        isAdmin = userFromDB.adminChannels.some(
+    if (!userFromDB || !concernedchannel) return activate;
+    switch (requiredRoles[0]) {
+      case 'admin':
+        activate = userFromDB.adminChannels.some(
           (chan) => chan.name === concernedchannel,
         );
-      }
+        break;
+      case 'member':
+        activate = userFromDB.adminChannels.some(
+          (chan) => chan.name === concernedchannel,
+        );
+        break;
+      case 'owner':
+        console.log('je rentre ici', userFromDB.login);
+        activate = userFromDB.createdChannels.some(
+          (chan) => chan.name === concernedchannel,
+        );
+        console.log('activate ', activate);
+
+        break;
+      default:
+        break;
     }
     // console.log('Requests user', isAdmin);
 
-    return isAdmin;
+    return activate;
   }
 }
 

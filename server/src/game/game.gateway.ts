@@ -22,7 +22,6 @@ import {
 } from './enum/EServerGame';
 
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { validateOrReject } from 'class-validator';
 
 @WebSocketGateway(4010, { cors: '*' })
 @Injectable()
@@ -334,6 +333,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       player2: new PlayerDto(),
       frameTime: 1000 / 50,
       interval: null,
+      ballSpeed: 5,
+      ballVelocity: [4, 4],
+      paddleSpeed: 20,
+      paddleHeight: 100,
     };
 
     room.players.push(user.nickname);
@@ -678,11 +681,33 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     };
 
     // RESET THE BALL POSITION ACCORDING TO THE BOARD DIMENSION
-    const resetBall = () => {
+    const resetBallPosition = () => {
       ball.position = [board.width / 2, board.height / 2];
       this.server.to(room.id).emit('updatePositionBall', {
         positions: ball.position,
         canBeCollided: true,
+      });
+    };
+
+    // RESET THE BALL SPEED
+    const resetBallSpeed = () => {
+      const tmpBallVelocity = [...room.ballVelocity];
+
+      if (ball.velocity[0] <= 0) {
+        tmpBallVelocity[0] = -tmpBallVelocity[0];
+      }
+      ball.speed = room.ballSpeed;
+      ball.velocity = [...tmpBallVelocity];
+      console.log(
+        '[Game GATEWAY - resetBallSpeed]',
+        'ball.speed: ',
+        ball.speed,
+        'ball.velocity: ',
+        ball.velocity,
+      );
+      this.server.to(room.id).emit('updateSpeedBall', {
+        speed: ball.speed,
+        velocity: ball.velocity,
       });
     };
 
@@ -719,8 +744,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         'BallX: ',
         ballX,
       );
-      resetBall();
-      ball.velocity[0] = -ball.velocity[0];
+      // ball.velocity[0] = -ball.velocity[0];
+      resetBallSpeed();
+      resetBallPosition();
       resetPlayer();
       updateScore(ballX);
     };
@@ -779,6 +805,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       const angleRadian = (Math.PI / 4) * collidePoint;
       const direction = ball.position[0] < board.width / 2 ? 1 : -1;
+      ball.speed++;
       ball.velocity[0] = Math.cos(angleRadian) * direction * ball.speed;
       ball.velocity[1] = Math.sin(angleRadian) * ball.speed;
       if (ball.canCollide === false) {
@@ -790,6 +817,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to(room.id).emit('updateAfterPaddleCollision', {
         positions: ball.position,
         velocity: ball.velocity,
+        speed: ball.speed,
         canBeCollided: false,
       });
     };
@@ -833,7 +861,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     player1.info = [player1Socket.id, player1Name];
     player2.info = [player2Socket.id, player2Name];
     resetPlayer();
-    resetBall();
+    resetBallSpeed();
+    resetBallPosition();
 
     /*** THE GAME ***/
     const theGame = () => {

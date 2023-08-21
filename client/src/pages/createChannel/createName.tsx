@@ -6,13 +6,19 @@ import "./createChannel.css"
 import { ChannelModel } from "../../types/chat/channelTypes";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
-import { fetchAllChannelsInDatabase, selectAllChannels } from "../../redux-features/chat/channelsSlice";
+import { fetchPublicChannels, fetchUserChannels, selectPublicChannels, selectUserChannels } from "../../redux-features/chat/channelsSlice";
 
 function CreateName() {
-	const dispatchSync = useAppDispatch();
-	React.useEffect(() => {dispatchSync(fetchAllChannelsInDatabase())}, []);
-	const channels : ChannelModel[] = useAppSelector(selectAllChannels);
-	
+	const AppDispatch = useAppDispatch();
+	React.useEffect(() => {
+		AppDispatch(fetchPublicChannels())
+		AppDispatch(fetchUserChannels())
+	}, []);
+
+	const publicChannels : ChannelModel[] = useAppSelector(selectPublicChannels);
+	const userChannels : ChannelModel[] = useAppSelector(selectUserChannels);
+	const channels : ChannelModel[] = [...publicChannels, ...userChannels];
+
 	const [channelName, setChannelName] = useState('');
 	const [isTaken, setIsTaken] = useState(false);
 

@@ -202,6 +202,10 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         ball.current.setPosition(value.positions);
         ball.current.setCanBeCollided(value.canBeCollided);
     });
+    socket.off("updateSpeedBall").on("updateSpeedBall", (value) => {
+        ball.current.setSpeed(value.speed);
+        ball.current.setVelocity(value.velocity);
+    });
     // UPDATE THE BALL VELOCITY
     socket.off("updateMoveBall").on("updateMoveBall", (value) => {
         ball.current.setPosition(value.positions);
@@ -213,6 +217,7 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         .on("updateAfterPaddleCollision", (value) => {
             ball.current.setPosition(value.positions);
             ball.current.setVelocity(value.velocity);
+            ball.current.setSpeed(value.speed);
             ball.current.setCanBeCollided(value.canBeCollided);
         });
     socket.off("updatePlayerScore").on("updatePlayerScore", (value) => {

@@ -19,6 +19,7 @@ import { ChannelModel } from '../types/chat/channelTypes';
 import ManagePasswordDialog from './ManagePasswordDialog';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { emptyChannel } from '../data/emptyChannel';
 
 export type ChannelMenuProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>;
