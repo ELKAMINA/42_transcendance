@@ -91,7 +91,7 @@ model Channel {
 	updatedAt   DateTime  	@updatedAt
 	type        String
 	key         String?
-	chatHistory Message[] 	@relation("channel/message")
+	chatHistory Message[] 	@relation("channel_message")
 }
 
 model Message {
@@ -106,7 +106,7 @@ model Message {
 	outgoing	Boolean
 	subtype		String?
 	reply		String?
-	channel		Channel?	@relation("channel/message", fields: [channelById], references: [name], onDelete: SetNull) // when the corresponding channel is deleted, set to null
+	channel		Channel?	@relation("channel_message", fields: [channelById], references: [name], onDelete: SetNull) // when the corresponding channel is deleted, set to null
 	channelById	String?
 }
 
