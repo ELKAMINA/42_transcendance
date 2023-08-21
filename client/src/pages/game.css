@@ -1,19 +1,32 @@
 .game {
     width: 100%;
     height: 100%;
+    /* background: linear-gradient(
+        180deg,
+        #07457e 0%,
+        rgba(0, 181, 160, 0.59) 90%
+    ); */
+}
+
+.pongWrapper {
+    height: 100%;
+    width: 100%;
+    position: absolute;
     background: linear-gradient(
         180deg,
         #07457e 0%,
         rgba(0, 181, 160, 0.59) 90%
     );
-}
-
-.pongWrapper {
-    width: 100%;
-    height: 100%;
     /* DEBUG */
     /* border: 5px solid green; */
 }
+
+/* .pongBannerOverview {
+    text-align: center;
+    display: table-row;
+    vertical-align: middle;
+    position: absolute;
+} */
 
 .pongBanner {
     display: flex;
@@ -21,7 +34,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100%;
+    height: 10%;
     max-height: 100px;
     background: linear-gradient(
         180deg,
@@ -114,12 +127,17 @@
         0 0 150px rgb(255, 234, 0);
 }
 
+.pongGameSlice {
+    /* display: table-row-group; */
+    text-align: center;
+    vertical-align: middle;
+}
+
 .pongGameCanvas {
     border: 10px solid black;
     display: table;
-    padding: 0;
     width: 100%;
-    height: 100%;
+    height: 80%;
     position: absolute;
 }
 
