@@ -35,14 +35,11 @@ export class channelController {
   createChannel(
     @Req() request: Request,
     @Body() dto: ChannelDto,
-  ): Promise<object> {
-    // console.log('La request ', request);
-    // console.log('dto = ', dto);
+  ): Promise<boolean> {
     const userNickname = this.getUserInfoFromRequest(
       request.headers.cookie,
     ).nickname;
-    console.log('User Nickname ', userNickname);
-    return this.ChannelService.createChannel(dto);
+    return this.ChannelService.createChannel(userNickname, dto);
   }
 
   /* A garder : 

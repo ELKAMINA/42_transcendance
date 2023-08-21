@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LockIcon from '@mui/icons-material/Lock';
-import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
@@ -91,7 +91,7 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 			.then((response) => {
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel('WelcomeChannel'))
-				AppDispatch(fetchAllChannelsInDatabase())
+				AppDispatch(fetchPublicChannels())
 				getSelectedItem('WelcomeChannel');
 
 				channelDeleted.current = true;
