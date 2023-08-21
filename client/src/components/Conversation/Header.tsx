@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
 import { fetchDisplayedChannel , selectDisplayedChannel, selectIsPopupOpen, setIsPopupOpen } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { FetchActualUser } from '../../redux-features/friendship/friendshipSlice';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": { 
@@ -206,6 +207,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 
 	const handleBlockingUnblocking = () => {
 		socketRef.current?.emit('blockOrUnblockUser', {sender: currentUser, receiver: currentUser === channel.members[0].login ? channel.members[1].login : channel.members[0].login, channelName: channel.name })
+		dispatch(FetchActualUser());
 		setOpenBlock(true);
 	}
 	
@@ -232,9 +234,8 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 
 	}, [displayBlockIcon])
 	
-	const AppDispatch = useAppDispatch();
 	useEffect(() => {
-		AppDispatch(setIsPopupOpen(false));
+		dispatch(setIsPopupOpen(false));
 	}, []) // reset isCreateChannelWindowOpen if refresh
 		
 	return (
