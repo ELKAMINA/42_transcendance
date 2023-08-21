@@ -7,6 +7,7 @@ import { ChannelDto } from './dto/channelPayload.dto';
 
 import { ChannelService } from '../channel/channel.service';
 import { Channel, User } from '@prisma/client';
+import { AuthGuard } from '@nestjs/passport';
 
 type DateTime = Date;
 
@@ -17,6 +18,7 @@ export type UserWithTime = {
 
 @Controller('channel')
 @ApiTags('channel')
+// @AuthGuard // AJOUTER PROTECTION
 export class channelController {
   constructor(
     private ChannelService: ChannelService,
