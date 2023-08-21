@@ -84,7 +84,38 @@ const EndGame: React.FC<IPongProps> = ({ room }) => {
                     </DialogTitle>
                     <Stack>
                         <DialogContent>
-                            {room.scorePlayers[0]} : {room.scorePlayers[1]}
+                            <Grid container spacing={2}>
+                                <Grid item xs={30}>
+                                    <Typography
+                                        align="center"
+                                        component="div"
+                                        sx={{
+                                            margin: 1,
+                                            color: "#07457E",
+                                            textShadow:
+                                                "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
+                                        {room.players[0]} Vs {room.players[1]}
+                                    </Typography>
+
+                                    <Typography
+                                        align="center"
+                                        component="div"
+                                        sx={{
+                                            margin: 1,
+                                            color: "#07457E",
+                                            textShadow:
+                                                "0 0 5px #0ff,0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
+                                        {room.scorePlayers[0]} :{" "}
+                                        {room.scorePlayers[1]}
+                                    </Typography>
+                                </Grid>
+                            </Grid>
                         </DialogContent>
                         <DialogActions>
                             <Button
