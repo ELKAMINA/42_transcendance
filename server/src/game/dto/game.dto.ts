@@ -92,4 +92,21 @@ export class GameDto {
   frameTime: number;
 
   interval: NodeJS.Timer;
+
+  // DEFAULT GAME OBJECT VALUE
+  @IsNotEmpty()
+  @IsInt()
+  ballSpeed: number;
+
+  @IsArray()
+  @ArrayMaxSize(2)
+  ballVelocity: number[];
+
+  @IsNotEmpty()
+  @IsInt()
+  paddleSpeed: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  paddleHeight: number;
 }
