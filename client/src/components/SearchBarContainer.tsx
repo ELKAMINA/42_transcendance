@@ -161,6 +161,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 				}
 			}
 			else if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
+				console.log("[searchbar] coucou");
 				if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
 					setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
 				}
