@@ -6,8 +6,8 @@ import { AuthGuard } from '@nestjs/passport';
 export class FtOauthGuard extends AuthGuard('42') {
   async canActivate(context: ExecutionContext) {
     const activate = (await super.canActivate(context)) as boolean;
-    const request = context.switchToHttp().getRequest();
-    console.log('La requete de 42 OAuthguard', request);
+    context.switchToHttp().getRequest();
+    // console.log('La requete de 42 OAuthguard', request);
     return activate;
   }
 }
