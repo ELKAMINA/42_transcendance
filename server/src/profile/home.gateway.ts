@@ -123,6 +123,15 @@ export class ProfileGateway
     @MessageBody() updates: UserUpdatesDto,
   ) {
     try {
+      /** ISSUE 118 ***/
+      // GET THE USER PROFILE
+      const currentUser = await this.userServ.searchUser(updates.oldNick);
+      console.log("[Home - GATEWAY]", "currentUser: ", currentUser, "currentUser.status: ", currentUser.status);
+      // CHECK THE STATUS OF THE USER THEN THROW AN ERROR IF IS PLAYING
+      if (currentUser.status === 'Playing') {
+        this.io.emit('ErrorChangeProfileOnPlaying');
+        throw new ForbiddenException('Impossible to change settings when an user is playing');
+      }
       const newInfos = await this.userServ.updateUserInfo(updates);
       this.io.emit('UpdateInfoUser', newInfos);
     } catch (e) {

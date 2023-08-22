@@ -83,6 +83,12 @@ export function PersonalInformation () {
         }
       });
 
+      /** ISSUE 118 ***/
+      // WILL SET ERROR MESSAGE IF THE USER HAS THE STATUS 'Playing'
+      sock.off('ErrorChangeProfileOnPlaying').on('ErrorChangeProfileOnPlaying', () => {
+        setErrMsg('Impossible to change settings when an user is playing');
+      })
+
       React.useEffect(() => {
         setErrMsg('')
     }, [nickname, password, avatar])
