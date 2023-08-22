@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LockIcon from '@mui/icons-material/Lock';
-import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectDisplayedChannel, selectOwnerUpdate, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
@@ -85,7 +85,6 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 	}, []);
 
 	async function deleteChannel(channelToDelete: string) {
-
 		await api
 			.post('http://localhost:4001/channel/deleteChannelByName', { name: channelToDelete })
 			.then((response) => {
@@ -101,7 +100,10 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 
 	function handleClick(channelToDelete: string, index: number): void {
 		// only the creator/owner of the channel can delete it
-		if (currentUser === channels[index].createdBy.login)
+		// console.log("[alignItemsList] channels[index].ownedBy.login = ", selectedChannel.ownedBy.login);
+		// console.log("[alignItemsList] currentUser = ", currentUser);
+		// if (currentUser === channels[index].ownedBy.login)
+		if (currentUser === selectedChannel.ownedBy.login)
 			deleteChannel(channelToDelete);
 		else
 			setAlertError(true);

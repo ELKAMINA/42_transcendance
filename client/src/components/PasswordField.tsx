@@ -58,6 +58,7 @@ export default function PasswordField({isOpen, handlePwd,  passwordFieldId, isPw
 						</IconButton>
 					</InputAdornment>
 					}
+					required
 					label="Password"
 					value={value} // Bind the input value to the state
 					sx={{

@@ -294,24 +294,34 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         <>
             <Navbar currentRoute={currentRoute} />
             <div className="pongWrapper">
-                <div className="pongBanner">
-                    <div className="pongBannerPlayerName">
-                        <div className="pongBannerPlayerName1">
-                            {room.players[0]}
-                        </div>
+                <div className="pongHelpOverview">
+                    <div className="pongHelp">
+                        How to play:
+                        <br />
+                        <strong>Move up</strong> = X and{" "}
+                        <strong>Move down</strong> = S
                     </div>
-                    <div className="pongBannerPlayerScore">
-                        <div className="pongBannerPlayerScore1">
-                            {player1Score}
+                </div>
+                <div className="pongBannerOverview">
+                    <div className="pongBanner">
+                        <div className="pongBannerPlayerName">
+                            <div className="pongBannerPlayerName1">
+                                {room.players[0]}
+                            </div>
                         </div>
-                        <div className="pongBannerVersus">VS</div>
-                        <div className="pongBannerPlayerScore2">
-                            {player2Score}
+                        <div className="pongBannerPlayerScore">
+                            <div className="pongBannerPlayerScore1">
+                                {player1Score}
+                            </div>
+                            <div className="pongBannerVersus">VS</div>
+                            <div className="pongBannerPlayerScore2">
+                                {player2Score}
+                            </div>
                         </div>
-                    </div>
-                    <div className="pongBannerPlayerName">
-                        <div className="pongBannerPlayerName2">
-                            {room.players[1]}
+                        <div className="pongBannerPlayerName">
+                            <div className="pongBannerPlayerName2">
+                                {room.players[1]}
+                            </div>
                         </div>
                     </div>
                 </div>
