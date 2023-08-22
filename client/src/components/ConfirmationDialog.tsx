@@ -112,7 +112,6 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
 	const handleClose = (newValue?: string) => {
 		setOpen(false);
 		if (newValue && newValue !== 'Dione') {
-			console.log("[confirmationDialog] value = ", newValue);
 			setValue(newValue);
 			handleConfirm('')
 		}
