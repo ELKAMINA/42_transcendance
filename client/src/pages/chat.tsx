@@ -30,7 +30,7 @@ function Chat () {
 	const justBeenBannedNotif = useAppSelector(selectIsBanned);
 	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
-		if (channels.length === 0) {
+		if (channels.length === 0 || displayedChannel.name === 'empty channel' || displayedChannel.name === undefined) {
 			return 'WelcomeChannel';
 		} else {
 			return displayedChannel.name;
@@ -40,6 +40,10 @@ function Chat () {
 	const socketRef = useRef<Socket>();
 	const roomId = selectedChannel;
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+	// useEffect(() => {
+	// 	console.log("[chat] displayedChannel = ", displayedChannel)
+	// }, []) 
 
 	useEffect(() => {
 		AppDispatch(setIsMember(false));
@@ -53,10 +57,12 @@ function Chat () {
 			return ; // exit the function immediatly
 		
 		// create socket connection
-		socketRef.current = socketIOClient("http://localhost:4002", {
-			query: {roomId},
-			withCredentials: true,
-		})
+		if (roomId != 'WelcomeChannel' && roomId != 'empty channel') {
+			socketRef.current = socketIOClient("http://localhost:4002", {
+				query: {roomId},
+				withCredentials: true,
+			})	
+		}
 
 		if (newChannelCreated.current || isNewMemberNotif || justBeenBannedNotif) {
 			socketRef.current?.emit('newChannelCreated');
@@ -88,27 +94,31 @@ function Chat () {
 		socketRef.current?.on('justBannedNotif', () => {
 			// console.log('[chat] - BANNED!');
 			// console.log('[chat] - current user = ', currentUser);
+			// console.log("[chat] roomId = ", roomId);
 			AppDispatch(fetchDisplayedChannel(roomId));
+		})
+
+		socketRef.current?.on('channelDeletedNotif', () => {
+			console.log('[chat] - new channel has been deleted, and you were a member!');
+			// console.log('[chat] - current user = ', currentUser);
+			AppDispatch(fetchUserChannels());
+			AppDispatch(fetchDisplayedChannel('WelcomeChannel'));
+		})
+
+		socketRef.current?.on('newChannelNotif', () => {
+			// console.log('[chat] - new channel has been created, and you are a member!');
+			// console.log('[chat] - current user = ', currentUser);
+			AppDispatch(fetchUserChannels());
 		})
 
 		return () => {
 			// console.log('[Unmounted Component Conversation] ', selectedChannel)
-			if (socketRef.current?.connected)
+			if (socketRef.current?.connected) {
+				// console.log('[Unmounted Component Conversation] socketRef.current?.id = ', socketRef.current?.id)
 				socketRef.current?.disconnect()
+			}
 		}
 	}, [roomId, isNewMemberNotif, justBeenBannedNotif])
-
-	socketRef.current?.off('newChannelNotif').on('newChannelNotif', () => {
-		// console.log('[chat] - new channel has been created, and you are a member!');
-		// console.log('[chat] - current user = ', currentUser);
-		AppDispatch(fetchUserChannels());
-	})
-
-	socketRef.current?.off('channelDeletedNotif').on('channelDeletedNotif', () => {
-		// console.log('[chat] - new channel has been created, and you are a member!');
-		// console.log('[chat] - current user = ', currentUser);
-		AppDispatch(fetchUserChannels());
-	})
 
 	/*** ISSUE 88 ***/
 	socketRef.current?.off('channelKickNotif').on('channelKickNotif', () => {
@@ -129,14 +139,18 @@ function Chat () {
 		setSelectedChannel(channelName);
 	}
 
-	let isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
+	let isBanned;
+	// console.log("[Chat] displayedChannel.name = ", displayedChannel);
+	if (displayedChannel && displayedChannel.name !== 'WelcomeChannel')
+		isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
 	useEffect(() => {
 		// console.log("[Chat] displayedChannel.name = ", displayedChannel.name);
 		// console.log("[Chat] displayedChannel.banned = ", displayedChannel.banned);
+		if (displayedChannel && displayedChannel.name !== 'WelcomeChannel')
 		isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
 		// console.log("[Chat] isBanned = ", isBanned);
 	}, [userChannels, displayedChannel]) // when the channels for which the user is a member are modified, re-check if he is now banned from any of them
-// 
+
 	return (
 		<Provider store={store}>
 			<div className='chat-container'>
