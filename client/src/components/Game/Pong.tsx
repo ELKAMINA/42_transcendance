@@ -294,6 +294,14 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         <>
             <Navbar currentRoute={currentRoute} />
             <div className="pongWrapper">
+                <div className="pongHelpOverview">
+                    <div className="pongHelp">
+                        How to play:
+                        <br />
+                        <strong>Move up</strong> = X and{" "}
+                        <strong>Move down</strong> = S
+                    </div>
+                </div>
                 <div className="pongBannerOverview">
                     <div className="pongBanner">
                         <div className="pongBannerPlayerName">
