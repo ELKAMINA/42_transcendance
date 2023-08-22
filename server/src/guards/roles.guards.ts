@@ -20,16 +20,18 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    console.log('Required roles ', requiredRoles);
+
     const request = context.switchToHttp().getRequest();
-    console.log('request ', request);
-    if (!requiredRoles && !request.orginialUrl.includes('/replaceMembers')) {
+    console.log('[Guard ---- Required roles] ', requiredRoles);
+    console.log('[Guard ---- path asked] ', request.route.path);
+    // console.log('request ');
+    if (!requiredRoles && !request.route.path.includes('/replaceMembers')) {
       // Step 5
       // console.log('Required roles CONDITION ', requiredRoles);
       return true;
     } else if (
       !requiredRoles &&
-      request.orginialUrl.includes('/replaceMembers')
+      request.route.path.includes('/replaceMembers')
     ) {
       const { action } = request.body;
       if (action === 'leave') requiredRoles = ['member'];
@@ -54,25 +56,32 @@ export class RolesGuard implements CanActivate {
         activate = userFromDB.adminChannels.some(
           (chan) => chan.name === concernedchannel,
         );
+        console.log('ADMIN = [Guard ---- path asked] ', request.route.path);
         break;
       case 'member':
-        activate = userFromDB.adminChannels.some(
+        console.log(
+          '[Guard] --- Role: member : Channels C user',
+          userFromDB.channels,
+        );
+        console.log('[From member ]: Channel concerned ', concernedchannel);
+        console.log('[From member ]: User concerned ', userFromDB.login);
+        console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
+        activate = userFromDB.channels.some(
           (chan) => chan.name === concernedchannel,
         );
         break;
       case 'owner':
-        console.log('je rentre ici', userFromDB.login);
         activate = userFromDB.createdChannels.some(
           (chan) => chan.name === concernedchannel,
         );
-        console.log('activate ', activate);
+        console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
+        console.log('[Guard] --- OWNER : activate ', activate);
 
         break;
       default:
         break;
     }
-    // console.log('Requests user', isAdmin);
-
+    console.log('[Guard ] --- Final result : activate: ', activate);
     return activate;
   }
 }
