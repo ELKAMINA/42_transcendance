@@ -100,13 +100,18 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 
 	function handleClick(channelToDelete: string, index: number): void {
 		// only the creator/owner of the channel can delete it
-		// console.log("[alignItemsList] channels[index].ownedBy.login = ", selectedChannel.ownedBy.login);
-		// console.log("[alignItemsList] currentUser = ", currentUser);
+		// console.log("[alignItemsList] selectedChannel.name = ", selectedChannel.name);
+		// console.log("[alignItemsList] selectedChannel.ownedBy.login = ", selectedChannel.ownedBy.login);
+		// console.log("[alignItemsList] channels[index].name = ", channels[index].name);
+		// console.log("[alignItemsList] channels[index].ownedBy.login = ", channels[index].ownedBy.login);
+
 		// if (currentUser === channels[index].ownedBy.login)
-		if (currentUser === selectedChannel.ownedBy.login)
-			deleteChannel(channelToDelete);
-		else
-			setAlertError(true);
+		// if (selectedChannel && selectedChannel.name !== 'WelcomeChannel') {
+			if (currentUser === channels[index].ownedBy.login)
+				deleteChannel(channelToDelete);
+			else
+				setAlertError(true);
+		// }
 	}
 
 	const [selectedIndex, setSelectedIndex] = React.useState(() => {

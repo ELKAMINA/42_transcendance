@@ -11,7 +11,7 @@ import Conversation from '../components/Conversation/Conversation';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectIsBanned, selectIsMember, selectOwnerUpdate, selectUserChannels, setIsBanned, setIsMember, setOwnerUpdate } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectAdminUpdate, selectDisplayedChannel, selectIsBanned, selectIsMember, selectOwnerUpdate, selectUserChannels, setAdminUpdate, setIsBanned, setIsMember, setOwnerUpdate } from '../redux-features/chat/channelsSlice';
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
@@ -29,6 +29,7 @@ function Chat () {
 	const isNewMemberNotif = useAppSelector(selectIsMember)
 	const justBeenBannedNotif = useAppSelector(selectIsBanned);
 	const ownerUpdate = useAppSelector(selectOwnerUpdate);
+	const adminUpdate = useAppSelector(selectAdminUpdate);
 	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0 || displayedChannel.name === 'empty channel' || displayedChannel.name === undefined) {
@@ -79,6 +80,11 @@ function Chat () {
 			AppDispatch(setOwnerUpdate(false));
 		}
 
+		if (adminUpdate) {
+			socketRef.current?.emit('adminUpdate');
+			AppDispatch(setAdminUpdate(false));
+		}
+
 		if (channelDeleted.current) {
 			socketRef.current?.emit('channelDeleted');
 			channelDeleted.current = false;
@@ -106,6 +112,15 @@ function Chat () {
 			// console.log('[chat] - current user = ', currentUser);
 			// console.log("[chat] roomId = ", roomId);
 			AppDispatch(fetchDisplayedChannel(roomId));
+			AppDispatch(fetchUserChannels());
+		})
+
+		socketRef.current?.on('adminUpdate', () => {
+			// console.log('[chat] - owner update!');
+			// console.log('[chat] - current user = ', currentUser);
+			// console.log("[chat] roomId = ", roomId);
+			AppDispatch(fetchDisplayedChannel(roomId));
+			AppDispatch(fetchUserChannels());
 		})
 
 		socketRef.current?.on('channelDeletedNotif', () => {
@@ -128,7 +143,7 @@ function Chat () {
 				socketRef.current?.disconnect()
 			}
 		}
-	}, [roomId, isNewMemberNotif, justBeenBannedNotif, ownerUpdate])
+	}, [roomId, isNewMemberNotif, justBeenBannedNotif, ownerUpdate, adminUpdate])
 
 	/*** ISSUE 88 ***/
 	socketRef.current?.off('channelKickNotif').on('channelKickNotif', () => {

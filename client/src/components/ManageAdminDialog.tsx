@@ -14,7 +14,7 @@ import api from '../utils/Axios-config/Axios';
 import { UserByLogin } from '../types/users/userType';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, setAdminUpdate } from '../redux-features/chat/channelsSlice';
 
 export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
@@ -33,6 +33,7 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 			})
 			.then((response) => {
 				// console.log("response = ", response)
+				AppDispatch(setAdminUpdate(true));
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})
