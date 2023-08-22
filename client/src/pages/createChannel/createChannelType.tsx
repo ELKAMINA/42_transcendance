@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Box, Checkbox, Divider, FormControlLabel, FormGroup, Stack } from "@mui/material";
+import { Box, Checkbox, Divider, FormControlLabel, FormGroup, Stack, Typography } from "@mui/material";
 
 import PasswordField from "../../components/PasswordField";
 import { addChannelType, addPassword, isProtectedByPassword } from "../../redux-features/chat/createChannel/channelTypeSlice";
@@ -48,8 +48,11 @@ function  CreateType() {
 	<Box className='form-channel-type'>
 		<Stack direction={'column'} spacing={2} alignItems={'start'}>
 			<Divider />
-			<label className='create-channel-label' htmlFor='channelType'>choose channel type</label>
-			<FormGroup>
+			{/* <label className='create-channel-label' htmlFor='channelType'>choose channel type</label> */}
+			<Typography variant="h5" gutterBottom>
+        		choose channel type
+      		</Typography>
+			<FormGroup id={'channelType'}>
 				<FormControlLabel control={<Checkbox checked={checkedPublic} onChange={handlePublic} name="public" />} label="public"/>
 				<FormControlLabel control={<Checkbox checked={checkedPrivate} onChange={handlePrivate} name="private" />} label="private" />
 				<FormControlLabel control={<Checkbox checked={checkedProtected} onChange={handleProtected} name="protected_by_password" />} label="protected by password" />

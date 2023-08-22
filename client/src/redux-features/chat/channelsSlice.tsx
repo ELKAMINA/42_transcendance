@@ -13,6 +13,7 @@ export interface ChannelSlice {
 	isMember: boolean,
 	isBanned: boolean,
 	isPopupOpen: boolean,
+	ownerUpdate: boolean,
 	isMuted: MutingInfo[],
 	// createdChannels : ChannelModel[],
 	// memberedChannels : ChannelModel[],
@@ -32,6 +33,7 @@ const initialState : ChannelSlice = {
 	gameDialog: false,
 	isMember: false,
 	isBanned: false,
+	ownerUpdate: false,
 	isPopupOpen: false,
 	isMuted: [],
 	// createdChannels : [],
@@ -62,40 +64,12 @@ export const channelsSlice = createSlice({
 			}
 		},
 		  
-		// updateCreatedChannels: (state, action : PayloadAction<ChannelModel[]>) => {
-		// 	return {
-		// 		...state,
-		// 		createdChannels: [...action.payload]
-		// 	}
-		// },
-
-		// updateMemberedChannels: (state, action : PayloadAction<ChannelModel[]>) => {
-			// return {
-				// ...state,
-				// memberedChannels: [...action.payload]
-			// }
-		// },
-
-		// updateAllChannels: (state, action: PayloadAction<ChannelModel[]>) => {
-		// 	return {
-		// 		...state,
-		// 		allChannels: [...action.payload]
-		// 	}
-		// },
-
 		updateDisplayedChannel: (state, action: PayloadAction<ChannelModel>) => {
 			return {
 				...state,
 				displayedChannel : action.payload
 			}
 		},
-
-		// updatePrivateChannels: (state, action: PayloadAction<ChannelModel[]>) => {
-		// 	return {
-		// 		...state,
-		// 		privateChannels : action.payload
-		// 	}
-		// },
 
 		updatePublicChannels: (state, action: PayloadAction<ChannelModel[]>) => {
 			return {
@@ -104,32 +78,6 @@ export const channelsSlice = createSlice({
 			}
 		},
 
-		// updatePrivateConvs: (state, action: PayloadAction<ChannelModel[]>) => {
-		// 	return {
-		// 		...state,
-		// 		privateConvs : action.payload
-		// 	}
-		// },
-		// updateUserPrivateChannels: (state, action: PayloadAction<ChannelModel[]>) => {
-		// 	return {
-		// 		...state,
-		// 		userPrivateChannels : action.payload
-		// 	}
-		// },
-
-		// updateUserPublicChannels: (state, action: PayloadAction<ChannelModel[]>) => {
-		// 	return {
-		// 		...state,
-		// 		userPublicChannels : action.payload
-		// 	}
-		// },
-
-		// updateUserPrivateConvs: (state, action: PayloadAction<ChannelModel[]>) => {
-		// 	return {
-		// 		...state,
-		// 		userPrivateConvs : action.payload
-		// 	}
-		// },
 		setGameDialog: (state, action: PayloadAction<boolean>) => {
 			return {
 				...state,
@@ -153,6 +101,9 @@ export const channelsSlice = createSlice({
 		},
 		setIsBanned: (state, action: PayloadAction<boolean>) => {
 			state.isBanned = action.payload;
+		},
+		setOwnerUpdate: (state, action: PayloadAction<boolean>) => {
+			state.ownerUpdate = action.payload;
 		},
 		setIsPopupOpen: (state, action: PayloadAction<boolean>) => {
 			state.isPopupOpen = action.payload;
@@ -182,150 +133,26 @@ export function fetchUserChannels() {
 	};
 }
 
-// export function fetchCreatedByUserChannels() {
-// 	return async (dispatch: any, getState: any) => {
-
-// 		const requestBody = {
-// 			login: getState().persistedReducer.auth.nickname,
-// 		};
-
-// 		try {
-// 		const response = await api.post(
-// 			"http://localhost:4001/channel/createdby",
-// 			requestBody
-// 		);
-// 		// console.log('getting created by user channels from database = ', response.data);
-// 			dispatch(updateCreatedChannels(response.data));
-
-// 		} catch (error) {
-// 			console.log('error while getting created by user channels from database', error);
-// 		}
-// 	};
-// }
-
-// export function fetchUserIsAMemberChannels() {
-// 	return async (dispatch: any, getState: any) => {
-
-// 		const requestBody = {
-// 			login: getState().persistedReducer.auth.nickname,
-// 		};
-
-// 		try {
-// 			const response = await api.post(
-// 				"http://localhost:4001/channel/ismember",
-// 				requestBody
-// 			);
-// 			// console.log('getting is member channels from database = ', response.data);
-// 			dispatch(updateMemberedChannels(response.data));
-// 		} catch (error) {
-// 			console.log('error while getting is member channels from database', error);
-// 		}
-// 	};
-// }
-
-// export function fetchAllChannelsInDatabase() {
-// 	// console.log("[channelSlice] fetching all channels from db", )
-// 	return async (dispatch: any, getState: any) => {
-// 		try {
-// 			const response = await api.post("http://localhost:4001/channel/all",);
-// 			dispatch(updateAllChannels(response.data));
-
-// 		} catch (error) {
-// 			console.log('error while getting all channels from database', error);
-// 		}
-// 	};
-// }
-
 export function fetchDisplayedChannel(name : string) {
+	// console.log("[fetchDisplayedChannel] fetching channel : ", name);
 	return async (dispatch: any, getState: any) => {
 		const requestBody = {
 			name: name,
 		}
 		try {
 			const response = await api.post("http://localhost:4001/channel/displayed", requestBody);
-			dispatch(updateDisplayedChannel(response.data));
-
+			if (response === undefined)
+				dispatch(updateDisplayedChannel(emptyChannel));
+			else {
+				// console.log("[fetchDisplayedChannel] response = ", response);
+				dispatch(updateDisplayedChannel(response.data));
+			} 
+	
 		} catch (error) {
 			console.log(`error while getting displayed channel ${requestBody.name} from database`, error);
 		}
 	};
 }
-
-// // fetch all the private chan for which the user is a member or a creator
-// export function fetchUserPrivateChannels() {
-// 	return async (dispatch: any, getState: any) => {
-// 		const requestBody = {
-// 			login: getState().persistedReducer.auth.nickname,
-// 	  	};
-// 	  try {
-// 			const response = await api.post(
-// 				"http://localhost:4001/channel/fetchUserPrivateChannels",
-// 				requestBody
-// 			);
-// 			// console.log('getting user private channels from database = ', response.data);
-// 			dispatch(updateUserPrivateChannels(response.data));
-
-// 	  } catch (error) {
-// 			console.log('error while getting user private channels from database', error);
-// 	  }
-// 	};
-// }
-
-// // fetch all the public chan for which the user is a member or a creator
-// export function fetchUserPublicChannels() {
-// 	return async (dispatch: any, getState: any) => {
-// 		const requestBody = {
-// 			login: getState().persistedReducer.auth.nickname,
-// 	  	};
-// 	  try {
-// 			const response = await api.post(
-// 				"http://localhost:4001/channel/fetchUserPublicChannels",
-// 				requestBody
-// 			);
-// 			// console.log('getting user public channels from database = ', response.data);
-// 			dispatch(updateUserPublicChannels(response.data));
-
-// 	  } catch (error) {
-// 			console.log('error while getting user public channels from database', error);
-// 	  }
-// 	};
-// }
-
-// // fetch all the private conv for which the user is a member or a creator
-// export function fetchUserPrivateConvs() {
-// 	return async (dispatch: any, getState: any) => {
-// 		const requestBody = {
-// 			login: getState().persistedReducer.auth.nickname,
-// 	  	};
-// 	  try {
-// 			const response = await api.post(
-// 				"http://localhost:4001/channel/fetchUserPrivateConvs",
-// 				requestBody
-// 			);
-// 			// console.log('getting user private convs from database = ', response.data);
-// 			dispatch(updateUserPrivateConvs(response.data));
-
-// 	  } catch (error) {
-// 			console.log('error while getting user private convs from database', error);
-// 	  }
-// 	};
-// }
-
-// // fetch all the private chan for which the user is a member or a creator
-// export function fetchPrivateChannels() {
-// 	return async (dispatch: any, getState: any) => {
-// 	  try {
-// 			const response = await api.post(
-// 				"http://localhost:4001/channel/fetchPrivateChannels"
-// 			);
-// 			// console.log('getting private channels from database = ', response.data);
-// 			dispatch(updatePrivateChannels(response.data));
-
-// 	  } catch (error) {
-// 			console.log('error while getting private channels from database', error);
-// 	  }
-// 	};
-// }
 
 // // fetch all the public channels in db
 export function fetchPublicChannels() {
@@ -343,22 +170,6 @@ export function fetchPublicChannels() {
 	};
 }
 
-// // fetch all the private conv for which the user is a member or a creator
-// export function fetchPrivateConvs() {
-// 	return async (dispatch: any, getState: any) => {
-// 	  try {
-// 			const response = await api.post(
-// 				"http://localhost:4001/channel/fetchPrivateConvs"
-// 			);
-// 			// console.log('getting private convs from database = ', response.data);
-// 			dispatch(updatePrivateConvs(response.data));
-
-// 	  } catch (error) {
-// 			console.log('error while getting private convs from database', error);
-// 	  }
-// 	};
-// }
-
 export const {
 	updateUserChannels, 
 	updateDisplayedChannel,
@@ -368,6 +179,7 @@ export const {
 	setIsMuted,
 	setIsMember,
 	setIsBanned,
+	setOwnerUpdate,
 	setIsPopupOpen,
 	// updateCreatedChannels, 
 	// updateMemberedChannels, 
@@ -389,6 +201,7 @@ export const selectIsMuted = (state : RootState) => state.persistedReducer.chann
 export const selectIsMember = (state : RootState) => state.persistedReducer.channels.isMember
 export const selectIsBanned = (state : RootState) => state.persistedReducer.channels.isBanned
 export const selectIsPopupOpen = (state : RootState) => state.persistedReducer.channels.isPopupOpen
+export const selectOwnerUpdate = (state : RootState) => state.persistedReducer.channels.ownerUpdate
 // export const selectCreatedChannels = (state: RootState) => state.persistedReducer.channels.createdChannels
 // export const selectMemberedChannels = (state: RootState) => state.persistedReducer.channels.memberedChannels
 // export const selectAllChannels = (state: RootState) => state.persistedReducer.channels.allChannels
