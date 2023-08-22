@@ -15,7 +15,7 @@ import { ChannelModel } from '../types/chat/channelTypes';
 import { UserModel } from '../types/users/userType';
 import OwnerCandidatesList from './OwnerCandidatesList';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, setOwnerUpdate } from '../redux-features/chat/channelsSlice';
 
 export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
@@ -32,6 +32,7 @@ export default function GiveOwnerShipDialog({openDialog, setOpenDialog} : {openD
 				owner : updatedOwner,
 			})
 			.then((response) => {
+				AppDispatch(setOwnerUpdate(true));
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})
