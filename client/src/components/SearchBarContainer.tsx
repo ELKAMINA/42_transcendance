@@ -137,6 +137,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 
 	// Event handler to log the selected option
 	const handleOptionSelect = async (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
+		// console.log("[searchBar container] value = ", value);
 		if (value) {
 			setSelectedOption(value);
 
@@ -155,8 +156,10 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 				}
 			}
 			else if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
-				console.log("[searchbar] coucou");
+				// console.log("[searchBar container] name = ", value.name);
+				// console.log("[searchBar container] members = ", value.members);
 				if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
+					// console.log("[searchbar] coucou");
 					setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
 				}
 				else { // if current user is not a member of the picked channel
