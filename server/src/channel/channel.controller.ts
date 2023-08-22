@@ -50,27 +50,7 @@ export class channelController {
   getUserChannels(@Body() requestBody): Promise<object> {
     return this.ChannelService.getUserChannels(requestBody.login);
   }
-
-  /* A supprimer/Commenter  */
-  // @Post('/createdby')
-  // @Public() // TODO - remove public
-  // getCreatedByUserChannels(@Body() requestBody): Promise<object> {
-  //   return this.ChannelService.getCreatedByUserChannels(requestBody.login);
-  // }
-
-  // @Post('/ismember')
-  // @Public() // TODO - remove public
-  // getUserIsAMemberChannels(@Body() requestBody): Promise<object> {
-  //   return this.ChannelService.getUserIsAMemberChannels(requestBody.login);
-  // }
-
-  /* A supprimer/Commenter  */
-  @Post('/all')
-  @Public() // TODO - remove public
-  getAllChannelsInDatabase(): Promise<object> {
-    return this.ChannelService.getAllChannelsInDatabase();
-  }
-
+  
   /* A Garder:
     - Checker si le user est bien  membre (et authenticated)
   */

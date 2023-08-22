@@ -110,50 +110,38 @@ export class ChannelService {
    
   }
 
-  async getAllChannelsInDatabase(): Promise<object> {
-    const channels = await this.prisma.channel.findMany({
-      include: {
-        members: true,
-        admins: true,
-        banned: true,
-        muted: true,
-        createdBy: true,
-        ownedBy: true,
-        chatHistory: true,
-      },
-    });
-    return channels;
-  }
-
   // requestBody = {name : <name of the channel>}
   async getDisplayedChannel(requestBody: string): Promise<object> {
+	// console.log("[getDisplayedChanne] requestBody = ", requestBody);
+	if (requestBody === undefined)
+		return undefined; // this case will be handled in channelSlice
 	try {
 		const channel = await this.prisma.channel.findUnique({
 			where: { name: requestBody },
 			include: {
-			  members: {
-				include: {
-				  blocked: true,
-				  blockedBy: true,
+				members: {
+					include: {
+						blocked: true,
+						blockedBy: true,
+					},
 				},
-			  },
-			  admins: true,
-			  banned: true,
-			  muted: true,
-			  createdBy: true,
-			  ownedBy: true,
-			  chatHistory: true,
+				admins: true,
+				banned: true,
+				muted: true,
+				createdBy: true,
+				ownedBy: true,
+				chatHistory: true,
 			},
-		  });
-		  if (!channel) {
-			throw new NotFoundException('User not found');
-		  }
-		  // console.log('channel ', channel)
-		  return channel;
+			});
+			if (!channel) {
+				return undefined;
+			}
+			// console.log("[getDisplayedChanne] channel = ", channel);
+			return channel;
 	} catch (error) {
-		console.error(error);
+		if (requestBody !== 'WelcomeChannel')
+			console.error(error);
 	}
-
   }
 
   async getAllPublicChannelsInDatabase(): Promise<object> {
