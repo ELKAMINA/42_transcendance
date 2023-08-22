@@ -58,14 +58,14 @@ export default function Sign(props: Signing){
     }, [dispatch])
 
     React.useEffect(()=> {
-        console.log('je rentre ici 1')
+        // console.log('je rentre ici 1')
         if (error){
-            console.log('je rentre ici 2', error)
+            // console.log('je rentre ici 2', error)
             setErrMsg('Credentials taken')
         }
     }, [])
 
-    console.log('ereuuur state ', errMsg)
+    // console.log('ereuuur state ', errMsg)
     React.useEffect(() => {
         if (error === null)
             setErrMsg('')

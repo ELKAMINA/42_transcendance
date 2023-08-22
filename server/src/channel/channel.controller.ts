@@ -76,7 +76,7 @@ export class channelController {
   /* A Garder:
     - Checker si le user est bien  membre (et authenticated)
   */
-  @Roles('member')
+  // @Roles('member')
   @Post('/displayed')
   getDisplayedChannel(@Body() requestBody): Promise<object> {
     return this.ChannelService.getDisplayedChannel(requestBody.name);
@@ -166,7 +166,6 @@ export class channelController {
 
   @Roles('owner')
   @Post('/updateOwner')
-  @Public() // TODO - remove public
   updateOwner(
     @Body() requestBody: { channelName: { name: string }; owner: User },
   ): Promise<Channel> {
@@ -196,7 +195,6 @@ export class channelController {
 
   @Roles('owner')
   @Post('/updatePassword')
-  @Public() // TODO - remove public
   updatePassword(
     @Body() requestBody: { channelName: { name: string }; key: string },
   ): Promise<Channel> {

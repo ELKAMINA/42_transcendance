@@ -29,6 +29,9 @@ export class UserService {
           adminChannels: true,
           channels: true,
           createdChannels: true,
+          ownedChannels: true,
+          bannedFromChannels: true,
+          MutedInChannels: true,
         },
       });
       return user;

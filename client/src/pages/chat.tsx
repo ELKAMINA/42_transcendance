@@ -31,13 +31,16 @@ function Chat () {
 	const justBeenBannedNotif = useAppSelector(selectIsBanned);
 	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
-		if (channels.length === 0) {
+		if (channels.length === 0 || displayedChannel.name === 'empty channel') {
 			return 'WelcomeChannel';
 		} else {
+			// console.log('here ', displayedChannel.name)
 			return displayedChannel.name;
 		}
 	})
 	
+	// console.log('Selected Channel ', selectedChannel)
+
 	const socketRef = useRef<Socket>();
 	const roomId = selectedChannel;
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -119,7 +122,7 @@ function Chat () {
 	})
 	
 	useEffect(() => {
-		if (selectedChannel !== '') {
+		if (selectedChannel !== '' && selectedChannel !== "empty channel") {
 			// console.log('[ From Chat.tsx - useEffect is trigerred ', selectedChannel)
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
 		}
