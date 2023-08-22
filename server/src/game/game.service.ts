@@ -12,7 +12,7 @@ export class GameService {
 
   async matchCreation(roomInfos: GameDto) {
     console.log(
-      '[GATEWAY - matchCreation]',
+      '[GATEWAY Service - matchCreation]',
       'Room at the end of the game',
       roomInfos,
     );
@@ -42,16 +42,7 @@ export class GameService {
       );
       winner = roomInfos.players[1];
     }
-    const match = await this.prisma.match.create({
-      data: {
-        createdAt: roomInfos.createdDate,
-        player1Id: roomInfos.players[0],
-        player2Id: roomInfos.players[1],
-        p1_score: roomInfos.scorePlayers[0],
-        p2_score: roomInfos.scorePlayers[1],
-        winnerName: winner,
-      },
-    });
+    this.updateMatchHistory(roomInfos, winner);
     await this.updateRankOfAllUsers();
   }
 
@@ -79,15 +70,36 @@ export class GameService {
   }
 
   async updateUserGameStat(player: string, iswinner: boolean, score: number) {
-    const user = await this.prisma.user.update({
-      where: { login: player },
-      data: {
-        totalMatches: { increment: 1 },
-        totalWins: iswinner ? { increment: 1 } : { increment: 0 },
-        totalloss: iswinner ? { increment: 0 } : { increment: 1 },
-        level: { increment: score },
-      },
-    });
+    try {
+      const user = await this.prisma.user.update({
+        where: { login: player },
+        data: {
+          totalMatches: { increment: 1 },
+          totalWins: iswinner ? { increment: 1 } : { increment: 0 },
+          totalloss: iswinner ? { increment: 0 } : { increment: 1 },
+          level: { increment: score },
+        },
+      });
+    } catch (e) {
+      console.error('[Game Service - updateUserGameStat]', 'Error: ', e);
+    }
+  }
+
+  async updateMatchHistory(roomInfos: GameDto, winner: string) {
+    try {
+      const match = await this.prisma.match.create({
+        data: {
+          createdAt: roomInfos.createdDate,
+          player1Id: roomInfos.players[0],
+          player2Id: roomInfos.players[1],
+          p1_score: roomInfos.scorePlayers[0],
+          p2_score: roomInfos.scorePlayers[1],
+          winnerName: winner,
+        },
+      });
+    } catch (e) {
+      console.error('[Game Service - updateMatchHistory]', 'Error: ', e);
+    }
   }
 
   // GET ALL USER GAME STATISTICS AND BY RESPECTING THE FOLLOWING RANKING RULES:
@@ -110,10 +122,10 @@ export class GameService {
         },
         {
           login: 'asc',
-        }
+        },
       ],
       select: {
-        avatar: true,
+        avatar: false,
         login: true,
         totalMatches: true,
         totalWins: true,
@@ -124,18 +136,26 @@ export class GameService {
     });
     // console.log('[GATEWAY - getLeaderBoard]','leaderboard: ', leaderBoard);
     query.forEach((element) => {
-      console.log('[GATEWAY - getUserGameStat]','query element: ', element);
-    })
+      console.log(
+        '[GATEWAY Service - getUserGameStat]',
+        'query element: ',
+        element,
+      );
+    });
     return query;
   }
 
   async updateRankOfAllUsers() {
     const sortedUsers = await this.getUserGameStat();
     sortedUsers.map(async (element: any, index: number) => {
-      await this.prisma.user.update({
-        where: { login: element.login },
-        data: { rank: index + 1 },
-      });
+      try {
+        await this.prisma.user.update({
+          where: { login: element.login },
+          data: { rank: index + 1 },
+        });
+      } catch (e) {
+        console.error('[Game Service - updateRankOfAllUsers]', 'Error: ', e);
+      }
     });
   }
 }
