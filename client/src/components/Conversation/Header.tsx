@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
 import { fetchDisplayedChannel , selectDisplayedChannel, selectIsPopupOpen, setIsPopupOpen } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { FetchActualUser } from '../../redux-features/friendship/friendshipSlice';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": { 
@@ -87,7 +88,8 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	const dispatch = useAppDispatch();
 
 	useEffect(()=> {
-		dispatch(fetchDisplayedChannel(channel.name))
+		if (channel.name !== 'empty channel')
+			dispatch(fetchDisplayedChannel(channel.name))
 	}, [])
 
 	channel = useAppSelector(selectDisplayedChannel) || emptyChannel;
@@ -163,8 +165,14 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 
 	const checkIfUserIsBlocked = (currentUser: string, channel: ChannelModel ) => {
 		let check;
+
+		if (channel.members.length < 2)
+			return ;
+
 		// console.log('FROM CHECK FUNCTION Member 0 ', channel.members[0].login);
 		// console.log('FROM CHECK FUNCTION Member 1 ', channel.members[1].login);
+		if (channel.members.length <= 1)
+			return ; // added by alicia
 		if (currentUser === channel.members[0].login){
 			check = channel.members[0].blockedBy.find((e: UserModel) => e.login === channel.members[1].login)
 			// console.log('MEMBERS 0 blockedBy friends ', channel.members[0].blocked)
@@ -206,13 +214,12 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 		setOpenBlock(true);
 	}
 	
-	socketRef.current?.on('blockStatus', (status: string) => {
-		// console.log('status ', status)
+	socketRef.current?.off('blockStatus').on('blockStatus', (status: string) => { // DEBUB : replace .off by useEffect
 		setBlock(status);
 	})
 
-
-	socketRef.current?.on('FriendBlocked', async (info: blockUnblock) => {
+	socketRef.current?.off('FriendBlocked').on('FriendBlocked', async (info: blockUnblock) => {
+		dispatch(FetchActualUser());
 		if (info.status === 1){
 			if (info.senderReceiver.receiver === currentUser){
 				setDisplayblockIcon(false)
@@ -227,11 +234,10 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 	
 	useEffect(() => {
 
-	}, [displayBlockIcon])
+	}, [displayBlockIcon]) // DEBUG 
 	
-	const AppDispatch = useAppDispatch();
 	useEffect(() => {
-		AppDispatch(setIsPopupOpen(false));
+		dispatch(setIsPopupOpen(false));
 	}, []) // reset isCreateChannelWindowOpen if refresh
 		
 	return (

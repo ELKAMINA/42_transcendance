@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { SensorDoor } from '@mui/icons-material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LockIcon from '@mui/icons-material/Lock';
-import { fetchAllChannelsInDatabase, fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import api from '../utils/Axios-config/Axios';
@@ -32,9 +32,9 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 	const [alertError, setAlertError] = React.useState<boolean>(false);
 
 	const AppDispatch = useAppDispatch();
-	const currentUser : string = useAppSelector(selectCurrentUser);
+	const currentUser: string = useAppSelector(selectCurrentUser);
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
-	
+
 	const channels = useAppSelector(selectUserChannels) as Channel[];
 	const [channelsForDisplay, setchannelsForDisplay] = React.useState<Channel[]>([]); // this is a state for the formated channels, aka with private convs names updated according to current user
 	React.useEffect(() => {
@@ -56,7 +56,7 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 	}, [channels, currentUser])
 
 	// React.useEffect(() => {
-		// console.log('channelsForDisplay = ', channelsForDisplay)
+	// console.log('channelsForDisplay = ', channelsForDisplay)
 	// }, [channelsForDisplay])
 
 	// React.useEffect(() => {
@@ -68,16 +68,16 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 		// console.log('selectedChannel camembert = ', selectedChannel);
 		if (selectedChannel.name === 'WelcomeChannel') { // if selectedChannel is the welcome channel
 			setSelectedIndex(-1); // dont select any item
-			return ;
+			return;
 		}
 
 		const index = getSelectedChannelIndex();
 		setSelectedIndex(index);
-		
+
 	}, [selectedChannel])
 
 
-	React.useEffect(() => { 
+	React.useEffect(() => {
 		AppDispatch(fetchUserChannels());
 		// console.log('user channels = ', channels);
 		if (getSelectedChannelIndex() === -1) // when refreshing the page, if the selectedChannel is not in the list of channels anymore, sent index to 0 (aka first item in the list) 
@@ -86,20 +86,20 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 
 	async function deleteChannel(channelToDelete: string) {
 
-	await api
-		.post('http://localhost:4001/channel/deleteChannelByName', { name: channelToDelete })
-		.then((response) => {
-			AppDispatch(fetchUserChannels());
-			AppDispatch(fetchDisplayedChannel('WelcomeChannel'))
-			AppDispatch(fetchAllChannelsInDatabase())
-			getSelectedItem('WelcomeChannel');
+		await api
+			.post('http://localhost:4001/channel/deleteChannelByName', { name: channelToDelete })
+			.then((response) => {
+				AppDispatch(fetchUserChannels());
+				AppDispatch(fetchDisplayedChannel('WelcomeChannel'))
+				AppDispatch(fetchPublicChannels())
+				getSelectedItem('WelcomeChannel');
 
-			channelDeleted.current = true;
-		})
-		.catch((error) => console.log('error while deleting channel', error));
+				channelDeleted.current = true;
+			})
+			.catch((error) => console.log('error while deleting channel', error));
 	}
 
-	function handleClick(channelToDelete: string, index : number): void {
+	function handleClick(channelToDelete: string, index: number): void {
 		// only the creator/owner of the channel can delete it
 		if (currentUser === channels[index].createdBy.login)
 			deleteChannel(channelToDelete);
@@ -119,7 +119,7 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 
 		// get the channel corresponding to the index
 		const clickedItem = channels[index];
-		
+
 		// if the selected channel is protected by a password, open password dialog slide
 		if (clickedItem.key !== '') {
 			setAlertDialogSlideOpen(true);
@@ -142,7 +142,7 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 		window.addEventListener('resize', handleWindowResize);
 		return () => {
 			window.removeEventListener('resize', handleWindowResize);
-	};
+		};
 	}, []);
 
 	const handleCloseAlert = () => {
@@ -163,46 +163,46 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 								'&.Mui-selected': { backgroundColor: '#032B50' }
 							}}
 						>
-						<ListItem alignItems="center">
-							<ListItemAvatar>
-							<Avatar alt={element.name} src={element.avatar} />
-							</ListItemAvatar>
-							<Stack direction="row" alignItems="center" spacing={2}>
-							{showIcons && element.type === 'private' && (
-								<Tooltip title="private channel" placement="top">
-								<SensorDoor />
-								</Tooltip>
-							)}
-							{showIcons && element.type === 'public' && (
-								<Tooltip title="public channel" placement="top">
-								<Diversity3Icon />
-								</Tooltip>
-							)}
-							{showIcons && element.key !== '' && (
-								<Tooltip title="protected by password" placement="top">
-								<LockIcon />
-								</Tooltip>
-							)}
-							</Stack>
-							<ListItemText
-								sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-								primary={element.name === currentUser ? element.createdBy.login : element.name}
-							/>
-
-							{showIcons && element.type !== 'privateConv' && (
-							<Box>
-								<ConfirmationDialog
-									title = 'delete channel'
-									id = 'delete-channel'
-									options = { ['Yes, I want to delete this channel.'] }
-									icon={
-										<DeleteIcon sx={{ color: 'red', p: 0, marginLeft: 'auto',}} fontSize="small"/>
-									}
-									handleConfirm={() => handleClick(element.name, index)}
-									dialogTitle='Delete this channel from the database?'
+							<ListItem alignItems="center">
+								<ListItemAvatar>
+									<Avatar alt={element.name} src={element.avatar} />
+								</ListItemAvatar>
+								<Stack direction="row" alignItems="center" spacing={2}>
+									{showIcons && element.type === 'private' && (
+										<Tooltip title="private channel" placement="top">
+											<SensorDoor />
+										</Tooltip>
+									)}
+									{showIcons && element.type === 'public' && (
+										<Tooltip title="public channel" placement="top">
+											<Diversity3Icon />
+										</Tooltip>
+									)}
+									{showIcons && element.key !== '' && (
+										<Tooltip title="protected by password" placement="top">
+											<LockIcon />
+										</Tooltip>
+									)}
+								</Stack>
+								<ListItemText
+									sx={{ flexGrow: 1, marginLeft: showIcons ? 1 : 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+									primary={element.name === currentUser ? element.createdBy.login : element.name}
 								/>
-							</Box>)}
-						</ListItem>
+
+								{showIcons && element.type !== 'privateConv' && (
+									<Box>
+										<ConfirmationDialog
+											title='delete channel'
+											id='delete-channel'
+											options={['Yes, I want to delete this channel.']}
+											icon={
+												<DeleteIcon sx={{ color: 'red', p: 0, marginLeft: 'auto', }} fontSize="small" />
+											}
+											handleConfirm={() => handleClick(element.name, index)}
+											dialogTitle='Delete this channel from the database?'
+										/>
+									</Box>)}
+							</ListItem>
 						</ListItemButton>
 					</Stack>
 				);
@@ -213,10 +213,10 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 				getSelectedItem={getSelectedItem}
 				element={channels[selectedIndex]}
 			/>
-			{ alertError &&
-				<FullScreenAlert severity='error' alertTitle='Error' normalTxt='cannot delete channel --' 
-					strongTxt='you cannot delete a channel you do not own!' open={alertError} handleClose={handleCloseAlert}/>
+			{alertError &&
+				<FullScreenAlert severity='error' alertTitle='Error' normalTxt='cannot delete channel --'
+					strongTxt='you cannot delete a channel you do not own!' open={alertError} handleClose={handleCloseAlert} />
 			}
 		</List>
-		);
+	);
 }

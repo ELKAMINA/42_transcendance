@@ -77,7 +77,12 @@ export class ProfileGateway
       // console.log('test ', this.server)
       // console.log('client ', client);
       // console.log('al reponse ', response);
-      // this.io.emit('newUserConnected', {});
+      const user = await this.userServ.searchUser(
+        this.getUserInfoFromSocket(client.handshake.headers.cookie).nickname,
+      );
+      if (user) {
+        this.io.emit('newUserConnected', user.faEnabled);
+      }
       this.logger.log(`WS Client with id: ${client.id}  connected!`);
       // this.logger.debug(`Number of connected sockets ${sockets.size}`);
       this.logger.log(`Client connected: ${client.id}`);

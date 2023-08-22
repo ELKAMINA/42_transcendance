@@ -9,18 +9,9 @@ export class ChannelDto {
 	@ApiProperty()
 	name: string;
   
-	@IsNotEmpty()
-	@ApiProperty()
-	@IsInt()
-	channelId: number;
-  
 	@IsString()
 	@ApiProperty()
 	type: string;
-
-	@IsNotEmpty()
-	@ApiProperty()
-	createdBy: UserByLogin;
 
 	@ApiProperty()
 	protected_by_password: boolean;

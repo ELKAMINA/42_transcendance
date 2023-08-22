@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
-  async createChannel(dto: ChannelDto): Promise<object> {
+  async createChannel(userNickname : string, dto: ChannelDto): Promise<boolean> {
     const pwd = dto.key !== '' ? await argon.hash(dto.key) : '';
     try {
       // before creating the Channel record,
@@ -18,11 +18,11 @@ export class ChannelService {
       // If the creator record is not found,
       // we throw a NotFoundException with an appropriate error message.
       const creator = await this.prisma.user.findUnique({
-        where: { login: dto.createdBy.login },
+        where: { login: userNickname },
       });
       if (!creator) {
         throw new NotFoundException(
-          `User with login '${dto.createdBy}' not found.`,
+          `User with login '${userNickname}' not found.`,
         );
       }
       // we create channel record
@@ -36,25 +36,23 @@ export class ChannelService {
             connect: dto.admins.map((user) => ({ login: user.login })),
           },
           createdBy: {
-            connect: { login: dto.createdBy.login },
+            connect: { login: userNickname },
           },
           ownedBy: {
-            connect: { login: dto.createdBy.login },
+            connect: { login: userNickname },
           },
           type: dto.type,
           key: pwd,
         } as Prisma.ChannelCreateInput,
       });
-      // we return the newly created channel
-      return channel;
+      // we return true is the channel is successfully created
+      return true;
     } catch (error: any) {
-      throw error;
+      console.error(error);
     }
   }
 
-  async deleteChannelByName(requestBody: {
-    name: string | string[];
-  }): Promise<void> {
+  async deleteChannelByName(requestBody: { name: string }): Promise<void> {
     try {
       const channelNames = Array.isArray(requestBody.name)
         ? requestBody.name
@@ -70,134 +68,46 @@ export class ChannelService {
         await this.prisma.channel.delete({ where: { name: name } });
       }
     } catch (error: any) {
-      throw error;
-    }
-  }
-
-  // deletes only the channels created by the user which nickname is passed as a parameter
-  async deleteAllChannels(requestBody: { createdBy: string }): Promise<void> {
-    try {
-      const channelsToDelete = await this.prisma.channel.findMany({
-        where: {
-          createdById: requestBody.createdBy,
-        },
-      });
-
-      // delete all the associated messages
-      for (const channel of channelsToDelete) {
-        await this.prisma.message.deleteMany({
-          where: {
-            channelById: channel.name,
-          },
-        });
-      }
-
-      // delete all the channels that match the 'createdBy' string
-      await this.prisma.channel.deleteMany({
-        where: {
-          createdById: requestBody.createdBy,
-        },
-      });
-    } catch (error: any) {
-      throw error;
+      console.error(error);
     }
   }
 
   async getUserChannels(requestBody: string): Promise<object> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        login: requestBody,
-      },
-      // the include option means that when fetching the user information,
-      // the response will include the 'channels' and
-      // 'createdChannels' fields of the user in
-      // addition to the main user entity.
-      include: {
-        channels: {
-          include: {
-            members: true,
-            admins: true,
-            banned: true,
-            muted: true,
-            createdBy: true,
-            ownedBy: true,
-            chatHistory: true,
-          },
-        },
-        // createdChannels: {
-        // 	include: {
-        // 		members: true,
-        // 		admins: true,
-        // 		banned: true,
-        // 		muted: true,
-        // 		createdBy: true,
-        // 		ownedBy: true,
-        // 		chatHistory: true,
-        // 	}
-        // },
-      },
-    });
+	try {
+		const user = await this.prisma.user.findUnique({
+			where: {
+			  login: requestBody,
+			},
+			// the include option means that when fetching the user information,
+			// the response will include the 'channels' and
+			// 'createdChannels' fields of the user in
+			// addition to the main user entity.
+			include: {
+			  channels: {
+				include: {
+				  members: true,
+				  admins: true,
+				  banned: true,
+				  muted: true,
+				  createdBy: true,
+				  ownedBy: true,
+				  chatHistory: true,
+				},
+			  },
+			},
+		  });
+	  
+		  if (!user) {
+			throw new NotFoundException('User not found');
+		  }
+	  
+		  const output = [...user.channels]; /*, ...user.createdChannels];*/
+		  return output;
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const output = [...user.channels]; /*, ...user.createdChannels];*/
-    return output;
-  }
-
-  async getCreatedByUserChannels(requestBody: string): Promise<object> {
-    const user = await this.prisma.user.findUnique({
-      where: { login: requestBody },
-      include: {
-        channels: false,
-        createdChannels: {
-          include: {
-            members: true,
-            admins: true,
-            banned: true,
-            muted: true,
-            createdBy: true,
-            ownedBy: true,
-            chatHistory: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const output = [...user.createdChannels];
-    return output;
-  }
-
-  async getUserIsAMemberChannels(requestBody: string): Promise<object> {
-    const user = await this.prisma.user.findUnique({
-      where: { login: requestBody },
-      include: {
-        channels: {
-          include: {
-            members: true,
-            admins: true,
-            banned: true,
-            muted: true,
-            createdBy: true,
-            ownedBy: true,
-            chatHistory: true,
-          },
-        },
-        createdChannels: false,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const output = [...user.channels];
-    return output;
+	} catch (error) {
+		console.error(error);
+	}
+   
   }
 
   async getAllChannelsInDatabase(): Promise<object> {
@@ -217,206 +127,39 @@ export class ChannelService {
 
   // requestBody = {name : <name of the channel>}
   async getDisplayedChannel(requestBody: string): Promise<object> {
-    const channel = await this.prisma.channel.findUnique({
-      where: { name: requestBody },
-      include: {
-        members: {
-          include: {
-            blocked: true,
-            blockedBy: true,
-          },
-        },
-        admins: true,
-        banned: true,
-        muted: true,
-        createdBy: true,
-        ownedBy: true,
-        chatHistory: true,
-      },
-    });
-    if (!channel) {
-      throw new NotFoundException('User not found');
-    }
-    // console.log('channel ', channel)
-    return channel;
-  }
+	try {
+		const channel = await this.prisma.channel.findUnique({
+			where: { name: requestBody },
+			include: {
+			  members: {
+				include: {
+				  blocked: true,
+				  blockedBy: true,
+				},
+			  },
+			  admins: true,
+			  banned: true,
+			  muted: true,
+			  createdBy: true,
+			  ownedBy: true,
+			  chatHistory: true,
+			},
+		  });
+		  if (!channel) {
+			throw new NotFoundException('User not found');
+		  }
+		  // console.log('channel ', channel)
+		  return channel;
+	} catch (error) {
+		console.error(error);
+	}
 
-  async getUserPrivateChannels(requestBody: string): Promise<object> {
-    try {
-      const user = await this.prisma.user.findUnique({
-        where: { login: requestBody },
-        // the include option means that when fetching the user information,
-        // the response will include the 'channels' and
-        // 'createdChannels' fields of the user in
-        // addition to the main user entity.
-        include: {
-          channels: {
-            where: {
-              type: 'private', // Filter channels by type 'private'
-            },
-            include: {
-              members: true,
-              admins: true,
-              banned: true,
-              muted: true,
-              createdBy: true,
-              ownedBy: true,
-              chatHistory: true,
-            },
-          },
-          // createdChannels: {
-          // 	where: {
-          // 		type: 'private' // Filter channels by type 'private'
-          // 	},
-          // 	include: {
-          // 		members: true,
-          // 		banned: true,
-          // 		muted: true,
-          // 		admins: true,
-          // 		createdBy: true,
-          // 		ownedBy: true,
-          // 		chatHistory: true,
-          // 	}
-          // },
-        },
-      });
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      const output = [...user.channels]; /*, ...user.createdChannels];*/
-      return output;
-    } catch (error: any) {
-      console.log('error = ', error);
-    }
-  }
-
-  async getUserPublicChannels(requestBody: string): Promise<object> {
-    try {
-      const user = await this.prisma.user.findUnique({
-        where: { login: requestBody },
-        // the include option means that when fetching the user information,
-        // the response will include the 'channels' and
-        // 'createdChannels' fields of the user in
-        // addition to the main user entity.
-        include: {
-          channels: {
-            where: {
-              type: 'public', // Filter channels by type 'public'
-            },
-            include: {
-              members: true,
-              admins: true,
-              banned: true,
-              muted: true,
-              createdBy: true,
-              ownedBy: true,
-              chatHistory: true,
-            },
-          },
-          // createdChannels: {
-          // 	where: {
-          // 		type: 'public' // Filter channels by type 'public'
-          // 	},
-          // 	include: {
-          // 		members: true,
-          // 		banned: true,
-          // 		admins: true,
-          // 		createdBy: true,
-          // 		ownedBy: true,
-          // 		chatHistory: true,
-          // 	}
-          // },
-        },
-      });
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      const output = [...user.channels]; /*, ...user.createdChannels];*/
-      return output;
-    } catch (error: any) {
-      console.log('error = ', error);
-    }
-  }
-
-  async getUserPrivateConvs(requestBody: string): Promise<object> {
-    try {
-      const user = await this.prisma.user.findUnique({
-        where: { login: requestBody },
-        // the include option means that when fetching the user information,
-        // the response will include the 'channels' and
-        // 'createdChannels' fields of the user in
-        // addition to the main user entity.
-        include: {
-          channels: {
-            where: {
-              type: 'privateConv', // Filter channels by type 'privateConv'
-            },
-            include: {
-              members: true,
-              admins: true,
-              banned: true,
-              muted: true,
-              createdBy: true,
-              ownedBy: true,
-              chatHistory: true,
-            },
-          },
-          // createdChannels: {
-          // 	where: {
-          // 		type: 'privateConv' // Filter channels by type 'privateConv'
-          // 	},
-          // 	include: {
-          // 		members: true,
-          // 		admins: true,
-          // 		banned: true,
-          // 		muted: true,
-          // 		createdBy: true,
-          // 		ownedBy: true,
-          // 		chatHistory: true,
-          // 	}
-          // },
-        },
-      });
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      const output = [...user.channels]; /*, ...user.createdChannels];*/
-      return output;
-    } catch (error) {
-      console.log('error : ', error);
-    }
-  }
-
-  async getAllPrivateChannelsInDatabase(): Promise<object> {
-    const channels = await this.prisma.channel.findMany({
-      where: {
-        type: 'private', // Filter channels by type 'private'
-      },
-    });
-
-    return channels;
   }
 
   async getAllPublicChannelsInDatabase(): Promise<object> {
     const channels = await this.prisma.channel.findMany({
       where: {
         type: 'public', // Filter channels by type 'public'
-      },
-    });
-
-    return channels;
-  }
-
-  async getAllPrivateConvsInDatabase(): Promise<object> {
-    const channels = await this.prisma.channel.findMany({
-      where: {
-        type: 'privateConv', // Filter channels by type 'privateConv'
       },
     });
 
@@ -635,7 +378,7 @@ export class ChannelService {
       // console.log('updatedChannel = ', updatedChannel.ownedById);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 
@@ -686,16 +429,17 @@ export class ChannelService {
       // console.log('[MEMBERS] updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 
   async replaceMembers(requestBody: {
     channelName: { name: string };
     members: User[];
+    action: string;
   }): Promise<Channel> {
     try {
-      const { channelName, members } = requestBody;
+      const { channelName, members, action } = requestBody;
       // Find the channel by name
       const channel = await this.prisma.channel.findUnique({
         where: {
@@ -704,7 +448,9 @@ export class ChannelService {
       });
 
       if (!channel) {
-        throw new Error(`Channel with name '${channelName.name}' not found.`);
+        throw new Error(
+          `Channel with ${action} name '${channelName.name}' not found.`,
+        );
       }
 
       // Extract the new member IDs from the request
@@ -725,7 +471,7 @@ export class ChannelService {
       // console.log('[MEMBERS] updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 
@@ -761,7 +507,7 @@ export class ChannelService {
       });
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 }

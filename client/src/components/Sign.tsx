@@ -20,6 +20,7 @@ import { useSignupMutation, useSigninMutation, useCheckPwdMutation} from '../app
 import { resetChannelName, resetChannelNameStore } from '../redux-features/chat/createChannel/channelNameSlice';
 import { setSignCredentials, setAvatar, setNick, resetAuthStore } from '../redux-features/auth/authSlice';
 import { resetFriendshipStore } from '../redux-features/friendship/friendshipSlice';
+import api from '../utils/Axios-config/Axios';
 
 
 interface Signing {
@@ -28,6 +29,8 @@ interface Signing {
   }
 
 export default function Sign(props: Signing){
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
     const dispatch = useAppDispatch();
     const userRef = React.useRef<HTMLInputElement>(null)
     const errRef = React.useRef<HTMLInputElement>(null)
@@ -51,11 +54,22 @@ export default function Sign(props: Signing){
         dispatch(resetChannelNameStore())
         if (userRef && userRef.current)
             userRef.current.focus()
+
     }, [dispatch])
 
+    React.useEffect(()=> {
+        console.log('je rentre ici 1')
+        if (error){
+            console.log('je rentre ici 2', error)
+            setErrMsg('Credentials taken')
+        }
+    }, [])
+
+    console.log('ereuuur state ', errMsg)
     React.useEffect(() => {
-        setErrMsg('')
-    }, [nickname, password])
+        if (error === null)
+            setErrMsg('')
+    }, [nickname, password, error])
 
     const ft_auth = async () => {
         window.open("http://localhost:4001/auth/42/callback", "_self");

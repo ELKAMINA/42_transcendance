@@ -13,7 +13,7 @@ import CreateUsersList from "./createUsersList";
 import api from '../../utils/Axios-config/Axios' 
 import { UserByLogin } from "../../types/users/userType";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
-import { fetchAllChannelsInDatabase, fetchUserChannels, setIsPopupOpen } from "../../redux-features/chat/channelsSlice";
+import { fetchPublicChannels, fetchUserChannels, setIsPopupOpen } from "../../redux-features/chat/channelsSlice";
 import { resetChannelUser } from "../../redux-features/chat/createChannel/channelUserSlice";
 import { resetChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { FetchUsersDb, selectFriends } from "../../redux-features/friendship/friendshipSlice";
@@ -40,7 +40,9 @@ function CreateChannel(props : CreateChannelProps) {
 	const appDispatch = useAppDispatch();
 
 	// when the search component is mounted the first time, get the list of users
-	React.useEffect(() => {appDispatch(FetchUsersDb())}, [appDispatch]);
+	React.useEffect(() => {
+		appDispatch(FetchUsersDb())
+	}, [appDispatch]);
 
 	const channelCreation = async () => {
 		// console.log('channelUsersList = ', channelUsersList);
@@ -54,9 +56,7 @@ function CreateChannel(props : CreateChannelProps) {
 			await api
 			.post ('http://localhost:4001/channel/creation', {
 				name: newName,
-				channelId: Date.now(),
 				type: channelType.type,
-				createdBy: createdBy,
 				admins: [createdBy],
 				protected_by_password: channelType.protected_by_password,
 				key: channelType.key,
@@ -67,7 +67,7 @@ function CreateChannel(props : CreateChannelProps) {
 
 			// if channel is successfully added to the database, execute this :
 			await appDispatch(fetchUserChannels());
-			await appDispatch(fetchAllChannelsInDatabase()); // to update the searchbar options
+			await appDispatch(fetchPublicChannels()); // to update the searchbar options
 			props.getSelectedItem(newName);
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
