@@ -68,10 +68,10 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 	return (
 		<Box width={'100%'}>
 			<FormControl sx={{width: '100%' }}>
-				<InputLabel id="demo-multiple-chip-label">users *</InputLabel>
+				<InputLabel id="multiple-chip-label">users *</InputLabel>
 				<Select
-					labelId="demo-multiple-chip-label"
-					id="demo-multiple-chip"
+					labelId="multiple-chip-label"
+					id="multiple-chip"
 					multiple
 					required
 					value={personName}
