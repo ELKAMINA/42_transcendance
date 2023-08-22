@@ -56,13 +56,10 @@ function Chat () {
 		if (selectedChannel === 'empty channel') // if roomId is 'WelcomeChannel'
 			return ; // exit the function immediatly
 		
-		// create socket connection
-		if (roomId != 'WelcomeChannel' && roomId != 'empty channel') {
-			socketRef.current = socketIOClient("http://localhost:4002", {
-				query: {roomId},
-				withCredentials: true,
-			})	
-		}
+		socketRef.current = socketIOClient("http://localhost:4002", {
+			query: {roomId},
+			withCredentials: true,
+		})	
 
 		if (newChannelCreated.current || isNewMemberNotif || justBeenBannedNotif) {
 			socketRef.current?.emit('newChannelCreated');
