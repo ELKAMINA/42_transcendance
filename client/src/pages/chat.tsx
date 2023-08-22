@@ -106,6 +106,7 @@ function Chat () {
 			// console.log('[chat] - current user = ', currentUser);
 			// console.log("[chat] roomId = ", roomId);
 			AppDispatch(fetchDisplayedChannel(roomId));
+			AppDispatch(fetchUserChannels());
 		})
 
 		socketRef.current?.on('channelDeletedNotif', () => {
