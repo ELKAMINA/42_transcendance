@@ -233,7 +233,7 @@ export function fetchUserChannels() {
 // 		} catch (error) {
 // 			console.log('error while getting all channels from database', error);
 // 		}
-// 	};
+// 	};r
 // }
 
 export function fetchDisplayedChannel(name : string) {
@@ -243,7 +243,11 @@ export function fetchDisplayedChannel(name : string) {
 		}
 		try {
 			const response = await api.post("http://localhost:4001/channel/displayed", requestBody);
-			dispatch(updateDisplayedChannel(response.data));
+			// console.log("[fetchDisplayedChannel] response = ", response);
+			if (response === undefined)
+				dispatch(updateDisplayedChannel(emptyChannel));
+			else 
+				dispatch(updateDisplayedChannel(response.data));
 
 		} catch (error) {
 			console.log(`error while getting displayed channel ${requestBody.name} from database`, error);
