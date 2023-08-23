@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 import * as argon from 'argon2';
@@ -24,6 +24,16 @@ export class ChannelService {
         throw new NotFoundException(
           `User with login '${userNickname}' not found.`,
         );
+      }
+      /*** ISSUE 110 ***/
+      // CHECK IF THE CHANNEL NAME ALREADY EXISTS
+      const channelExist = await this.prisma.channel.findUnique({
+        where: {
+          name: dto.name,
+        },
+      })
+      if (channelExist) {
+        throw new ForbiddenException('Channel name taken');
       }
       // we create channel record
       const channel = await this.prisma.channel.create({
