@@ -8,6 +8,8 @@ import channelsReducer from '../redux-features/chat/channelsSlice'
 import channelUserReducer from '../redux-features/chat/createChannel/channelUserSlice'
 import channelTypeReducer from '../redux-features/chat/createChannel/channelTypeSlice'
 import channelNameReducer from '../redux-features/chat/createChannel/channelNameSlice'
+// HANDLE ERROR ON WHOLE createChannel COMPONENT
+import createChannelErrorReducer from '../redux-features/chat/createChannel/createChannelErrorSlice';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +30,7 @@ const rootReducer = combineReducers({
 	channelName: channelNameReducer,
 	channelUser: channelUserReducer,
 	channelType: channelTypeReducer,
+	createChannelError: createChannelErrorReducer,
 });
 
 
