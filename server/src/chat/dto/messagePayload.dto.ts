@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsOptional, IsDate, IsBoolean } from "class-validator";
+import { IsNotEmpty, IsString, IsOptional, IsDate, IsBoolean, MaxLength } from "class-validator";
 
 export class MessageDto {
 
@@ -10,6 +10,7 @@ export class MessageDto {
   
 	@IsString()
 	@ApiProperty()
+	@MaxLength(64)
 	message: string;
 
 	@IsDate()

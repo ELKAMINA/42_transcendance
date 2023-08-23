@@ -18,6 +18,9 @@ import MicOffIcon from '@mui/icons-material/MicOff';
 import './Footer.css';
 import UnblockBlock from './UnblockBlock';
 
+/** ISSUE 110***/
+import { DoNotDisturbOnRounded } from '@mui/icons-material';
+
 interface mutes {
 	login: string,
 	ExpiryTime: Date | null,
@@ -67,6 +70,11 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		status: 0,
 	});
 	const [openBlock, setOpenBlock] = useState<boolean>(false);
+	/** ISSUE 110***/
+	// HANDLE THE ERROR IN MESSAGE TO DISABLE THE BUTTON IF
+	// THE MESSAGE IS TOO LARGE
+	const [errorInMsg, setErrorInMsg] = useState<boolean>(false);
+	const [errMsg, setErrMsg] = useState<string>("");
 	
 
 	// record message
@@ -99,6 +107,20 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 			setIsMuted(false);
 		}
     }, [selectedChannel])
+
+	/** ISSUE 110***/
+	// USE EFFECT TO GET THE LENGTH OF THE INPUT VALUE
+	// AND SET THE ERROR MESSAGE
+	React.useEffect( () => {
+		if (value.length >64) {
+			setErrMsg("The messsage is too large (64 characaters max)");
+			setErrorInMsg(true);
+		}
+		else {
+			setErrMsg("");
+			setErrorInMsg(false);
+		}
+	}, [value])
 
 	// useEffect(() => {
 	// 	return () => {
@@ -200,7 +222,8 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 
 
 	async function sendMessage() {
-		if (await userIsBlocked() === false && isMuted === false && value !== "") {
+		if (await userIsBlocked() === false && isMuted === false && value !== "" &&
+						errorInMsg === false) {
 			const messageToBeSent = {
 				sentBy: authState.nickname,
 				sentById: authState.nickname,
@@ -250,6 +273,8 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 				<StyledInput
 					onChange = {handleChange}
 					onKeyDown= {handleKeyDown}
+					error={errorInMsg}
+					helperText={errMsg}
 					value = {value}
 					variant='filled' fullWidth placeholder="Write a message..." InputProps={{
 						disableUnderline: true,
@@ -264,12 +289,13 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 					height: 48, width: 48, backgroundColor: '#07457E', borderRadius: 1.5
 				}}>
 					<Stack sx={{height:'100%', width:'100%',}} alignItems={'center'} justifyContent={'center'}>
-						{isMuted === false && 
-							<IconButton onClick={handleClick}>
+						{isMuted === false && errorInMsg === false && 
+							<IconButton onClick={handleClick} >
 								<SendIcon fontSize="medium" sx={{color: 'white'}}/>
 							</IconButton>
 						}
 						{isMuted === true && <MicOffIcon fontSize='medium' sx={{color: 'red'}}/>}
+						{isMuted === false && errorInMsg === true && <DoNotDisturbOnRounded fontSize="medium" sx={{color: 'red'}}/>}
 					</Stack>
 				</Box>
 			</Stack>
