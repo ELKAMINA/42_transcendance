@@ -37,6 +37,7 @@ api.interceptors.response.use((response) => {
             return api(config);
         };
     }
+    return Promise.reject(error);
 })
   
 const updateToken = async () => {
