@@ -83,7 +83,6 @@ export default function KickMember({
                         channelById: selectedChannel.name,
                     };
                     const userName = kickedMember.login;
-					const members = selectedChannel.members
                     // emit user has been kick out message
                     socketRef.current?.emit("kickedMember", {
                         dto,
