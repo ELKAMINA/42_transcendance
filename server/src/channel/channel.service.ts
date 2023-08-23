@@ -435,7 +435,8 @@ export class ChannelService {
 		}
 	}
 
-	async replaceMembers(requestBody: {channelName: { name: string }; members: User[]; action: string;
+	async replaceMembers(requestBody: {
+		channelName: { name: string }; members: User[]; action: string;
 	}): Promise<Channel> {
 		// console.log("[replaceMembers - channel.services] requestBody = ", requestBody.channelName.name);
 		try {
@@ -445,6 +446,7 @@ export class ChannelService {
 				where: {
 					name: channelName.name,
 				},
+				include : {admins : true}
 			});
 
 			if (!channel) {
@@ -456,6 +458,14 @@ export class ChannelService {
 			// Extract the new member IDs from the request
 			const newMemberIds = members.map((member) => member.login);
 
+			// Fetch the current 'admins' of the channel
+			const currentAdmins = channel.admins || [];
+
+			// Identify admins who are no longer members
+			const updatedAdmins = currentAdmins.filter((admin) => newMemberIds.some((newMemberId) => newMemberId === admin.login));
+			const newAdminIds = updatedAdmins.map((admin) => admin.login);
+
+
 			// Update the channel's members with the combined array
 			const updatedChannel = await this.prisma.channel.update({
 				where: {
@@ -464,6 +474,9 @@ export class ChannelService {
 				data: {
 					members: {
 						set: newMemberIds.map((login) => ({ login })),
+					},
+					admins: {
+						set: newAdminIds.map((login) => ({login})),
 					},
 				},
 			});
