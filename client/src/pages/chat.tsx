@@ -11,7 +11,7 @@ import Conversation from '../components/Conversation/Conversation';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
-import { fetchDisplayedChannel, fetchUserChannels, selectAdminUpdate, selectDisplayedChannel, selectExitUpdate, selectIsBanned, selectIsMember, selectOwnerUpdate, selectUserChannels, setAdminUpdate, setExitUpdate, setIsBanned, setIsMember, setOwnerUpdate } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectAdminUpdate, selectDisplayedChannel, selectExitUpdate, selectIsBanned, selectIsMember, selectOwnerUpdate, selectUserChannels, setAdminUpdate, setExitUpdate, setIsBanned, setIsMember, setOwnerUpdate } from '../redux-features/chat/channelsSlice';
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
@@ -163,6 +163,7 @@ function Chat () {
 		// console.log('[chat - on channelKickNotif]', 'A member has been kicked');
 		// console.log('[chat - on channelKickNotif]', 'currentUser: ', currentUser);
 		AppDispatch(fetchUserChannels());
+		AppDispatch(fetchPublicChannels());
 	})
 	
 	useEffect(() => {
@@ -196,7 +197,7 @@ function Chat () {
 			<div className='chat-container'>
 				<Navbar currentRoute={currentRoute} />
 				<div className='chat-wrapper'>
-				<SideBar handleSelectItem={handleSelectChannel} socketRef={socketRef} newChannelCreated={newChannelCreated} channelDeleted={channelDeleted}/>
+				<SideBar handleSelectItem={handleSelectChannel} newChannelCreated={newChannelCreated} channelDeleted={channelDeleted}/>
 				<div className='chat'>
 					{isBanned === false && <Conversation socketRef={socketRef} messages={messages} setMessages={setMessages}/>}
 					{isBanned === true && <Banned />}
