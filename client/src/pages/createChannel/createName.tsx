@@ -36,7 +36,7 @@ function CreateName() {
 		  setIsTaken(true);
 		  /*** ISSUE 110 ***/
 		  dispatch(setNameErrorState(true));
-		} else if (value.length <= 0) {
+		} else if (value.length <= 0 || value.length > 20) {
 			dispatch(setNameErrorState(true));
 		} else {
 		  dispatch(changeChannelName(value))
