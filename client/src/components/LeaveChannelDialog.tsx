@@ -84,8 +84,14 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 				{"Leaving channel"}
 			</DialogTitle>
 			<DialogContent>
-				<DialogContentText sx={{marginTop:'7%', marginBottom: '7%'}}>
-					Doing this will exclude you from the list of members. If this channel is private, you will only be able to re-join if invited by a member.
+				<DialogContentText sx={{marginTop:'7%'}}>
+					Doing this will exclude you from the list of members. 
+					If this channel is private, you will only be able to re-join if invited by a member.
+				</DialogContentText>
+				<DialogContentText sx={{fontWeight: 'bold'}}>
+					If you are an admin of the channel, you will loose this status.
+				</DialogContentText>
+				<DialogContentText sx={{marginBottom: '7%'}}>
 					Are you sure you want to leave?
 				</DialogContentText>
 			</DialogContent>
