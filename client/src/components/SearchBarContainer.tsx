@@ -31,6 +31,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	useEffect(() => {
 		AppDispatch(FetchAllFriends())
 		AppDispatch(fetchPublicChannels())
+		// AppDispatch(fetchUserChannels())
 	}, []); // get the friends and channels from database
 
 	const friends = useAppSelector(selectFriends) as UserModel[];
@@ -156,9 +157,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 				}
 			}
 			else if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
-				// console.log("[searchBar container] name = ", value.name);
-				// console.log("[searchBar container] members = ", value.members);
-				if (value.members.length > 1) {
+				if (value.members) {
 					if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
 						// console.log("[searchbar] coucou");
 						setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
@@ -193,7 +192,6 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 			}
 		}
 	};
-
 
 	return (
 		<Box sx={{width: '95%'}}>
