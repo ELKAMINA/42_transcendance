@@ -53,7 +53,6 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 			.post('http://localhost:4001/channel/updateBanned', {
 				channelName : {name : selectedChannel.name},
 				banned : readyToBeSendBanned,
-				currentUser: currentUser,
 			})
 			.then((response) => {
 				// console.log("response = ", response)

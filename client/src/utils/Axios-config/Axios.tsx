@@ -19,6 +19,7 @@ api.interceptors.request.use( (config) => {
 
 api.interceptors.response.use((response) => {
     /* If the request is OK, return the response */
+    // console.log('the response', response)
     return response
 }, async(error) => {
     /* If the request is KO: 
@@ -43,6 +44,8 @@ api.interceptors.response.use((response) => {
             return api(config);
         };
     }
+    // console.log('error ', error)
+    return Promise.reject(error);
 })
   
 const updateToken = async () => {

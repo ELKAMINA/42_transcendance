@@ -146,7 +146,7 @@ export class ChannelService {
         type: 'public', // Filter channels by type 'public'
       },
     });
-
+    // console.log('public channels', channels);
     return channels;
   }
 
@@ -291,7 +291,7 @@ export class ChannelService {
         throw new Error(`Channel with name '${channelName.name}' not found.`);
       }
 
-      const mutedIds = muted.map((muted) => ({ login: muted.login }));
+      const mutedIds = muted.map((mute) => ({ login: mute.login }));
 
       // Update the channel's muted with the new array
       const updatedChannel = await this.prisma.channel.update({
@@ -322,7 +322,8 @@ export class ChannelService {
       // console.log('updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      console.error(error);
+      console.error(error); // Amina: j'ai commenté car c moche dans la console
+      console.error('a problem has occured with muting someone');
     }
   }
 

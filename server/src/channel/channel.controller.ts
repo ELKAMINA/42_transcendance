@@ -12,7 +12,6 @@ import { Channel, User } from '@prisma/client';
 import { RolesGuard } from 'src/guards/roles.guards';
 import { Roles } from 'src/decorators/roles.decorators';
 import { ChannelService } from '../channel/channel.service';
-import { ExcludeRolesGuard } from 'src/guards/excludeRole.guard';
 
 type DateTime = Date;
 
@@ -21,19 +20,15 @@ export type UserWithTime = {
   ExpiryTime: string | null;
 };
 
-// @UseGuards(RolesGuard)
+@UseGuards(RolesGuard)
 @Controller('channel')
 @ApiTags('channel')
-// @AuthGuard // AJOUTER PROTECTION
 export class channelController {
   constructor(
     private ChannelService: ChannelService,
     private prismaService: PrismaService,
   ) {}
 
-  /* A garder : 
-    Check if user is authenticated
-  */
   @Post('/creation')
   createChannel(
     @Req() request: Request,
@@ -45,61 +40,23 @@ export class channelController {
     return this.ChannelService.createChannel(userNickname, dto);
   }
 
-  /* A garder : 
-    Check if user is authenticated
-  */
   @Post('/userchannels')
   getUserChannels(@Body() requestBody): Promise<object> {
     return this.ChannelService.getUserChannels(requestBody.login);
   }
 
-  /* A Garder:
-    - Checker si le user est bien  membre (et authenticated)
-  */
-  // @Roles('member')
   @Post('/displayed')
   getDisplayedChannel(@Body() requestBody): Promise<object> {
     return this.ChannelService.getDisplayedChannel(requestBody.name);
   }
-
-  // @Post('/fetchUserPrivateChannels')
-  // @Public() // TODO - remove public
-  // getUserPrivateChannels(@Body() requestBody: string): Promise<object> {
-  //   return this.ChannelService.getUserPrivateChannels(requestBody);
-  // }
-
-  // @Post('/fetchUserPublicChannels')
-  // @Public() // TODO - remove public
-  // getUserPublicChannels(@Body() requestBody: string): Promise<object> {
-  //   return this.ChannelService.getUserPublicChannels(requestBody);
-  // }
-
-  // @Post('/fetchUserPrivateConvs')
-  // @Public() // TODO - remove public
-  // getUserPrivateConvs(@Body() requestBody: string): Promise<object> {
-  //   return this.ChannelService.getUserPrivateConvs(requestBody);
-  // }
-
-  // @Post('/fetchPrivateChannels')
-  // @Public() // TODO - remove public
-  // getPrivateChannels(): Promise<object> {
-  //   return this.ChannelService.getAllPrivateChannelsInDatabase();
-  // }
 
   @Post('/fetchPublicChannels')
   getPublicChannels(): Promise<object> {
     return this.ChannelService.getAllPublicChannelsInDatabase();
   }
 
-  // @Post('/fetchPrivateConvs')
-  // @Public() // TODO - remove public
-  // getPrivateConvs(): Promise<object> {
-  //   return this.ChannelService.getAllPrivateConvsInDatabase();
-  // }
-
   @Roles('owner')
   @Post('/deleteChannelByName')
-  @Public() // TODO - remove public
   deleteChannelByName(@Body() requestBody: { name: string }): Promise<void> {
     return this.ChannelService.deleteChannelByName(requestBody);
   }
@@ -160,10 +117,6 @@ export class channelController {
     return this.ChannelService.addMembers(requestBody);
   }
 
-  // @Roles('admin') uard */
-  //Amina : i deleted the role bc as we have a condition functionality
-  // depending  if it's kick or leave, the work is done inside the Guard
-  @UseGuards(RolesGuard)
   @Post('/replaceMembers')
   replaceMembers(
     @Body()

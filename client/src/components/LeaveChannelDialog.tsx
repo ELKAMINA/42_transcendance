@@ -43,10 +43,6 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 				action: 'leave',
 			})
 			.then((response) => {
-				console.log('la response ', response)
-				if (response.status && response.status === 403){
-					return ;
-				}
 				// update the state of the user channels
 				AppDispatch(fetchUserChannels());
 

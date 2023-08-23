@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Body,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { Reflector } from '@nestjs/core';
 import { parse } from 'cookie';
@@ -16,99 +21,96 @@ export class RolesGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    let requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    try {
+      let requiredRoles = this.reflector.getAllAndOverride<string[]>(
+        ROLES_KEY,
+        [context.getHandler(), context.getClass()],
+      );
+      let toBan;
+      let toMute;
+      let activate = false;
+      let concernedchannel;
 
-    const request = context.switchToHttp().getRequest();
-    // const response = context.switchToHttp().getResponse();
+      /* Getting the request  */
+      const request = context.switchToHttp().getRequest();
 
-    // console.log('[Guard ---- Required roles] ', requiredRoles);
-    // console.log('[Guard ---- path asked] ', request.route.path);
-    // console.log('request ');
-    if (!requiredRoles && !request.route.path.includes('/replaceMembers')) {
-      // Step 5
-      // console.log('Required roles CONDITION ', requiredRoles);
-      return true;
-    } else if (
-      !requiredRoles &&
-      request.route.path.includes('/replaceMembers')
-    ) {
-      const { action } = request.body;
-      if (action === 'leave') requiredRoles = ['not owner'];
-      else requiredRoles = ['admin'];
-    }
-    // console.log('Requests ', request);
-    let concernedchannel;
-    if (request.route.path.includes('/checkPwd')) {
-      concernedchannel = request.body.obj.name;
-      // console.log('concerned channel', concernedchannel);
-    }
-
-    let activate = false;
-    if (request.body.channelName)
-      concernedchannel = request.body.channelName.name;
-    else if (request.body.name) {
-      concernedchannel = request.body.name;
-    }
-    if (
-      concernedchannel === 'WelcomeChannel' ||
-      concernedchannel === 'empty channel'
-    ) {
-      return true;
-    }
-    // console.log('concerned Channel ', concernedchannel);
-
-    const userFromCookie = this.getUserInfoFromSocket(request.headers.cookie);
-    const userFromDB = await this.userServ.searchUser(userFromCookie.nickname);
-    if (!userFromDB || !concernedchannel) return activate;
-    console.log('[ Required roles ] ', requiredRoles);
-    console.log('1----[ ]: Channel concerned ', concernedchannel);
-    console.log('[]: User concerned ', userFromDB.login);
-    requiredRoles.map((role) => {
-      switch (role) {
-        case 'admin':
-          activate = userFromDB.adminChannels.some(
-            (chan) => chan.name === concernedchannel,
-          );
-          console.log('ADMIN = [Guard ---- path asked] ', request.route.path);
-          break;
-        case 'member':
-          console.log(
-            '[Guard] --- Role: member : Channels C user',
-            userFromDB.channels,
-          );
-          console.log(
-            '2----[From member ]: Channel concerned ',
-            concernedchannel,
-          );
-          console.log('[From member ]: User concerned ', userFromDB.login);
-          console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
-          activate = userFromDB.channels.some(
-            (chan) => chan.name === concernedchannel,
-          );
-          break;
-        case 'owner':
-          activate = userFromDB.ownedChannels.some(
-            (chan) => chan.name === concernedchannel,
-          );
-          console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
-          console.log('[Guard] --- OWNER : activate ', activate);
-          break;
-        case 'not owner':
-          activate = !userFromDB.ownedChannels.some(
-            (chan) => chan.name === concernedchannel,
-          );
-          console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
-          console.log('[Guard] --- NOT OWNER : activate ', activate);
-          break;
-        default:
-          break;
+      /* Checking required roles  */
+      if (!requiredRoles && !request.route.path.includes('/replaceMembers')) {
+        return true;
+      } else if (
+        !requiredRoles &&
+        request.route.path.includes('/replaceMembers')
+      ) {
+        const { action } = request.body;
+        if (action === 'leave') requiredRoles = ['not owner'];
+        else requiredRoles = ['admin'];
       }
-    });
-    console.log('[Guard ] --- Final result : activate: ', activate);
-    return activate;
+
+      /* Getting channel name depending on arg received */
+      if (request.route.path.includes('/checkPwd')) {
+        concernedchannel = request.body.obj.name;
+      }
+      if (request.body.channelName)
+        concernedchannel = request.body.channelName.name;
+      else if (request.body.name) {
+        concernedchannel = request.body.name;
+      }
+      if (
+        concernedchannel === 'WelcomeChannel' ||
+        concernedchannel === 'empty channel'
+      ) {
+        return true;
+      }
+
+      /* Getting user from cookie */
+      const userFromCookie = this.getUserInfoFromSocket(request.headers.cookie);
+      const userFromDB = await this.userServ.searchUser(
+        userFromCookie.nickname,
+      );
+      if (!userFromDB || !concernedchannel) return activate;
+
+      /* Issue 111: a user cannot ban/mute itself */
+      if (request.route.path.includes('/updateMuted')) {
+        toMute = request.body.muted.some((e) => e === userFromDB.login);
+        if (toMute) return false;
+      }
+
+      if (request.route.path.includes('/updateBanned')) {
+        toBan = request.body.banned.some((e) => e === userFromDB.login);
+        if (toBan) return false;
+      }
+
+      /* Logic for each role */
+      requiredRoles.map((role) => {
+        switch (role) {
+          case 'admin':
+            activate = userFromDB.adminChannels.some(
+              (chan) => chan.name === concernedchannel,
+            );
+            break;
+          case 'member':
+            activate = userFromDB.channels.some(
+              (chan) => chan.name === concernedchannel,
+            );
+            break;
+          case 'owner':
+            activate = userFromDB.ownedChannels.some(
+              (chan) => chan.name === concernedchannel,
+            );
+            break;
+          case 'not owner':
+            activate = !userFromDB.ownedChannels.some(
+              (chan) => chan.name === concernedchannel,
+            );
+            break;
+          default:
+            break;
+        }
+      });
+      return activate;
+    } catch (e) {
+      console.log('Oups, something went wrong with Roles');
+    }
   }
 }
 
@@ -124,5 +126,4 @@ export class RolesGuard implements CanActivate {
 
 	5. *Step 5 means : If there are no requiredRoles attached as metadata, the guard will allow the action to proceed by returning true.
 
-	6. This line switches the context to the HTTP context and then fetches the current HTTP request object. This allows access to request-specific properties, like headers, body, params, and user (often attached by authentication middleware).
-*/
+	6. This line switches the context to the HTTP context and then fetches the current HTTP request object. This allows access to request-specific properties, like headers, body, params, and user (often attached by authentication middleware).*/
