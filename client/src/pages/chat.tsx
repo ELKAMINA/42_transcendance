@@ -11,7 +11,7 @@ import Conversation from '../components/Conversation/Conversation';
 import { Channel, ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
-import { fetchDisplayedChannel, fetchUserChannels, selectAdminUpdate, selectDisplayedChannel, selectIsBanned, selectIsMember, selectOwnerUpdate, selectUserChannels, setAdminUpdate, setIsBanned, setIsMember, setOwnerUpdate } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectAdminUpdate, selectDisplayedChannel, selectExitUpdate, selectIsBanned, selectIsMember, selectOwnerUpdate, selectUserChannels, setAdminUpdate, setExitUpdate, setIsBanned, setIsMember, setOwnerUpdate } from '../redux-features/chat/channelsSlice';
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
@@ -29,6 +29,7 @@ function Chat () {
 	const isNewMemberNotif = useAppSelector(selectIsMember)
 	const justBeenBannedNotif = useAppSelector(selectIsBanned);
 	const ownerUpdate = useAppSelector(selectOwnerUpdate);
+	const exitUpdate = useAppSelector(selectExitUpdate);
 	const adminUpdate = useAppSelector(selectAdminUpdate);
 	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
@@ -55,7 +56,7 @@ function Chat () {
 	useEffect(() => {
 		// console.log('[Chat] - roomId = ', roomId)
 
-		if (selectedChannel === 'empty channel') // if roomId is 'WelcomeChannel'
+		if (selectedChannel === 'empty channel') // if roomId is 'empty channel'
 			return ; // exit the function immediatly
 		
 		socketRef.current = socketIOClient("http://localhost:4002", {
@@ -63,11 +64,11 @@ function Chat () {
 			withCredentials: true,
 		})	
 
-		if (newChannelCreated.current || isNewMemberNotif || justBeenBannedNotif) {
+		if (newChannelCreated.current || isNewMemberNotif) {
 			socketRef.current?.emit('newChannelCreated');
 			newChannelCreated.current = false;
 			AppDispatch(setIsMember(false));
-			AppDispatch(setIsBanned(false));
+			// AppDispatch(setIsBanned(false));
 		}
 
 		if (justBeenBannedNotif) {
@@ -83,6 +84,11 @@ function Chat () {
 		if (adminUpdate) {
 			socketRef.current?.emit('adminUpdate');
 			AppDispatch(setAdminUpdate(false));
+		}
+
+		if (exitUpdate) {
+			socketRef.current?.emit('exitUpdate');
+			AppDispatch(setExitUpdate(false));
 		}
 
 		if (channelDeleted.current) {
@@ -145,7 +151,14 @@ function Chat () {
 		}
 	}, [roomId, isNewMemberNotif, justBeenBannedNotif, ownerUpdate, adminUpdate])
 
-	/*** ISSUE 88 ***/
+	socketRef.current?.off('').on('leavingChannelNotif', (userName : string) => {
+		if (currentUser !== userName) {
+			AppDispatch(fetchUserChannels());
+			console.log("received event member left the room = ", roomId);
+			AppDispatch(fetchDisplayedChannel(roomId))	
+		}
+	})
+
 	socketRef.current?.off('channelKickNotif').on('channelKickNotif', () => {
 		// console.log('[chat - on channelKickNotif]', 'A member has been kicked');
 		// console.log('[chat - on channelKickNotif]', 'currentUser: ', currentUser);
@@ -164,8 +177,9 @@ function Chat () {
 		setSelectedChannel(channelName);
 	}
 
-	let isBanned;
-	// console.log("[Chat] displayedChannel.name = ", displayedChannel);
+	let isBanned = false;
+	// if (!displayedChannel || displayedChannel.name !== 'WelcomeChannel' || displayedChannel.banned)
+		// isBanned = false;
 	if (displayedChannel && displayedChannel.name !== 'WelcomeChannel' && displayedChannel.banned) {
 		isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
 	}

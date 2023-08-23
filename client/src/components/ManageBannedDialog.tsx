@@ -9,7 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import UserList, { UserWithTime } from './UserList';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, setIsBanned } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectDisplayedChannel, setIsBanned } from '../redux-features/chat/channelsSlice';
 import api from '../utils/Axios-config/Axios';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { UserModel } from '../types/users/userType';
@@ -57,6 +57,7 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 			.then((response) => {
 				// console.log("response = ", response)
 				AppDispatch(fetchUserChannels());
+				AppDispatch(fetchPublicChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 				AppDispatch(setIsBanned(true));
 			})

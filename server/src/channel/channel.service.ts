@@ -276,8 +276,8 @@ export class ChannelService {
 						BannedExpiry: bannedUser.ExpiryTime ? bannedUser.ExpiryTime : null,
 					},
 				});
-				console.log(`Updated BannedExpiry for user with ID '${user.login}'`);
-				console.log('user updated = ', user.BannedExpiry);
+				// console.log(`Updated BannedExpiry for user with ID '${user.login}'`);
+				// console.log('user updated = ', user.BannedExpiry);
 			}
 
 			// console.log('updatedChannel = ', updatedChannel);
@@ -333,8 +333,8 @@ export class ChannelService {
 						MutedExpiry: mutedUser.ExpiryTime ? mutedUser.ExpiryTime : null,
 					},
 				});
-				console.log(`Updated MutedExpiry for user with ID '${user.login}'`);
-				console.log('user updated = ', user.MutedExpiry);
+				// console.log(`Updated MutedExpiry for user with ID '${user.login}'`);
+				// console.log('user updated = ', user.MutedExpiry);
 			}
 
 			// console.log('updatedChannel = ', updatedChannel);
@@ -406,15 +406,15 @@ export class ChannelService {
 
 			// Extract the current member IDs from the retrieved channel
 			const existingMemberIds = channel.members.map((member) => member.login);
-			console.log('existingMemberIds = ', existingMemberIds);
+			// console.log('existingMemberIds = ', existingMemberIds);
 
 			// Extract the new member IDs from the request
 			const newMemberIds = members.map((member) => member.login);
-			console.log('newMemberIds = ', newMemberIds);
+			// console.log('newMemberIds = ', newMemberIds);
 
 			// Combine the existing and new member IDs
 			const allMemberIds = [...existingMemberIds, ...newMemberIds];
-			console.log('allMemberIds = ', allMemberIds);
+			// console.log('allMemberIds = ', allMemberIds);
 
 			// Update the channel's members with the combined array
 			const updatedChannel = await this.prisma.channel.update({
@@ -435,11 +435,9 @@ export class ChannelService {
 		}
 	}
 
-	async replaceMembers(requestBody: {
-		channelName: { name: string };
-		members: User[];
-		action: string;
+	async replaceMembers(requestBody: {channelName: { name: string }; members: User[]; action: string;
 	}): Promise<Channel> {
+		// console.log("[replaceMembers - channel.services] requestBody = ", requestBody.channelName.name);
 		try {
 			const { channelName, members, action } = requestBody;
 			// Find the channel by name
@@ -470,7 +468,7 @@ export class ChannelService {
 				},
 			});
 
-			// console.log('[MEMBERS] updatedChannel = ', updatedChannel);
+			// console.log('[MEMBERS] updatedChannel = ', updatedChannel.name);
 			return updatedChannel;
 		} catch (error) {
 			console.error(error);

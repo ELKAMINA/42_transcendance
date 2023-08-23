@@ -13,11 +13,11 @@ import { ChatMessage } from "../../types/chat/messageType";
 import { ChannelModel } from "../../types/chat/channelTypes";
 import { selectCurrentUser } from "../../redux-features/auth/authSlice";
 import {
-    selectDisplayedChannel,
-    selectGameDialog,
-    setGameDialog,
-    fetchDisplayedChannel,
-    fetchUserChannels,
+	selectDisplayedChannel,
+	selectGameDialog,
+	setGameDialog,
+	fetchDisplayedChannel,
+	fetchUserChannels,
 } from "../../redux-features/chat/channelsSlice";
 
 import GameSuggestion from "../Game/GameSuggestion";
@@ -28,258 +28,198 @@ import { useNavigate } from "react-router-dom";
 // import { wait } from "../../utils/global/global";
 
 export interface dialogInfo {
-    sender: string;
-    receiver: string;
-    content: string;
-    waiting: boolean; // false means it's the user who we suggested to
+	sender: string;
+	receiver: string;
+	content: string;
+	waiting: boolean; // false means it's the user who we suggested to
 }
 
 interface gameSugg {
-    from: string;
-    to: string;
+	from: string;
+	to: string;
 }
 
 type ConvProps = {
-    socketRef: React.MutableRefObject<Socket | undefined>;
-    messages: ChatMessage[];
-    setMessages: (arg0: ChatMessage[]) => void;
+	socketRef: React.MutableRefObject<Socket | undefined>;
+	messages: ChatMessage[];
+	setMessages: (arg0: ChatMessage[]) => void;
 };
 
 function Conversation({ socketRef, messages, setMessages }: ConvProps) {
-    const selectedChannel: ChannelModel =
-        useAppSelector((state) => selectDisplayedChannel(state)) ||
-        emptyChannel;
-    const isWelcomeChannel =
-        selectedChannel.name === "WelcomeChannel" ? true : false;
-    const roomId = selectedChannel.name;
-    // const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
-    const currentUser = useAppSelector((state: RootState) =>
-        selectCurrentUser(state)
-    );
+	const selectedChannel: ChannelModel = useAppSelector(selectDisplayedChannel);
+	const isWelcomeChannel = selectedChannel.name === "WelcomeChannel" ? true : false;
+	const roomId = selectedChannel.name;
+	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
+	const currentUser = useAppSelector(selectCurrentUser);
 
-    const dispatch = useAppDispatch();
-    const gameDialog = useAppSelector(selectGameDialog);
-    const [open, setOpen] = useState<boolean>(false);
-    const [gameDialogInfo, setGameDialogInfo] = useState<dialogInfo>({
-        sender: "",
-        receiver: "",
-        content: "",
-        waiting: false,
-    });
-    const navigate = useNavigate();
+	const dispatch = useAppDispatch();
+	const gameDialog = useAppSelector(selectGameDialog);
+	const [open, setOpen] = useState<boolean>(false);
+	const [gameDialogInfo, setGameDialogInfo] = useState<dialogInfo>({
+		sender: "",
+		receiver: "",
+		content: "",
+		waiting: false,
+	});
+	const navigate = useNavigate();
 
-    /*** ISSUE 88 ***/
-    // HANDLE SERVER MESSAGE TO REQUEST KICK OF USER
-    socketRef.current?.on("ServerToChatForKicking", (userName: string) => {
-        console.log(
-            "[Chat - on ServerToChatForKicking]",
-            "currentUser: ",
-            currentUser,
-            "userName to be kicked: ",
-            userName
-        );
-        if (currentUser === userName) {
-            dispatch(fetchUserChannels());
-            dispatch(fetchDisplayedChannel("WelcomeChannel"));
-        }
-    });
+	socketRef.current?.on("ServerToChatForKicking", (userName: string) => {
+		if (currentUser === userName) {
+			dispatch(fetchUserChannels());
+			dispatch(fetchDisplayedChannel("WelcomeChannel"));
+		}
+	});
 
-    // useEffect(() => {
-    // console.log('[A larrivée sur Conversation : selectedChannels] ', selectedChannel)
-    // console.log('[A larrivée sur Conversation : Welcome Channel] ', isWelcomeChannel)
-    // console.log('[A larrivée sur Conversation : CurrentUser] ', currentUser)
-    // }, []);
+	useEffect(() => {
+		return () => {
+			dispatch(setGameDialog(false));
+		};
+	}, [roomId]);
 
-    // async function waitforme() {
-    // await wait(2000);
-    // console.log('error 2');
-    // }
+	const send = (value: ChatMessage) => {
+		if (socketRef.current) {
+			value.senderSocketId = socketRef.current.id;
+		}
+		socketRef.current?.emit("ChatToServer", value);
+	};
 
-    useEffect(() => {
-        // console.log("[conversation] - roomId = ", roomId);
+	// scroll the Box element to the bottom by setting the scrollTop property to the scrollHeight hehe
+	const scrollMessageContainerToBottom = () => {
+		if (messageContainerRef.current) {
+			messageContainerRef.current.scrollTop =
+				messageContainerRef.current.scrollHeight;
+		}
+	};
 
-        // socketRef.current?.on('ServerToChat:' + roomId, (message : ChatMessage) => {
-        // 	const incomingMessage : ChatMessage = {
-        // 		...message,
-        // 		outgoing: message.sentBy === currentUser,
-        // 		incoming: message.sentBy !== currentUser,
-        // 	}
-        // 	// console.log('[From Messages : all Messages ]: ', messages)
-        // 	setMessages((messages) => [...messages, incomingMessage])
-        // })
+	useEffect(() => {
+		scrollMessageContainerToBottom();
+		// console.log('[IN THE USEEFFECT -- From Messages: all Messages ]: ', messages)
+	}, [messages]); // call the function when messages change
 
-        return () => {
-            dispatch(setGameDialog(false));
-        };
-    }, [roomId]);
+	useEffect(() => {
+		scrollMessageContainerToBottom(); // scroll to bottom when the component is rendered
+	}, []);
 
-    // --- OTHER SOLUTION ----
-    // useEffect(() => {
-    // 	console.log("[conversation] - selectedChannel = ", selectedChannel.name);
-    // 	const messageListener = (message: ChatMessage) => {
-    // 		const incomingMessage: ChatMessage = {
-    // 			...message,
-    // 			outgoing: message.sentBy === currentUser,
-    // 			incoming: message.sentBy !== currentUser,
-    // 		};
-    // 		setMessages((prevMessages) => [...prevMessages, incomingMessage]);
-    // 	};
+	const suggestGame = (gameSuggestionInfo: gameSugg) => {
+		socketRef.current?.emit("suggestingGame", gameSuggestionInfo);
+	};
 
-    // 	socketRef.current?.on('ServerToChat:' + roomId, messageListener);
+	// A REVOIR AVEC AMINA
+	socketRef.current
+		?.off("respondingGame")
+		.on("respondingGame", (gameSuggestionInfo: gameSugg) => {
+			// console.log(gameSuggestionInfo);
+			if (gameSuggestionInfo.to !== currentUser) {
+				setGameDialogInfo({
+					sender: gameSuggestionInfo.from,
+					receiver: gameSuggestionInfo.to,
+					content: `Waiting for ${gameSuggestionInfo.to} to accept the game`,
+					waiting: true,
+				});
+			} else if (gameSuggestionInfo.to === currentUser) {
+				setGameDialogInfo({
+					sender: gameSuggestionInfo.from,
+					receiver: gameSuggestionInfo.to,
+					content: `${gameSuggestionInfo.from} wanna play with you`,
+					waiting: false,
+				});
+			}
+			setOpen(true);
+			dispatch(setGameDialog(true));
+		});
 
-    // 	return () => {
-    // 		console.log('[conversation] = returning')
-    // 		socketRef.current?.off('ServerToChat:' + roomId, messageListener);
-    // 	};
-    // }, [selectedChannel]);
+	socketRef.current
+		?.off("serverPrivateGame")
+		.on("serverPrivateGame", (gameAcceptance) => {
+			navigate(`/game?data`, {
+				state: {
+					data: {
+						type: EClientPlayType.ONETOONE,
+						sender: gameAcceptance.sender,
+						receiver: gameAcceptance.receiver,
+					},
+				},
+			});
+		});
 
-    // --- END OF OTHER SOLUTION ----
+	socketRef.current?.off("gameDenied").on("gameDenied", () => {
+		setOpen(false);
+		dispatch(setGameDialog(false));
+	});
 
-    const send = (value: ChatMessage) => {
-        if (socketRef.current) {
-            value.senderSocketId = socketRef.current.id;
-        }
-        socketRef.current?.emit("ChatToServer", value);
-    };
+	socketRef.current?.off("gameCancelled").on("gameCancelled", () => {
+		setOpen(false);
+		dispatch(setGameDialog(false));
+	});
 
-    // scroll the Box element to the bottom by setting the scrollTop property to the scrollHeight hehe
-    const scrollMessageContainerToBottom = () => {
-        if (messageContainerRef.current) {
-            messageContainerRef.current.scrollTop =
-                messageContainerRef.current.scrollHeight;
-        }
-    };
+	const handleClose = () => {
+		setOpen(false);
+	};
 
-    useEffect(() => {
-        scrollMessageContainerToBottom();
-        // console.log('[IN THE USEEFFECT -- From Messages: all Messages ]: ', messages)
-    }, [messages]); // call the function when messages change
+	const acceptGame = (gameAcceptance: any) => {
+		socketRef.current?.emit("privateGame", gameAcceptance);
+	};
 
-    useEffect(() => {
-        scrollMessageContainerToBottom(); // scroll to bottom when the component is rendered
-    }, []);
+	const denyGame = () => {
+		socketRef.current?.emit("denyGame");
+	};
 
-    const suggestGame = (gameSuggestionInfo: gameSugg) => {
-        socketRef.current?.emit("suggestingGame", gameSuggestionInfo);
-    };
+	const cancelGame = () => {
+		socketRef.current?.emit("cancelGame");
+	};
 
-    // A REVOIR AVEC AMINA
-    socketRef.current
-        ?.off("respondingGame")
-        .on("respondingGame", (gameSuggestionInfo: gameSugg) => {
-            // console.log(gameSuggestionInfo);
-            if (gameSuggestionInfo.to !== currentUser) {
-                setGameDialogInfo({
-                    sender: gameSuggestionInfo.from,
-                    receiver: gameSuggestionInfo.to,
-                    content: `Waiting for ${gameSuggestionInfo.to} to accept the game`,
-                    waiting: true,
-                });
-            } else if (gameSuggestionInfo.to === currentUser) {
-                setGameDialogInfo({
-                    sender: gameSuggestionInfo.from,
-                    receiver: gameSuggestionInfo.to,
-                    content: `${gameSuggestionInfo.from} wanna play with you`,
-                    waiting: false,
-                });
-            }
-            setOpen(true);
-            dispatch(setGameDialog(true));
-        });
-
-    socketRef.current
-        ?.off("serverPrivateGame")
-        .on("serverPrivateGame", (gameAcceptance) => {
-            navigate(`/game?data`, {
-                state: {
-                    data: {
-                        type: EClientPlayType.ONETOONE,
-                        sender: gameAcceptance.sender,
-                        receiver: gameAcceptance.receiver,
-                    },
-                },
-            });
-        });
-
-    socketRef.current?.off("gameDenied").on("gameDenied", () => {
-        setOpen(false);
-        dispatch(setGameDialog(false));
-    });
-
-    socketRef.current?.off("gameCancelled").on("gameCancelled", () => {
-        setOpen(false);
-        dispatch(setGameDialog(false));
-    });
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const acceptGame = (gameAcceptance: any) => {
-        socketRef.current?.emit("privateGame", gameAcceptance);
-    };
-
-    const denyGame = () => {
-        socketRef.current?.emit("denyGame");
-    };
-
-    const cancelGame = () => {
-        socketRef.current?.emit("cancelGame");
-    };
-
-    return (
-        <Stack height={"100%"} maxHeight={"100vh"} width={"auto"}>
-            {isWelcomeChannel && gameDialog === false && (
-                <Stack direction={"column"} justifyContent={"center"}>
-                    <Box
-                        sx={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <Typography
-                            align="center"
-                            variant="h1"
-                            sx={{ color: "grey", fontStyle: "italic" }}
-                        >
-                            No channel selected yet...
-                        </Typography>
-                    </Box>
-                </Stack>
-            )}
-            {!isWelcomeChannel && gameDialog === false && (
-                <React.Fragment>
-                    <Header socketRef={socketRef} onSuggestGame={suggestGame} />
-                    <Box
-                        width={"100%"}
-                        sx={{
-                            flexGrow: 1, // ensures that the message section expands and takes up all the available vertical space between the chat header and footer.
-                            height: "100%",
-                            overflowY: "scroll",
-                        }}
-                        ref={messageContainerRef}
-                    >
-                        <Message
-                            messages={messages}
-                            setMessages={setMessages}
-                        />
-                    </Box>
-                    <Footer send={send} socketRef={socketRef} />
-                </React.Fragment>
-            )}
-            {gameDialog === true && (
-                <GameSuggestion
-                    open={open}
-                    handleClose={handleClose}
-                    dialogContent={gameDialogInfo}
-                    onAcceptingGame={acceptGame}
-                    onDeny={denyGame}
-                    onCancel={cancelGame}
-                />
-            )}
-        </Stack>
-    );
+	return (
+		<Stack height={"100%"} maxHeight={"100vh"} width={"auto"}>
+			{isWelcomeChannel && gameDialog === false && (
+				<Stack direction={"column"} justifyContent={"center"}>
+					<Box
+						sx={{
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						<Typography
+							align="center"
+							variant="h1"
+							sx={{ color: "grey", fontStyle: "italic" }}
+						>
+							No channel selected yet...
+						</Typography>
+					</Box>
+				</Stack>
+			)}
+			{!isWelcomeChannel && gameDialog === false && (
+				<React.Fragment>
+					<Header socketRef={socketRef} onSuggestGame={suggestGame} />
+					<Box
+						width={"100%"}
+						sx={{
+							flexGrow: 1, // ensures that the message section expands and takes up all the available vertical space between the chat header and footer.
+							height: "100%",
+							overflowY: "scroll",
+						}}
+						ref={messageContainerRef}
+					>
+						<Message
+							messages={messages}
+							setMessages={setMessages}
+						/>
+					</Box>
+					<Footer send={send} socketRef={socketRef} />
+				</React.Fragment>
+			)}
+			{gameDialog === true && (
+				<GameSuggestion
+					open={open}
+					handleClose={handleClose}
+					dialogContent={gameDialogInfo}
+					onAcceptingGame={acceptGame}
+					onDeny={denyGame}
+					onCancel={cancelGame}
+				/>
+			)}
+		</Stack>
+	);
 }
 
 export default Conversation;

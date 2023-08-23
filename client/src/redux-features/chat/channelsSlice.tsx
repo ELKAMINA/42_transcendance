@@ -15,6 +15,7 @@ export interface ChannelSlice {
 	isPopupOpen: boolean,
 	ownerUpdate: boolean,
 	adminUpdate: boolean,
+	exitUpdate : boolean,
 	isMuted: MutingInfo[],
 	// createdChannels : ChannelModel[],
 	// memberedChannels : ChannelModel[],
@@ -37,6 +38,7 @@ const initialState : ChannelSlice = {
 	adminUpdate: false,
 	ownerUpdate: false,
 	isPopupOpen: false,
+	exitUpdate : false,
 	isMuted: [],
 	// createdChannels : [],
 	// memberedChannels : [],
@@ -110,6 +112,10 @@ export const channelsSlice = createSlice({
 		setAdminUpdate: (state, action: PayloadAction<boolean>) => {
 			// console.log("[channelslice - adminUpdate] action.payload = ", action.payload)
 			state.adminUpdate = action.payload;
+		},
+		setExitUpdate: (state, action: PayloadAction<boolean>) => {
+			// console.log("[channelslice - exitUpdate] action.payload = ", action.payload)
+			state.exitUpdate = action.payload;
 		},
 		setIsPopupOpen: (state, action: PayloadAction<boolean>) => {
 			state.isPopupOpen = action.payload;
@@ -187,6 +193,7 @@ export const {
 	setIsBanned,
 	setOwnerUpdate,
 	setAdminUpdate,
+	setExitUpdate,
 	setIsPopupOpen,
 	// updateCreatedChannels, 
 	// updateMemberedChannels, 
@@ -210,6 +217,7 @@ export const selectIsBanned = (state : RootState) => state.persistedReducer.chan
 export const selectIsPopupOpen = (state : RootState) => state.persistedReducer.channels.isPopupOpen
 export const selectOwnerUpdate = (state : RootState) => state.persistedReducer.channels.ownerUpdate
 export const selectAdminUpdate = (state : RootState) => state.persistedReducer.channels.adminUpdate
+export const selectExitUpdate = (state : RootState) => state.persistedReducer.channels.exitUpdate
 // export const selectCreatedChannels = (state: RootState) => state.persistedReducer.channels.createdChannels
 // export const selectMemberedChannels = (state: RootState) => state.persistedReducer.channels.memberedChannels
 // export const selectAllChannels = (state: RootState) => state.persistedReducer.channels.allChannels

@@ -71,27 +71,21 @@ export default function KickMember({
             })
             .then((response) => {
                 updatedKicked.map((kickedMember) => {
-                    /*** ISSUE 88 ***/
-                    // CHANGE THE PAYLOAD STRUCTURE TO SEND MESSAGE DTO AND
-                    // THE USERNAME WHO MUST BE KICKED
                     let dto: any = {
-                        // WRONG sendBy DATA, SHOULD BE THE currentUser WHO HAS EXECUTED
-                        // THE KICK ACTION
-                        // sentBy: kickedMember.login,
                         sentBy: currentUser,
                         message: `${kickedMember.login} has been kicked out of the channel!`,
                         sentAt: new Date(),
                         senderSocketId: socketRef.current?.id,
                         incoming: true,
                         outgoing: false,
-                        subtype: "InfoMsg",
+                        subtype: "infoMsg",
                         channel: selectedChannel.name,
                         channelById: selectedChannel.name,
                     };
                     const userName = kickedMember.login;
-
+					const members = selectedChannel.members
                     // emit user has been kick out message
-                    socketRef.current?.emit("LeavingChannel", {
+                    socketRef.current?.emit("kickedMember", {
                         dto,
                         userName,
                     });
