@@ -87,13 +87,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('LeavingChannel')
   handleUserLeavingChannel(socket: Socket, body: MessageDto): void {
     const roomId = socket.handshake.query.roomId as string;
-    console.log('[Chat GATEWAY - LeavingChannel]', 'roomId: ', roomId);
-    console.log('[Chat GATEWAY - LeavingChannel]', 'body.dto: ', body);
-    console.log(
-      '[Chat GATEWAY - LeavingChannel]',
-      'body.userName: ',
-      body.sentBy,
-    );
+    // console.log('[Chat GATEWAY - LeavingChannel]', 'roomId: ', roomId);
+    // console.log('[Chat GATEWAY - LeavingChannel]', 'body.dto: ', body);
+    // console.log(
+    //   '[Chat GATEWAY - LeavingChannel]',
+    //   'body.userName: ',
+    //   body.sentBy,
+    // );
     this.ChatService.createMessage(body);
     this.server.to(roomId).emit('ServerToChat:' + roomId, body);
     this.server.to(roomId).emit('ServerToChatForKicking', body.sentBy);

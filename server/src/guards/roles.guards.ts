@@ -22,7 +22,7 @@ export class RolesGuard implements CanActivate {
     ]);
 
     const request = context.switchToHttp().getRequest();
-    const response = context.switchToHttp().getResponse();
+    // const response = context.switchToHttp().getResponse();
 
     // console.log('[Guard ---- Required roles] ', requiredRoles);
     // console.log('[Guard ---- path asked] ', request.route.path);
@@ -36,7 +36,7 @@ export class RolesGuard implements CanActivate {
       request.route.path.includes('/replaceMembers')
     ) {
       const { action } = request.body;
-      if (action === 'leave') requiredRoles = ['member'];
+      if (action === 'leave') requiredRoles = ['not owner'];
       else requiredRoles = ['admin'];
     }
     // console.log('Requests ', request);
@@ -66,38 +66,47 @@ export class RolesGuard implements CanActivate {
     console.log('[ Required roles ] ', requiredRoles);
     console.log('1----[ ]: Channel concerned ', concernedchannel);
     console.log('[]: User concerned ', userFromDB.login);
-    switch (requiredRoles[0]) {
-      case 'admin':
-        activate = userFromDB.adminChannels.some(
-          (chan) => chan.name === concernedchannel,
-        );
-        console.log('ADMIN = [Guard ---- path asked] ', request.route.path);
-        break;
-      case 'member':
-        console.log(
-          '[Guard] --- Role: member : Channels C user',
-          userFromDB.channels,
-        );
-        console.log(
-          '2----[From member ]: Channel concerned ',
-          concernedchannel,
-        );
-        console.log('[From member ]: User concerned ', userFromDB.login);
-        console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
-        activate = userFromDB.channels.some(
-          (chan) => chan.name === concernedchannel,
-        );
-        break;
-      case 'owner':
-        activate = userFromDB.ownedChannels.some(
-          (chan) => chan.name === concernedchannel,
-        );
-        console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
-        console.log('[Guard] --- OWNER : activate ', activate);
-        break;
-      default:
-        break;
-    }
+    requiredRoles.map((role) => {
+      switch (role) {
+        case 'admin':
+          activate = userFromDB.adminChannels.some(
+            (chan) => chan.name === concernedchannel,
+          );
+          console.log('ADMIN = [Guard ---- path asked] ', request.route.path);
+          break;
+        case 'member':
+          console.log(
+            '[Guard] --- Role: member : Channels C user',
+            userFromDB.channels,
+          );
+          console.log(
+            '2----[From member ]: Channel concerned ',
+            concernedchannel,
+          );
+          console.log('[From member ]: User concerned ', userFromDB.login);
+          console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
+          activate = userFromDB.channels.some(
+            (chan) => chan.name === concernedchannel,
+          );
+          break;
+        case 'owner':
+          activate = userFromDB.ownedChannels.some(
+            (chan) => chan.name === concernedchannel,
+          );
+          console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
+          console.log('[Guard] --- OWNER : activate ', activate);
+          break;
+        case 'not owner':
+          activate = !userFromDB.ownedChannels.some(
+            (chan) => chan.name === concernedchannel,
+          );
+          console.log('MEMBER = [Guard ---- path asked] ', request.route.path);
+          console.log('[Guard] --- NOT OWNER : activate ', activate);
+          break;
+        default:
+          break;
+      }
+    });
     console.log('[Guard ] --- Final result : activate: ', activate);
     return activate;
   }

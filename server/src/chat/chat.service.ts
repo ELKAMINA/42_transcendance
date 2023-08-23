@@ -12,7 +12,7 @@ export class ChatService {
   constructor(private prisma: PrismaService) {}
 
   async createMessage(dto: MessageDto): Promise<void> {
-    console.log('dto ', dto);
+    // console.log('dto ', dto);
     try {
       const creator = await this.prisma.user.findUnique({
         where: { login: dto.sentBy },

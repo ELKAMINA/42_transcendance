@@ -12,7 +12,7 @@ import { Channel, User } from '@prisma/client';
 import { RolesGuard } from 'src/guards/roles.guards';
 import { Roles } from 'src/decorators/roles.decorators';
 import { ChannelService } from '../channel/channel.service';
-import { AuthGuard } from '@nestjs/passport';
+import { ExcludeRolesGuard } from 'src/guards/excludeRole.guard';
 
 type DateTime = Date;
 
@@ -21,7 +21,7 @@ export type UserWithTime = {
   ExpiryTime: string | null;
 };
 
-@UseGuards(RolesGuard)
+// @UseGuards(RolesGuard)
 @Controller('channel')
 @ApiTags('channel')
 // @AuthGuard // AJOUTER PROTECTION
@@ -163,6 +163,7 @@ export class channelController {
   // @Roles('admin') uard */
   //Amina : i deleted the role bc as we have a condition functionality
   // depending  if it's kick or leave, the work is done inside the Guard
+  @UseGuards(RolesGuard)
   @Post('/replaceMembers')
   replaceMembers(
     @Body()
