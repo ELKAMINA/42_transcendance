@@ -12,6 +12,10 @@ import { Stack, Tooltip } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import formatTimeToISO from '../utils/formatTimeToISO';
+import { selectActualUser } from '../redux-features/friendship/friendshipSlice';
+import { useAppSelector } from '../utils/redux-hooks';
+import { ChannelModel } from '../types/chat/channelTypes';
+import { selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
 
 export type UserWithTime = {
 	login: string;
@@ -30,7 +34,20 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 	const userIndexes: number[] = initialUsers.map((admin) =>
 		usersSet.findIndex((user) => user.login === admin.login)
 	);
-	
+
+	const currentUser = useAppSelector(selectActualUser);
+	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
+	const [isAdmin, setisAdmin] = React.useState<boolean>(false);
+	const [isOwner, setisOwner] = React.useState<boolean>(false);
+
+	React.useEffect(() => {
+		if (currentUser.login === selectedChannel.ownedById) {
+			setisOwner(true);
+		} else if (selectedChannel.admins.some((admin) => admin.login === currentUser.login)) {
+			setisAdmin(true);
+		}
+	}, [currentUser])
+
 	const [checked, setChecked] = React.useState<number[]>(userIndexes.filter(index => index !== -1));
 	const [timeChecked, setTimeChecked] = React.useState<number[]>([-1]);
 
@@ -38,7 +55,10 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 	const handleToggle = (value: number) => () => {
 		
 		const currentIndex = checked.indexOf(value);
+		// console.log("currentIndex = ", currentIndex);
+		// console.log("checked = ", checked);
 		const newChecked = [...checked];
+		// console.log("newChecked = ", newChecked);
 	
 		if (currentIndex === -1) {
 			newChecked.push(value);
@@ -118,7 +138,10 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 			const labelId = `checkbox-list-secondary-label-${value}`;
 			const isChecked = checked.indexOf(value) !== -1; // Check if the item is checked
 			const isTimeChecked = timeChecked.indexOf(value) !== -1; // Check if the item is checked
-	
+			let isDisabled = false;
+			if (isAdmin)
+				isDisabled = userIndexes.indexOf(value) !== -1; // Check if the index is in userIndexes
+
 			return (
 				<ListItem key={value} secondaryAction={
 						<Stack direction="row" spacing={1}>
@@ -131,6 +154,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 										/>}
 										<Tooltip title='set timer'>
 											<Checkbox
+												disabled={isDisabled} // Disable the Checkbox if the index is in userIndexes
 												icon={<AccessTimeIcon />}
 												checkedIcon={<WatchLaterIcon />}
 												onChange={handleTimeToggle(value)}
@@ -143,6 +167,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 							)}
 							<Checkbox
 								// edge="start"
+								disabled={isDisabled} // Disable the Checkbox if the index is in userIndexes
 								onChange={handleToggle(value)}
 								checked={isChecked}
 								inputProps={{ 'aria-labelledby': labelId }}
