@@ -116,9 +116,9 @@ export default function KickMember({
     const membersOptions: UserModel[] = selectedChannel.members.filter(
         (member: UserModel) => {
             // Check if the member is not in the admins array
-            const isAdmin = selectedChannel.admins.some(
-                (admin) => admin.login === member.login
-            );
+			let isAdmin = selectedChannel.admins.some(admin => admin.login === member.login);
+			if (currentUser === selectedChannel.ownedById)
+				isAdmin = false;
 
             // Check if the member's login is different from channel.ownedById
             const isOwnedBy = member.login === selectedChannel.ownedById;

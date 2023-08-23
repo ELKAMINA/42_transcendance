@@ -11,10 +11,11 @@ import DialogContentText from '@mui/material/DialogContentText';
 
 import UserList from './UserList';
 import api from '../utils/Axios-config/Axios';
-import { UserByLogin } from '../types/users/userType';
+import { UserByLogin, UserModel } from '../types/users/userType';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, setAdminUpdate } from '../redux-features/chat/channelsSlice';
+import { selectActualUser } from '../redux-features/friendship/friendshipSlice';
 
 export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
@@ -22,6 +23,7 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	const [updatedAdmins, setUpdatedAdmins] = React.useState<UserByLogin[]>([]);
 	const AppDispatch = useAppDispatch();
+	const currentUser = useAppSelector(selectActualUser);
 
 	async function updateAdmins() : Promise<void> {
 		// just send users as UserByLogin object to prevent 'avatar linked payload too large' error 

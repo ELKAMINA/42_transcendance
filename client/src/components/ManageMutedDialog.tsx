@@ -16,11 +16,13 @@ import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from
 import api from '../utils/Axios-config/Axios';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { UserModel } from '../types/users/userType';
+import { selectActualUser } from '../redux-features/friendship/friendshipSlice';
 
 export default function ManageMutedDialog({socketRef, openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void, socketRef : React.MutableRefObject<Socket | undefined>}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
+	const currentUser = useAppSelector(selectActualUser);
 	const [updatedMuted, setUpdatedMuted] = React.useState<UserModel[]>([]);
 	const [updatedMutedWithTime, setUpdatedMutedWithTime] = React.useState<UserWithTime[]>([]);
 	const AppDispatch = useAppDispatch();
@@ -79,8 +81,9 @@ export default function ManageMutedDialog({socketRef, openDialog, setOpenDialog}
 
 	const membersOptions: UserModel[] = selectedChannel.members.filter((member: UserModel) => {
 		// Check if the member is not in the admins array
-		const isAdmin = selectedChannel.admins.some(admin => admin.login === member.login);
-	  
+		let isAdmin = selectedChannel.admins.some(admin => admin.login === member.login);
+		if (currentUser.login === selectedChannel.ownedById) // if the currentUser is the owner of the channel, leave the admins in the list
+			isAdmin = false;
 		// Check if the member's login is different from channel.ownedById
 		const isOwnedBy = member.login === selectedChannel.ownedById;
 	  

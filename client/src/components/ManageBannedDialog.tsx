@@ -14,11 +14,13 @@ import api from '../utils/Axios-config/Axios';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { UserModel } from '../types/users/userType';
 import SendIcon from '@mui/icons-material/Send';
+import { selectActualUser } from '../redux-features/friendship/friendshipSlice';
 
 export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
+	const currentUser = useAppSelector(selectActualUser);
 	const [updatedBanned, setUpdatedBanned] = React.useState<UserModel[]>([]);
 	const [updatedBannedWithTime, setUpdatedBannedWithTime] = React.useState<UserWithTime[]>([]);
 
@@ -72,8 +74,9 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 
 	const membersOptions: UserModel[] = selectedChannel.members.filter((member: UserModel) => {
 		// Check if the member is not in the admins array
-		const isAdmin = selectedChannel.admins.some(admin => admin.login === member.login);
-	  
+		let isAdmin = selectedChannel.admins.some(admin => admin.login === member.login);
+		if (currentUser.login === selectedChannel.ownedById)
+			isAdmin = false;
 		// Check if the member's login is different from channel.ownedById
 		const isOwnedBy = member.login === selectedChannel.ownedById;
 	  
