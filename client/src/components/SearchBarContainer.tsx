@@ -161,6 +161,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 					if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
 						// console.log("[searchbar] coucou");
 						setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
+						newChannelCreated.current = true;
 					}
 					else { // if current user is not a member of the picked channel
 						// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
