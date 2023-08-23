@@ -1,12 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Message } from "@prisma/client";
-import { IsNotEmpty, IsString, IsInt, IsOptional, ValidateIf } from "class-validator";
+import { IsNotEmpty, IsString, IsInt, IsOptional, ValidateIf, MaxLength, MinLength } from "class-validator";
 import { UserByLogin } from "../../user/types";
 
 export class ChannelDto {
 	@IsString()
 	@IsNotEmpty()
 	@ApiProperty()
+	@MinLength(1)
+	@MaxLength(20)
 	name: string;
   
 	@IsString()
