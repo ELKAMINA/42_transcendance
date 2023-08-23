@@ -166,13 +166,14 @@ function Chat () {
 
 	let isBanned;
 	// console.log("[Chat] displayedChannel.name = ", displayedChannel);
-	if (displayedChannel && displayedChannel.name !== 'WelcomeChannel')
+	if (displayedChannel && displayedChannel.name !== 'WelcomeChannel' && displayedChannel.banned) {
 		isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
+	}
 	useEffect(() => {
 		// console.log("[Chat] displayedChannel.name = ", displayedChannel.name);
 		// console.log("[Chat] displayedChannel.banned = ", displayedChannel.banned);
-		if (displayedChannel && displayedChannel.name !== 'WelcomeChannel')
-		isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
+		if (displayedChannel && displayedChannel.name !== 'WelcomeChannel' && displayedChannel.banned)
+			isBanned = displayedChannel.banned.some(banned => currentUser === banned.login) // if user is part of the banned user list
 		// console.log("[Chat] isBanned = ", isBanned);
 	}, [userChannels, displayedChannel]) // when the channels for which the user is a member are modified, re-check if he is now banned from any of them
 
