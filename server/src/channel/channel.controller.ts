@@ -52,7 +52,7 @@ export class channelController {
   getUserChannels(@Body() requestBody): Promise<object> {
     return this.ChannelService.getUserChannels(requestBody.login);
   }
-  
+
   /* A Garder:
     - Checker si le user est bien  membre (et authenticated)
   */
@@ -152,7 +152,7 @@ export class channelController {
     return this.ChannelService.updateOwner(requestBody);
   }
 
-  @Roles('member')
+  @Roles('admin')
   @Post('/addMembers')
   addMembers(
     @Body() requestBody: { channelName: { name: string }; members: User[] },
@@ -160,7 +160,9 @@ export class channelController {
     return this.ChannelService.addMembers(requestBody);
   }
 
-  @Roles('admin')
+  // @Roles('admin') uard */
+  //Amina : i deleted the role bc as we have a condition functionality
+  // depending  if it's kick or leave, the work is done inside the Guard
   @Post('/replaceMembers')
   replaceMembers(
     @Body()
@@ -170,6 +172,7 @@ export class channelController {
       action: string;
     },
   ): Promise<Channel> {
+    // console.log('request body', requestBody);
     return this.ChannelService.replaceMembers(requestBody);
   }
 

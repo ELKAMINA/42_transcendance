@@ -92,6 +92,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
+    const user = await this.verifyJwtSocketConnections(socket);
     const newReq = await this.friends.requestFriendship(
       body.sender,
       body.receiver.nickname,
@@ -186,6 +187,7 @@ export class FriendshipGateway
             userInfo.nickname,
             userInfo.refreshToken,
           );
+          console.log('new tokens ', newTokens)
           const data: object = {
             nickname: userInfo.nickname,
             accessToken: newTokens.access_token,

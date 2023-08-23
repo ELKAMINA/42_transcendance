@@ -22,6 +22,8 @@ export class RolesGuard implements CanActivate {
     ]);
 
     const request = context.switchToHttp().getRequest();
+    const response = context.switchToHttp().getResponse();
+
     // console.log('[Guard ---- Required roles] ', requiredRoles);
     // console.log('[Guard ---- path asked] ', request.route.path);
     // console.log('request ');
@@ -39,6 +41,10 @@ export class RolesGuard implements CanActivate {
     }
     // console.log('Requests ', request);
     let concernedchannel;
+    if (request.route.path.includes('/checkPwd')) {
+      concernedchannel = request.body.obj.name;
+      // console.log('concerned channel', concernedchannel);
+    }
 
     let activate = false;
     if (request.body.channelName)
