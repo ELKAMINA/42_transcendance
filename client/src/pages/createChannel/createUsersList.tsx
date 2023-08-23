@@ -12,6 +12,13 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { UserByLogin } from '../../types/users/userType';
 import { useAppDispatch } from '../../utils/redux-hooks';
 
+/*** ISSUE 110 ***/
+// HANDLE ERROR ON WHOLE createChannel COMPONENT
+import { useEffect } from "react";
+import {
+	setUserListErrorState,
+} from "../../redux-features/chat/createChannel/createChannelErrorSlice";
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -44,6 +51,15 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 	const [personName, setPersonName] = React.useState<string[]>([]);
 
 	const dispatch = useAppDispatch();
+
+	/*** ISSUE 110 ***/
+	useEffect(() => {
+		if (personName.length <= 0) {
+			dispatch(setUserListErrorState(true));
+		} else {
+			dispatch(setUserListErrorState(false));
+		}
+	}, [personName])
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment

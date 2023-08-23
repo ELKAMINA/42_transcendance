@@ -39,6 +39,12 @@ function CreateChannel(props : CreateChannelProps) {
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
 
+	/*** ISSUE 110 ***/
+	// HANDLE ERROR ON WHOLE createChannel
+	const channelNameErrorState = useSelector((state: RootState) => state.persistedReducer.createChannelError.channelNameError);
+	const channelUserListErrorState = useSelector((state: RootState) => state.persistedReducer.createChannelError.channelUserListError);
+	const channelTypeErrorState = useSelector((state: RootState) => state.persistedReducer.createChannelError.channelTypeError);
+
 	// when the search component is mounted the first time, get the list of users
 	React.useEffect(() => {
 		appDispatch(FetchUsersDb())
@@ -100,6 +106,19 @@ function CreateChannel(props : CreateChannelProps) {
 		props.setTrigger(false);
 		appDispatch(setIsPopupOpen(false))
 	}
+
+	// HANDLE ERROR ON WHOLE createChannel COMPONENT IF:
+	// - THE CHANNEL NAME IS INCORRECT
+	// - THE USER LIST IS INCORRECT
+	// - THE CHANNEL TYPE IS INCORRECT
+	function checkCreateChannelState(): boolean {
+		if (channelNameErrorState === false &&
+		channelUserListErrorState === false &&
+		channelTypeErrorState === false) {
+				return false;
+		}
+		return true;
+	}
 	
 	return (props.trigger) ? (
 		<Box className='create-channel-popup'>
@@ -125,6 +144,7 @@ function CreateChannel(props : CreateChannelProps) {
 									variant='contained'
 									// size='large'
 									sx={{ color: 'white', backgroundColor: '#99E100', fontWeight: '800', fontSize: '2em' }}
+									disabled={checkCreateChannelState()}
 								>CREATE CHANNEL
 								</Button>
 							</Box>

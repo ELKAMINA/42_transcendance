@@ -8,6 +8,10 @@ import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { changeChannelName } from "../../redux-features/chat/createChannel/channelNameSlice";
 import { fetchPublicChannels, fetchUserChannels, selectPublicChannels, selectUserChannels } from "../../redux-features/chat/channelsSlice";
 
+/*** ISSUE 110 ***/
+// HANDLE ERROR ON WHOLE createChannel COMPONENT
+import { setNameErrorState } from "../../redux-features/chat/createChannel/createChannelErrorSlice";
+
 function CreateName() {
 	const AppDispatch = useAppDispatch();
 	React.useEffect(() => {
@@ -30,9 +34,14 @@ function CreateName() {
 
 		if (channels.find(channel => channel.name === value)) {
 		  setIsTaken(true);
+		  /*** ISSUE 110 ***/
+		  dispatch(setNameErrorState(true));
+		} else if (value.length <= 0) {
+			dispatch(setNameErrorState(true));
 		} else {
 		  dispatch(changeChannelName(value))
 		  setIsTaken(false);
+		  dispatch(setNameErrorState(false));
 		}
 	}
 	  

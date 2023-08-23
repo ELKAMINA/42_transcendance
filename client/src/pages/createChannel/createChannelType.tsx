@@ -5,6 +5,13 @@ import { Box, Checkbox, Divider, FormControlLabel, FormGroup, Stack, Typography 
 import PasswordField from "../../components/PasswordField";
 import { addChannelType, addPassword, isProtectedByPassword } from "../../redux-features/chat/createChannel/channelTypeSlice";
 
+/*** ISSUE 110 ***/
+// HANDLE ERROR ON WHOLE createChannel COMPONENT
+import { useEffect } from "react";
+import {
+	setTypeErrorState,
+} from "../../redux-features/chat/createChannel/createChannelErrorSlice";
+
 function  CreateType() {
 	const dispatch = useDispatch();
 	
@@ -12,6 +19,15 @@ function  CreateType() {
 	const [checkedPublic, setCheckedPublic] = React.useState(true);
 	const [checkedPrivate, setCheckedPrivate] = React.useState(false);
 	const [checkedProtected, setCheckedProtected] = React.useState(false);
+
+	/*** ISSUE 110 ***/
+	useEffect(() => {
+		if (checkedPublic === false && checkedPrivate === false) {
+			dispatch(setTypeErrorState(true));
+		} else {
+			dispatch(setTypeErrorState(false));
+		}
+	}, [checkedPublic, checkedPrivate, checkedProtected])
 
 	const handlePublic = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCheckedPublic(e.target.checked);
@@ -35,7 +51,7 @@ function  CreateType() {
 
 	const handleProtected = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCheckedProtected(e.target.checked);
-				
+
 		dispatch(isProtectedByPassword(e.target.checked))
 	}
 
