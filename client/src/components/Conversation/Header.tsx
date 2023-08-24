@@ -253,12 +253,12 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 				<Stack direction={'row'} spacing={2}>
 					<Box>
 						{!isCreateChannelWindowOpen && <StyledBadge
-							overlap="circular"
-							anchorOrigin={{
-								vertical: "bottom",
-								horizontal: "right",
-							}}
-							variant="dot"
+							// overlap="circular"
+							// anchorOrigin={{
+								// vertical: "bottom",
+								// horizontal: "right",
+							// }}
+							// variant="dot"
 						>
 							<Button 
 								// disabled
@@ -273,9 +273,9 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 							</Button>
 						</StyledBadge>}
 					</Box>
-					<Stack spacing={0.2}>
+					<Stack spacing={1}>
 							<Typography variant="subtitle2">{channelName}</Typography>
-							<Typography variant="caption">online</Typography>
+							<Typography color="#595343" variant="caption">{channel.type}</Typography>
 					</Stack>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} spacing={3}>
