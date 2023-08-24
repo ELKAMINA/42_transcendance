@@ -32,14 +32,26 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 	const [openLeaveChannel, setOpenLeaveChannel] = React.useState<boolean>(false);
 	const [openChannelInfo, setOpenChannelInfo] = React.useState<boolean>(false);
 
+	const anchorRef = React.useRef<HTMLButtonElement>(null);
+	
+	// return focus to the button when we transitioned from !open -> open
+	const prevOpen = React.useRef(open);
+	React.useEffect(() => {
+		if (prevOpen.current === true && open === false) {
+			anchorRef.current!.focus();
+		}
+
+		prevOpen.current = open;
+	}, [open]);
 
 	// check if user is owner of the selected channel
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
 	const isOwner : boolean = currentUser === selectedChannel.ownedById ? true : false;
+	if (!selectedChannel)
+		return ;
 	const isAdmin : boolean = selectedChannel.admins.some(admin => admin.login === currentUser)
 
-	const anchorRef = React.useRef<HTMLButtonElement>(null);
 
 	const handleToggle = () => {
 		setOpen((prevOpen) => !prevOpen);
@@ -90,18 +102,6 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 			setOpen(false);
 		}
 	}
-
-	// return focus to the button when we transitioned from !open -> open
-	const prevOpen = React.useRef(open);
-	React.useEffect(() => {
-		if (prevOpen.current === true && open === false) {
-			anchorRef.current!.focus();
-		}
-
-		prevOpen.current = open;
-	}, [open]);
-
-
 
 	return (
 		<React.Fragment>
