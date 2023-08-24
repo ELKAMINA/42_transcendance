@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 
 import MatchHistory from "../Events/Skeleton";
-import { UserModel } from "../../../types/users/userType";
+import { UserModel, UserModelProtected } from "../../../types/users/userType";
 import { Rank, Wins, Loss, TotalMatches, Level } from "./Scores";
 
 interface TabPanelProps {
@@ -44,7 +44,7 @@ function a11yProps(index: number) {
 }
 
 interface Myprops {
-    interestProfile: UserModel;
+    interestProfile: UserModelProtected | undefined;
 }
 
 export default function ProfileInfo(props: Myprops) {
@@ -54,8 +54,8 @@ export default function ProfileInfo(props: Myprops) {
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
-    const matches = props.interestProfile.p1
-        .concat(props.interestProfile.p2)
+    const matches  = props.interestProfile?.p1
+        .concat(props.interestProfile?.p2)
         .filter(
             (v, i, a) => a.findIndex((t) => t.match_id === v.match_id) === i
         )
@@ -123,7 +123,7 @@ export default function ProfileInfo(props: Myprops) {
             </TabPanel>
             <TabPanel value={value} index={1} dir={theme.direction}>
                 {/* remplacer par le tableau de match joués et recuperer les infos */}
-                {matches.map((e: any, index) => (
+                {matches?.map((e: any, index) => (
                     <MatchHistory key={index} us={e} />
                 ))}
             </TabPanel>

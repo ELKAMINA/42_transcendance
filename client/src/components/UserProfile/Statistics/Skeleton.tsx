@@ -9,7 +9,7 @@ import { FetchTotalPlayers, selectTotalPlayers } from '../../../redux-features/g
 
 interface Myprops {
     name: string,
-    data: string,
+    data: string | undefined,
 }
 
 const Statistics = (props: Myprops) => {

@@ -2,12 +2,16 @@ import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+import { sock as socketSettings } from "./settings";
 import { store } from "../app/store";
 import Navbar from "../components/NavBar";
 import api from "../utils/Axios-config/Axios";
 import ProfileInfo from "../components/UserProfile/Statistics/ProfileInfo";
 import UserProfileHeader from "../components/UserProfile/userProfile-header";
 import "./userProfile.css";
+import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
+import { selectCurrentUser } from "../redux-features/auth/authSlice";
+import { FetchAFriend, FetchFriendshipInfo, getIsMyFriend, getUserToStalk, selectIsMyFriend, selectSpecificFriend } from "../redux-features/friendship/friendshipSlice";
 
 export function transformData(queryParams: URLSearchParams) {
     const obj: Record<string, string> = {};
@@ -22,31 +26,30 @@ export function transformData(queryParams: URLSearchParams) {
 
 const UserProfile = () => {
     const location = useLocation();
+    const dispatch: any = useAppDispatch();
+    const currentUser = useAppSelector(selectCurrentUser)
     const currentRoute = window.location.pathname;
-    const [isMyfriend, setMyFriend] = useState({
-        isMyfriend: false,
-        myBlockedFriend: false,
-        thoseWhoBlockedMe: false,
-    });
-    // const userToStalk = transformData(new URLSearchParams(location.search));
-    const userToStalk = location.state.data;
-    // console.log("user to Stalk ", userToStalk);
+    let userToStalk = location.state.data;
 
-    const friendship = async () =>
-        await api
-            .post("http://localhost:4001/friendship/ismyfriend", {
-                me: store.getState().persistedReducer.auth.nickname,
-                him: userToStalk.login,
-            })
-            .then((res) => {
-                setMyFriend(res.data);
-            })
-            .catch((e) => console.log("eroooor ", e));
+
 
     useEffect(() => {
-        friendship();
-    }, []);
+        dispatch(FetchAFriend(userToStalk.login))
+        dispatch(FetchFriendshipInfo(currentUser, userToStalk.login))
+        // socketSettings.connect()
+        // friendship();
+        return () => {
+            dispatch(getUserToStalk(undefined))
+            dispatch(getIsMyFriend({isMyfriend: false, myBlockedFriend: false, thoseWhoBlockedMe: false}))
+            // if (socketSettings.connected){
+            //     socketSettings.disconnect();
+            // }
+        }
+    }, [userToStalk.login]);
 
+    let finalUser = useAppSelector(selectSpecificFriend)
+    let isMyFriend = useAppSelector(selectIsMyFriend)
+    // console.log('isMyFriend ', isMyFriend)
     return (
         <Box className="userprofile-container">
             <Box className="userprofile-header">
@@ -56,12 +59,12 @@ const UserProfile = () => {
                 marginTop: 3.5,
             }} className="userprofile-middle">
                 <UserProfileHeader
-                    name={userToStalk.login}
-                    status={userToStalk.status}
-                    friendship={isMyfriend}
-                    srcAvatar={userToStalk.avatar}
+                    name={finalUser?.login}
+                    status={finalUser?.status}
+                    friendship={isMyFriend}
+                    srcAvatar={finalUser?.avatar}
                 />
-                <ProfileInfo interestProfile={userToStalk} />
+                <ProfileInfo interestProfile={finalUser} />
             </Box>
             <Box className="userprofile-infos"></Box>
         </Box>

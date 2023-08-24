@@ -53,6 +53,37 @@ export type UserModel = {
     messagesSent: ChatMessage[];
 };
 
+export type UserModelProtected = {
+    createdAt: Date;
+    updatedAt: Date;
+    user_id: string;
+    login: string;
+    faEnabled: boolean | null;
+    // avatar: string | null;
+    avatar: string | undefined;
+    status: string | undefined;
+    friends: UserModel[];
+    friendOf: UserModel[];
+    totalFriends: number | null;
+    FriendRequestSent: FriendRequest[];
+    FriendRequestReceived: FriendRequest[];
+    blocked: UserModel[];
+    blockedBy: UserModel[];
+    totalBlockedFriends: number | null;
+    totalMatches: number | null;
+    totalWins: number | null;
+    totalloss: number | null;
+    level: number | null;
+    rank: number | null;
+    p1: Match[];
+    p2: Match[];
+    FriendSuggestions: string[];
+    channels: Channel[];
+    createdChannels: Channel[];
+    adminChannels: Channel[];
+    messagesSent: ChatMessage[];
+};
+
 export type UserLeaderBoard = {
     login: string;
     avatar: string | undefined;

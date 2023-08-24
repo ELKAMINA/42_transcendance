@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import  api  from '../../utils/Axios-config/Axios';
 import { RootState } from '../../app/store';
 import { setAvatar } from "../auth/authSlice";
+import { UserModelProtected } from "../../types/users/userType";
 
 
 export interface friendshipState {
@@ -14,7 +15,13 @@ export interface friendshipState {
 	allUsers: [],
     selectedItems: string,
     user: Record<string, any>,
+    specificFriend: UserModelProtected | undefined, 
     error: number,
+    isMyFriend: {
+        isMyfriend: boolean,
+        myBlockedFriend: boolean,
+        thoseWhoBlockedMe: boolean,
+    }
 }
 
 const initialState: friendshipState = {
@@ -26,7 +33,14 @@ const initialState: friendshipState = {
     selectedItems: '',
     user: {},
 	allUsers: [],
+    specificFriend: undefined, 
     error: 0,
+    isMyFriend:
+    {
+        isMyfriend: false,
+        myBlockedFriend: false,
+        thoseWhoBlockedMe: false,
+    }
     // socket: {} as unknown as Socket ,
 }
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -58,6 +72,15 @@ export const friendshipSlice = createSlice({
         setFriendshipError: (state, action: PayloadAction<number>) => {
             state.error = action.payload;
         },
+        getUserToStalk: (state, action: PayloadAction<UserModelProtected | undefined>) => {
+            state.specificFriend = action.payload;
+        },
+        getIsMyFriend: (state, action: PayloadAction<{
+            isMyfriend: boolean,
+            myBlockedFriend: boolean,
+            thoseWhoBlockedMe: boolean}>) => {
+            state.isMyFriend = action.payload;
+        },
         resetFriendshipStore : (state) => {
             return initialState;
         },
@@ -65,7 +88,7 @@ export const friendshipSlice = createSlice({
 })
 
 // // action need the name of the task/thing, i want to apply to the state and the data to do that (which is the payload)
-export const { updateAllSuggestions, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem, getActualUser, getAllUsersInDb, resetFriendshipStore, setFriendshipError} = friendshipSlice.actions
+export const { updateAllSuggestions, updateAllRequests, updateAllFriends, updateBlockedFriends, setSelectedItem, getActualUser, getAllUsersInDb, resetFriendshipStore, setFriendshipError, getUserToStalk, getIsMyFriend} = friendshipSlice.actions
 
 
 export const selectSuggestions = (state: RootState) => state.persistedReducer.friendship.suggestions
@@ -74,7 +97,9 @@ export const selectFrRequests = (state: RootState) => state.persistedReducer.fri
 export const selectBlockedFriends = (state: RootState) => state.persistedReducer.friendship.blockedFriends
 export const selectItems = (state: RootState) => state.persistedReducer.friendship.selectedItems
 export const selectActualUser = (state: RootState) => state.persistedReducer.friendship.user
+export const selectSpecificFriend = (state: RootState) => state.persistedReducer.friendship.specificFriend
 export const selectError = (state: RootState) => state.persistedReducer.friendship.error
+export const selectIsMyFriend = (state: RootState) => state.persistedReducer.friendship.isMyFriend
 
 export function FetchUsersDb() {
 	return async (dispatch:any, getState: any) => {
@@ -153,6 +178,36 @@ export function FetchSuggestions() {
                 dispatch(updateBlockedFriends(res.data))
             })
             .catch((e) => {dispatch(setFriendshipError(5))
+            });
+        }
+    }
+
+    export function FetchAFriend(name: string) {
+        return async (dispatch:any, getState: any) => {
+            await api
+            .get("http://0.0.0.0:4001/user/userprofile", {
+                params: {
+                    ProfileName: name,
+            }})
+            .then((res) => {
+                dispatch(getUserToStalk(res.data))
+            })
+            .catch((e) => {dispatch(setFriendshipError(6))
+            });
+        }
+    }
+
+    export function FetchFriendshipInfo(curr: string, him: string) {
+        return async (dispatch:any, getState: any) => {
+            await api
+            .post("http://localhost:4001/friendship/ismyfriend", {
+                me: curr,
+                him: him,
+            })
+            .then((res) => {
+                dispatch(getIsMyFriend(res.data))
+            })
+            .catch((e) => {dispatch(setFriendshipError(6))
             });
         }
     }

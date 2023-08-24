@@ -8,10 +8,12 @@ import Typography from '@mui/material/Typography';
 
 import { useAppSelector } from '../../utils/redux-hooks';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
+import { FetchUserByName } from '../../utils/global/global';
+import { Status } from '../../types/users/userType';
 
 interface myProps {
-    name: string | null,
-    status: string | null,
+    name: string | undefined,
+    status: string | undefined,
     friendship: {
       isMyfriend: boolean,
       myBlockedFriend: boolean,
@@ -24,7 +26,7 @@ interface myProps {
 
 function UserProfileHeader(props: myProps) {
   const [color, setColorBadge] = useState('red');
-  console.log('les props = ', props)
+  // console.log('les props = ', props)
   const user = useAppSelector(selectCurrentUser)
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -55,13 +57,15 @@ function UserProfileHeader(props: myProps) {
     },
   }));
   React.useEffect(() => {
+    // console.log('props.friendship ', props.friendship)
     if (props.status === 'Offline')
-      setColorBadge('red');
+      setColorBadge('red')
     else if (props.status === 'Online')
       setColorBadge('green');
     else
       setColorBadge('orange');
-  }, [props.status]);
+  }, [props.status, props.friendship]);
+
   return (
     <Box textAlign='center' display="flex" flexDirection="row" alignItems="center" p={2} justifyContent="space-around" 
     sx={{
@@ -115,20 +119,21 @@ function UserProfileHeader(props: myProps) {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             variant="dot"
           >
-          <Typography 
-          sx={{
-            margin: 0.5,
-          }}
-          component='div' variant="body1" color="textSecondary">
-              {props.status}
-          </Typography>
+            <Typography 
+            sx={{
+              margin: 0.5,
+            }}
+            component='div' variant="body1" color={"textSecondary"}>
+                {props.status}
+            </Typography>
           </StyledBadge>
         </Box>
         <Box ml={2} display="flex" flexDirection='row' justifyContent='space-between' flexWrap='wrap'>
-        {props.friendship.myBlockedFriend && <div className='userprof-header'> Friends - Blocked by you</div> }
-        {props.friendship.thoseWhoBlockedMe && <div className='userprof-header'> Friends - Blocked you</div> }
+        {props.friendship.myBlockedFriend && !props.friendship.thoseWhoBlockedMe && <div className='userprof-header'> Friends - Blocked by you</div> }
+        {props.friendship.thoseWhoBlockedMe && !props.friendship.myBlockedFriend && <div className='userprof-header'> Friends - Blocked you</div> }
         {props.friendship.isMyfriend && !props.friendship.myBlockedFriend && !props.friendship.thoseWhoBlockedMe && <div className='userprof-header'>Friends</div> }
         {!props.friendship.isMyfriend && !props.friendship.thoseWhoBlockedMe && !props.friendship.myBlockedFriend && props.name !== user  && <div className='userprof-header'>Not Friends</div>}
+        {props.friendship.thoseWhoBlockedMe && props.friendship.myBlockedFriend && props.name !== user  && <div className='userprof-header'>Shared hate</div>}
         </Box> 
   </Box>
   )
