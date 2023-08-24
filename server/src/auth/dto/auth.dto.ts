@@ -1,10 +1,12 @@
-import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger'; // What is that
 
 export class AuthDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
+  @MinLength(1)
+  @MaxLength(24)
   nickname: string;
 
   @IsString()

@@ -154,7 +154,7 @@ export default function Sign(props: Signing){
                 // console.log('error ', err);
                 if (err.status === 400)
                 {
-                    setErrMsg("Password must be at least 6 characters && Field must not be empty\n");
+                    setErrMsg("Nickname must be at least 1 character and less than 24 characters && Password must be at least 6 characters && Field must not be empty\n");
                 }
                 else if (err.data && err.data.message && typeof err.data.message === 'string' ){
                     setErrMsg(err.data.message);
