@@ -18,6 +18,7 @@ import {
 	setGameDialog,
 	fetchDisplayedChannel,
 	fetchUserChannels,
+	fetchPublicChannels,
 } from "../../redux-features/chat/channelsSlice";
 
 import GameSuggestion from "../Game/GameSuggestion";
@@ -62,13 +63,6 @@ function Conversation({ socketRef, messages, setMessages }: ConvProps) {
 		waiting: false,
 	});
 	const navigate = useNavigate();
-
-	socketRef.current?.on("ServerToChatForKicking", (userName: string) => {
-		if (currentUser === userName) {
-			dispatch(fetchUserChannels());
-			dispatch(fetchDisplayedChannel("WelcomeChannel"));
-		}
-	});
 
 	useEffect(() => {
 		return () => {

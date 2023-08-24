@@ -11,7 +11,7 @@ import { Channel } from '../types/chat/channelTypes';
 import { UserByLogin } from '../types/users/userType';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector, } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, setIsMember } from '../redux-features/chat/channelsSlice';
 
 export type EnterChannelConfirmationDialogProps = {
 	selectedChannel : Channel | undefined;
@@ -20,11 +20,7 @@ export type EnterChannelConfirmationDialogProps = {
 	setIsConfirmed : (isConfirmed : boolean) => void;
 }
 
-export default function EnterChannelConfirmationDialog({
-	setIsConfirmed,
-	selectedChannel,
-	openDialog, 
-	setOpenDialog } : EnterChannelConfirmationDialogProps) {
+export default function EnterChannelConfirmationDialog({setIsConfirmed, selectedChannel, openDialog, setOpenDialog } : EnterChannelConfirmationDialogProps) {
 	
 	const AppDispatch = useAppDispatch();
 	const currentUser : string = useAppSelector(selectCurrentUser);
@@ -37,6 +33,7 @@ export default function EnterChannelConfirmationDialog({
 				members : [newMember], // list of new members to add 
 			})
 			.then((response) => {
+				AppDispatch(setIsMember(true))
 				AppDispatch(fetchUserChannels());
 				if (selectedChannel)
 					AppDispatch(fetchDisplayedChannel(selectedChannel.name));

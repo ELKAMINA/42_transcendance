@@ -14,7 +14,7 @@ import { emptyChannel } from '../data/emptyChannel';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectDisplayedChannel, selectUserChannels, setExitUpdate } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectDisplayedChannel, selectUserChannels } from '../redux-features/chat/channelsSlice';
 
 export type LeaveChannelDialogProps = {
 	socketRef: React.MutableRefObject<Socket | undefined>,
@@ -43,7 +43,7 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 				action: 'leave',
 			})
 			.then((response) => {
-				AppDispatch(setExitUpdate(true));
+				// AppDispatch(set(true));
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel('WelcomeChannel'));
 				AppDispatch(fetchPublicChannels());

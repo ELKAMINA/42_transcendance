@@ -56,12 +56,12 @@ export default function KickMember({
             )
             .map((member) => ({ login: member.login }));
 
-        console.log("filteredMembers = ", filteredMembers);
+        // console.log("filteredMembers = ", filteredMembers);
         KickMemberOut(filteredMembers);
     }
 
     async function KickMemberOut(updatedMember: UserByLogin[]) {
-        console.log("[Chat - KickMemberOut]", "currentUser: ", currentUser);
+        // console.log("[Chat - KickMemberOut]", "currentUser: ", currentUser);
 
         await api
             .post("http://localhost:4001/channel/replaceMembers", {
@@ -84,10 +84,7 @@ export default function KickMember({
                     };
                     const userName = kickedMember.login;
                     // emit user has been kick out message
-                    socketRef.current?.emit("kickedMember", {
-                        dto,
-                        userName,
-                    });
+                    socketRef.current?.emit("kickedMember", {dto, userName});
                 });
             })
             .catch((error) =>

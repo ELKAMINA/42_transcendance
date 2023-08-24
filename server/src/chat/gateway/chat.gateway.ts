@@ -46,10 +46,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('newChannelCreated')
-	handleNewChannelCreated(socket: Socket): void {
+	handleNewChannelCreated(socket: Socket, userName : string): void {
 		// const roomId = socket.handshake.query.roomId as string;
-		// console.log("[chatGateway] roomId = ", roomId);
-		this.server.emit('newChannelNotif');
+		// console.log("[chatGateway] userName = ", userName);
+		this.server.emit('newChannelNotif', userName);
 	}
 
 	@SubscribeMessage('ownerUpdate')
@@ -67,17 +67,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('channelDeleted')
-	handleNewChannelDeleted(socket: Socket): void {
+	handleNewChannelDeleted(socket: Socket, deletedChannelName: string): void {
 		// const roomId = socket.handshake.query.roomId as string;
-		// console.log("[chatGateway] roomId = ", roomId);
-		this.server.emit('channelDeletedNotif');
+		// console.log("[chatGateway] deletedChannelName = ", deletedChannelName);
+		this.server.emit('channelDeletedNotif', deletedChannelName);
 	}
 
-	@SubscribeMessage('justBanned')
-	handleJustBannedNotif(socket: Socket): void {
+	@SubscribeMessage('bannedNotif')
+	handleJustBannedNotif(socket: Socket, userName : string): void {
 		// const roomId = socket.handshake.query.roomId as string;
 		// console.log("[chatGateway] roomId = ", roomId);
-		this.server.emit('justBannedNotif');
+		this.server.emit('bannedNotif', userName);
 	}
 
 	@SubscribeMessage('LeavingChannel')
@@ -92,11 +92,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('kickedMember')
 	handleUserKick(socket: Socket, body: { dto: MessageDto; userName: string }): void {
 		const roomId = socket.handshake.query.roomId as string;
-		this.ChatService.createMessage(body.dto);
 
+		this.ChatService.createMessage(body.dto);
 		this.server.to(roomId).emit('ServerToChat:' + roomId, body.dto);
-		this.server.to(roomId).emit('ServerToChatForKicking', body.userName);
-		this.server.to(roomId).emit('channelKickNotif');
+
+		this.server.to(roomId).emit('kickUpdate', body.userName, roomId);
+		// this.server.emit('channelKickNotif', body.userName);
 	}
 
 	@SubscribeMessage('blockOrUnblockUser')

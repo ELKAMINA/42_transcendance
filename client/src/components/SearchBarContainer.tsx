@@ -136,7 +136,6 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	const [pickedChannel, setPickedChannel] = useState<Channel>();
 	const [isConfirmed, setIsConfirmed] = useState<boolean>();
 
-	// Event handler to log the selected option
 	const handleOptionSelect = async (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
 		// console.log("[searchBar container] value = ", value);
 		if (value) {
@@ -161,7 +160,6 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 					if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
 						// console.log("[searchbar] coucou");
 						setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
-						newChannelCreated.current = true;
 					}
 					else { // if current user is not a member of the picked channel
 						// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
@@ -176,19 +174,15 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 						else { // if the channel is not protected by a password
 							// getSelectedItem(value.name);
 							AppDispatch(fetchDisplayedChannel(value.name))
+							newChannelCreated.current = true;
 						}
 					}
 				}
 			}
 			else if ('login' in value) { // if selected value is a user
-				if (!userChannels.some(channel => { // check if there is no privateConv for which the user is a member
-					return channel.type === 'privateConv' &&
-						channel.members.some(member => member.login === value.login);
-				})) {
-					await createPrivateConv(value);
-				}
-				else {
-					AppDispatch(fetchDisplayedChannel(value.login))
+				// check if there is no privateConv for which the user is a member
+				if (!userChannels.some(channel => {return channel.type === 'privateConv' && channel.members.some(member => member.login === value.login);})) { 
+						await createPrivateConv(value);
 				}
 			}
 		}
