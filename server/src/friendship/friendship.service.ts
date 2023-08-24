@@ -90,6 +90,10 @@ export class FriendshipService {
       },
     });
     if (user) {
+      delete user.hash;
+      delete user.fA;
+      delete user.email;
+      delete user.rtHash;
       const allFriends = user.friends.concat(user.friendOf);
       const blockedFriends = user.blocked;
       const onlyFriends = allFriends.filter(
@@ -112,6 +116,10 @@ export class FriendshipService {
       },
     });
     if (user) {
+      delete user.hash;
+      delete user.fA;
+      delete user.email;
+      delete user.rtHash;
       return user.blocked;
     }
     return null;
@@ -174,6 +182,7 @@ export class FriendshipService {
         },
       },
     });
+    // console.log('the user in userprofile', user);
     if (user) {
       isUserInFriendsArray =
         user.friends.length > 0 || user.friendOf.length > 0;
@@ -248,7 +257,13 @@ export class FriendshipService {
           },
         });
       }
-      console.log('le user depuis acceptance ', user.login);
+      if (user) {
+        delete user.hash;
+        delete user.fA;
+        delete user.email;
+        delete user.rtHash;
+      }
+      // console.log('le user depuis acceptance ', user.login);
       return user;
     } catch (e) {
       return null;
@@ -275,6 +290,12 @@ export class FriendshipService {
             FriendRequestSent: true,
           },
         });
+        if (user) {
+          delete user.hash;
+          delete user.fA;
+          delete user.email;
+          delete user.rtHash;
+        }
         return user;
       }
     } catch (e) {
@@ -294,6 +315,7 @@ export class FriendshipService {
           blocked: true,
         },
       });
+      // console.log('blocked friend ', usAndAllBlockedFriend);
       if (usAndAllBlockedFriend) {
         const isBlocked = usAndAllBlockedFriend.blocked.some(
           (fr) => fr.login === recId,

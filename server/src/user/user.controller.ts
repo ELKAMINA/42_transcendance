@@ -12,24 +12,22 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('/all')
-  @Public()
   findAll() {
     return this.userService.findAll();
   }
 
-  @Get('/userprofile')
   @Public()
+  @Get('/userprofile')
   getUserProfile(@Query() query: Record<string, any>) {
     return this.userService.getUserProfile(query);
   }
 
   @Post('/me')
-  @Public()
   getActualUser(@Body() body) {
     return this.userService.getActualUser(body);
   }
 
   updateData(nickName: string, dataToUpdate: any) {
-	return this.userService.updateData(nickName, dataToUpdate);
+    return this.userService.updateData(nickName, dataToUpdate);
   }
 }

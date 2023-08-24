@@ -40,7 +40,8 @@ export class FriendshipGateway
   @WebSocketServer() io: Namespace;
 
   private users: Map<object, Array<Socket>> = new Map<object, Array<Socket>>();
-  private i: number = 0;
+
+  private i = 0;
 
   constructor(
     private userServ: UserService,
@@ -143,7 +144,7 @@ export class FriendshipGateway
       body.sender,
       body.receiver.nickname,
     );
-    this.io.emit('blockedFriend', user);
+    this.io.emit('blockedFriend', { status: user, senderReceiver: body });
   }
 
   isAlreadyConnected(user: object): Array<Socket> {
@@ -196,7 +197,7 @@ export class FriendshipGateway
             userInfo.nickname,
             userInfo.refreshToken,
           );
-          console.log('new tokens ', newTokens)
+          console.log('new tokens ', newTokens);
           const data: object = {
             nickname: userInfo.nickname,
             access_token: newTokens.access_token,

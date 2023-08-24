@@ -34,6 +34,12 @@ export class UserService {
           MutedInChannels: true,
         },
       });
+      if (user) {
+        delete user.hash;
+        delete user.fA;
+        delete user.email;
+        delete user.rtHash;
+      }
       return user;
     } catch (e) {
       return null;
@@ -43,7 +49,12 @@ export class UserService {
   async findAll() {
     try {
       const users = await this.prisma.user.findMany();
-      //   console.log('all the users ', users);
+      for (const user of users) {
+        delete user.hash;
+        delete user.fA;
+        delete user.email;
+        delete user.rtHash;
+      }
       return users;
     } catch (e) {
       return null;
@@ -60,7 +71,6 @@ export class UserService {
   async getActualUser(body) {
     // console.log('le body de la requete ', body)
     const user = await this.searchUser(body.nickname);
-    // console.log('le user ', user)
     if (user) return user;
     else return null;
   }
@@ -120,7 +130,13 @@ export class UserService {
           login: userInfo.login !== '' ? userInfo.login : userInfo.oldNick,
         },
       });
-      return finalUser;
+      if (finalUser) {
+        delete finalUser.hash;
+        delete finalUser.fA;
+        delete finalUser.email;
+        delete finalUser.rtHash;
+        return finalUser;
+      }
     } catch (error: any) {
       if (
         error.constructor.name === Prisma.PrismaClientKnownRequestError.name
@@ -149,6 +165,12 @@ export class UserService {
         FriendRequestSent: true,
       },
     });
-    return user;
+    if (user) {
+      delete user.hash;
+      delete user.fA;
+      delete user.email;
+      delete user.rtHash;
+      return user;
+    }
   }
 }

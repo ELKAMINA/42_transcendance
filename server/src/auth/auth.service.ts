@@ -167,7 +167,7 @@ export class AuthService {
           throw new ForbiddenException('Credentials taken');
         }
       }
-      console.log('la ????');
+      // console.log('la ????');
       throw error;
     } // PrismaClientKnownRequestError to catch the unique prisma duplicate error (for instance for the email that is duplicated )
   }

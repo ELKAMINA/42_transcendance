@@ -24,6 +24,7 @@ interface myProps {
 
 function UserProfileHeader(props: myProps) {
   const [color, setColorBadge] = useState('red');
+  console.log('les props = ', props)
   const user = useAppSelector(selectCurrentUser)
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -124,9 +125,9 @@ function UserProfileHeader(props: myProps) {
           </StyledBadge>
         </Box>
         <Box ml={2} display="flex" flexDirection='row' justifyContent='space-between' flexWrap='wrap'>
-        {props.friendship.myBlockedFriend && <div className='userprof-header'>Not friends - Blocked by you</div> }
-        {props.friendship.thoseWhoBlockedMe && <div className='userprof-header'> Not friends - Blocked you</div> }
-        {props.friendship.isMyfriend && <div className='userprof-header'>Friends</div> }
+        {props.friendship.myBlockedFriend && <div className='userprof-header'> Friends - Blocked by you</div> }
+        {props.friendship.thoseWhoBlockedMe && <div className='userprof-header'> Friends - Blocked you</div> }
+        {props.friendship.isMyfriend && !props.friendship.myBlockedFriend && !props.friendship.thoseWhoBlockedMe && <div className='userprof-header'>Friends</div> }
         {!props.friendship.isMyfriend && !props.friendship.thoseWhoBlockedMe && !props.friendship.myBlockedFriend && props.name !== user  && <div className='userprof-header'>Not Friends</div>}
         </Box> 
   </Box>

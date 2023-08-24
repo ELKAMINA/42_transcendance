@@ -16,8 +16,10 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 import api from "../utils/Axios-config/Axios";
 import {socket} from '../components/AllFriendship'
-import { useAppSelector } from "../utils/redux-hooks";
+import { useAppDispatch, useAppSelector } from "../utils/redux-hooks";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
+import { UserModel } from "../types/users/userType";
+import { FetchAllBlockedFriends, FetchAllFriends } from "../redux-features/friendship/friendshipSlice";
 
 type FriendshipProps = {
     id: string,
@@ -30,7 +32,15 @@ type FriendshipProps = {
 export enum BlockingStatus {
     BLOCKED = 1,
     UNBLOCKED = 2,
-  }
+}
+
+export type Block =  {
+    status: BlockingStatus,
+    body: {
+        sender: string,
+        receiver: UserModel,
+    }
+}
 
 export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar, type, bgColor}) => {
     // const [avt, setAvtr] = useState('')
@@ -38,6 +48,7 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
     const navigate = useNavigate();
     const [buttonColor, setButtonColor] = useState('red'); // State to track the button color
     const [blockBgColor, setBlockBgColor] = useState('yellowgreen');
+    const dispatch = useAppDispatch();
 
     const receiver = {
         nickname: login,
@@ -71,16 +82,18 @@ export const FriendSuggestion : React.FC<FriendshipProps> = ({id, login, avatar,
 
     }
 
-    socket.on('blockedFriend', (status: BlockingStatus) => {
-        if (status === 1){
-            setButtonColor('grey')
-            setBlockBgColor('grey')
-        }
-        else {
-            // console.log('status ', status);
-            setButtonColor('red')
-            setBlockBgColor('#AFEEEE')
-        }
+    socket.off('blockedFriend').on('blockedFriend', (blocked: Block) => {
+        // if (blocked.status === 1){
+        //     setButtonColor('grey')
+        //     setBlockBgColor('grey')
+        // }
+        // else {
+        //     // console.log('status ', status);
+        //     setButtonColor('red')
+        //     setBlockBgColor('#AFEEEE')
+        // }
+        dispatch(FetchAllBlockedFriends())
+        dispatch(FetchAllFriends())
     })
 
     React.useEffect(()=> {
