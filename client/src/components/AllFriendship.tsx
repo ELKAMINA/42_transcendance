@@ -95,6 +95,15 @@ export default function FriendshipComponent(props: Myprops) {
           break;
       }
     }
+
+    /** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
+    socket.off("autoRefreshWhenUsernameChanging").on("autoRefreshWhenUsernameChanging", async () => {
+      console.log("[AllFriendship - on autoRefreshWhenUsernameChanging", "Messagge received from the Settings");
+        dispatch(FetchSuggestions());
+        dispatch(FetchAllFriendRequests());
+        dispatch(FetchAllFriends());
+        dispatch(FetchAllBlockedFriends());
+    })
     
   return (
     <>

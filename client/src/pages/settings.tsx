@@ -29,6 +29,21 @@ export const sock = io('http://localhost:4003', {
   autoConnect: false,
 })
 
+/** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
+export const sockChat = io('http://localhost:4002', {
+    withCredentials: true,
+    transports: ['websocket'], 
+    upgrade: false,
+    autoConnect: false,
+})
+
+export const sockFriend = io('http://localhost:4006', {
+  withCredentials: true,
+  transports: ['websocket'], 
+  upgrade: false,
+  autoConnect: false,
+})
+
 export function PersonalInformation () {
     const [nickname, setNickname] = React.useState('')
     const [password, setPwd] = React.useState('')
@@ -43,13 +58,23 @@ export function PersonalInformation () {
     const dispatch = useAppDispatch();
 
     React.useEffect(() => {
-        sock.connect()
+        sock.connect();
+        /** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
+        sockChat.connect();
+        sockFriend.connect();
         sock.on('connect', () => {
 
         })
         return () => {  // cleanUp function when component unmount
             if (sock.connected){
                 sock.disconnect()
+            }
+            /** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
+            if (sockChat.connected){
+                sockChat.disconnect()
+            }
+            if (sockFriend.connected){
+                sockFriend.disconnect()
             }
         }
       }, [])
@@ -60,6 +85,9 @@ export function PersonalInformation () {
               setErrMsg(data.message);
           }
           else if (data !== null) {
+                /** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
+                sockFriend.emit('autoRefreshWhenUsernameChanging', {});
+                sockChat.emit('autoRefreshWhenUsernameChanging', {});
               if (data.login) dispatch(setNick(data.login));
               if (data.avatar) dispatch(setAvatar(data.avatar));
             //   console.log('[SETTINGS ] je rentre ici au rafraichissement ?', access_token)

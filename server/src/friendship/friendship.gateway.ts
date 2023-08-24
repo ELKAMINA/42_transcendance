@@ -216,4 +216,13 @@ export class FriendshipGateway
     if (userConnected) userConnected.push(client);
     else this.users.set(userInfo, [client]);
   }
+
+  /** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
+  @SubscribeMessage('autoRefreshWhenUsernameChanging')
+  async autoRefreshWhenUsernameChanging(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: any,
+  ) {
+    this.io.emit('autoRefreshWhenUsernameChanging');
+  }
 }

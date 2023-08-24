@@ -207,4 +207,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     }
   }
+
+  /** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
+  @SubscribeMessage('autoRefreshWhenUsernameChanging')
+  async autoRefreshWhenUsernameChanging(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: any,
+  ) {
+    this.server.emit('autoRefreshWhenUsernameChanging');
+  }
 }
