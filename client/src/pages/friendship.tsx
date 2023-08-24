@@ -34,11 +34,13 @@ function Suggestions () {
           dispatch(FetchSuggestions());
         }
     })
-    socket.off('newCookie').on('newCookie', (data) => {
-      dispatch(setOnlyTokens({...data}));
-      const serializeData = JSON.stringify(data);
-      Cookies.set('Authcookie', serializeData, { path: '/' });
-    })
+    // socket.on('newCookie', (data) => {
+    //   console.log('[Suggestions] -- je rentre ???', data)
+    //   dispatch(setOnlyTokens({...data}));
+    //   const serializeData = JSON.stringify(data);
+    //   Cookies.set('Authcookie', serializeData, { path: '/' });
+    // })
+
     socket.off('friendAdded').on('friendAdded', (data: any) => {
       if (data != null){
         dispatch(FetchSuggestions())
@@ -94,6 +96,14 @@ function Requests () {
       // else dispatch(setFriendshipError(2))
  
      })
+
+    //  socket.off('newCookie').on('newCookie', (data) => {
+    //   console.log('[Requests]---- je rentre ???', data)
+    //   dispatch(setOnlyTokens({...data}));
+    //   const serializeData = JSON.stringify(data);
+    //   Cookies.set('Authcookie', serializeData, { path: '/' });
+    // })
+
     socket.off('acceptedFriend').on('acceptedFriend', (data: any) => {
       if (data != null)
       dispatch(FetchAllFriendRequests());
@@ -156,11 +166,19 @@ function Friends () {
       }
       // dispatch(setSelectedItem(''))
     }
-  }, [dispatch])
+  }, [])
  
     socket.off('friendBlocked').on('friendBlocked', (data: any) => {
       dispatch(FetchAllBlockedFriends())
     })
+
+    // socket.off('newCookie').on('newCookie', (data) => {
+    //   console.log('[Friends] -- je rentre ???', data)
+    //   dispatch(setOnlyTokens({...data}));
+    //   const serializeData = JSON.stringify(data);
+    //   Cookies.set('Authcookie', serializeData, { path: '/' });
+    // })
+
     socket.off('acceptedFriend').on('acceptedFriend', (data: any) => {
       if (data != null)
         dispatch(FetchAllFriends())

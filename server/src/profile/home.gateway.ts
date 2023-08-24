@@ -165,7 +165,7 @@ export class ProfileGateway
             .then((res) => {
               console.log('response ', res);
             })
-            .catch((e) => console.log('erooor ', e));
+            .catch((e) => console.error('erooor ', e));
           return newTokens;
         } catch (e) {
           throw new ForbiddenException('Invalid access and refresh tokens');

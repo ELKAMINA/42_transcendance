@@ -167,7 +167,7 @@ export default class AuthController {
     this.authService.cancelTfa(body.nickname);
   }
 
-  // @Public()
+  @Public()
   @Post('update-cookie')
   updateCookie(@Body() newCookie, @Res({ passthrough: true }) res: Response) {
     this.authService.setCookie(newCookie, res);
