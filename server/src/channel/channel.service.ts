@@ -73,6 +73,7 @@ export class ChannelService {
 	}
 
 	async getUserChannels(requestBody: string): Promise<object> {
+		// console.log("[getUserChannels] requestBody = ", requestBody);
 		try {
 			const user = await this.prisma.user.findUnique({
 				where: {
