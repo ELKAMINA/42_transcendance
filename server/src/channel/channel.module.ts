@@ -3,10 +3,16 @@ import { ChannelService } from './channel.service';
 import { channelController } from './channel.controller';
 import { MuteSchedulerService } from './MuteSchedulerService';
 import { BannedSchedulerService } from './BannedSchedulerService';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [],
-  providers: [ChannelService, MuteSchedulerService, BannedSchedulerService],
+  providers: [
+    ChannelService,
+    MuteSchedulerService,
+    BannedSchedulerService,
+    UserService,
+  ],
   controllers: [channelController],
 })
 export default class channelModule {}

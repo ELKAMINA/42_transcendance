@@ -69,6 +69,7 @@ export default class AuthController {
     @GetCurrentUserId() userNick: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
   ) {
+    // console.log('userNick ', userNick);
     return this.authService.refresh(userNick, refreshToken);
   }
   /* ******************** */

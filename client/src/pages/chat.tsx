@@ -15,6 +15,7 @@ import { fetchDisplayedChannel, fetchUserChannels, selectAdminUpdate, selectDisp
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
+import { emptyChannel } from '../data/emptyChannel';
 
 
 function Chat () {
@@ -35,10 +36,13 @@ function Chat () {
 		if (channels.length === 0 || displayedChannel.name === 'empty channel' || displayedChannel.name === undefined) {
 			return 'WelcomeChannel';
 		} else {
+			// console.log('here ', displayedChannel.name)
 			return displayedChannel.name;
 		}
 	})
 	
+	// console.log('Selected Channel ', selectedChannel)
+
 	const socketRef = useRef<Socket>();
 	const roomId = selectedChannel;
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -153,7 +157,7 @@ function Chat () {
 	})
 	
 	useEffect(() => {
-		if (selectedChannel !== '') {
+		if (selectedChannel !== '' && selectedChannel !== "empty channel") {
 			// console.log('[ From Chat.tsx - useEffect is trigerred ', selectedChannel)
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
 		}

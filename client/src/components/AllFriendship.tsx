@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Cookies from 'js-cookie';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import { io } from 'socket.io-client';
@@ -10,6 +11,7 @@ import { Stack, Typography, Container } from '@mui/material';
 
 import { Suggestions, Requests, Friends } from '../pages/friendship';
 import { selectItems, setSelectedItem, selectError, FetchAllFriendRequests, setFriendshipError, FetchSuggestions, FetchAllFriends, FetchAllBlockedFriends } from '../redux-features/friendship/friendshipSlice';
+import { setOnlyTokens } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { useState } from 'react';
 import SomethingWentWrong from '../pages/somethingWentWrong';
@@ -62,6 +64,14 @@ export default function FriendshipComponent(props: Myprops) {
         }
       }
     })
+
+    // socket.off('newCookie').on('newCookie', (data) => {
+    //   // console.log('je rentre ???', data)
+    //   dispatch(setOnlyTokens({...data}));
+    //   const serializeData = JSON.stringify(data);
+    //   Cookies.set('Authcookie', serializeData, { path: '/' });
+    // })
+
 
     const handleChildAction = (err: number) => {
       switch (err) {

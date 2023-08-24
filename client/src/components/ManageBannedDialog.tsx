@@ -14,6 +14,7 @@ import api from '../utils/Axios-config/Axios';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { UserModel } from '../types/users/userType';
 import SendIcon from '@mui/icons-material/Send';
+import { selectCurrentUser } from '../redux-features/auth/authSlice';
 
 export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 	const theme = useTheme();
@@ -21,6 +22,7 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	const [updatedBanned, setUpdatedBanned] = React.useState<UserModel[]>([]);
 	const [updatedBannedWithTime, setUpdatedBannedWithTime] = React.useState<UserWithTime[]>([]);
+	const currentUser = useAppSelector(selectCurrentUser)
 
 	const AppDispatch = useAppDispatch();
 

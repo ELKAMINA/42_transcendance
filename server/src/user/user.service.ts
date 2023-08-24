@@ -26,6 +26,12 @@ export class UserService {
           FriendRequestSent: true,
           p1: true,
           p2: true,
+          adminChannels: true,
+          channels: true,
+          createdChannels: true,
+          ownedChannels: true,
+          bannedFromChannels: true,
+          MutedInChannels: true,
         },
       });
       return user;

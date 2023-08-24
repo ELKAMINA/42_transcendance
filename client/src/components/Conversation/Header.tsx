@@ -252,7 +252,8 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 			<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} sx={{width: '100%', height: '100%',}}>
 				<Stack direction={'row'} spacing={2}>
 					<Box>
-						{!isCreateChannelWindowOpen && <StyledBadge
+						{!isCreateChannelWindowOpen && 
+						<StyledBadge
 							overlap="circular"
 							anchorOrigin={{
 								vertical: "bottom",
@@ -275,7 +276,7 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 					</Box>
 					<Stack spacing={0.2}>
 							<Typography variant="subtitle2">{channelName}</Typography>
-							<Typography variant="caption">online</Typography>
+							{isPrivateConv && channel.name !== 'WelcomeChannel' && channel.name !== 'empty channel' &&  <Typography variant="caption"> {currentUser === channel.members[0].login ? channel.members[0].status : channel.members[1].status} </Typography>}
 					</Stack>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} spacing={3}>

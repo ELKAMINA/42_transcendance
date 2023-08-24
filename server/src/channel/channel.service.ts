@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
-  async createChannel(userNickname : string, dto: ChannelDto): Promise<boolean> {
+  async createChannel(userNickname: string, dto: ChannelDto): Promise<boolean> {
     const pwd = dto.key !== '' ? await argon.hash(dto.key) : '';
     try {
       // before creating the Channel record,
@@ -83,75 +83,71 @@ export class ChannelService {
   }
 
   async getUserChannels(requestBody: string): Promise<object> {
-	try {
-		const user = await this.prisma.user.findUnique({
-			where: {
-			  login: requestBody,
-			},
-			// the include option means that when fetching the user information,
-			// the response will include the 'channels' and
-			// 'createdChannels' fields of the user in
-			// addition to the main user entity.
-			include: {
-			  channels: {
-				include: {
-				  members: true,
-				  admins: true,
-				  banned: true,
-				  muted: true,
-				  createdBy: true,
-				  ownedBy: true,
-				  chatHistory: true,
-				},
-			  },
-			},
-		  });
-	  
-		  if (!user) {
-			throw new NotFoundException('User not found');
-		  }
-	  
-		  const output = [...user.channels]; /*, ...user.createdChannels];*/
-		  return output;
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          login: requestBody,
+        },
+        // the include option means that when fetching the user information,
+        // the response will include the 'channels' and
+        // 'createdChannels' fields of the user in
+        // addition to the main user entity.
+        include: {
+          channels: {
+            include: {
+              members: true,
+              admins: true,
+              banned: true,
+              muted: true,
+              createdBy: true,
+              ownedBy: true,
+              chatHistory: true,
+            },
+          },
+        },
+      });
 
-	} catch (error) {
-		console.error(error);
-	}
-   
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const output = [...user.channels]; /*, ...user.createdChannels];*/
+      return output;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   // requestBody = {name : <name of the channel>}
   async getDisplayedChannel(requestBody: string): Promise<object> {
-	// console.log("[getDisplayedChanne] requestBody = ", requestBody);
-	if (requestBody === undefined)
-		return undefined; // this case will be handled in channelSlice
-	try {
-		const channel = await this.prisma.channel.findUnique({
-			where: { name: requestBody },
-			include: {
-				members: {
-					include: {
-						blocked: true,
-						blockedBy: true,
-					},
-				},
-				admins: true,
-				banned: true,
-				muted: true,
-				createdBy: true,
-				ownedBy: true,
-				chatHistory: true,
-			},
-			});
-			if (!channel) {
-				return undefined;
-			}
-			// console.log("[getDisplayedChanne] channel = ", channel);
-			return channel;
-	} catch (error) {
-		if (requestBody !== 'WelcomeChannel')
-			console.error(error);
-	}
+    // console.log("[getDisplayedChanne] requestBody = ", requestBody);
+    if (requestBody === undefined) return undefined; // this case will be handled in channelSlice
+    try {
+      const channel = await this.prisma.channel.findUnique({
+        where: { name: requestBody },
+        include: {
+          members: {
+            include: {
+              blocked: true,
+              blockedBy: true,
+            },
+          },
+          admins: true,
+          banned: true,
+          muted: true,
+          createdBy: true,
+          ownedBy: true,
+          chatHistory: true,
+        },
+      });
+      if (!channel) {
+        return undefined;
+      }
+      // console.log("[getDisplayedChanne] channel = ", channel);
+      return channel;
+    } catch (error) {
+      if (requestBody !== 'WelcomeChannel') console.error(error);
+    }
   }
 
   async getAllPublicChannelsInDatabase(): Promise<object> {
@@ -160,7 +156,7 @@ export class ChannelService {
         type: 'public', // Filter channels by type 'public'
       },
     });
-
+    // console.log('public channels', channels);
     return channels;
   }
 
@@ -178,7 +174,7 @@ export class ChannelService {
       );
       return isPasswordCorrect;
     } catch (error: any) {
-      throw error;
+      console.error(error);
     }
   }
 
@@ -222,7 +218,7 @@ export class ChannelService {
       // console.log('updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 
@@ -279,7 +275,7 @@ export class ChannelService {
       // console.log('updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 
@@ -305,7 +301,7 @@ export class ChannelService {
         throw new Error(`Channel with name '${channelName.name}' not found.`);
       }
 
-      const mutedIds = muted.map((muted) => ({ login: muted.login }));
+      const mutedIds = muted.map((mute) => ({ login: mute.login }));
 
       // Update the channel's muted with the new array
       const updatedChannel = await this.prisma.channel.update({
@@ -336,7 +332,8 @@ export class ChannelService {
       // console.log('updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      throw error;
+      console.error(error); // Amina: j'ai commenté car c moche dans la console
+      console.error('a problem has occured with muting someone');
     }
   }
 

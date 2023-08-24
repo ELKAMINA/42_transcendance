@@ -269,14 +269,14 @@ export function Security () {
 
     const tfa = async () => {
         await api
-        .post("http://0.0.0.0:4001/auth/2fa/generate", actualUser)
+        .post("http://localhost:4001/auth/2fa/generate", actualUser)
         .then((res) => {dispatch(setQrCode(res.data));})
         .catch((e) => {console.log("error ", e)});
       }
     
       const cancelTfa = async () => {
         await api
-        .post("http://0.0.0.0:4001/auth/2fa/cancel", {nickname: user})
+        .post("http://localhost:4001/auth/2fa/cancel", {nickname: user})
         .then((res) => {})
         .catch((e) => {console.log("error ", e)});
     }

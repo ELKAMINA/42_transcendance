@@ -40,6 +40,7 @@ export class FriendshipGateway
   @WebSocketServer() io: Namespace;
 
   private users: Map<object, Array<Socket>> = new Map<object, Array<Socket>>();
+  private i: number = 0;
 
   constructor(
     private userServ: UserService,
@@ -59,9 +60,14 @@ export class FriendshipGateway
   //Whenever we want to handle message in the server, We use this decorator to handle it. MsgToServer is the name of the event he is waiting for
   async handleConnection(@ConnectedSocket() client: Socket) {
     try {
+      this.i += 1;
+      console.log(`Socket n° ${this.i}`);
       // const sockets = this.io.sockets; // toutes les sockets connectées
-      const user = await this.verifyJwtSocketConnections(client);
-      this.io.emit('newUserConnected', user.nickname);
+      // const user = await this.verifyJwtSocketConnections(client);
+      // if (user.accessToken){
+      //   this.io.emit('newCookie', user)
+      // }
+      // this.io.emit('newUserConnected', client.handshake.headers.cookie);
       // this.logger.log(`WS Client with id: ${client.id}  connected!`);
       // this.logger.debug(`Number of connected sockets ${sockets.size}`);
       // this.logger.log(`Client connected: ${client.id}`);
@@ -92,6 +98,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
+    // const user = await this.verifyJwtSocketConnections(socket);
     const newReq = await this.friends.requestFriendship(
       body.sender,
       body.receiver.nickname,
@@ -105,6 +112,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
+    // await this.verifyJwtSocketConnections(socket);
     const user = await this.friends.acceptFriend(
       body.sender,
       body.receiver.nickname,
@@ -117,6 +125,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
+    // await this.verifyJwtSocketConnections(socket);
     const user = await this.friends.denyFriend(
       body.sender.nickname,
       body.receiver,
@@ -129,6 +138,7 @@ export class FriendshipGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: any,
   ) {
+    // await this.verifyJwtSocketConnections(socket);
     const user = await this.friends.blockFriend(
       body.sender,
       body.receiver.nickname,
@@ -169,7 +179,7 @@ export class FriendshipGateway
   }
 
   async verifyJwtSocketConnections(client: Socket) {
-    let newTokens;
+    let newTokens = null;
     const userInfo = this.getUserInfoFromSocket(
       client.handshake.headers.cookie,
     );
@@ -186,19 +196,13 @@ export class FriendshipGateway
             userInfo.nickname,
             userInfo.refreshToken,
           );
+          console.log('new tokens ', newTokens)
           const data: object = {
             nickname: userInfo.nickname,
-            accessToken: newTokens.access_token,
-            refreshToken: newTokens.refresh_token,
+            access_token: newTokens.access_token,
+            refresh_token: newTokens.refresh_token,
           };
-          axios
-            .post('http://127.0.0.1:4001/auth/update-cookie', data)
-            .then((res) => {
-              //   console.log('la response ', res);
-            })
-            .catch((e) => console.log('erooor ', e));
-          this.io.emit('newCookie', data);
-          return newTokens;
+          return data;
         } catch (e) {
           throw new ForbiddenException('Invalid access and refresh tokens');
         }
