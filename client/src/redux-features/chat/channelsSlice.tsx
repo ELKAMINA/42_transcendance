@@ -15,6 +15,7 @@ export interface ChannelSlice {
 	isPopupOpen: boolean,
 	ownerUpdate: boolean,
 	adminUpdate: boolean,
+	kickedUpdate : boolean,
 	isMuted: MutingInfo[],
 	// createdChannels : ChannelModel[],
 	// memberedChannels : ChannelModel[],
@@ -37,6 +38,7 @@ const initialState : ChannelSlice = {
 	adminUpdate: false,
 	ownerUpdate: false,
 	isPopupOpen: false,
+	kickedUpdate : false,
 	isMuted: [],
 	// createdChannels : [],
 	// memberedChannels : [],
@@ -102,6 +104,7 @@ export const channelsSlice = createSlice({
 			state.isMember = action.payload;
 		},
 		setIsBanned: (state, action: PayloadAction<boolean>) => {
+			// console.log("[channelslice - bannedUpdate] action.payload = ", action.payload)
 			state.isBanned = action.payload;
 		},
 		setOwnerUpdate: (state, action: PayloadAction<boolean>) => {
@@ -110,6 +113,10 @@ export const channelsSlice = createSlice({
 		setAdminUpdate: (state, action: PayloadAction<boolean>) => {
 			// console.log("[channelslice - adminUpdate] action.payload = ", action.payload)
 			state.adminUpdate = action.payload;
+		},
+		setKickedUpdate: (state, action: PayloadAction<boolean>) => {
+			// console.log("[channelslice - kickedUpdate] action.payload = ", action.payload)
+			state.kickedUpdate = action.payload;
 		},
 		setIsPopupOpen: (state, action: PayloadAction<boolean>) => {
 			state.isPopupOpen = action.payload;
@@ -187,6 +194,7 @@ export const {
 	setIsBanned,
 	setOwnerUpdate,
 	setAdminUpdate,
+	setKickedUpdate,
 	setIsPopupOpen,
 	// updateCreatedChannels, 
 	// updateMemberedChannels, 
@@ -210,6 +218,7 @@ export const selectIsBanned = (state : RootState) => state.persistedReducer.chan
 export const selectIsPopupOpen = (state : RootState) => state.persistedReducer.channels.isPopupOpen
 export const selectOwnerUpdate = (state : RootState) => state.persistedReducer.channels.ownerUpdate
 export const selectAdminUpdate = (state : RootState) => state.persistedReducer.channels.adminUpdate
+export const selectKickedUpdate = (state : RootState) => state.persistedReducer.channels.kickedUpdate
 // export const selectCreatedChannels = (state: RootState) => state.persistedReducer.channels.createdChannels
 // export const selectMemberedChannels = (state: RootState) => state.persistedReducer.channels.memberedChannels
 // export const selectAllChannels = (state: RootState) => state.persistedReducer.channels.allChannels

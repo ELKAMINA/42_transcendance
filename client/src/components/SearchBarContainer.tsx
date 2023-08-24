@@ -31,6 +31,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	useEffect(() => {
 		AppDispatch(FetchAllFriends())
 		AppDispatch(fetchPublicChannels())
+		// AppDispatch(fetchUserChannels())
 	}, []); // get the friends and channels from database
 
 	const friends = useAppSelector(selectFriends) as UserModel[];
@@ -135,7 +136,6 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	const [pickedChannel, setPickedChannel] = useState<Channel>();
 	const [isConfirmed, setIsConfirmed] = useState<boolean>();
 
-	// Event handler to log the selected option
 	const handleOptionSelect = async (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
 		// console.log("[searchBar container] value = ", value);
 		if (value) {
@@ -156,44 +156,37 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 				}
 			}
 			else if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
-				// console.log("[searchBar container] name = ", value.name);
-				// console.log("[searchBar container] members = ", value.members);
-				if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
-					// console.log("[searchbar] coucou");
-					setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
-				}
-				else { // if current user is not a member of the picked channel
-					// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
-					setPickedChannel(value);
-					// open EnterChannelConfirmationDialog
-					setOpenConfirmationDialog(true);
-				}
-				if (isConfirmed) { // if the user do want to enter the channel
-					if (value.key !== '') { // if channel is protected by a password
-						setAlertDialogSlideOpen(true); // open password check dialog slide
+				if (value.members) {
+					if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
+						// console.log("[searchbar] coucou");
+						setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
 					}
-					else { // if the channel is not protected by a password
-						// getSelectedItem(value.name);
-						AppDispatch(fetchDisplayedChannel(value.name))
+					else { // if current user is not a member of the picked channel
+						// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
+						setPickedChannel(value);
+						// open EnterChannelConfirmationDialog
+						setOpenConfirmationDialog(true);
+					}
+					if (isConfirmed) { // if the user do want to enter the channel
+						if (value.key !== '') { // if channel is protected by a password
+							setAlertDialogSlideOpen(true); // open password check dialog slide
+						}
+						else { // if the channel is not protected by a password
+							// getSelectedItem(value.name);
+							AppDispatch(fetchDisplayedChannel(value.name))
+							newChannelCreated.current = true;
+						}
 					}
 				}
 			}
 			else if ('login' in value) { // if selected value is a user
-				if (!userChannels.some(channel => { // check if there is no privateConv for which the user is a member
-					return channel.type === 'privateConv' &&
-						channel.members.some(member => member.login === value.login);
-				})) {
-					await createPrivateConv(value);
-				}
-				else {
-					console.log("YOU SHOULD NOT EVER SEE THIS");
-					AppDispatch(fetchDisplayedChannel(value.login))
-					// getSelectedItem(value.login);
+				// check if there is no privateConv for which the user is a member
+				if (!userChannels.some(channel => {return channel.type === 'privateConv' && channel.members.some(member => member.login === value.login);})) { 
+						await createPrivateConv(value);
 				}
 			}
 		}
 	};
-
 
 	return (
 		<Box sx={{width: '95%'}}>
