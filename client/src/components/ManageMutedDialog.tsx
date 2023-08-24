@@ -45,7 +45,7 @@ export default function ManageMutedDialog({socketRef, openDialog, setOpenDialog}
 			return updatedMutedWithTime[existingUserIndex];
 		});
 		
-		console.log('updatedMutedWithNullTime = ', updatedMutedWithNullTime);
+		// console.log('updatedMutedWithNullTime = ', updatedMutedWithNullTime);
 		
 		// send request to be the backend
 		updateMuted(updatedMutedWithNullTime);
