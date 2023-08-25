@@ -41,6 +41,7 @@ export class channelController {
 		return this.ChannelService.getUserChannels(userNickname);
 	}
 
+	@Roles('member')
 	@Post('/displayed')
 	getDisplayedChannel(@Body() requestBody): Promise<object> {
 		return this.ChannelService.getDisplayedChannel(requestBody.name);
