@@ -42,11 +42,13 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 		const modifiedChannels = channels.map((channel) => {
 			const modifiedChannel = { ...channel };
 			if (channel.type === 'privateConv') { // if the channel is a private conv
-				if (channel.members[0].login === currentUser) {
-					modifiedChannel.name = channel.members[1].login;
-				}
-				else {
-					modifiedChannel.name = channel.members[0].login;
+				if (channel.members.length >= 2) {
+					if (channel.members[0].login === currentUser) {
+						modifiedChannel.name = channel.members[1].login;
+					}
+					else {
+						modifiedChannel.name = channel.members[0].login;
+					}
 				}
 				return modifiedChannel;
 			}
