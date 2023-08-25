@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 import * as argon from 'argon2';
@@ -60,6 +60,7 @@ export class ChannelService {
 			return true;
 		} catch (error: any) {
 			console.error(error);
+			throw new BadRequestException()
 		}
 	}
 
