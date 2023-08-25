@@ -88,7 +88,7 @@ export default function KickMember({
                 });
             })
             .catch((error) =>
-                console.log("error while updating members : ", error)
+                console.log("error while kicking members : ", error)
             );
     }
 
