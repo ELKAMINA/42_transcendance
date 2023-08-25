@@ -26,8 +26,7 @@ export class ChannelService {
 				);
 			}
 
-			 /*** ISSUE 110 ***/
-			// CHECK IF THE CHANNEL NAME ALREADY EXISTS
+			// we check if channel already exist
 			const channelExist = await this.prisma.channel.findUnique({
 				where: {
 				name: dto.name,

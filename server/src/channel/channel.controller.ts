@@ -30,19 +30,15 @@ export class channelController {
 	) { }
 
 	@Post('/creation')
-	createChannel(
-		@Req() request: Request,
-		@Body() dto: ChannelDto,
-	): Promise<boolean> {
-		const userNickname = this.getUserInfoFromRequest(
-			request.headers.cookie,
-		).nickname;
+	createChannel(@Req() request: Request, @Body() dto: ChannelDto): Promise<boolean> {
+		const userNickname = this.getUserInfoFromRequest(request.headers.cookie).nickname;
 		return this.ChannelService.createChannel(userNickname, dto);
 	}
 
 	@Post('/userchannels')
-	getUserChannels(@Body() requestBody): Promise<object> {
-		return this.ChannelService.getUserChannels(requestBody.login);
+	getUserChannels(@Req() request: Request): Promise<object> {
+		const userNickname = this.getUserInfoFromRequest(request.headers.cookie).nickname;
+		return this.ChannelService.getUserChannels(userNickname);
 	}
 
 	@Post('/displayed')
