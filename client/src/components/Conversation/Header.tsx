@@ -252,18 +252,10 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 			<Stack alignItems={'center'} direction={'row'} justifyContent={'space-between'} sx={{width: '100%', height: '100%',}}>
 				<Stack direction={'row'} spacing={2}>
 					<Box>
-						{!isCreateChannelWindowOpen && <StyledBadge
-							// overlap="circular"
-							// anchorOrigin={{
-								// vertical: "bottom",
-								// horizontal: "right",
-							// }}
-							// variant="dot"
-						>
+						{!isCreateChannelWindowOpen && <StyledBadge>
 							<Button 
-								// disabled
 								onClick={() => handleProfile(channelName)}
-								// sx={{zIndex: "0"}}
+								disabled={channel.type !== 'privateConv'}
 							>
 							<Avatar
 								alt={channelName}
