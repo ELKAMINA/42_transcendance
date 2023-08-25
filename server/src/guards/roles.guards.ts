@@ -4,7 +4,7 @@ import { Reflector } from '@nestjs/core';
 import { parse } from 'cookie';
 
 import { ROLES_KEY } from 'src/decorators/roles.decorators';
-import { SearchUserModel } from 'src/user/types';
+import { SearchUserModel, UserModel } from 'src/user/types';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { all } from 'axios';
 
@@ -39,7 +39,7 @@ export class RolesGuard implements CanActivate {
 
       /* Getting the request  */
       const request = context.switchToHttp().getRequest();
-      console.log('path of the request ', request.route.path);
+      // console.log('path of the request ', request.route.path);
       /* Checking required roles  */
       if (
         !requiredRoles &&
@@ -55,7 +55,6 @@ export class RolesGuard implements CanActivate {
       ) {
         const { action } = request.body;
         if (action === 'leave') requiredRoles = ['not owner'];
-        else requiredRoles = ['admin'];
       }
 
       /* Getting channel name depending on arg received */
@@ -79,24 +78,32 @@ export class RolesGuard implements CanActivate {
       const userFromDB = await this.userServ.searchUser(
         userFromCookie.nickname,
       );
+      // console.log('user ', userFromDB.login);
+      // console.log('concerned Channel ', concernedchannel);
       if (!userFromDB || !concernedchannel) return activate;
 
-      const amItheOwner = userFromDB.ownedChannels.some(
+      const amItheOwner = userFromDB.ownedChannels?.some(
         (e) => e.name === concernedchannel,
       );
-      const amIAnAdmin = userFromDB.adminChannels.some(
+      const amIAnAdmin = userFromDB.adminChannels?.some(
         (e) => e.name === concernedchannel,
       );
+      // console.log('amIadmin ', amIAnAdmin);
+
       /* Issue 111: a user cannot ban/mute itself */
       if (request.route.path.includes('/updateMuted')) {
-        toMute = request.body.muted.some((e) => e === userFromDB.login);
-        if (toMute) return false;
+        let tomute = new Array<{ login: string; ExpiryTime: string }>(
+          request.body.muted,
+        );
+        tomute = request.body.banned?.filter(
+          (e) => e.login === userFromDB.login,
+        );
         if (amItheOwner) return true;
         else {
           if (amIAnAdmin) {
             let lastArray = new Array<{ login: string; ExpiryTime: string }>();
             lastArray = await this.getNewRequestBody(
-              request.body.muted,
+              tomute,
               concernedchannel,
               amItheOwner,
               amIAnAdmin,
@@ -109,20 +116,51 @@ export class RolesGuard implements CanActivate {
         }
       }
       if (request.route.path.includes('/updateBanned')) {
-        const toban = request.body.banned.some((e) => e === userFromDB.login);
-        if (toban) return false;
+        let toban = new Array<{ login: string; ExpiryTime: string }>(
+          request.body.banned,
+        );
+        toban = request.body.banned?.filter(
+          (e) => e.login === userFromDB.login,
+        );
         if (amItheOwner) return true;
         else {
           if (amIAnAdmin) {
             let lastArray = new Array<{ login: string; ExpiryTime: string }>();
             lastArray = await this.getNewRequestBody(
-              request.body.banned,
+              toban,
               concernedchannel,
               amItheOwner,
               amIAnAdmin,
             );
             request.body.banned = lastArray;
-            console.log('LastArray ', lastArray);
+            // console.log('LastArray ', lastArray);
+            if (lastArray.length > 0) return true;
+            else return false;
+          }
+        }
+      }
+
+      if (request.route.path.includes('/replaceMembers') && !requiredRoles) {
+        let toKick = new Array<UserModel>(request.body.tokickOrLeave);
+        toKick = request.body.tokickOrLeave?.filter(
+          (e) => e.login !== userFromDB.login,
+        );
+        request.body.tokickOrLeave = toKick;
+        // console.log('to kick ', request.body.tokickOrLeave);
+        // console.log('amIAdmin ', amIAnAdmin);
+
+        if (amItheOwner) return true;
+        else {
+          if (amIAnAdmin) {
+            let lastArray = new Array<UserModel>();
+            lastArray = await this.kicking(
+              request.body.tokickOrLeave,
+              concernedchannel,
+              amItheOwner,
+              amIAnAdmin,
+            );
+            request.body.members = lastArray;
+            // console.log('LastArray ', lastArray);
             if (lastArray.length > 0) return true;
             else return false;
           }
@@ -158,11 +196,46 @@ export class RolesGuard implements CanActivate {
           }
         });
       }
-      console.log('activate ', activate);
+      // console.log('activate ', activate);
       return activate;
     } catch (e) {
       console.log('Oups, something went wrong with Roles', e);
     }
+  }
+
+  async kicking(
+    toKick: any,
+    concernedchannel: string,
+    amItheOwner,
+    amIAnAdmin,
+  ): Promise<Array<UserModel>> {
+    // console.log('kicking ', toKick);
+    toKick.forEach((obj) => {
+      toKick.activate = true;
+      // console.log('obj', obj);
+      if (amItheOwner) {
+        if (obj.adminChannels?.some((e) => e.name === concernedchannel)) {
+          obj.activate = true;
+        }
+        if (obj.us.ownedChannels?.some((e) => e.name === concernedchannel)) {
+          obj.activate = false;
+        }
+      } else if (amIAnAdmin) {
+        if (obj.adminChannels?.some((e) => e.name === concernedchannel)) {
+          obj.activate = false;
+        }
+        if (obj.ownedChannels?.some((e) => e.name === concernedchannel)) {
+          obj.activate = false;
+        }
+      }
+    });
+    toKick = toKick.filter((e) => e.activate !== false);
+    const lastArray = new Array<UserModel>();
+    toKick.forEach((e) => {
+      lastArray.push(e);
+    });
+    // console.log('amIadmin', lastArray);
+    return lastArray;
   }
 
   async getNewRequestBody(

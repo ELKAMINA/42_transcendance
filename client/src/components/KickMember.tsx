@@ -45,6 +45,7 @@ export default function KickMember({
     );
     // const AppDispatch = useAppDispatch();
 
+
     function filterKickedMembersFromChannel() {
         const filteredMembers = selectedChannel.members
             .filter(
@@ -60,6 +61,10 @@ export default function KickMember({
         KickMemberOut(filteredMembers);
     }
 
+    React.useEffect(() => {
+       console.log('updated Kick ', updatedKicked)
+    }, [updatedKicked])
+
     async function KickMemberOut(updatedMember: UserByLogin[]) {
         // console.log("[Chat - KickMemberOut]", "currentUser: ", currentUser);
 
@@ -68,6 +73,7 @@ export default function KickMember({
                 channelName: { name: selectedChannel.name },
                 members: updatedMember,
                 action: 'kick',
+                tokickOrLeave: updatedKicked,
             })
             .then((response) => {
                 updatedKicked.map((kickedMember) => {

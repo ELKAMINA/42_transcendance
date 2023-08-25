@@ -12,6 +12,7 @@ import { Channel, User } from '@prisma/client';
 import { RolesGuard } from 'src/guards/roles.guards';
 import { Roles } from 'src/decorators/roles.decorators';
 import { ChannelService } from '../channel/channel.service';
+import { UserModel } from 'src/user/types';
 
 type DateTime = Date;
 
@@ -40,11 +41,13 @@ export class channelController {
     return this.ChannelService.createChannel(userNickname, dto);
   }
 
+  /* A recuperer  du cookie */
   @Post('/userchannels')
   getUserChannels(@Body() requestBody): Promise<object> {
     return this.ChannelService.getUserChannels(requestBody.login);
   }
 
+  @Roles('member')
   @Post('/displayed')
   getDisplayedChannel(@Body() requestBody): Promise<object> {
     return this.ChannelService.getDisplayedChannel(requestBody.name);
@@ -133,6 +136,7 @@ export class channelController {
       channelName: { name: string };
       members: User[];
       action: string;
+      tokickOrLeave: UserModel[];
     },
   ): Promise<Channel> {
     // console.log('request body', requestBody);

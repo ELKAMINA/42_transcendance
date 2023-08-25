@@ -9,6 +9,7 @@ import * as argon from 'argon2';
 import { Channel, Prisma, User } from '@prisma/client';
 import { UserWithTime } from './channel.controller';
 import dayjs from 'dayjs';
+import { UserModel } from 'src/user/types';
 
 @Injectable()
 export class ChannelService {
@@ -540,6 +541,7 @@ export class ChannelService {
     channelName: { name: string };
     members: User[];
     action: string;
+    tokickOrLeave: UserModel[];
   }): Promise<Channel> {
     // console.log("[replaceMembers - channel.services] requestBody = ", requestBody.channelName.name);
     try {
@@ -559,16 +561,16 @@ export class ChannelService {
       }
 
       // Extract the new member IDs from the request
-      const newMemberIds = members.map((member) => member.login);
+      const newMemberIds = members?.map((member) => member.login);
 
       // Fetch the current 'admins' of the channel
       const currentAdmins = channel.admins || [];
 
       // Identify admins who are no longer members
-      const updatedAdmins = currentAdmins.filter((admin) =>
-        newMemberIds.some((newMemberId) => newMemberId === admin.login),
+      const updatedAdmins = currentAdmins?.filter((admin) =>
+        newMemberIds?.some((newMemberId) => newMemberId === admin.login),
       );
-      const newAdminIds = updatedAdmins.map((admin) => admin.login);
+      const newAdminIds = updatedAdmins?.map((admin) => admin.login);
 
       // Update the channel's members with the combined array
       const updatedChannel = await this.prisma.channel.update({
@@ -577,10 +579,10 @@ export class ChannelService {
         },
         data: {
           members: {
-            set: newMemberIds.map((login) => ({ login })),
+            set: newMemberIds?.map((login) => ({ login })),
           },
           admins: {
-            set: newAdminIds.map((login) => ({ login })),
+            set: newAdminIds?.map((login) => ({ login })),
           },
         },
       });
