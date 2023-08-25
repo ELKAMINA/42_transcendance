@@ -4,8 +4,9 @@ import { Reflector } from '@nestjs/core';
 import { parse } from 'cookie';
 
 import { ROLES_KEY } from 'src/decorators/roles.decorators';
-// import { SearchUserModel } from 'src/user/types';
+import { SearchUserModel } from 'src/user/types';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { all } from 'axios';
 
 interface completeUserWithTime {
   us: any;
@@ -80,73 +81,52 @@ export class RolesGuard implements CanActivate {
       );
       if (!userFromDB || !concernedchannel) return activate;
 
+      const amItheOwner = userFromDB.ownedChannels.some(
+        (e) => e.name === concernedchannel,
+      );
+      const amIAnAdmin = userFromDB.adminChannels.some(
+        (e) => e.name === concernedchannel,
+      );
       /* Issue 111: a user cannot ban/mute itself */
       if (request.route.path.includes('/updateMuted')) {
         toMute = request.body.muted.some((e) => e === userFromDB.login);
         if (toMute) return false;
+        if (amItheOwner) return true;
+        else {
+          if (amIAnAdmin) {
+            let lastArray = new Array<{ login: string; ExpiryTime: string }>();
+            lastArray = await this.getNewRequestBody(
+              request.body.muted,
+              concernedchannel,
+              amItheOwner,
+              amIAnAdmin,
+            );
+            request.body.muted = lastArray;
+            console.log('LastArray ', lastArray);
+            if (lastArray.length > 0) return true;
+            else return false;
+          }
+        }
       }
-
       if (request.route.path.includes('/updateBanned')) {
-        /*  2 use cases :
-        UseCase 1:
-        - I am the owner of the channel and i want to ban an admin or member
-        */
-        // const allObjectBanned = new Array<completeUserWithTime>();
-        /* Je traverse le tableau des banned et j'enregistre un par un dans un objet avec : Tout l'object User et le temps d'expiration prévu pr le ban */
-        // console.log('body ', request.body.banned);
-        // request.body.banned.forEach(async (element: any) => {
-        //   const user = await this.userServ.searchUser(element.login);
-        //   // console.log('Banned people ', user);
-        //   if (user) {
-        //     allObjectBanned.push({
-        //       us: user,
-        //       ExpiryTime: element.ExpiryTime,
-        //     });
-        //   }
-        // });
-        // console.log('allObjectBanned ', allObjectBanned);
-        // const allObjectBannedPromises = request.body.banned.map(
-        //   async (element: any) => {
-        //     const user = await this.prismaServ.user.findUnique({
-        //       where: { login: element.login },
-        //       include: {
-        //         ownedChannels: true,
-        //         adminChannels: true,
-        //         channels: true,
-        //       },
-        //     });
-        //     console.log('le user ', user);
-        //     if (user) {
-        //       return {
-        //         us: user,
-        //         ExpiryTime: element.ExpiryTime,
-        //       };
-        //     }
-        //     return null; // or you can return some default value or error indicator
-        //   },
-        // );
-        // const allObjectBanned = (
-        //   await Promise.all(allObjectBannedPromises)
-        // ).filter(Boolean); // We filter out any null values from the results
-        // console.log('allObjectBanned ', allObjectBanned[0]);
-        // toBan = request.body.banned.some((e) => e === userFromDB.login);
-        // if (toBan) return false;
-        // const amItheOwner = userFromDB.ownedChannels.some(
-        //   (e) => e.name === concernedchannel,
-        // );
-        // if (amItheOwner) return true;
-        // else {
-        //   const amIAnAdmin = userFromDB.adminChannels.some(
-        //     (e) => e.name === concernedchannel,
-        //   );
-        //   if (amIAnAdmin) {
-        //     allObjectBanned.map((element) => {});
-        //   }
-        // }
-        /*
-          UseCase 2:
-            - I am the admin of the channel and i want to ban a member
-        */
+        const toban = request.body.banned.some((e) => e === userFromDB.login);
+        if (toban) return false;
+        if (amItheOwner) return true;
+        else {
+          if (amIAnAdmin) {
+            let lastArray = new Array<{ login: string; ExpiryTime: string }>();
+            lastArray = await this.getNewRequestBody(
+              request.body.banned,
+              concernedchannel,
+              amItheOwner,
+              amIAnAdmin,
+            );
+            request.body.banned = lastArray;
+            console.log('LastArray ', lastArray);
+            if (lastArray.length > 0) return true;
+            else return false;
+          }
+        }
       }
 
       /* Logic for each role */
@@ -185,9 +165,57 @@ export class RolesGuard implements CanActivate {
     }
   }
 
-  // amITheOwner(user: any, channel: string) {
-  //   const owner = user.ow
-  // }
+  async getNewRequestBody(
+    bannedOrMuted: any,
+    concernedchannel: string,
+    amItheOwner,
+    amIAnAdmin,
+  ): Promise<Array<{ login: string; ExpiryTime: string }>> {
+    const completeObjects = bannedOrMuted.map(async (element: any) => {
+      const user = await this.prismaServ.user.findUnique({
+        where: { login: element.login },
+        include: {
+          ownedChannels: true,
+          adminChannels: true,
+          channels: true,
+        },
+      });
+      // console.log('le user ', user);
+      if (user) {
+        return {
+          us: user,
+          ExpiryTime: element.ExpiryTime,
+          activate: true,
+        };
+      }
+      return null; // or you can return some default value or error indicator
+    });
+    let allObject = (await Promise.all(completeObjects)).filter(Boolean); // We filter out any null values from the results
+    // console.log(allObject);
+    allObject.forEach((obj) => {
+      if (amItheOwner) {
+        if (obj.us.adminChannels.some((e) => e.name === concernedchannel)) {
+          obj.activate = true;
+        }
+        if (obj.us.ownedChannels.some((e) => e.name === concernedchannel)) {
+          obj.activate = false;
+        }
+      } else if (amIAnAdmin) {
+        if (obj.us.adminChannels.some((e) => e.name === concernedchannel)) {
+          obj.activate = false;
+        }
+        if (obj.us.ownedChannels.some((e) => e.name === concernedchannel)) {
+          obj.activate = false;
+        }
+      }
+    });
+    allObject = allObject.filter((e) => e.activate !== false);
+    const lastArray = new Array<{ login: string; ExpiryTime: string }>();
+    allObject.forEach((e) => {
+      lastArray.push({ login: e.us.login, ExpiryTime: e.ExpiryTime });
+    });
+    return lastArray;
+  }
 }
 
 /* Code explanation :
