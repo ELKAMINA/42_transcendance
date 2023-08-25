@@ -76,7 +76,7 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 	const membersOptions: UserModel[] = selectedChannel.members.filter((member: UserModel) => {
 		// Check if the member is not in the admins array
 		let isAdmin = selectedChannel.admins.some(admin => admin.login === member.login);
-		if (currentUser.login === selectedChannel.ownedById)
+		if (currentUser && currentUser.login === selectedChannel.ownedById)
 			isAdmin = false;
 		// Check if the member's login is different from channel.ownedById
 		const isOwnedBy = member.login === selectedChannel.ownedById;

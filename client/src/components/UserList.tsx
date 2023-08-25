@@ -41,10 +41,12 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 	const [isOwner, setisOwner] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
-		if (currentUser.login === selectedChannel.ownedById) {
-			setisOwner(true);
-		} else if (selectedChannel.admins.some((admin) => admin.login === currentUser.login)) {
-			setisAdmin(true);
+		if (currentUser) {
+			if (currentUser.login === selectedChannel.ownedById) {
+				setisOwner(true);
+			} else if (selectedChannel.admins.some((admin) => admin.login === currentUser.login)) {
+				setisAdmin(true);
+			}
 		}
 	}, [currentUser])
 
