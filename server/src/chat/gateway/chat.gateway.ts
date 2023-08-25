@@ -37,16 +37,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('ChatToServer')
-	handleNewChatMessage(socket: Socket, dto: MessageDto): void {
-		// console.log('[handleNewChatMessage] message = ', dto.message)
+	async handleNewChatMessage(socket: Socket, dto: MessageDto): Promise<void> {
 		const roomId = socket.handshake.query.roomId as string;
-		// console.log('[handleNewChatMessage] roomId = ', roomId)
-		this.ChatService.createMessage(dto);
-		this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
+
+		try {
+			const isSuccess = await this.ChatService.createMessage(dto);
+			if (isSuccess) {
+				this.server.to(roomId).emit('ServerToChat:' + roomId, dto);
+			} else {
+				this.server.emit('channelDeletedNotif', dto.channel);
+			}
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
+
 	@SubscribeMessage('newChannelCreated')
-	handleNewChannelCreated(socket: Socket, userName : string): void {
+	handleNewChannelCreated(socket: Socket, userName: string): void {
 		// const roomId = socket.handshake.query.roomId as string;
 		// console.log("[chatGateway] userName = ", userName);
 		this.server.emit('newChannelNotif', userName);
@@ -74,7 +82,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('bannedNotif')
-	handleJustBannedNotif(socket: Socket, userName : string): void {
+	handleJustBannedNotif(socket: Socket, userName: string): void {
 		// const roomId = socket.handshake.query.roomId as string;
 		// console.log("[chatGateway] roomId = ", roomId);
 		this.server.emit('bannedNotif', userName);
