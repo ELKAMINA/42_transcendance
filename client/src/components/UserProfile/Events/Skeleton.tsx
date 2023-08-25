@@ -2,6 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import { Grid } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 import { Match } from "../../../types/match";
@@ -21,30 +22,46 @@ const MatchHistory = (props: Myprops) => {
     React.useEffect(() => {}, []);
     return (
         <Card
-            sx={{
-                width: "80vw",
-                height: "10vh",
-                display: "flex",
-                alignContent: "center",
-                // flexDirection: 'row',
-                // justifyContent: 'space-around',
-                margin: "20px",
-                borderRadius: "20px",
-                // alignItems: 'center',
-            }}
+        sx={(theme)=> ({
+            width: {
+                xs: '80%',
+                sm: '80%',
+                md: '80%',
+                lg: '80%',
+            },
+            height: {
+                xs: '10%',
+                sm: '10%',
+                md: '10%',
+                lg: '10%',
+            },
+            // overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            margin: 2,
+            // alignItems: 'center',
+            })}
         >
             <CardContent
                 sx={{
                     display: "flex",
                     flexDirection: "row",
-                    alignItems: "center",
+                    alignItems: "baseline",
                     // alignContent: 'center',
-                    justifyContent: "space-around",
-                    flex: "1",
+                    justifyContent: "space-evenly",
+                    // flex: "1",
                 }}
             >
                 <Typography component="div"
-                    sx={{ fontSize: 30, color: "00FFFF" }}
+                    sx={(theme)=> ({
+                        fontSize: {
+                            xs: 11,
+                            sm: 15,
+                            md: 20,
+                            lg: 25,
+                        },
+
+                    })}
                     color="text.secondary"
                     gutterBottom
                 >
@@ -58,14 +75,31 @@ const MatchHistory = (props: Myprops) => {
                     }}
                 >
                     <Typography component="div"
-                        sx={{ fontSize: 30, color: "#07457E" }}
+                        sx={(theme)=> ({
+                            fontSize: {
+                                xs: 12,
+                                sm: 15,
+                                md: 20,
+                                lg: 30,
+                            },
+                            color: "#07457E"
+                        })}
                         color="text.secondary"
                         gutterBottom
                     >
                         {props.us.p1_score} - {props.us.p2_score}
                     </Typography>
                     <Typography component="div"
-                        sx={{ fontSize: 12, color: "#07457E", font: "italic" }}
+                        sx={(theme)=> ({
+                            fontSize: {
+                                xs: 10,
+                                sm: 20,
+                                md: 30,
+                                lg: 10,
+                            },
+                            color: "#07457E",
+                            font: "italic"
+                        })}
                         color="text.secondary"
                         gutterBottom
                     >
@@ -74,7 +108,15 @@ const MatchHistory = (props: Myprops) => {
                     </Typography>
                 </Box>
                 <Typography component="div"
-                    sx={{ fontSize: 30, color: "00FFFF" }}
+                    sx={(theme)=> ({
+                        fontSize: {
+                            xs: 11,
+                            sm: 15,
+                            md: 20,
+                            lg: 25,
+                        },
+                        color: "00FFFF" 
+                    })}
                     color="text.secondary"
                     gutterBottom
                 >
