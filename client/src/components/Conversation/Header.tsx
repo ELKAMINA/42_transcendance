@@ -275,7 +275,6 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 					</Box>
 					<Stack spacing={1}>
 							<Typography variant="subtitle2">{channelName}</Typography>
-							{isPrivateConv && channel.name !== 'WelcomeChannel' && channel.name !== 'empty channel' &&  <Typography variant="caption"> {currentUser === channel.members[0].login ? channel.members[0].status : channel.members[1].status} </Typography>}
 							<Typography color="#595343" variant="caption">{channel.type}</Typography>
 					</Stack>
 				</Stack>
