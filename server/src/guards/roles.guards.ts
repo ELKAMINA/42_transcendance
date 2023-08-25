@@ -81,32 +81,34 @@ export class RolesGuard implements CanActivate {
       }
 
       /* Logic for each role */
-      requiredRoles.map((role) => {
-        switch (role) {
-          case 'admin':
-            activate = userFromDB.adminChannels.some(
-              (chan) => chan.name === concernedchannel,
-            );
-            break;
-          case 'member':
-            activate = userFromDB.channels.some(
-              (chan) => chan.name === concernedchannel,
-            );
-            break;
-          case 'owner':
-            activate = userFromDB.ownedChannels.some(
-              (chan) => chan.name === concernedchannel,
-            );
-            break;
-          case 'not owner':
-            activate = !userFromDB.ownedChannels.some(
-              (chan) => chan.name === concernedchannel,
-            );
-            break;
-          default:
-            break;
-        }
-      });
+	  if (requiredRoles) {
+		requiredRoles.map((role) => {
+			switch (role) {
+			  case 'admin':
+				activate = userFromDB.adminChannels.some(
+				  (chan) => chan.name === concernedchannel,
+				);
+				break;
+			  case 'member':
+				activate = userFromDB.channels.some(
+				  (chan) => chan.name === concernedchannel,
+				);
+				break;
+			  case 'owner':
+				activate = userFromDB.ownedChannels.some(
+				  (chan) => chan.name === concernedchannel,
+				);
+				break;
+			  case 'not owner':
+				activate = !userFromDB.ownedChannels.some(
+				  (chan) => chan.name === concernedchannel,
+				);
+				break;
+			  default:
+				break;
+			}
+		  });
+	  }
       return activate;
     } catch (e) {
       console.log('Oups, something went wrong with Roles');
