@@ -25,6 +25,8 @@ function CreateName() {
 
 	const [channelName, setChannelName] = useState('');
 	const [isTaken, setIsTaken] = useState(false);
+	/*** ISSUE 137 ***/
+	const [isNameError, setIsNameError] = useState(false);
 
 	const dispatch = useDispatch();
 
@@ -36,15 +38,29 @@ function CreateName() {
 		  setIsTaken(true);
 		  /*** ISSUE 110 ***/
 		  dispatch(setNameErrorState(true));
-		} else if (value.length <= 0 || value.length > 20) {
+		} else if (value.length > 20) {
+			setIsNameError(true);
 			dispatch(setNameErrorState(true));
 		} else {
 		  dispatch(changeChannelName(value))
 		  setIsTaken(false);
+		  setIsNameError(false);
 		  dispatch(setNameErrorState(false));
 		}
 	}
-	  
+	
+	/*** ISSUE 137 ***/
+	// SET THE HELP TEXT DEPENDING OF THE ERROR
+	const setHelpeText = () => {
+		let result = "required";
+
+		if (isTaken === true) {
+			result = "this name is taken!";
+		} else if (isNameError === true) {
+			result = "the channel name is inccorrect (1 character min and 20 characters maximum!";
+		}
+		return result;
+	}
 
 	return (
 	<Box width={'100%'}>
@@ -56,8 +72,8 @@ function CreateName() {
 			value = {channelName}
 			onChange={handleChange}
 			required
-			helperText={isTaken === true ? 'this name is taken!' : 'required'}
-			error={isTaken === true}
+			helperText={setHelpeText()}
+			error={isTaken || isNameError}
 			sx={{
 				width: '100%',
 				'& input': {
