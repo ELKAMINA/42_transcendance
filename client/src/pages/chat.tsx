@@ -98,14 +98,7 @@ function Chat () {
 		})
 	
 		socketRef.current?.on('channelDeletedNotif', (deletedChannelName : string) => {
-			// console.log('[chat] - new channel has been deleted, and you were a member!');
-			// console.log('[chat] - current user = ', currentUser);
-			// if the channel deleted is the one the current user is displaying
-			// console.log('[chat] - displayed channel = ', displayedChannel.name);
-			// console.log('[chat] - deletedChannelName = ', deletedChannelName);
-			// console.log('[chat - selectedChannel = ', selectedChannel);
 			if (deletedChannelName === selectedChannel) {
-				// AppDispatch(fetchDisplayedChannel('WelcomeChannel'));
 				setSelectedChannel('WelcomeChannel');
 			}
 			AppDispatch(fetchUserChannels());
@@ -123,6 +116,7 @@ function Chat () {
 			// console.log('[chat] - member notif !');
 			// console.log('[chat] - current user = ', currentUser);
 			AppDispatch(fetchUserChannels());
+			AppDispatch(fetchPublicChannels());
 			if (currentUser != userName) 
 				AppDispatch(fetchDisplayedChannel(roomId));
 		})
