@@ -176,6 +176,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			.emit('userHasBeenMuted', { mutedUser: body, channelName: roomId });
 	}
 
+	// vérifier que l'utilisateur qui se connecte est bien membre
 	handleConnection(socket: Socket) {
 		// console.log('CONNECTED ', socket.id);
 		const roomId = socket.handshake.query.roomId as string;
