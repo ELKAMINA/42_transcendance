@@ -16,9 +16,6 @@ import {
 	selectDisplayedChannel,
 	selectGameDialog,
 	setGameDialog,
-	fetchDisplayedChannel,
-	fetchUserChannels,
-	fetchPublicChannels,
 } from "../../redux-features/chat/channelsSlice";
 
 import GameSuggestion from "../Game/GameSuggestion";
