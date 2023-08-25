@@ -48,8 +48,7 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 		// console.log("[messages] = ", selectedChannel.name);
 		
 		// console.log("[messages] currentUser.blocked = ", currentUser.blocked);
-
-		if (selectedChannel && selectedChannel.chatHistory) {
+		if (currentUser && selectedChannel && selectedChannel.chatHistory) {
             const newChat: ChatMessage[] = selectedChannel.chatHistory.concat(messages);
 			const sortedChat : ChatMessage[] = newChat.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()); // sort messages from oldest to most recent
 			const filteredBlockedUsersChat : ChatMessage[] = sortedChat.filter((el) => 

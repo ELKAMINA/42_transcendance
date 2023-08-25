@@ -55,7 +55,7 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 				AppDispatch(setIsMember(true));
 			})
-			.catch((error) => console.log('error while updating members : ', error))
+			.catch((error) => console.log('error while adding members : ', error))
 	}
 
 	const handleClose = () => {

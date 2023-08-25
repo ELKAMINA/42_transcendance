@@ -82,7 +82,7 @@ export default function ManageMutedDialog({socketRef, openDialog, setOpenDialog}
 	const membersOptions: UserModel[] = selectedChannel.members.filter((member: UserModel) => {
 		// Check if the member is not in the admins array
 		let isAdmin = selectedChannel.admins.some(admin => admin.login === member.login);
-		if (currentUser.login === selectedChannel.ownedById) // if the currentUser is the owner of the channel, leave the admins in the list
+		if (currentUser && currentUser.login === selectedChannel.ownedById) // if the currentUser is the owner of the channel, leave the admins in the list
 			isAdmin = false;
 		// Check if the member's login is different from channel.ownedById
 		const isOwnedBy = member.login === selectedChannel.ownedById;

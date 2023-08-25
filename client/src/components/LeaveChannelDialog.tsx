@@ -60,7 +60,7 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 					channelById: selectedChannel.name,
 				});
 			})
-			.catch((error) => console.log('error while updating members : ', error))
+			.catch((error) => console.log('error while updating members from LeaveChannelDialog: ', error))
 	}
 
 	function handleSubmit() {

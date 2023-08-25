@@ -20,6 +20,7 @@ import UnblockBlock from './UnblockBlock';
 
 /** ISSUE 110***/
 import { DoNotDisturbOnRounded } from '@mui/icons-material';
+import api from '../../utils/Axios-config/Axios';
 
 interface mutes {
 	login: string,
@@ -152,7 +153,13 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 					return false;
 				}
 			}	catch(error : any) {
-				console.error('error while checking if user is blocked = ', error);
+				console.error('oops, user not found! = ');
+				await api
+					.post('http://localhost:4001/channel/deleteChannelByName', { name: selectedChannel.name })
+					.then((response) => {
+						socketRef.current?.emit('channelDeleted', selectedChannel.name);
+					})
+					.catch((error) => console.log('error while deleting channel', error));
 				return false; // default return statement
 			}
 		} else {

@@ -78,10 +78,12 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 		// 	// #2 : we change the name of the channels for a correct display
 			.map((channel) => {
 				if (channel.type === 'privateConv') { // if the channel is of type privateConv
-					if (channel.members[0].login === currentUserName) { // if currentUser correspond to members[0], display members[1]'s login
-						return { ...channel, name: channel.members[1].login };
-					} else {
-						return { ...channel, name: channel.members[0].login }; // and vice versa
+					if (channel.members.length >= 2) {
+						if (channel.members[0].login === currentUserName) { // if currentUser correspond to members[0], display members[1]'s login
+							return { ...channel, name: channel.members[1].login };
+						} else {
+							return { ...channel, name: channel.members[0].login }; // and vice versa
+						}
 					}
 				}
 				return channel; // For other channel types or conditions, keep the channel as is

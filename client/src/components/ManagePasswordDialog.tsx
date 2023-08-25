@@ -37,7 +37,7 @@ export default function ManagePasswordDialog({openDialog, setOpenDialog} : {open
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})
-			.catch((error) => console.log('error while updating members : ', error))
+			.catch((error) => console.log('error while updating password : ', error))
 	}
 
 	const handleSubmit = () => {
