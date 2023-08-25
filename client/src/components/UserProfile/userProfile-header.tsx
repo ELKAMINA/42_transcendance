@@ -32,7 +32,7 @@ function UserProfileHeader(props: myProps) {
     '& .MuiBadge-badge': {
       backgroundColor: color,
       color: color,
-      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      boxShadow: `0 0 0 1px ${theme.palette.background.paper}`,
       '&::after': {
         position: 'absolute',
         top: 0,

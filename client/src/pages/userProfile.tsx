@@ -36,14 +36,11 @@ const UserProfile = () => {
     useEffect(() => {
         dispatch(FetchAFriend(userToStalk.login))
         dispatch(FetchFriendshipInfo(currentUser, userToStalk.login))
-        // socketSettings.connect()
-        // friendship();
+
         return () => {
             dispatch(getUserToStalk(undefined))
             dispatch(getIsMyFriend({isMyfriend: false, myBlockedFriend: false, thoseWhoBlockedMe: false}))
-            // if (socketSettings.connected){
-            //     socketSettings.disconnect();
-            // }
+
         }
     }, [userToStalk.login]);
 
