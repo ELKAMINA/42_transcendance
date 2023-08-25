@@ -11,20 +11,18 @@ import { Channel } from '../types/chat/channelTypes';
 import { UserByLogin } from '../types/users/userType';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector, } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, setIsMember } from '../redux-features/chat/channelsSlice';
+import { MutableRefObject } from 'react';
 
 export type EnterChannelConfirmationDialogProps = {
 	selectedChannel : Channel | undefined;
 	openDialog : boolean;
 	setOpenDialog : (arg0 : boolean) => void;
-	setIsConfirmed : (isConfirmed : boolean) => void;
+	// setIsConfirmed : (isConfirmed : boolean) => void;
+	isConfirmed :  MutableRefObject<boolean>;
 }
 
-export default function EnterChannelConfirmationDialog({
-	setIsConfirmed,
-	selectedChannel,
-	openDialog, 
-	setOpenDialog } : EnterChannelConfirmationDialogProps) {
+export default function EnterChannelConfirmationDialog({isConfirmed, selectedChannel, openDialog, setOpenDialog } : EnterChannelConfirmationDialogProps) {
 	
 	const AppDispatch = useAppDispatch();
 	const currentUser : string = useAppSelector(selectCurrentUser);
@@ -37,9 +35,10 @@ export default function EnterChannelConfirmationDialog({
 				members : [newMember], // list of new members to add 
 			})
 			.then((response) => {
+				AppDispatch(setIsMember(true))
 				AppDispatch(fetchUserChannels());
-				if (selectedChannel)
-					AppDispatch(fetchDisplayedChannel(selectedChannel.name));
+				// if (selectedChannel)
+					// AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})
 			.catch((error) => console.log('error while updating members : ', error))
 	}
@@ -47,13 +46,15 @@ export default function EnterChannelConfirmationDialog({
 	const handleConfirm = () => {
 		// add current user to the the selected channel's list of members
 		addMembers();
-		setIsConfirmed(true);
+		// setIsConfirmed(true);
+		isConfirmed.current = true;
 		setOpenDialog(false);
 	};
 
 	const handleCancel = () => {
 		// don't do anything
-		setIsConfirmed(false);
+		// setIsConfirmed(false);
+		isConfirmed.current = false;
 		setOpenDialog(false);
 	};
 

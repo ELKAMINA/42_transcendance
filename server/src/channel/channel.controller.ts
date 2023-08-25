@@ -77,6 +77,10 @@ export class channelController {
     return this.ChannelService.updateAdmins(requestBody);
   }
 
+  // IF USERS WHO ARE BEING BANNED ARE ADMINS : @ROLES('OWNER')
+  // IF USERS WHO ARE BEING BANNED ARE MEMBERS : @ROLES('ADMIN')
+  // IF USER WHO IS BEING BANNED IS THE OWNER : FORBIDDEN
+  @Roles('admin')
   @Post('/updateBanned')
   updateBanned(
     @Body()
@@ -88,6 +92,10 @@ export class channelController {
     return this.ChannelService.updateBanned(requestBody);
   }
 
+  // IF USERS WHO ARE BEING MUTED ARE ADMINS : @ROLES('OWNER')
+  // IF USERS WHO ARE BEING MUTED ARE MEMBERS : @ROLES('ADMIN')
+  // IF USER WHO IS BEING MUTED IS THE OWNER : FORBIDDEN
+  @Roles('admin')
   @Post('/updateMuted')
   updateMuted(
     @Body()
@@ -115,6 +123,9 @@ export class channelController {
     return this.ChannelService.addMembers(requestBody);
   }
 
+  // IF USERS WHO ARE BEING KICKED ARE ADMINS : @ROLES('OWNER')
+  // IF USERS WHO ARE BEING KICKED ARE MEMBERS : @ROLES('ADMIN')
+  // IF USER WHO IS BEING KICKED IS THE OWNER : FORBIDDEN
   @Post('/replaceMembers')
   replaceMembers(
     @Body()
@@ -141,13 +152,4 @@ export class channelController {
     const idAtRt = JSON.parse(userInfo);
     return idAtRt;
   }
-
-//   The owner is the ONLY ONE who can :
-
-// make/unmake admins
-// change the channel's password
-// kick, ban or mute other admins
-// The owner and the admins are the only ones who can :
-
-// kick, ban or mute other members
 }

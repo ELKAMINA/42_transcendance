@@ -33,14 +33,26 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 	const [openLeaveChannel, setOpenLeaveChannel] = React.useState<boolean>(false);
 	const [openChannelInfo, setOpenChannelInfo] = React.useState<boolean>(false);
 
+	const anchorRef = React.useRef<HTMLButtonElement>(null);
+	
+	// return focus to the button when we transitioned from !open -> open
+	const prevOpen = React.useRef(open);
+	React.useEffect(() => {
+		if (prevOpen.current === true && open === false) {
+			anchorRef.current!.focus();
+		}
+
+		prevOpen.current = open;
+	}, [open]);
 
 	// check if user is owner of the selected channel
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
 	const isOwner : boolean = currentUser === selectedChannel.ownedById ? true : false;
+	if (!selectedChannel)
+		return ;
 	const isAdmin : boolean = selectedChannel.admins.some(admin => admin.login === currentUser)
 
-	const anchorRef = React.useRef<HTMLButtonElement>(null);
 
 	const handleToggle = () => {
 		setOpen((prevOpen) => !prevOpen);
@@ -92,18 +104,6 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 		}
 	}
 
-	// return focus to the button when we transitioned from !open -> open
-	const prevOpen = React.useRef(open);
-	React.useEffect(() => {
-		if (prevOpen.current === true && open === false) {
-			anchorRef.current!.focus();
-		}
-
-		prevOpen.current = open;
-	}, [open]);
-
-
-
 	return (
 		<React.Fragment>
 
@@ -146,7 +146,7 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 								aria-labelledby="composition-button"
 								onKeyDown={handleListKeyDown}
 							>
-								{isAdmin &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
+								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'manageAdmin')}>manage admins</MenuItem>}
 								{isAdmin &&	<MenuItem onClick={(event) => handleClose(event, 'addMembers')}>add members</MenuItem>}
 								{isOwner &&	<MenuItem onClick={(event) => handleClose(event, 'managePassword')}>add / manage password</MenuItem>}
 								{<MenuItem onClick={(event) => handleClose(event, 'channelInfo')}>info about channel</MenuItem>}

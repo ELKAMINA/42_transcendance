@@ -13,12 +13,11 @@ type handleSelectItemFunction = (pwd: string) => void;
 
 interface SideBarProps {
   	handleSelectItem: handleSelectItemFunction;
-	socketRef: React.MutableRefObject<Socket | undefined>;
 	newChannelCreated: MutableRefObject<boolean>;
 	channelDeleted: MutableRefObject<boolean>;
 }
 
-function SideBar({handleSelectItem, socketRef, newChannelCreated, channelDeleted} : SideBarProps) {
+function SideBar({handleSelectItem, newChannelCreated, channelDeleted} : SideBarProps) {
 	const [buttonPopup, setButtonPopup] = useState<boolean>(false);
 	const AppDispatch = useAppDispatch();
 

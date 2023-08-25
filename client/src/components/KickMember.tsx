@@ -56,12 +56,12 @@ export default function KickMember({
             )
             .map((member) => ({ login: member.login }));
 
-        console.log("filteredMembers = ", filteredMembers);
+        // console.log("filteredMembers = ", filteredMembers);
         KickMemberOut(filteredMembers);
     }
 
     async function KickMemberOut(updatedMember: UserByLogin[]) {
-        console.log("[Chat - KickMemberOut]", "currentUser: ", currentUser);
+        // console.log("[Chat - KickMemberOut]", "currentUser: ", currentUser);
 
         await api
             .post("http://localhost:4001/channel/replaceMembers", {
@@ -71,30 +71,20 @@ export default function KickMember({
             })
             .then((response) => {
                 updatedKicked.map((kickedMember) => {
-                    /*** ISSUE 88 ***/
-                    // CHANGE THE PAYLOAD STRUCTURE TO SEND MESSAGE DTO AND
-                    // THE USERNAME WHO MUST BE KICKED
                     let dto: any = {
-                        // WRONG sendBy DATA, SHOULD BE THE currentUser WHO HAS EXECUTED
-                        // THE KICK ACTION
-                        // sentBy: kickedMember.login,
                         sentBy: currentUser,
                         message: `${kickedMember.login} has been kicked out of the channel!`,
                         sentAt: new Date(),
                         senderSocketId: socketRef.current?.id,
                         incoming: true,
                         outgoing: false,
-                        subtype: "InfoMsg",
+                        subtype: "infoMsg",
                         channel: selectedChannel.name,
                         channelById: selectedChannel.name,
                     };
                     const userName = kickedMember.login;
-
                     // emit user has been kick out message
-                    socketRef.current?.emit("LeavingChannel", {
-                        dto,
-                        userName,
-                    });
+                    socketRef.current?.emit("kickedMember", {dto, userName});
                 });
             })
             .catch((error) =>
@@ -116,9 +106,9 @@ export default function KickMember({
     const membersOptions: UserModel[] = selectedChannel.members.filter(
         (member: UserModel) => {
             // Check if the member is not in the admins array
-            const isAdmin = selectedChannel.admins.some(
-                (admin) => admin.login === member.login
-            );
+			let isAdmin = selectedChannel.admins.some(admin => admin.login === member.login);
+			if (currentUser === selectedChannel.ownedById)
+				isAdmin = false;
 
             // Check if the member's login is different from channel.ownedById
             const isOwnedBy = member.login === selectedChannel.ownedById;

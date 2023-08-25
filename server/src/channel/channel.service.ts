@@ -29,6 +29,7 @@ export class ChannelService {
           `User with login '${userNickname}' not found.`,
         );
       }
+
       /*** ISSUE 110 ***/
       // CHECK IF THE CHANNEL NAME ALREADY EXISTS
       const channelExist = await this.prisma.channel.findUnique({
@@ -39,6 +40,7 @@ export class ChannelService {
       if (channelExist) {
         throw new ForbiddenException('Channel name taken');
       }
+
       // we create channel record
       const channel = await this.prisma.channel.create({
         data: {
@@ -62,7 +64,6 @@ export class ChannelService {
       // we return true is the channel is successfully created
       return true;
     } catch (error: any) {
-      console.log('iciiiii ???????');
       console.error(error);
     }
   }
@@ -88,6 +89,7 @@ export class ChannelService {
   }
 
   async getUserChannels(requestBody: string): Promise<object> {
+    // console.log("[getUserChannels] requestBody = ", requestBody);
     try {
       const user = await this.prisma.user.findUnique({
         where: {
@@ -116,7 +118,7 @@ export class ChannelService {
         throw new NotFoundException('User not found');
       }
 
-      const output = [...user.channels]; /*, ...user.createdChannels];*/
+      const output = [...user.channels];
       return output;
     } catch (error) {
       console.error(error);
@@ -133,8 +135,52 @@ export class ChannelService {
         include: {
           members: {
             include: {
-              blocked: true,
-              blockedBy: true,
+              blocked: {
+                select: {
+                  login: true,
+                  user_id: true,
+                  faEnabled: true,
+                  avatar: true,
+                  provider: true,
+                  status: true,
+                  blockedBy: true,
+                  friendOf: true,
+                  friends: true,
+                  FriendRequestReceived: true,
+                  FriendRequestSent: true,
+                  p1: true,
+                  p2: true,
+                  adminChannels: true,
+                  channels: true,
+                  createdChannels: true,
+                  ownedChannels: true,
+                  bannedFromChannels: true,
+                  MutedInChannels: true,
+                },
+              },
+              blockedBy: {
+                select: {
+                  login: true,
+                  user_id: true,
+                  faEnabled: true,
+                  avatar: true,
+                  provider: true,
+                  status: true,
+                  blockedBy: true,
+                  friendOf: true,
+                  friends: true,
+                  FriendRequestReceived: true,
+                  FriendRequestSent: true,
+                  p1: true,
+                  p2: true,
+                  adminChannels: true,
+                  channels: true,
+                  createdChannels: true,
+                  ownedChannels: true,
+                  bannedFromChannels: true,
+                  MutedInChannels: true,
+                },
+              },
             },
           },
           admins: true,
@@ -160,8 +206,66 @@ export class ChannelService {
       where: {
         type: 'public', // Filter channels by type 'public'
       },
+      include: {
+        members: {
+          include: {
+            blocked: {
+              select: {
+                login: true,
+                user_id: true,
+                faEnabled: true,
+                avatar: true,
+                provider: true,
+                status: true,
+                blockedBy: true,
+                friendOf: true,
+                friends: true,
+                FriendRequestReceived: true,
+                FriendRequestSent: true,
+                p1: true,
+                p2: true,
+                adminChannels: true,
+                channels: true,
+                createdChannels: true,
+                ownedChannels: true,
+                bannedFromChannels: true,
+                MutedInChannels: true,
+              },
+            },
+            blockedBy: {
+              select: {
+                login: true,
+                user_id: true,
+                faEnabled: true,
+                avatar: true,
+                provider: true,
+                status: true,
+                blockedBy: true,
+                friendOf: true,
+                friends: true,
+                FriendRequestReceived: true,
+                FriendRequestSent: true,
+                p1: true,
+                p2: true,
+                adminChannels: true,
+                channels: true,
+                createdChannels: true,
+                ownedChannels: true,
+                bannedFromChannels: true,
+                MutedInChannels: true,
+              },
+            },
+          },
+        },
+        admins: true,
+        banned: true,
+        muted: true,
+        createdBy: true,
+        ownedBy: true,
+        chatHistory: true,
+      },
     });
-    // console.log('public channels', channels);
+
     return channels;
   }
 
@@ -179,7 +283,7 @@ export class ChannelService {
       );
       return isPasswordCorrect;
     } catch (error: any) {
-      console.error(error);
+      throw error;
     }
   }
 
@@ -223,7 +327,7 @@ export class ChannelService {
       // console.log('updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 
@@ -273,14 +377,14 @@ export class ChannelService {
             BannedExpiry: bannedUser.ExpiryTime ? bannedUser.ExpiryTime : null,
           },
         });
-        console.log(`Updated BannedExpiry for user with ID '${user.login}'`);
-        console.log('user updated = ', user.BannedExpiry);
+        // console.log(`Updated BannedExpiry for user with ID '${user.login}'`);
+        // console.log('user updated = ', user.BannedExpiry);
       }
 
       // console.log('updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 
@@ -306,7 +410,7 @@ export class ChannelService {
         throw new Error(`Channel with name '${channelName.name}' not found.`);
       }
 
-      const mutedIds = muted.map((mute) => ({ login: mute.login }));
+      const mutedIds = muted.map((muted) => ({ login: muted.login }));
 
       // Update the channel's muted with the new array
       const updatedChannel = await this.prisma.channel.update({
@@ -330,15 +434,14 @@ export class ChannelService {
             MutedExpiry: mutedUser.ExpiryTime ? mutedUser.ExpiryTime : null,
           },
         });
-        console.log(`Updated MutedExpiry for user with ID '${user.login}'`);
-        console.log('user updated = ', user.MutedExpiry);
+        // console.log(`Updated MutedExpiry for user with ID '${user.login}'`);
+        // console.log('user updated = ', user.MutedExpiry);
       }
 
       // console.log('updatedChannel = ', updatedChannel);
       return updatedChannel;
     } catch (error) {
-      console.error(error); // Amina: j'ai commenté car c moche dans la console
-      console.error('a problem has occured with muting someone');
+      throw error;
     }
   }
 
@@ -404,15 +507,15 @@ export class ChannelService {
 
       // Extract the current member IDs from the retrieved channel
       const existingMemberIds = channel.members.map((member) => member.login);
-      console.log('existingMemberIds = ', existingMemberIds);
+      // console.log('existingMemberIds = ', existingMemberIds);
 
       // Extract the new member IDs from the request
       const newMemberIds = members.map((member) => member.login);
-      console.log('newMemberIds = ', newMemberIds);
+      // console.log('newMemberIds = ', newMemberIds);
 
       // Combine the existing and new member IDs
       const allMemberIds = [...existingMemberIds, ...newMemberIds];
-      console.log('allMemberIds = ', allMemberIds);
+      // console.log('allMemberIds = ', allMemberIds);
 
       // Update the channel's members with the combined array
       const updatedChannel = await this.prisma.channel.update({
@@ -438,6 +541,7 @@ export class ChannelService {
     members: User[];
     action: string;
   }): Promise<Channel> {
+    // console.log("[replaceMembers - channel.services] requestBody = ", requestBody.channelName.name);
     try {
       const { channelName, members, action } = requestBody;
       // Find the channel by name
@@ -445,6 +549,7 @@ export class ChannelService {
         where: {
           name: channelName.name,
         },
+        include: { admins: true },
       });
 
       if (!channel) {
@@ -456,6 +561,15 @@ export class ChannelService {
       // Extract the new member IDs from the request
       const newMemberIds = members.map((member) => member.login);
 
+      // Fetch the current 'admins' of the channel
+      const currentAdmins = channel.admins || [];
+
+      // Identify admins who are no longer members
+      const updatedAdmins = currentAdmins.filter((admin) =>
+        newMemberIds.some((newMemberId) => newMemberId === admin.login),
+      );
+      const newAdminIds = updatedAdmins.map((admin) => admin.login);
+
       // Update the channel's members with the combined array
       const updatedChannel = await this.prisma.channel.update({
         where: {
@@ -465,10 +579,13 @@ export class ChannelService {
           members: {
             set: newMemberIds.map((login) => ({ login })),
           },
+          admins: {
+            set: newAdminIds.map((login) => ({ login })),
+          },
         },
       });
 
-      // console.log('[MEMBERS] updatedChannel = ', updatedChannel);
+      // console.log('[MEMBERS] updatedChannel = ', updatedChannel.name);
       return updatedChannel;
     } catch (error) {
       console.error(error);
