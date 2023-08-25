@@ -52,7 +52,18 @@ export default function ManageAdminDialog({openDialog, setOpenDialog} : {openDia
 	};
 
 	// filter the owner from available options because the owner cannot be destituted from its admin status
-	const channelMembersOptions = selectedChannel.members.filter(member => member.login !== selectedChannel.ownedById)
+	// const channelMembersOptions = selectedChannel.members.filter(member => member.login !== selectedChannel.ownedById)
+	const channelMembersOptions: UserModel[] = selectedChannel.members.filter((member: UserModel) => {
+		// Check if the member is not in the banned array
+		const isBanned = selectedChannel.banned.some(banned => banned.login === member.login);
+		// if (currentUser.login === selectedChannel.ownedById)
+		// 	isBanned = false;
+		// Check if the member's login is different from channel.ownedById
+		const isOwnedBy = member.login === selectedChannel.ownedById;
+	  
+		// Return true if the member is not an admin and their login is different from channel.ownedById
+		return !isBanned && !isOwnedBy;
+	});
 	const channelAdminsOptions = selectedChannel.admins.filter(admin => admin.login !== selectedChannel.ownedById)
 
   	return (
