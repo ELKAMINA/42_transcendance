@@ -69,7 +69,7 @@ export class channelController {
     return this.ChannelService.checkPwd(requestBody);
   }
 
-  @Roles('admin')
+  @Roles('owner')
   @Post('/updateAdmins')
   updateAdmins(
     @Body() requestBody: { channelName: { name: string }; admins: User[] },
@@ -77,7 +77,6 @@ export class channelController {
     return this.ChannelService.updateAdmins(requestBody);
   }
 
-  @Roles('admin')
   @Post('/updateBanned')
   updateBanned(
     @Body()
@@ -89,7 +88,6 @@ export class channelController {
     return this.ChannelService.updateBanned(requestBody);
   }
 
-  @Roles('admin')
   @Post('/updateMuted')
   updateMuted(
     @Body()
@@ -143,4 +141,13 @@ export class channelController {
     const idAtRt = JSON.parse(userInfo);
     return idAtRt;
   }
+
+//   The owner is the ONLY ONE who can :
+
+// make/unmake admins
+// change the channel's password
+// kick, ban or mute other admins
+// The owner and the admins are the only ones who can :
+
+// kick, ban or mute other members
 }

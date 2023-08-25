@@ -1,18 +1,23 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  Body,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { Reflector } from '@nestjs/core';
 import { parse } from 'cookie';
 
 import { ROLES_KEY } from 'src/decorators/roles.decorators';
+// import { SearchUserModel } from 'src/user/types';
+import { PrismaService } from 'src/prisma/prisma.service';
 
+interface completeUserWithTime {
+  us: any;
+  ExpiryTime: string;
+}
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector, private userServ: UserService) {}
+  constructor(
+    private reflector: Reflector,
+    private userServ: UserService,
+    private prismaServ: PrismaService,
+  ) {}
 
   getUserInfoFromSocket(cookie: string) {
     const { Authcookie: userInfo } = parse(cookie);
@@ -33,9 +38,15 @@ export class RolesGuard implements CanActivate {
 
       /* Getting the request  */
       const request = context.switchToHttp().getRequest();
-
+      console.log('path of the request ', request.route.path);
       /* Checking required roles  */
-      if (!requiredRoles && !request.route.path.includes('/replaceMembers')) {
+      if (
+        !requiredRoles &&
+        !request.route.path.includes('/replaceMembers') &&
+        !request.route.path.includes('/updateBanned') &&
+        !request.route.path.includes('/updateMuted')
+      ) {
+        console.log('je rentre ici ??');
         return true;
       } else if (
         !requiredRoles &&
@@ -76,42 +87,107 @@ export class RolesGuard implements CanActivate {
       }
 
       if (request.route.path.includes('/updateBanned')) {
-        toBan = request.body.banned.some((e) => e === userFromDB.login);
-        if (toBan) return false;
+        /*  2 use cases :
+        UseCase 1:
+        - I am the owner of the channel and i want to ban an admin or member
+        */
+        // const allObjectBanned = new Array<completeUserWithTime>();
+        /* Je traverse le tableau des banned et j'enregistre un par un dans un objet avec : Tout l'object User et le temps d'expiration prévu pr le ban */
+        // console.log('body ', request.body.banned);
+        // request.body.banned.forEach(async (element: any) => {
+        //   const user = await this.userServ.searchUser(element.login);
+        //   // console.log('Banned people ', user);
+        //   if (user) {
+        //     allObjectBanned.push({
+        //       us: user,
+        //       ExpiryTime: element.ExpiryTime,
+        //     });
+        //   }
+        // });
+        // console.log('allObjectBanned ', allObjectBanned);
+        // const allObjectBannedPromises = request.body.banned.map(
+        //   async (element: any) => {
+        //     const user = await this.prismaServ.user.findUnique({
+        //       where: { login: element.login },
+        //       include: {
+        //         ownedChannels: true,
+        //         adminChannels: true,
+        //         channels: true,
+        //       },
+        //     });
+        //     console.log('le user ', user);
+        //     if (user) {
+        //       return {
+        //         us: user,
+        //         ExpiryTime: element.ExpiryTime,
+        //       };
+        //     }
+        //     return null; // or you can return some default value or error indicator
+        //   },
+        // );
+        // const allObjectBanned = (
+        //   await Promise.all(allObjectBannedPromises)
+        // ).filter(Boolean); // We filter out any null values from the results
+        // console.log('allObjectBanned ', allObjectBanned[0]);
+        // toBan = request.body.banned.some((e) => e === userFromDB.login);
+        // if (toBan) return false;
+        // const amItheOwner = userFromDB.ownedChannels.some(
+        //   (e) => e.name === concernedchannel,
+        // );
+        // if (amItheOwner) return true;
+        // else {
+        //   const amIAnAdmin = userFromDB.adminChannels.some(
+        //     (e) => e.name === concernedchannel,
+        //   );
+        //   if (amIAnAdmin) {
+        //     allObjectBanned.map((element) => {});
+        //   }
+        // }
+        /*
+          UseCase 2:
+            - I am the admin of the channel and i want to ban a member
+        */
       }
 
       /* Logic for each role */
-      requiredRoles.map((role) => {
-        switch (role) {
-          case 'admin':
-            activate = userFromDB.adminChannels.some(
-              (chan) => chan.name === concernedchannel,
-            );
-            break;
-          case 'member':
-            activate = userFromDB.channels.some(
-              (chan) => chan.name === concernedchannel,
-            );
-            break;
-          case 'owner':
-            activate = userFromDB.ownedChannels.some(
-              (chan) => chan.name === concernedchannel,
-            );
-            break;
-          case 'not owner':
-            activate = !userFromDB.ownedChannels.some(
-              (chan) => chan.name === concernedchannel,
-            );
-            break;
-          default:
-            break;
-        }
-      });
+      if (requiredRoles) {
+        requiredRoles.map((role) => {
+          switch (role) {
+            case 'admin':
+              activate = userFromDB.adminChannels.some(
+                (chan) => chan.name === concernedchannel,
+              );
+              break;
+            case 'member':
+              activate = userFromDB.channels.some(
+                (chan) => chan.name === concernedchannel,
+              );
+              break;
+            case 'owner':
+              activate = userFromDB.ownedChannels.some(
+                (chan) => chan.name === concernedchannel,
+              );
+              break;
+            case 'not owner':
+              activate = !userFromDB.ownedChannels.some(
+                (chan) => chan.name === concernedchannel,
+              );
+              break;
+            default:
+              break;
+          }
+        });
+      }
+      console.log('activate ', activate);
       return activate;
     } catch (e) {
-      console.log('Oups, something went wrong with Roles');
+      console.log('Oups, something went wrong with Roles', e);
     }
   }
+
+  // amITheOwner(user: any, channel: string) {
+  //   const owner = user.ow
+  // }
 }
 
 /* Code explanation :

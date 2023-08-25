@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 import * as argon from 'argon2';
@@ -31,7 +35,7 @@ export class ChannelService {
         where: {
           name: dto.name,
         },
-      })
+      });
       if (channelExist) {
         throw new ForbiddenException('Channel name taken');
       }
@@ -58,6 +62,7 @@ export class ChannelService {
       // we return true is the channel is successfully created
       return true;
     } catch (error: any) {
+      console.log('iciiiii ???????');
       console.error(error);
     }
   }
