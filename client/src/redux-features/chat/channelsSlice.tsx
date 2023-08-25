@@ -127,6 +127,7 @@ export function fetchDisplayedChannel(name: string) {
 		}
 		try {
 			const response = await api.post("http://localhost:4001/channel/displayed", requestBody);
+			// console.log("[fetchDisplayedChannel] response = ", response);
 			if (response === undefined)
 				dispatch(updateDisplayedChannel(emptyChannel));
 			else {
@@ -135,7 +136,8 @@ export function fetchDisplayedChannel(name: string) {
 			}
 
 		} catch (error) {
-			console.log(`error while getting displayed channel ${requestBody.name} from database serving user with login : ${getState().persistedReducer.auth.nickname}`, error);
+			console.log("oops channel not found!");
+			dispatch(updateDisplayedChannel(emptyChannel));
 		}
 	};
 }
