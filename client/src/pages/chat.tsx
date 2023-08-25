@@ -17,6 +17,8 @@ import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
 import { emptyChannel } from '../data/emptyChannel';
 
+/***  ISSUE 113 ***/
+import { FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 
 function Chat () {
 	const currentRoute = window.location.pathname;
@@ -143,6 +145,14 @@ function Chat () {
 			// console.log("[chat] roomId = ", roomId);
 			AppDispatch(fetchDisplayedChannel(roomId));
 			AppDispatch(fetchUserChannels());
+		})
+
+		/** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
+		socketRef.current?.off("autoRefreshWhenUsernameChanging").on("autoRefreshWhenUsernameChanging", async () => {
+			console.log("[chat - on autoRefreshWhenUsernameChanging", "Messagge received from the Settings");
+			AppDispatch(fetchDisplayedChannel(roomId));
+			AppDispatch(fetchUserChannels());
+			AppDispatch(FetchAllFriends());
 		})
 
 		return () => {
