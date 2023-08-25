@@ -40,7 +40,7 @@ export default function EnterChannelConfirmationDialog({isConfirmed, selectedCha
 				// if (selectedChannel)
 					// AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 			})
-			.catch((error) => console.log('error while updating members : ', error))
+			.catch((error) => console.log('error while adding members from EnterChannelConfirmationDialog : ', error))
 	}
 	
 	const handleConfirm = () => {
