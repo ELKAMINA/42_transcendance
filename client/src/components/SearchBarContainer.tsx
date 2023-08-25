@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useSelector } from "react-redux";
-import React, { MutableRefObject, useEffect, useState } from 'react'
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react'
 import SearchBarHighlights from "./SearchBarHighlight";
 import EnterChannelConfirmationDialog from "./EnterChannelConfirmationDialog";
 
@@ -134,7 +134,9 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 
 	const [openConfirmationDialog, setOpenConfirmationDialog] = useState<boolean>(false);
 	const [pickedChannel, setPickedChannel] = useState<Channel>();
-	const [isConfirmed, setIsConfirmed] = useState<boolean>();
+	// const [isConfirmed, setIsConfirmed] = useState<boolean>();
+	const isConfirmed = useRef<boolean>(false)
+	// const passwordStatus = useRef<boolean>(false);
 
 	const handleOptionSelect = async (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
 		// console.log("[searchBar container] value = ", value);
@@ -151,6 +153,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 
 				// console.log("[SearchBarContainer] channelName = ", conv?.name);
 				if (conv) {
+					// console.log("[searchBarContainer] conv.name = ", conv.name)
 					AppDispatch(fetchDisplayedChannel(conv.name))
 					// getSelectedItem(conv.name);
 				}
@@ -158,8 +161,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 			else if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
 				if (value.members) {
 					if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
-						// console.log("[searchbar] coucou");
-						setIsConfirmed(true) // do not open the confirmation dialog box and set confirmed to true
+						isConfirmed.current = true; // do not open the confirmation dialog box and set confirmed to true
 					}
 					else { // if current user is not a member of the picked channel
 						// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
@@ -167,22 +169,25 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 						// open EnterChannelConfirmationDialog
 						setOpenConfirmationDialog(true);
 					}
-					if (isConfirmed) { // if the user do want to enter the channel
-						if (value.key !== '') { // if channel is protected by a password
+					// console.log("[searchBar container] openConfirmationDialog = ", openConfirmationDialog)
+					if (isConfirmed.current) { // if the user do want to enter the channel
+						// console.log("[searchBar container] value.key = ", value.key)
+						if (value.key !== '' && openConfirmationDialog === false) { // if channel is protected by a password
 							setAlertDialogSlideOpen(true); // open password check dialog slide
 						}
-						else { // if the channel is not protected by a password
-							// getSelectedItem(value.name);
-							AppDispatch(fetchDisplayedChannel(value.name))
+						else if (openConfirmationDialog === false) { // if the channel is not protected by a password
+							getSelectedItem(value.name);
+							// AppDispatch(fetchDisplayedChannel(value.name))
 							newChannelCreated.current = true;
 						}
+						isConfirmed.current = false;
 					}
 				}
 			}
 			else if ('login' in value) { // if selected value is a user
 				// check if there is no privateConv for which the user is a member
 				if (!userChannels.some(channel => {return channel.type === 'privateConv' && channel.members.some(member => member.login === value.login);})) { 
-						await createPrivateConv(value);
+					await createPrivateConv(value);
 				}
 			}
 		}
@@ -197,6 +202,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 					setAlertDialogSlideOpen={setAlertDialogSlideOpen}
 					getSelectedItem={getSelectedItem}
 					element={selectedOption}
+					// passwordStatus={passwordStatus}
 				/>
 			}
 			{ openConfirmationDialog &&
@@ -204,7 +210,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 					openDialog={openConfirmationDialog}
 					setOpenDialog={setOpenConfirmationDialog}
 					selectedChannel={pickedChannel}
-					setIsConfirmed = {setIsConfirmed}
+					isConfirmed = {isConfirmed}
 				/>
 			}
 		</Box>

@@ -101,8 +101,10 @@ function Chat () {
 			// console.log('[chat] - displayed channel = ', displayedChannel.name);
 			// console.log('[chat] - deletedChannelName = ', deletedChannelName);
 			// console.log('[chat - selectedChannel = ', selectedChannel);
-			if (deletedChannelName === selectedChannel)
-				AppDispatch(fetchDisplayedChannel('WelcomeChannel'));
+			if (deletedChannelName === selectedChannel) {
+				// AppDispatch(fetchDisplayedChannel('WelcomeChannel'));
+				setSelectedChannel('WelcomeChannel');
+			}
 			AppDispatch(fetchUserChannels());
 		})
 
