@@ -45,7 +45,7 @@ type ConvProps = {
 
 function Conversation({ socketRef, messages, setMessages }: ConvProps) {
 	const selectedChannel: ChannelModel = useAppSelector(selectDisplayedChannel);
-	const isWelcomeChannel = selectedChannel.name === "WelcomeChannel" ? true : false;
+	const isWelcomeChannel = selectedChannel.name === "WelcomeChannel" || selectedChannel.name === "empty channel";
 	const roomId = selectedChannel.name;
 	const messageContainerRef = useRef<HTMLDivElement>(null); // create a reference on the 'Box' element below
 	const currentUser = useAppSelector(selectCurrentUser);
