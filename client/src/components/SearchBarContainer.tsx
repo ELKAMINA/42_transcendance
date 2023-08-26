@@ -174,7 +174,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 					// console.log("[searchBar container] openConfirmationDialog = ", openConfirmationDialog)
 					if (isConfirmed.current) { // if the user do want to enter the channel
 						// console.log("[searchBar container] value.key = ", value.key)
-						if (value.key !== '' && openConfirmationDialog === false) { // if channel is protected by a password
+						if (value.pbp === true && openConfirmationDialog === false) { // if channel is protected by a password
 							setAlertDialogSlideOpen(true); // open password check dialog slide
 						}
 						else if (openConfirmationDialog === false) { // if the channel is not protected by a password

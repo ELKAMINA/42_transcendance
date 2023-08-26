@@ -62,7 +62,7 @@ export class FriendshipGateway
   async handleConnection(@ConnectedSocket() client: Socket) {
     try {
       this.i += 1;
-      console.log(`Socket n° ${this.i}`);
+    //   console.log(`Socket n° ${this.i}`);
       // const sockets = this.io.sockets; // toutes les sockets connectées
       // const user = await this.verifyJwtSocketConnections(client);
       // if (user.accessToken){
@@ -104,7 +104,7 @@ export class FriendshipGateway
       body.sender,
       body.receiver.nickname,
     );
-    console.log('oui 2');
+    // console.log('oui 2');
     this.io.emit('friendAdded', newReq);
   }
 

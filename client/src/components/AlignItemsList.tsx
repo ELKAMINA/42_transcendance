@@ -130,7 +130,7 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 		const clickedItem = channels[index];
 
 		// if the selected channel is protected by a password, open password dialog slide
-		if (clickedItem.key !== '') {
+		if (clickedItem.pbp === true) {
 			setAlertDialogSlideOpen(true);
 		} else {
 			// if no password protection, update 'displayedChannel' slice through prop 'getSelectedItem'
@@ -187,7 +187,7 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 											<Diversity3Icon />
 										</Tooltip>
 									)}
-									{showIcons && element.key !== '' && (
+									{showIcons && element.pbp === true && (
 										<Tooltip title="protected by password" placement="top">
 											<LockIcon />
 										</Tooltip>
