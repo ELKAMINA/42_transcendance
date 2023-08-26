@@ -10,7 +10,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { Stack, Typography, Container } from '@mui/material';
 
 import { Suggestions, Requests, Friends } from '../pages/friendship';
-import { selectItems, setSelectedItem, selectError, FetchAllFriendRequests, setFriendshipError, FetchSuggestions, FetchAllFriends, FetchAllBlockedFriends } from '../redux-features/friendship/friendshipSlice';
+import { selectItems, setSelectedItem, selectError, FetchAllFriendRequests, setFriendshipError, FetchSuggestions, FetchAllFriends, FetchAllBlockedFriends, FetchUsersDb } from '../redux-features/friendship/friendshipSlice';
 import { setOnlyTokens } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { useState } from 'react';
@@ -75,6 +75,10 @@ export default function FriendshipComponent(props: Myprops) {
 
     const handleChildAction = (err: number) => {
       switch (err) {
+        case 1:
+          dispatch(setFriendshipError(0))
+          dispatch(FetchUsersDb())
+          break;
         case 2:
           dispatch(setFriendshipError(0))
           dispatch(FetchAllFriendRequests())
