@@ -12,6 +12,7 @@ export class ChannelService {
 
 	async createChannel(userNickname: string, dto: ChannelDto): Promise<boolean> {
 		const pwd = dto.key !== '' ? await argon.hash(dto.key) : '';
+		// const isProtectedByPassword = dto.key !== '' ? true : false;
 		try {
 			// before creating the Channel record,
 			// we fetch the User record with the specified login value using this.prisma.user.findUnique().
@@ -29,7 +30,7 @@ export class ChannelService {
 			// we check if channel already exist
 			const channelExist = await this.prisma.channel.findUnique({
 				where: {
-				name: dto.name,
+					name: dto.name,
 				},
 			})
 			if (channelExist) {
@@ -53,6 +54,7 @@ export class ChannelService {
 						connect: { login: userNickname },
 					},
 					type: dto.type,
+					pbp: dto.key !== '' ? true : false,
 					key: pwd,
 				} as Prisma.ChannelCreateInput,
 			});

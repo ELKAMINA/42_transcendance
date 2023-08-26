@@ -110,7 +110,8 @@ export const emptyChannel : ChannelModel = {
 	ownedById: 'casper_le_fantome',
 	createdAt: new Date(),
 	updatedAt: new Date(),
-	type: 'WelcomeChannel', 
+	type: 'WelcomeChannel',
+	pbp: false,
 	key: null,
 	chatHistory: [],
 }

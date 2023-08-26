@@ -11,7 +11,7 @@ export type Channel = {
 	admins: UserByLogin[],
 	banned?: UserByLogin[],
 	muted?: UserByLogin[],
-	protected_by_password?: boolean,
+	pbp?: boolean,
 	type?: string,
 	key?: string,
 	chatHistory?: ChatMessage[],
@@ -34,6 +34,7 @@ export type ChannelModel = {
 	createdAt: Date;
 	updatedAt: Date;
 	type: string;
+	pbp: boolean;
 	key: string | null;
 	chatHistory: ChatMessage[];
 }
