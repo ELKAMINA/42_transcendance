@@ -83,7 +83,7 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 	  
 		// Return true if the member is not an admin and their login is different from channel.ownedById
 		return !isAdmin && !isOwnedBy;
-	});
+	}).concat(selectedChannel.banned);
 
   	return (
 		<div>
