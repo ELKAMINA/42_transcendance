@@ -118,7 +118,7 @@ export class channelController {
     return this.ChannelService.updateOwner(requestBody);
   }
 
-  @Roles('admin')
+
   @Post('/addMembers')
   addMembers(
     @Body() requestBody: { channelName: { name: string }; members: User[] },

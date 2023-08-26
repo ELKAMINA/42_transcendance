@@ -7,6 +7,8 @@ import { ROLES_KEY } from 'src/decorators/roles.decorators';
 import { SearchUserModel, UserModel } from 'src/user/types';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { all } from 'axios';
+import { ChannelService } from 'src/channel/channel.service';
+import { Channel } from '@prisma/client';
 
 interface completeUserWithTime {
   us: any;
@@ -18,6 +20,7 @@ export class RolesGuard implements CanActivate {
     private reflector: Reflector,
     private userServ: UserService,
     private prismaServ: PrismaService,
+    private channelServ: ChannelService,
   ) {}
 
   getUserInfoFromSocket(cookie: string) {
@@ -28,26 +31,32 @@ export class RolesGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
+      /* Retrieving any metadata associated with the request (if any "@Roles() exists above the route ?") */
       let requiredRoles = this.reflector.getAllAndOverride<string[]>(
         ROLES_KEY,
         [context.getHandler(), context.getClass()],
       );
-      let toBan;
-      let toMute;
+
+      /* Declaring some global variables: activate is the one 
+      that gives access (if true) or not to the request */
       let activate = false;
       let concernedchannel;
 
-      /* Getting the request  */
+      /* Getting the request from the context */
       const request = context.switchToHttp().getRequest();
-      // console.log('path of the request ', request.route.path);
-      /* Checking required roles  */
+
+      /* Checking which are the required roles and the path asked for 
+      if any roles is required and the pathes don't match with these: Give access
+      if not check if the path is : replaceMembers and check action (leave or kick)
+      bc the same route manages 2 actions that requires differents roles
+      */
       if (
         !requiredRoles &&
         !request.route.path.includes('/replaceMembers') &&
         !request.route.path.includes('/updateBanned') &&
-        !request.route.path.includes('/updateMuted')
+        !request.route.path.includes('/updateMuted') &&
+        !request.route.path.includes('/addMembers')
       ) {
-        console.log('je rentre ici ??');
         return true;
       } else if (
         !requiredRoles &&
@@ -57,7 +66,7 @@ export class RolesGuard implements CanActivate {
         if (action === 'leave') requiredRoles = ['not owner'];
       }
 
-      /* Getting channel name depending on arg received */
+      /* Getting channel name depending on arguments received from the request */
       if (request.route.path.includes('/checkPwd')) {
         concernedchannel = request.body.obj.name;
       }
@@ -78,40 +87,66 @@ export class RolesGuard implements CanActivate {
       const userFromDB = await this.userServ.searchUser(
         userFromCookie.nickname,
       );
-      // console.log('user ', userFromDB.login);
-      // console.log('concerned Channel ', concernedchannel);
+
+      /* Protection : if either user or channel exists: activate is false */
       if (!userFromDB || !concernedchannel) return activate;
 
+      /* Checking rights of the user doing the request */
       const amItheOwner = userFromDB.ownedChannels?.some(
         (e) => e.name === concernedchannel,
       );
       const amIAnAdmin = userFromDB.adminChannels?.some(
         (e) => e.name === concernedchannel,
       );
-      // console.log('amIadmin ', amIAnAdmin);
 
-      /* Issue 111: a user cannot ban/mute itself */
+      /* Managing the addMembers path : No metadata bc 2 differents situtations 
+      depending on the type of the channel */
+      if (request.route.path.includes('/addMembers')) {
+        const fullChannl: any = await this.channelServ.getDisplayedChannel(
+          concernedchannel,
+        );
+        if (fullChannl.name) {
+          if (fullChannl.type === 'public')
+            return true /* if public, everyone can access */;
+          else requiredRoles = ['admin']; /* else, only owners */
+        }
+      }
+
+      /* Issue 111: a user cannot ban/mute itself:  */
       if (request.route.path.includes('/updateMuted')) {
+        /* Creating a new array with the array of users that we want 
+        to mute received from the request */
         let tomute = new Array<{ login: string; ExpiryTime: string }>(
           request.body.muted,
         );
+        /* Checking if one of the user that we want to mute 
+        is the user that has done the request? if so, we delete it from the array */
         tomute = request.body.banned?.filter(
           (e) => e.login === userFromDB.login,
         );
+        /* if the user accesing the request is the owner, he has all rights */
         if (amItheOwner) return true;
         else {
+          /* if the user accesing the request is the admin, he can muted other 
+          users but not the owner or other admins */
           if (amIAnAdmin) {
             let lastArray = new Array<{ login: string; ExpiryTime: string }>();
+            /* Getting only the list of users that we can mute depending on our roles:
+              if admin : the users has to be members but not owners or admins
+              lastArray = is the final array that contains only the one's that we can mute
+            */
             lastArray = await this.getNewRequestBody(
               tomute,
               concernedchannel,
               amItheOwner,
               amIAnAdmin,
             );
+            /* Here we're changing the request with the newly array */
             request.body.muted = lastArray;
-            console.log('LastArray ', lastArray);
             if (lastArray.length > 0) return true;
-            else return false;
+            /* if last Array is empty, that means that we 
+            don't have the required rights to mute the list 
+            of users we received*/ else return false;
           }
         }
       }
@@ -133,41 +168,36 @@ export class RolesGuard implements CanActivate {
               amIAnAdmin,
             );
             request.body.banned = lastArray;
-            // console.log('LastArray ', lastArray);
             if (lastArray.length > 0) return true;
             else return false;
           }
         }
       }
 
+      /* Managing "kickig a user : if one the users that has 
+      to kicked doesn't the conditions, all the request is 
+      wrong and activate is false" */
       if (request.route.path.includes('/replaceMembers') && !requiredRoles) {
-        let toKick = new Array<UserModel>(request.body.tokickOrLeave);
-        toKick = request.body.tokickOrLeave?.filter(
-          (e) => e.login !== userFromDB.login,
+        const isItMe = request.body.tokickOrLeave?.some(
+          (e) => e.login === userFromDB.login,
         );
-        request.body.tokickOrLeave = toKick;
-        // console.log('to kick ', request.body.tokickOrLeave);
-        // console.log('amIAdmin ', amIAnAdmin);
-
+        if (isItMe) return false;
         if (amItheOwner) return true;
         else {
           if (amIAnAdmin) {
-            let lastArray = new Array<UserModel>();
-            lastArray = await this.kicking(
+            const lastArray = await this.kicking(
               request.body.tokickOrLeave,
               concernedchannel,
               amItheOwner,
               amIAnAdmin,
             );
-            request.body.members = lastArray;
-            // console.log('LastArray ', lastArray);
-            if (lastArray.length > 0) return true;
-            else return false;
+            return lastArray;
           }
         }
       }
 
-      /* Logic for each role */
+      /* Logic for each role, if any of the conditions has been evaluated*/
+
       if (requiredRoles) {
         requiredRoles.map((role) => {
           switch (role) {
@@ -196,7 +226,6 @@ export class RolesGuard implements CanActivate {
           }
         });
       }
-      // console.log('activate ', activate);
       return activate;
     } catch (e) {
       console.log('Oups, something went wrong with Roles', e);
@@ -208,34 +237,47 @@ export class RolesGuard implements CanActivate {
     concernedchannel: string,
     amItheOwner,
     amIAnAdmin,
-  ): Promise<Array<UserModel>> {
+  ): Promise<boolean> {
     // console.log('kicking ', toKick);
-    toKick.forEach((obj) => {
-      toKick.activate = true;
-      // console.log('obj', obj);
+    const completeObjects = toKick.map(async (element: any) => {
+      const user = await this.prismaServ.user.findUnique({
+        where: { login: element.login },
+        include: {
+          ownedChannels: true,
+          adminChannels: true,
+          channels: true,
+        },
+      });
+      // console.log('le user ', user);
+      if (user) {
+        return {
+          us: user,
+          activate: true,
+        };
+      }
+      return null; // or you can return some default value or error indicator
+    });
+    const allObject = (await Promise.all(completeObjects)).filter(Boolean); // We
+    allObject.forEach((obj) => {
       if (amItheOwner) {
-        if (obj.adminChannels?.some((e) => e.name === concernedchannel)) {
+        if (obj.us.adminChannels.some((e) => e.name === concernedchannel)) {
           obj.activate = true;
         }
-        if (obj.us.ownedChannels?.some((e) => e.name === concernedchannel)) {
+        if (obj.us.ownedChannels.some((e) => e.name === concernedchannel)) {
           obj.activate = false;
         }
       } else if (amIAnAdmin) {
-        if (obj.adminChannels?.some((e) => e.name === concernedchannel)) {
+        if (obj.us.adminChannels.some((e) => e.name === concernedchannel)) {
           obj.activate = false;
         }
-        if (obj.ownedChannels?.some((e) => e.name === concernedchannel)) {
+        if (obj.us.ownedChannels.some((e) => e.name === concernedchannel)) {
           obj.activate = false;
         }
       }
     });
-    toKick = toKick.filter((e) => e.activate !== false);
-    const lastArray = new Array<UserModel>();
-    toKick.forEach((e) => {
-      lastArray.push(e);
-    });
-    // console.log('amIadmin', lastArray);
-    return lastArray;
+    const isStgFalse = allObject.some((e) => e.activate === false);
+    if (!isStgFalse) return true;
+    else return false;
   }
 
   async getNewRequestBody(
