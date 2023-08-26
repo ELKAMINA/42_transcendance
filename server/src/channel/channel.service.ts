@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+	Injectable,
+	NotFoundException,
+	ForbiddenException,
+	BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 import * as argon from 'argon2';
@@ -32,7 +37,7 @@ export class ChannelService {
 				where: {
 					name: dto.name,
 				},
-			})
+			});
 			if (channelExist) {
 				throw new ForbiddenException('Channel name taken');
 			}
@@ -62,7 +67,7 @@ export class ChannelService {
 			return true;
 		} catch (error: any) {
 			console.error(error);
-			throw new BadRequestException()
+			throw new BadRequestException();
 		}
 	}
 
@@ -111,25 +116,24 @@ export class ChannelService {
 					},
 				},
 			});
-
 			if (!user) {
 				throw new NotFoundException('User not found');
 			}
-
+			delete user.hash;
+			delete user.fA;
+			delete user.email;
+			delete user.rtHash;
 			const output = [...user.channels];
 			return output;
-
 		} catch (error) {
 			console.error(error);
 		}
-
 	}
 
 	// requestBody = {name : <name of the channel>}
 	async getDisplayedChannel(requestBody: string): Promise<object> {
 		// console.log("[getDisplayedChanne] requestBody = ", requestBody);
-		if (requestBody === undefined)
-			return undefined; // this case will be handled in channelSlice
+		if (requestBody === undefined) return undefined; // this case will be handled in channelSlice
 		try {
 			const channel = await this.prisma.channel.findUnique({
 				where: { name: requestBody },
@@ -195,11 +199,11 @@ export class ChannelService {
 			if (!channel) {
 				return undefined;
 			}
+			delete channel?.key;
 			// console.log("[getDisplayedChanne] channel = ", channel);
 			return channel;
 		} catch (error) {
-			if (requestBody !== 'WelcomeChannel')
-				console.error(error);
+			if (requestBody !== 'WelcomeChannel') console.error(error);
 		}
 	}
 
@@ -285,7 +289,7 @@ export class ChannelService {
 			);
 			return isPasswordCorrect;
 		} catch (error: any) {
-			throw error;
+			console.error(error);
 		}
 	}
 
@@ -327,9 +331,10 @@ export class ChannelService {
 				},
 			});
 			// console.log('updatedChannel = ', updatedChannel);
+			delete updatedChannel?.key;
 			return updatedChannel;
 		} catch (error) {
-			throw error;
+			console.error(error);
 		}
 	}
 
@@ -357,13 +362,21 @@ export class ChannelService {
 			}
 
 			const bannedIds = banned.map((banned) => ({ login: banned.login }));
-			
-			const updatedMembers = channel.members.filter((member) => !bannedIds.some((banned) => banned.login === member.login));
-			const updatedMembersId = updatedMembers.map((member) => ({ login : member.login }))
+
+			const updatedMembers = channel.members.filter(
+				(member) => !bannedIds.some((banned) => banned.login === member.login),
+			);
+			const updatedMembersId = updatedMembers.map((member) => ({
+				login: member.login,
+			}));
 			// console.log("updatedMembersId = ", updatedMembersId);
 
-			const updatedAdmins = channel.admins.filter((admin) => !bannedIds.some((banned) => banned.login === admin.login));
-			const updatedAdminsId = updatedAdmins.map((admin) => ({ login : admin.login }))
+			const updatedAdmins = channel.admins.filter(
+				(admin) => !bannedIds.some((banned) => banned.login === admin.login),
+			);
+			const updatedAdminsId = updatedAdmins.map((admin) => ({
+				login: admin.login,
+			}));
 
 			// Update the channel's banned with the new array
 			const updatedChannel = await this.prisma.channel.update({
@@ -378,8 +391,8 @@ export class ChannelService {
 						set: updatedMembersId,
 					},
 					admins: {
-						set : updatedAdminsId,
-					}
+						set: updatedAdminsId,
+					},
 				},
 			});
 
@@ -398,9 +411,10 @@ export class ChannelService {
 			}
 
 			// console.log('updatedChannel = ', updatedChannel);
+			delete updatedChannel?.key;
 			return updatedChannel;
 		} catch (error) {
-			throw error;
+			console.error(error);
 		}
 	}
 
@@ -455,9 +469,10 @@ export class ChannelService {
 			}
 
 			// console.log('updatedChannel = ', updatedChannel);
+			delete updatedChannel?.key;
 			return updatedChannel;
 		} catch (error) {
-			throw error;
+			console.error(error);
 		}
 	}
 
@@ -495,6 +510,7 @@ export class ChannelService {
 				},
 			});
 			// console.log('updatedChannel = ', updatedChannel.ownedById);
+			delete updatedChannel?.key;
 			return updatedChannel;
 		} catch (error) {
 			console.error(error);
@@ -515,6 +531,7 @@ export class ChannelService {
 				include: {
 					members: true, // Include the current members of the channel
 					banned: true,
+
 				},
 			});
 
@@ -522,20 +539,14 @@ export class ChannelService {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
 
-			// Extract the current member IDs from the retrieved channel
-			const existingMemberIds = channel.members.map((member) => member.login);
-			// console.log('existingMemberIds = ', existingMemberIds);
-
-			// const membersWithoutBanned = members.filter((member) => channel.banned.some((banned) => member.login === banned.login));
-			// console.log("members = ", members);
-			// console.log("banned = ", channel.banned);
+			// remove the banned members from the list of members we want to add
 			const membersWithoutBanned = members.filter((member) => !channel.banned.some((banned) => member.login === banned.login));
-
-			// console.log("membersWithoutBanned = ", membersWithoutBanned);
 
 			// Extract the new member IDs from the request
 			const newMemberIds = membersWithoutBanned.map((member) => member.login);
-			// console.log('newMemberIds = ', newMemberIds);
+
+			// Extract the current member IDs from the retrieved channel
+			const existingMemberIds = channel.members.map((member) => member.login);
 
 			// Combine the existing and new member IDs
 			const allMemberIds = [...existingMemberIds, ...newMemberIds];
@@ -553,7 +564,7 @@ export class ChannelService {
 				},
 			});
 
-			// console.log('[MEMBERS] updatedChannel = ', updatedChannel);
+			delete updatedChannel?.key;
 			return updatedChannel;
 		} catch (error) {
 			console.error(error);
@@ -561,7 +572,9 @@ export class ChannelService {
 	}
 
 	async replaceMembers(requestBody: {
-		channelName: { name: string }; members: User[]; action: string;
+		channelName: { name: string };
+		members: User[];
+		action: string;
 	}): Promise<Channel> {
 		// console.log("[replaceMembers - channel.services] requestBody = ", requestBody.channelName.name);
 		try {
@@ -571,7 +584,7 @@ export class ChannelService {
 				where: {
 					name: channelName.name,
 				},
-				include: { admins: true }
+				include: { admins: true },
 			});
 
 			if (!channel) {
@@ -587,9 +600,10 @@ export class ChannelService {
 			const currentAdmins = channel.admins || [];
 
 			// Identify admins who are no longer members
-			const updatedAdmins = currentAdmins.filter((admin) => newMemberIds.some((newMemberId) => newMemberId === admin.login));
+			const updatedAdmins = currentAdmins.filter((admin) =>
+				newMemberIds.some((newMemberId) => newMemberId === admin.login),
+			);
 			const newAdminIds = updatedAdmins.map((admin) => admin.login);
-
 
 			// Update the channel's members with the combined array
 			const updatedChannel = await this.prisma.channel.update({
@@ -607,6 +621,7 @@ export class ChannelService {
 			});
 
 			// console.log('[MEMBERS] updatedChannel = ', updatedChannel.name);
+			delete updatedChannel?.key;
 			return updatedChannel;
 		} catch (error) {
 			console.error(error);
@@ -643,6 +658,7 @@ export class ChannelService {
 					},
 				},
 			});
+			delete updatedChannel?.key;
 			return updatedChannel;
 		} catch (error) {
 			console.error(error);

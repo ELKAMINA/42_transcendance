@@ -41,6 +41,7 @@ export default function LeaveChannelDialog({socketRef, openDialog, setOpenDialog
 				channelName : {name : selectedChannel.name},
 				members : updatedMembers,
 				action: 'leave',
+				tokickOrLeave: [],
 			})
 			.then((response) => {
 				// AppDispatch(set(true));

@@ -261,6 +261,10 @@ export class AuthService {
       // rejectOnNotFound: true,
     });
     if (us) {
+      delete us.hash;
+      delete us.fA;
+      delete us.email;
+      delete us.rtHash;
       return us;
     }
     const newUser = await this.prisma.user.create({
@@ -270,6 +274,10 @@ export class AuthService {
         avatar: details.avatar,
       },
     });
+    delete newUser.hash;
+    delete newUser.fA;
+    delete newUser.email;
+    delete newUser.rtHash;
     return newUser;
   }
 
@@ -323,7 +331,9 @@ export class AuthService {
     res: Response,
   ) {
     // verify the authentication code with the user's secret
-    const us = await this.userServ.searchUser(user);
+    const us = await this.prisma.user.findUnique({
+      where: { login: user },
+    });
     const verif = await authenticator.check(TfaCode, us.fA);
     if (!verif) {
       throw new UnauthorizedException('Wrong authentication code');
