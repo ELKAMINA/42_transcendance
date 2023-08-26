@@ -10,7 +10,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import { UserByLogin } from '../../types/users/userType';
-import { useAppDispatch } from '../../utils/redux-hooks';
+import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 
 /*** ISSUE 110 ***/
 // HANDLE ERROR ON WHOLE createChannel COMPONENT
@@ -18,6 +18,7 @@ import { useEffect } from "react";
 import {
 	setUserListErrorState,
 } from "../../redux-features/chat/createChannel/createChannelErrorSlice";
+import { selectFriends } from '../../redux-features/friendship/friendshipSlice';
 
 
 const ITEM_HEIGHT = 48;
@@ -41,14 +42,20 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 }
 
 export type MultipleSelectChipProps = {
-	userList : UserByLogin[],
+	userList? : UserByLogin[],
 	setUpdatedMembers? : (members : UserByLogin[]) => void,
 }
 
-export default function MultipleSelectChip({userList, setUpdatedMembers} : MultipleSelectChipProps) {
-
+export default function MultipleSelectChip({setUpdatedMembers} : MultipleSelectChipProps) {
 	const theme = useTheme();
 	const [personName, setPersonName] = React.useState<string[]>([]);
+	const userFriends = useAppSelector(selectFriends) as UserByLogin[];
+	const [simplifiedFriends, setSimplifiedFriends] = React.useState<UserByLogin[]>([]);
+
+	useEffect(() => {
+		const simplified = userFriends.map(({ login }) => ({ login }));
+		setSimplifiedFriends(simplified);
+	}, [userFriends])
 
 	const dispatch = useAppDispatch();
 
@@ -71,7 +78,7 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 			typeof value === 'string' ? value.split(',') : value,
 		);
 		
-		const newUsers: UserByLogin[] = userList.filter((user) => value.includes(user.login));
+		const newUsers: UserByLogin[] = simplifiedFriends.filter((user) => value.includes(user.login));
 		dispatch({
 			type: "channelUser/addChannelUser",
 			payload: newUsers,
@@ -103,7 +110,7 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 					)}
 					MenuProps={MenuProps}
 				>
-					{userList.map((user) => (
+					{simplifiedFriends.map((user) => (
 						<MenuItem
 						key={user.login}
 						value={user.login}
@@ -114,7 +121,7 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 					))}
 				</Select>
 			</FormControl>
-			{(userList.length === 0) && <Typography variant='body1' sx={{color: 'red'}}> No userList found! </Typography>}
+			{(simplifiedFriends.length === 0) && <Typography variant='body1' sx={{color: 'red'}}> No friend found! </Typography>}
 		</Box>
 	);
 }
