@@ -514,6 +514,7 @@ export class ChannelService {
 				},
 				include: {
 					members: true, // Include the current members of the channel
+					banned: true,
 				},
 			});
 
@@ -525,8 +526,15 @@ export class ChannelService {
 			const existingMemberIds = channel.members.map((member) => member.login);
 			// console.log('existingMemberIds = ', existingMemberIds);
 
+			// const membersWithoutBanned = members.filter((member) => channel.banned.some((banned) => member.login === banned.login));
+			// console.log("members = ", members);
+			// console.log("banned = ", channel.banned);
+			const membersWithoutBanned = members.filter((member) => !channel.banned.some((banned) => member.login === banned.login));
+
+			// console.log("membersWithoutBanned = ", membersWithoutBanned);
+
 			// Extract the new member IDs from the request
-			const newMemberIds = members.map((member) => member.login);
+			const newMemberIds = membersWithoutBanned.map((member) => member.login);
 			// console.log('newMemberIds = ', newMemberIds);
 
 			// Combine the existing and new member IDs
