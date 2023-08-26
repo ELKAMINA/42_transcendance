@@ -15,11 +15,12 @@ import { fetchDisplayedChannel, fetchUserChannels, setIsMember } from '../redux-
 import { MutableRefObject } from 'react';
 
 export type EnterChannelConfirmationDialogProps = {
-	selectedChannel : Channel | undefined;
+	// selectedChannel : Channel | undefined;
+	selectedChannel :  MutableRefObject<Channel | undefined>;
 	openDialog : boolean;
 	setOpenDialog : (arg0 : boolean) => void;
 	// setIsConfirmed : (isConfirmed : boolean) => void;
-	isConfirmed :  MutableRefObject<boolean>;
+	isConfirmed : MutableRefObject<boolean>;
 }
 
 export default function EnterChannelConfirmationDialog({isConfirmed, selectedChannel, openDialog, setOpenDialog } : EnterChannelConfirmationDialogProps) {
@@ -31,7 +32,7 @@ export default function EnterChannelConfirmationDialog({isConfirmed, selectedCha
 		const newMember : UserByLogin = {login : currentUser};
 		await api
 			.post('http://localhost:4001/channel/addMembers', {
-				channelName : {name : selectedChannel?.name},
+				channelName : {name : selectedChannel.current?.name},
 				members : [newMember], // list of new members to add 
 			})
 			.then((response) => {

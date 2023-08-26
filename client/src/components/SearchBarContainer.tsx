@@ -135,7 +135,8 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	}
 
 	const [openConfirmationDialog, setOpenConfirmationDialog] = useState<boolean>(false);
-	const [pickedChannel, setPickedChannel] = useState<Channel>();
+	// const [pickedChannel, setPickedChannel] = useState<Channel>();
+	const pickedChannel = useRef<Channel>();
 	// const [isConfirmed, setIsConfirmed] = useState<boolean>();
 	const isConfirmed = useRef<boolean>(false)
 	// const passwordStatus = useRef<boolean>(false);
@@ -167,7 +168,8 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 					}
 					else { // if current user is not a member of the picked channel
 						// update pickedChannel, this will be sent to EnterChannelConfirmationDialog
-						setPickedChannel(value);
+						// setPickedChannel(value);
+						pickedChannel.current = value;
 						// open EnterChannelConfirmationDialog
 						setOpenConfirmationDialog(true);
 					}
@@ -178,6 +180,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 							setAlertDialogSlideOpen(true); // open password check dialog slide
 						}
 						else if (openConfirmationDialog === false) { // if the channel is not protected by a password
+							console.log("MOULES FRITES BABY")
 							getSelectedItem(value.name);
 							// AppDispatch(fetchDisplayedChannel(value.name))
 							newChannelCreated.current = true;
