@@ -116,11 +116,13 @@ export class ChannelService {
           },
         },
       });
-
       if (!user) {
         throw new NotFoundException('User not found');
       }
-
+      delete user.hash;
+      delete user.fA;
+      delete user.email;
+      delete user.rtHash;
       const output = [...user.channels];
       return output;
     } catch (error) {
@@ -197,6 +199,7 @@ export class ChannelService {
       if (!channel) {
         return undefined;
       }
+      delete channel?.key;
       // console.log("[getDisplayedChanne] channel = ", channel);
       return channel;
     } catch (error) {
@@ -328,6 +331,7 @@ export class ChannelService {
         },
       });
       // console.log('updatedChannel = ', updatedChannel);
+      delete updatedChannel?.key;
       return updatedChannel;
     } catch (error) {
       console.error(error);
@@ -407,6 +411,7 @@ export class ChannelService {
       }
 
       // console.log('updatedChannel = ', updatedChannel);
+      delete updatedChannel?.key;
       return updatedChannel;
     } catch (error) {
       console.error(error);
@@ -464,6 +469,7 @@ export class ChannelService {
       }
 
       // console.log('updatedChannel = ', updatedChannel);
+      delete updatedChannel?.key;
       return updatedChannel;
     } catch (error) {
       console.error(error);
@@ -504,6 +510,7 @@ export class ChannelService {
         },
       });
       // console.log('updatedChannel = ', updatedChannel.ownedById);
+      delete updatedChannel?.key;
       return updatedChannel;
     } catch (error) {
       console.error(error);
@@ -555,6 +562,7 @@ export class ChannelService {
       });
 
       // console.log('[MEMBERS] updatedChannel = ', updatedChannel);
+      delete updatedChannel?.key;
       return updatedChannel;
     } catch (error) {
       console.error(error);
@@ -611,6 +619,7 @@ export class ChannelService {
       });
 
       // console.log('[MEMBERS] updatedChannel = ', updatedChannel.name);
+      delete updatedChannel?.key;
       return updatedChannel;
     } catch (error) {
       console.error(error);
@@ -647,6 +656,7 @@ export class ChannelService {
           },
         },
       });
+      delete updatedChannel?.key;
       return updatedChannel;
     } catch (error) {
       console.error(error);

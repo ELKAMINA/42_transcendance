@@ -44,6 +44,7 @@ export default function Sign(props: Signing){
     const [signup] = useSignupMutation(); // isLoading : Frequently Used Query Hook Return Values => When true, indicates that the query is currently loading for the first time, and has no data yet. This will be true for the first request fired off, but not for subsequent requests.
     const [checkPwd] = useCheckPwdMutation();
     const navigate = useNavigate()
+    const [IsFt, setFt] = useState<string>("")
 
     React.useEffect(() => {
         dispatch(resetAuthStore())
@@ -71,7 +72,8 @@ export default function Sign(props: Signing){
             setErrMsg('')
     }, [nickname, password, error])
 
-    const ft_auth = async () => {
+    const ft_auth = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        setFt(event.currentTarget.name);
         window.open("http://localhost:4001/auth/42/callback", "_self");
     }
 
@@ -116,7 +118,9 @@ export default function Sign(props: Signing){
                 avatar = selectedImage;
             }
             if (props.type === "Sign up"){
-                userData = await signup({ nickname, password, avatar, type: 'notTfa' }).unwrap() // unwrap extracts the payload of a fulfilled action or to throw either the error
+                if (IsFt !== '42'){
+                    userData = await signup({ nickname, password, avatar, type: 'notTfa' }).unwrap() // unwrap extracts the payload of a fulfilled action or to throw either the error
+                }
             }
             else{
                 let user: UserModel;
@@ -242,12 +246,14 @@ export default function Sign(props: Signing){
                 >
                 {props.type}
                 </Button>
-                <Button 
+                <Button
+                    name="42"
                     type="submit"
                     fullWidth
                     variant="contained"
                     sx={{ mt: 1.5, mb: 2 }}
-                    onClick={ft_auth} ><span>{props.type} with</span><img src={logoft} alt="42" width={"20px"}/>
+                    onClick={ft_auth} >
+                        <span>{props.type} with</span><img src={logoft} alt="42" width={"20px"}/>
                 </Button>
             </Box>
         </Container>
