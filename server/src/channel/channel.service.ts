@@ -157,7 +157,7 @@ export class ChannelService {
 									ownedChannels: true,
 									bannedFromChannels: true,
 									MutedInChannels: true,
-								  },
+								},
 							},
 							blockedBy: {
 								select: {
@@ -232,7 +232,7 @@ export class ChannelService {
 								ownedChannels: true,
 								bannedFromChannels: true,
 								MutedInChannels: true,
-						  	},
+							},
 						},
 						blockedBy: {
 							select: {
@@ -347,6 +347,8 @@ export class ChannelService {
 				},
 				include: {
 					banned: true,
+					members: true,
+					admins: true,
 				},
 			});
 
@@ -354,8 +356,14 @@ export class ChannelService {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
 
-			// console.log('banned = ', banned[0].login);
 			const bannedIds = banned.map((banned) => ({ login: banned.login }));
+			
+			const updatedMembers = channel.members.filter((member) => !bannedIds.some((banned) => banned.login === member.login));
+			const updatedMembersId = updatedMembers.map((member) => ({ login : member.login }))
+			// console.log("updatedMembersId = ", updatedMembersId);
+
+			const updatedAdmins = channel.admins.filter((admin) => !bannedIds.some((banned) => banned.login === admin.login));
+			const updatedAdminsId = updatedAdmins.map((admin) => ({ login : admin.login }))
 
 			// Update the channel's banned with the new array
 			const updatedChannel = await this.prisma.channel.update({
@@ -366,6 +374,12 @@ export class ChannelService {
 					banned: {
 						set: bannedIds,
 					},
+					members: {
+						set: updatedMembersId,
+					},
+					admins: {
+						set : updatedAdminsId,
+					}
 				},
 			});
 
@@ -549,7 +563,7 @@ export class ChannelService {
 				where: {
 					name: channelName.name,
 				},
-				include : {admins : true}
+				include: { admins: true }
 			});
 
 			if (!channel) {
@@ -579,7 +593,7 @@ export class ChannelService {
 						set: newMemberIds.map((login) => ({ login })),
 					},
 					admins: {
-						set: newAdminIds.map((login) => ({login})),
+						set: newAdminIds.map((login) => ({ login })),
 					},
 				},
 			});
