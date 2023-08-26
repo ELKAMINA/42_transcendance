@@ -1,6 +1,6 @@
 import "./createChannel.css"
 
-import React, { MutableRefObject } from "react";
+import React, { MutableRefObject, useEffect } from "react";
 import { IconButton } from "@mui/material";
 import { Box, Button, Stack } from "@mui/material";
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,9 +35,10 @@ function CreateChannel(props : CreateChannelProps) {
 	const channelType = useSelector((state : RootState) => state.persistedReducer.channelType) as ChannelTypeState;
 	const currentUser = useSelector((state : RootState) => state.persistedReducer.auth);
 	const userFriends = useAppSelector(selectFriends) as UserByLogin[];
-	const simplifiedFriends: UserByLogin[] = userFriends.map(({ login }) => ({ login })); // converting UserModel to UserByLogin to keep only login property
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
+
+
 
 	/*** ISSUE 110 ***/
 	// HANDLE ERROR ON WHOLE createChannel
@@ -56,7 +57,7 @@ function CreateChannel(props : CreateChannelProps) {
 	const isErrorBetweenFriendsUserList = (userList: UserByLogin[]): boolean => {
 		let result = false;
 		userFriends.forEach((friend, index) => {
-			// console.log("[createChannel - safetyCheckUserList]", "friend: ", friend, "index: ", index);
+			// console.log("[createChannel - safetyCheckUserList]", "friend: ", friend.login, "index: ", index);
 			const findFriends = userList.find((user) => user.login === friend.login);
 			// console.log("[createChannel - safetyCheckUserList]", "findFriends", findFriends)
 			if (findFriends === undefined) {
@@ -79,9 +80,9 @@ function CreateChannel(props : CreateChannelProps) {
 			/** ISSUE 113 ***/
 			// SAFETY CHECK BETWEEN THE FRIENDS LIST WHICH IS UPDATED AUTOMATICALLY
 			// AND THE USER LIST WHICH IS FIXED
-			if (isErrorBetweenFriendsUserList(updatedChannelUsersList)) {
-				throw "Comparison issue between Friends and UserList";
-			}
+			// if (isErrorBetweenFriendsUserList(updatedChannelUsersList)) {
+			// 	throw "Comparison issue between Friends and UserList";
+			// }
 			await api
 			.post ('http://localhost:4001/channel/creation', {
 				name: newName,
@@ -108,7 +109,7 @@ function CreateChannel(props : CreateChannelProps) {
 			props.newChannelCreated.current = true;
 
 		} catch (error : any) {
-			console.log('error while creating channel = ', error);
+			console.error('error while creating channel = ', error);
 			dispatch(resetChannelName());
 			dispatch(resetChannelType());
 			dispatch(resetChannelUser());
@@ -162,7 +163,7 @@ function CreateChannel(props : CreateChannelProps) {
 								<br></br>
 							</Box>
 							<CreateName />
-							<CreateUsersList userList={simplifiedFriends}/>
+							<CreateUsersList />
 							<CreateType />
 							<Box>
 								<Button
