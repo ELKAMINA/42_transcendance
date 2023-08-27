@@ -232,9 +232,9 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 		}
 	})
 	
-	useEffect(() => {
+	// useEffect(() => {
 
-	}, [displayBlockIcon]) // DEBUG 
+	// }, [displayBlockIcon]) // DEBUG 
 	
 	useEffect(() => {
 		dispatch(setIsPopupOpen(false));

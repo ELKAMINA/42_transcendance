@@ -23,10 +23,10 @@ export type UserModel = {
     updatedAt: Date;
     user_id: string;
     login: string;
-    email: string | null;
-    hash: string | null;
-    rtHash: string | null;
-    fA: string | null;
+    // email: string | null;
+    // hash: string | null;
+    // rtHash: string | null;
+    // fA: string | null;
     faEnabled: boolean | null;
     // avatar: string | null;
     avatar: string | undefined;

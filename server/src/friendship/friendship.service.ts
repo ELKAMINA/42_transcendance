@@ -25,6 +25,12 @@ export class FriendshipService {
         return;
       }
       try {
+        const USER_SAFE_SELECT = {
+          hash: false,
+          rtHash: false,
+          email: false,
+          fa: false,
+        };
         const newReq = await this.prisma.friendRequest.create({
           data: {
             sender: {
@@ -99,6 +105,7 @@ export class FriendshipService {
       const onlyFriends = allFriends.filter(
         (el) => !blockedFriends.some((obj) => obj.login === el.login),
       );
+      console.log('only friends ', onlyFriends);
       return onlyFriends;
     } else {
       throw new HttpException('No user found', HttpStatusCode.Forbidden);
