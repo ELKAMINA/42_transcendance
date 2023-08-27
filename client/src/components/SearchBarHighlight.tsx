@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { styled } from '@mui/material/styles';
+import { useState, useEffect } from 'react';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import TextField from '@mui/material/TextField';
@@ -43,28 +44,23 @@ const CssTextField = styled(TextField)({
 export type SearchBarHighlightsProps = {
 	myOptions : (Channel | UserModel)[];
 	handleOptionSelect : (event: React.ChangeEvent<{}>, optionSelected : Channel | UserModel | null) => void;
+	selectOption: (Channel | UserModel)[];
 }
 
-export default function SearchBarHighlights({myOptions, handleOptionSelect} : SearchBarHighlightsProps) {
+export default function SearchBarHighlights({myOptions, handleOptionSelect, selectOption} : SearchBarHighlightsProps) {
 
+	useEffect(() => {
+		// console.slog('selected options ', selectOption)
+		console.log('My options ', myOptions)
+	}, [myOptions])
 	return (
 		<Autocomplete
 			id="highlights-demo"
 			options={myOptions}
-			/* Amina added this block to fix issue 89 : This prop allows us to define a custom comparison function to check if an option matches the value. By default, the Autocomplete component uses strict equality (i.e., ===) for comparison. Given that objects are compared by reference and not by value in JavaScript, you'll encounter problems if the value isn't the exact same object reference as one of the myOptions. */
-			isOptionEqualToValue={(option, value) => {
-				if ('login' in option && 'login' in value) {
-					return option.login === value.login;
-				} else if ('name' in option && 'name' in value) {
-					return option.name === value.name;
-				}
-				return false;
-			}}
-			/* Amina : Fin */
 			getOptionLabel={(result) => {
 				let title: string | undefined;
+				// console.log('result', result)
 				if ('login' in result) {
-					// console.log('login in getOptionLabel ', result.login)
 					title = result.login;
 				} else if ('name' in result) {
 					// console.log('name in result  ', result.name)
@@ -72,7 +68,23 @@ export default function SearchBarHighlights({myOptions, handleOptionSelect} : Se
 				}
 				return title || '';
 			}}
-
+			isOptionEqualToValue={(option, value) => {
+				if ('login' in option && 'login' in value){
+					// console.log('1 --option ', option)
+					// console.log('2 --value ', value)
+					return option.login === value.login;
+				}
+				else if ('name' in option && 'name' in value){
+					// console.log('3 --option ', option)
+					// console.log('4 --value ', value)
+						return option.name === value.name;
+				} else if ('name' in option && 'login' in value){
+					// console.log('je rentre ici')
+					return option.name === value.login;
+				}
+				else
+					return false
+			}}
 			onChange={handleOptionSelect}
 			renderInput={(params) => ( <CssTextField {...params} label="search for channel or user" margin="normal" /> )}
 			renderOption={(props, result, { inputValue }) => {

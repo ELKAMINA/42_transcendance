@@ -64,9 +64,7 @@ export default function GameSuggestion(props : AlertDialogSlideProps) {
                         <CircularProgress color="primary" />
                     </Box>
                     <DialogActions>
-                        <IconButton onClick={()=> props.onCancel()}>
-                        <Button >Cancel</Button>
-                        </IconButton>
+                        <Button onClick={()=> props.onCancel()}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
             </>
@@ -89,12 +87,8 @@ export default function GameSuggestion(props : AlertDialogSlideProps) {
                         {dialogContent.content}
                     </DialogContent>
                     <DialogActions>
-                        <IconButton onClick={()=> props.onAcceptingGame(dialogContent)}>
-                            <Button >Accept</Button>
-                        </IconButton >
-                        <IconButton onClick={()=> props.onDeny()}>
-                            <Button >Deny</Button>
-                        </IconButton>
+                        <Button onClick={()=> props.onAcceptingGame(dialogContent)}>Accept</Button>
+                        <Button onClick={()=> props.onDeny()}>Deny</Button>
                     </DialogActions>
                 </Dialog>
             </>

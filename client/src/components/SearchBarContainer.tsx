@@ -38,6 +38,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	let filteredFriends : UserModel[] = [];
 	const publicChannels = useAppSelector(selectPublicChannels) as Channel[];
 	const userChannels = useAppSelector(selectUserChannels) as Channel[];
+	const [usersAndChannelBis, setUsersAndChannelsBis] = useState<(Channel | UserModel)[]>([]);
 	
 	let filteredChannels : Channel[] = [];
 
@@ -141,11 +142,13 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 	// const passwordStatus = useRef<boolean>(false);
 
 	const handleOptionSelect = async (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
-		// console.log("[searchBar container] value = ", value);
 		if (value) {
 			setSelectedOption(value);
-
+		
+		console.log('value ', value);
+			
 			if ('name' in value && value.type === 'privateConv') { // if value is a private conv
+				// console.log("Ici 3  = ", value);
 				const conv : Channel | undefined = userChannels.find((channel) => {
 					const memberLogin0 = channel.members[0].login;
 					const memberLogin1 = channel.members[1].login;
@@ -160,7 +163,10 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 					// getSelectedItem(conv.name);
 				}
 			}
-			else if ('name' in value && value.type !== 'privateConv') { // if it is a channel && if it's not a private conv
+			else if ('name' in value && value.type !== 'privateConv') { 
+				// if it is a channel && if it's not a private conv
+				// console.log("Ici 2 = ", value);
+
 				if (value.members) {
 					if (value.members.some((member) => member.login === currentUserName)) { // if current user is already a member
 						isConfirmed.current = true; // do not open the confirmation dialog box and set confirmed to true
@@ -187,17 +193,19 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 				}
 			}
 			else if ('login' in value) { // if selected value is a user
+				// console.log("[searchBar container] value = ", value);
 				// check if there is no privateConv for which the user is a member
 				if (!userChannels.some(channel => {return channel.type === 'privateConv' && channel.members.some(member => member.login === value.login);})) { 
+					// setUsersAndChannelsBis(usersAndChannels);
 					await createPrivateConv(value);
 				}
+				// console.log('user and channels ', usersAndChannelBis)
 			}
 		}
 	};
-
 	return (
 		<Box sx={{width: '95%'}}>
-			<SearchBarHighlights myOptions={usersAndChannels} handleOptionSelect={handleOptionSelect}/>
+			<SearchBarHighlights myOptions={usersAndChannels} handleOptionSelect={handleOptionSelect} selectOption={usersAndChannels}/>
 			{ selectedOption && 'name' in selectedOption && 
 				<AskForPassword
 					AlertDialogSlideOpen={AlertDialogSlideOpen}
