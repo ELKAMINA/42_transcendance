@@ -14,7 +14,7 @@ import { UserByLogin, UserModel } from '../types/users/userType';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import MultipleSelectChip from '../pages/createChannel/createUsersList';
 import { selectFriends } from '../redux-features/friendship/friendshipSlice';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, selectIsMember, setIsMember } from '../redux-features/chat/channelsSlice';
+import { selectDisplayedChannel, setIsMember } from '../redux-features/chat/channelsSlice';
 
 export default function AddMembersDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
 
@@ -23,25 +23,14 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 	const selectedChannel : ChannelModel = useAppSelector((state) => selectDisplayedChannel(state));
 	const [updatedMembers, setUpdatedMembers] = React.useState<UserByLogin[]>([]);
 	const AppDispatch = useAppDispatch();
-
-	// useEffect(() => {
-	// 	console.log('selectedChannel.members = ', selectedChannel.members);
-	// }, [selectedChannel]);
-
-
 	const friends = useAppSelector(selectFriends) as UserModel[];
 	const simplifiedFriends: UserByLogin[] = friends.map(({ login }) => ({ login })); // converting UserModel to UserByLogin to keep only login property
-	// console.log('simplifiedFriends = ', simplifiedFriends);
 
 	const filteredFriends: UserByLogin[] = simplifiedFriends.filter(friend => {
 		const isFriendIncluded = !selectedChannel.members.some(member => member.login === friend.login);
-		// console.log('Friend:', friend);
-		// console.log('Is Friend included:', isFriendIncluded);
 		return isFriendIncluded;
 	});
-		  
-	// console.log('Filtered Friends:', filteredFriends);
-	  
+
 	async function addMembers() : Promise<void> {
 		// console.log('updatedMembers = ', updatedMembers);
 		await api
@@ -50,9 +39,6 @@ export default function AddMembersDialog({openDialog, setOpenDialog} : {openDial
 				members : updatedMembers, // list of new members to add 
 			})
 			.then((response) => {
-				// console.log("response = ", response)
-				AppDispatch(fetchUserChannels());
-				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 				AppDispatch(setIsMember(true));
 			})
 			.catch((error) => console.log('error while adding members : ', error))

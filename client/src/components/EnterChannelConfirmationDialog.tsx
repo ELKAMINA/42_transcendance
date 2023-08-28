@@ -11,7 +11,7 @@ import { Channel } from '../types/chat/channelTypes';
 import { UserByLogin } from '../types/users/userType';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector, } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels, setIsMember } from '../redux-features/chat/channelsSlice';
+import { setIsMember } from '../redux-features/chat/channelsSlice';
 import { MutableRefObject } from 'react';
 
 export type EnterChannelConfirmationDialogProps = {
@@ -21,6 +21,7 @@ export type EnterChannelConfirmationDialogProps = {
 	setOpenDialog : (arg0 : boolean) => void;
 	// setIsConfirmed : (isConfirmed : boolean) => void;
 	isConfirmed : MutableRefObject<boolean>;
+	// isConfirmed : boolean;
 }
 
 export default function EnterChannelConfirmationDialog({isConfirmed, selectedChannel, openDialog, setOpenDialog } : EnterChannelConfirmationDialogProps) {
@@ -37,9 +38,7 @@ export default function EnterChannelConfirmationDialog({isConfirmed, selectedCha
 			})
 			.then((response) => {
 				AppDispatch(setIsMember(true))
-				AppDispatch(fetchUserChannels());
-				// if (selectedChannel)
-					// AppDispatch(fetchDisplayedChannel(selectedChannel.name));
+				// AppDispatch(fetchUserChannels());
 			})
 			.catch((error) => console.log('error while adding members from EnterChannelConfirmationDialog : ', error))
 	}
@@ -49,6 +48,7 @@ export default function EnterChannelConfirmationDialog({isConfirmed, selectedCha
 		addMembers();
 		// setIsConfirmed(true);
 		isConfirmed.current = true;
+		// isConfirmed = true;
 		setOpenDialog(false);
 	};
 
@@ -56,6 +56,7 @@ export default function EnterChannelConfirmationDialog({isConfirmed, selectedCha
 		// don't do anything
 		// setIsConfirmed(false);
 		isConfirmed.current = false;
+		// isConfirmed = false;
 		setOpenDialog(false);
 	};
 
