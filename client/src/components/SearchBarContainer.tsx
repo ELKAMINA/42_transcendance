@@ -7,7 +7,7 @@ import EnterChannelConfirmationDialog from "./EnterChannelConfirmationDialog";
 import api from "../utils/Axios-config/Axios";
 import AskForPassword from "./AskForPassword";
 import { UserByLogin, UserModel } from '../types/users/userType';
-import { Channel, ChannelModel } from '../types/chat/channelTypes';
+import { Channel } from '../types/chat/channelTypes';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { FetchAllFriends, selectFriends } from '../redux-features/friendship/friendshipSlice';
@@ -38,20 +38,9 @@ export default function SearchBarContainer({ getSelectedItem, newChannelCreated 
 	let filteredFriends: UserModel[] = [];
 	const publicChannels = useAppSelector(selectPublicChannels) as Channel[];
 	const userChannels = useAppSelector(selectUserChannels) as Channel[];
-	// const [usersAndChannelBis, setUsersAndChannelsBis] = useState<(Channel | UserModel)[]>([]);
-
 	let filteredChannels: Channel[] = [];
 
 	useEffect(() => {
-		// console.log("PUBLIC CHANNELS : ");
-		// publicChannels
-		// .filter((channel) => channel.name === 'courgette')
-		// .map((channel) => channel.members.map((member) => console.log(member.login)));
-		// console.log("USER CHANNELS : ");
-		// userChannels
-		// .filter((channel) => channel.name === 'courgette')
-		// .map((channel) => channel.members.map((member) => console.log(member.login)));
-
 		// STEP #1 ------------------------------------------------------------------------------------------------------------
 		// Filter out channels from publicChannels that also exist in userChannels
 		const filteredPublicChannels = publicChannels.filter(publicChannel =>
@@ -59,8 +48,6 @@ export default function SearchBarContainer({ getSelectedItem, newChannelCreated 
 		);
 		// concatenate public channels and user channels
 		const channels: Channel[] = [...filteredPublicChannels, ...userChannels];
-		// console.log("[searchBar] PRINTING CHANNELS : ")
-		// channels.map((channels) => console.log(channels.name))
 
 		// STEP #2 ------------------------------------------------------------------------------------------------------------
 		// remove the friends that already have an open conversation with the current user
@@ -77,8 +64,6 @@ export default function SearchBarContainer({ getSelectedItem, newChannelCreated 
 			// If no existing channels were found, keep the friend in the list
 			return existingChannels.length === 0;
 		});
-		// console.log("[searchBar] PRINTING FILTERED FRIENDS : ");
-		// filteredFriends.map((filteredFriend) => console.log(filteredFriend.login));
 
 		// STEP #3 ------------------------------------------------------------------------------------------------------------
 		if (channels.length > 0) {
@@ -99,8 +84,6 @@ export default function SearchBarContainer({ getSelectedItem, newChannelCreated 
 					return channel; // For other channel types or conditions, keep the channel as is
 				});
 		}
-
-		// console.log('filteredChannels = ', filteredChannels);
 
 		// Update usersAndChannels after filtering channels and friends
 		setUsersAndChannels([...filteredFriends, ...filteredChannels]);
@@ -145,12 +128,8 @@ export default function SearchBarContainer({ getSelectedItem, newChannelCreated 
 	}
 
 	const [openConfirmationDialog, setOpenConfirmationDialog] = useState<boolean>(false);
-	// const [pickedChannel, setPickedChannel] = useState<Channel>();
 	const pickedChannel = useRef<Channel>();
-	// const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
-	// let isConfirmed : boolean = false;
 	const isConfirmed = useRef<boolean>(false)
-	// const passwordStatus = useRef<boolean>(false);
 
 	const handleOptionSelect = async (event: React.ChangeEvent<{}>, value: Channel | UserModel | null) => {
 		if (value) {
