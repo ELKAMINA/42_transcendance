@@ -191,23 +191,21 @@ export default function SearchBarContainer({ getSelectedItem, newChannelCreated 
 					createPrivateConv(selectedOption)
 				}
 			}
-			setSelectedOption(null);
 		}
 	}, [selectedOption])
 
 	useEffect(() => {
 		if (selectedOption && 'name' in selectedOption && isConfirmed.current === true) { // if the user do want to enter the channel
-			console.log("[searchBar container] selectedOption.key = ", selectedOption.key) // TO CHECK LATER
 			if (selectedOption.pbp === true) { // if channel is protected by a password
 				setAlertDialogSlideOpen(true); // open password check dialog slide
 			}
 			else { // if the channel is not protected by a password
-				console.log("entering channel")
 				getSelectedItem(selectedOption.name);
 			}
-			isConfirmed.current = false;
 		}
-	}, [isConfirmed.current])
+		isConfirmed.current = false; 
+		// setSelectedOption(null);
+	}, [isConfirmed.current, selectedOption])
 
 	return (
 		<Box sx={{ width: '95%' }}>
