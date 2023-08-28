@@ -76,14 +76,14 @@ function Game() {
     };
 
     socket.off("updateComponent").on("updateComponent", (StateAndRoom: any) => {
-        console.log(
-            "[Game]",
-            "on updateComponent",
-            "StateAndRoom: ",
-            StateAndRoom
-        );
+        // console.log(
+        //     "[Game]",
+        //     "on updateComponent",
+        //     "StateAndRoom: ",
+        //     StateAndRoom
+        // );
         if (StateAndRoom.room) {
-            console.log("i got here ");
+            // console.log("i got here ");
             setGameSettings(StateAndRoom.room);
         }
         setGameStatus(StateAndRoom.status);
@@ -98,12 +98,12 @@ function Game() {
         .off("updateGameSettings")
         .on("updateGameSettings", (StateAndRoom: any) => {
             if (StateAndRoom.room) {
-                console.log(
-                    "[Game]",
-                    "on updateGameSettings",
-                    "StateAndRoom: ",
-                    StateAndRoom
-                );
+                // console.log(
+                //     "[Game]",
+                //     "on updateGameSettings",
+                //     "StateAndRoom: ",
+                //     StateAndRoom
+                // );
                 setGameSettings(StateAndRoom.room);
             }
             setGameStatus(StateAndRoom.status);
@@ -113,10 +113,10 @@ function Game() {
     useEffect(() => {
         socket.connect();
         socket.off("connect").on("connect", () => {
-            console.log(socket.id);
+            // console.log(socket.id);
             // FIRST CONNECTION OF THE USER
             if (onGamePage === 0) {
-                console.log("[Game]", "on connect", "onGamePage: ", onGamePage);
+                // console.log("[Game]", "on connect", "onGamePage: ", onGamePage);
                 dispatch(updateOnGamePage(1));
                 socket.emit("initPlayground", playButtonInfo.current);
             } else if (onGamePage === 1) {
@@ -135,14 +135,14 @@ function Game() {
         });
 
         return () => {
-            console.log("[Game]", "useEffect - return of the useEffect");
+            // console.log("[Game]", "useEffect - return of the useEffect");
             dispatch(updateOnGamePage(0));
             socket.disconnect();
-            console.log("[Game]", "useEffect - Request a disconnection");
+            // console.log("[Game]", "useEffect - Request a disconnection");
         };
     }, []);
 
-    console.log("[Game]", "onGamePage: ", onGamePage);
+    // console.log("[Game]", "onGamePage: ", onGamePage);
     return <div className="game">{renderGameComponent()}</div>;
 }
 

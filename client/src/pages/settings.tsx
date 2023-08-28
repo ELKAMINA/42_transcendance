@@ -312,7 +312,7 @@ export function Security () {
 
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log('event ', event.target.checked)
+        // console.log('event ', event.target.checked)
         dispatch(setTfaAuth(event.target.checked))
         if (event.target.checked){
             dispatch(setTfaState('Two Factor authentication is ON'))

@@ -61,9 +61,9 @@ export default function KickMember({
         KickMemberOut(filteredMembers);
     }
 
-    React.useEffect(() => {
-       console.log('updated Kick ', updatedKicked)
-    }, [updatedKicked])
+    // React.useEffect(() => {
+    //    console.log('updated Kick ', updatedKicked)
+    // }, [updatedKicked])
 
     async function KickMemberOut(updatedMember: UserByLogin[]) {
         // console.log("[Chat - KickMemberOut]", "currentUser: ", currentUser);

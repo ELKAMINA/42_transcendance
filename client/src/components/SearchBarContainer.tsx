@@ -146,7 +146,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 		if (value) {
 			setSelectedOption(value);
 		
-		console.log('value ', value);
+		// console.log('value ', value);
 			
 			if ('name' in value && value.type === 'privateConv') { // if value is a private conv
 				// console.log("Ici 3  = ", value);
@@ -186,7 +186,7 @@ export default function SearchBarContainer({getSelectedItem, newChannelCreated} 
 							setAlertDialogSlideOpen(true); // open password check dialog slide
 						}
 						else if (openConfirmationDialog === false) { // if the channel is not protected by a password
-							console.log("MOULES FRITES BABY")
+							// console.log("MOULES FRITES BABY")
 							getSelectedItem(value.name);
 							// AppDispatch(fetchDisplayedChannel(value.name))
 							newChannelCreated.current = true;

@@ -51,9 +51,9 @@ export class ExcludeRolesGuard implements CanActivate {
     const userFromCookie = this.getUserInfoFromSocket(request.headers.cookie);
     const userFromDB = await this.userServ.searchUser(userFromCookie.nickname);
     if (!userFromDB || !concernedchannel) return activate;
-    console.log('[ Excluded roles ] ', excludedRoles);
-    console.log('1----[ ]: Channel concerned ', concernedchannel);
-    console.log('[]: User concerned ', userFromDB.login);
+    // console.log('[ Excluded roles ] ', excludedRoles);
+    // console.log('1----[ ]: Channel concerned ', concernedchannel);
+    // console.log('[]: User concerned ', userFromDB.login);
     excludedRoles.map((excl) => {
       if (excl === 'owner') {
         activate = userFromDB.ownedChannels.some(
@@ -64,7 +64,7 @@ export class ExcludeRolesGuard implements CanActivate {
 
     // If excludedRoles is set to true, it would mean the roles listed are excluded from accessing the route. If a user with an excluded role tries to access the route, they should be denied access.
     // If it's set to false, then the roles listed are not excluded and hence can access the route. This behavior would be a bit counterintuitive given the naming, so a clear understanding of how it's implemented would be necessary.
-    console.log('[EXCLUDE ] --- Final result : activate: ', activate);
+    // console.log('[EXCLUDE ] --- Final result : activate: ', activate);
 
     // Check if user's role is in the excluded roles
     return activate;

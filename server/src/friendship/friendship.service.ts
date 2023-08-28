@@ -45,7 +45,7 @@ export class FriendshipService {
         });
         return newReq;
       } catch (e) {
-        console.log('i got here ??');
+        // console.log('i got here ??');
         return null;
       }
     }
@@ -105,7 +105,7 @@ export class FriendshipService {
       const onlyFriends = allFriends.filter(
         (el) => !blockedFriends.some((obj) => obj.login === el.login),
       );
-      console.log('only friends ', onlyFriends);
+      // console.log('only friends ', onlyFriends);
       return onlyFriends;
     } else {
       throw new HttpException('No user found', HttpStatusCode.Forbidden);

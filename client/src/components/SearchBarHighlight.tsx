@@ -49,10 +49,10 @@ export type SearchBarHighlightsProps = {
 
 export default function SearchBarHighlights({myOptions, handleOptionSelect, selectOption} : SearchBarHighlightsProps) {
 
-	useEffect(() => {
-		// console.slog('selected options ', selectOption)
-		console.log('My options ', myOptions)
-	}, [myOptions])
+	// useEffect(() => {
+	// 	// console.slog('selected options ', selectOption)
+	// 	console.log('My options ', myOptions)
+	// }, [myOptions])
 	return (
 		<Autocomplete
 			id="highlights-demo"

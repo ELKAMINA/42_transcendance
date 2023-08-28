@@ -143,7 +143,7 @@ function Chat () {
 
 		/** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
 		socketRef.current?.off("autoRefreshWhenUsernameChanging").on("autoRefreshWhenUsernameChanging", async () => {
-			console.log("[chat - on autoRefreshWhenUsernameChanging", "Messagge received from the Settings");
+			// console.log("[chat - on autoRefreshWhenUsernameChanging", "Messagge received from the Settings");
 			AppDispatch(fetchDisplayedChannel(roomId));
 			AppDispatch(fetchUserChannels());
 			AppDispatch(FetchAllFriends());

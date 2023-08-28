@@ -17,8 +17,8 @@ export function transformData(queryParams: URLSearchParams) {
     const obj: Record<string, string> = {};
 
     for (const [key, value] of queryParams.entries()) {
-        console.log(" in transform data ", value);
-        console.log(" in transform data - typeof ", typeof value);
+        // console.log(" in transform data ", value);
+        // console.log(" in transform data - typeof ", typeof value);
         obj[key] = value;
     }
     return obj;
