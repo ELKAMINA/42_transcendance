@@ -155,9 +155,9 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 			}	catch(error : any) {
 				console.error('oops, user not found! = ');
 				await api
-					.post('http://localhost:4001/channel/deleteChannelByName', { name: selectedChannel.name })
+					.post('http://localhost:4001/channel/checkChannel', { channelName: selectedChannel.name, channelMembers : selectedChannel.members })
 					.then((response) => {
-						socketRef.current?.emit('channelDeleted', selectedChannel.name);
+						// socketRef.current?.emit('channelDeleted', selectedChannel.name);
 					})
 					.catch((error) => console.log('error while deleting channel', error));
 				return false; // default return statement
