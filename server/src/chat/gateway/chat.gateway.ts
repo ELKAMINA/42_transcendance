@@ -67,6 +67,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.emit('ownerUpdate');
 	}
 
+	@SubscribeMessage('memberUpdate')
+	handleMemberUpdate(socket: Socket): void {
+		this.server.emit('memberUpdate');
+	}
+
 	@SubscribeMessage('adminUpdate')
 	handleAdminUpdate(socket: Socket): void {
 		// const roomId = socket.handshake.query.roomId as string;
@@ -104,8 +109,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.ChatService.createMessage(body.dto);
 		this.server.to(roomId).emit('ServerToChat:' + roomId, body.dto);
 
-		this.server.to(roomId).emit('kickUpdate', body.userName, roomId);
-		// this.server.emit('channelKickNotif', body.userName);
+		this.server.emit('kickUpdate', body.userName, roomId);
 	}
 
 	@SubscribeMessage('blockOrUnblockUser')
