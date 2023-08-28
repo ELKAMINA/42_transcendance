@@ -30,7 +30,7 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 	const [showIcons, setShowIcons] = React.useState(true);
 	const [AlertDialogSlideOpen, setAlertDialogSlideOpen] = React.useState(false);
 	const [alertError, setAlertError] = React.useState<boolean>(false);
-
+	const [confirmationDialogOpen, setConfirmationDialogOpen] = React.useState(false);
 	const AppDispatch = useAppDispatch();
 	const currentUser: string = useAppSelector(selectCurrentUser);
 	const selectedChannel: ChannelModel = useAppSelector((state) => selectDisplayedChannel(state)) || emptyChannel;
@@ -92,10 +92,11 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 	}
 
 	function handleClick(channelToDelete: string, index: number): void {
-			if (currentUser === channels[index].ownedBy.login)
-				deleteChannel(channelToDelete);
-			else
-				setAlertError(true);
+		if (currentUser === channels[index].ownedBy.login)
+			deleteChannel(channelToDelete);
+		else
+			setAlertError(true);
+		setConfirmationDialogOpen(false);
 	}
 
 	const [selectedIndex, setSelectedIndex] = React.useState(() => {
@@ -111,13 +112,14 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 		// get the channel corresponding to the index
 		const clickedItem = channels[index];
 
-		// if the selected channel is protected by a password, open password dialog slide
-		if (clickedItem.pbp === true) {
-			setAlertDialogSlideOpen(true);
-		} else {
-			// if no password protection, update 'displayedChannel' slice through prop 'getSelectedItem'
-			// console.log('[From AlignItems Component :  clickedItem.name]', clickedItem.name)
-			getSelectedItem(clickedItem.name);
+		// console.log("confirmationDialogOpen = ", confirmationDialogOpen);
+		
+		if (confirmationDialogOpen === false) { // if the 'deleteChannel' dialog is not open,
+			if (clickedItem.pbp === true) { // if the selected channel is protected by a password, open password dialog slide
+ 				setAlertDialogSlideOpen(true);
+			} else { // if not, just update the displayed channel
+				getSelectedItem(clickedItem.name);
+			}
 		}
 	};
 
@@ -189,8 +191,10 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 											icon={
 												<DeleteIcon sx={{ color: 'red', p: 0, marginLeft: 'auto', }} fontSize="small" />
 											}
-											handleConfirm={() => handleClick(element.name, index)}
+											handleConfirm={() => {
+												handleClick(element.name, index)}} 
 											dialogTitle='Delete this channel from the database?'
+											setConfirmationDialogOpen={setConfirmationDialogOpen}
 										/>
 									</Box>)}
 							</ListItem>
@@ -198,12 +202,14 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 					</Stack>
 				);
 			})}
-			< AskForPassword
-				AlertDialogSlideOpen={AlertDialogSlideOpen}
-				setAlertDialogSlideOpen={setAlertDialogSlideOpen}
-				getSelectedItem={getSelectedItem}
-				element={channels[selectedIndex]}
-			/>
+			{confirmationDialogOpen === false && 
+				< AskForPassword
+					AlertDialogSlideOpen={AlertDialogSlideOpen}
+					setAlertDialogSlideOpen={setAlertDialogSlideOpen}
+					getSelectedItem={getSelectedItem}
+					element={channels[selectedIndex]}
+				/>
+			}
 			{alertError &&
 				<FullScreenAlert severity='error' alertTitle='Error' normalTxt='cannot delete channel --'
 					strongTxt='you cannot delete a channel you do not own!' open={alertError} handleClose={handleCloseAlert} />

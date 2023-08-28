@@ -98,19 +98,24 @@ export interface ConfirmationDialogProps {
 	icon: React.ReactNode; // New prop for the icon
 	handleConfirm: handleConfirmFunction;
 	dialogTitle: string;
+	setConfirmationDialogOpen : (arg0 : boolean) => void
 }
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
-	const { title, id, options, icon, handleConfirm, dialogTitle } = props;
+	const { title, id, options, icon, handleConfirm, dialogTitle, setConfirmationDialogOpen } = props;
 	const [open, setOpen] = React.useState(false);
 	const [value, setValue] = React.useState('Dione');
 
-	const handleClickListItem = () => {
+	const handleClickListItem = (event : React.MouseEvent) => {
+		event.stopPropagation();
+		setConfirmationDialogOpen(true);
 		setOpen(true);
 	};
 
 	const handleClose = (newValue?: string) => {
 		setOpen(false);
+		setConfirmationDialogOpen(false);
+
 		if (newValue && newValue !== 'Dione') {
 			setValue(newValue);
 			handleConfirm('')
