@@ -1,7 +1,6 @@
 
 import { Provider } from 'react-redux';
 import { useEffect, useRef, useState } from "react";
-
 import './chat.css'
 import SideBar from './sideBar';
 import { store } from '../app/store';
@@ -15,9 +14,6 @@ import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectAd
 import { Socket } from 'socket.io-client';
 import socketIOClient from 'socket.io-client';
 import { ChatMessage } from '../types/chat/messageType';
-import { emptyChannel } from '../data/emptyChannel';
-
-/***  ISSUE 113 ***/
 import { FetchAllFriends } from '../redux-features/friendship/friendshipSlice';
 
 function Chat () {
@@ -32,20 +28,16 @@ function Chat () {
 	const isNewMemberNotif = useAppSelector(selectIsMember)
 	const justBeenBannedNotif = useAppSelector(selectIsBanned);
 	const ownerUpdate = useAppSelector(selectOwnerUpdate);
-	// const kickedUpdate = useAppSelector(selectKickedUpdate);
 	const adminUpdate = useAppSelector(selectAdminUpdate);
 	const channelDeleted = useRef<boolean>(false);
 	const [selectedChannel, setSelectedChannel] = useState<string>(() => {
 		if (channels.length === 0 || displayedChannel.name === 'empty channel' || displayedChannel.name === undefined) {
 			return 'WelcomeChannel';
 		} else {
-			// console.log('here ', displayedChannel.name)
 			return displayedChannel.name;
 		}
 	})
 	
-	// console.log('Selected Channel ', selectedChannel)
-
 	const socketRef = useRef<Socket>();
 	const roomId = selectedChannel;
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -56,8 +48,6 @@ function Chat () {
 	}, [])
 
 	useEffect(() => {
-		// console.log('[Chat] - roomId = ', roomId)
-
 		if (selectedChannel === 'empty channel') // if roomId is 'empty channel'
 			return ; // exit the function immediatly
 		
@@ -68,10 +58,8 @@ function Chat () {
 		})
 
 		if (newChannelCreated.current) {
-			// console.log("new channel created!")
 			socketRef.current?.emit('newChannelCreated', currentUser);
 			newChannelCreated.current = false;
-			// AppDispatch(setIsMember(false));
 		}
 
 		if (channelDeleted.current) {
@@ -96,7 +84,6 @@ function Chat () {
 				outgoing: message.sentBy === currentUser,
 				incoming: message.sentBy !== currentUser,
 			}
-			// console.log('[From Messages : all Messages ]: ', messages)
 			setMessages((messages) => [...messages, incomingMessage])
 		})
 	
@@ -109,26 +96,16 @@ function Chat () {
 		})
 
 		socketRef.current?.on('ownerUpdate', () => {
-			// console.log('[chat] - owner update!');
-			// console.log('[chat] - current user = ', currentUser);
-			// console.log("[chat] roomId = ", roomId);
 			AppDispatch(fetchDisplayedChannel(roomId));
 			AppDispatch(fetchUserChannels());
 		})
 
 		socketRef.current?.on('memberUpdate', () => {
-			// console.log('[chat] - member update!');
-			// console.log('[chat] - current user = ', currentUser);
-			// console.log("[chat] roomId = ", roomId);
 			AppDispatch(fetchDisplayedChannel(roomId));
 			AppDispatch(fetchUserChannels());
 		})
 
 		socketRef.current?.on('newChannelNotif', (userName : string) => {
-			// console.log('[chat] - member notif !');
-			// console.log('[chat] - current user = ', currentUser);
-			// console.log('[chat] - userName = ', userName);
-			// console.log('[chat] - roomId = ', roomId);
 			AppDispatch(fetchUserChannels());
 			AppDispatch(fetchPublicChannels());
 			if (currentUser != userName) {
@@ -137,60 +114,34 @@ function Chat () {
 		})
 
 		socketRef.current?.on('bannedNotif', (userName : string) => {
-			// console.log('[chat] - BANNED!');
-			// console.log('[chat] - current user = ', currentUser);
-			// console.log("[chat] roomId = ", roomId);
 			if (currentUser != userName)
 				AppDispatch(fetchDisplayedChannel(roomId));
-			// AppDispatch(fetchPublicChannels())
 			AppDispatch(fetchUserChannels())
 		})
 
 		socketRef.current?.on('adminUpdate', () => {
-			// console.log('[chat] - owner update!');
-			// console.log('[chat] - current user = ', currentUser);
-			// console.log("[chat] roomId = ", roomId);
 			AppDispatch(fetchDisplayedChannel(roomId));
 			AppDispatch(fetchUserChannels());
 		})
 
-		/** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
 		socketRef.current?.off("autoRefreshWhenUsernameChanging").on("autoRefreshWhenUsernameChanging", async () => {
-			// console.log("[chat - on autoRefreshWhenUsernameChanging", "Messagge received from the Settings");
 			AppDispatch(fetchDisplayedChannel(roomId));
 			AppDispatch(fetchUserChannels());
 			AppDispatch(FetchAllFriends());
 		})
 
 		return () => {
-			// console.log('[Unmounted Component Conversation] ', selectedChannel)
 			if (socketRef.current?.connected) {
-				// console.log('[Unmounted Component Conversation] socketRef.current?.id = ', socketRef.current?.id)
 				socketRef.current?.disconnect()
 			}
 		}
 	}, [roomId])
 
-	// useEffect(() => {
-	// 	console.log('[chat - from USE EFFECT] - displayed channel = ', displayedChannel.name);
-	// }, [displayedChannel])
-
-	// useEffect(() => {
-	// 	console.log('[chat - from USE EFFECT] - selectedChannel = ', selectedChannel);
-	// }, [selectedChannel])
-
-
 	// REAL-TIME NEW CHANNEL MEMBER UPDATE -------------------------------------------------------------------------------------------------------------------------------
 	useEffect(() => {
-		// console.log( "[isNewMemberNotif] roomId = ", roomId )
-		// console.log( "[isNewMemberNotif] socketRef.current.id = ", socketRef.current?.id )
-		// console.log( "[isNewMemberNotif] newChannelCreated = ", newChannelCreated )
-
 		// I emit the event only if the 'isMemberNotif' has been switched on by a user
 		if (isNewMemberNotif) {
-			// console.log('new member switched on!')
 			socketRef.current?.emit('memberUpdate');
-			// newChannelCreated.current = false;
 			AppDispatch(setIsMember(false));
 		}
 
@@ -237,9 +188,7 @@ function Chat () {
 			AppDispatch(fetchPublicChannels());
 			AppDispatch(fetchUserChannels());
 			if (selectedChannel === kickedFromRoomId) {
-				// console.log('I am being kicked out of the channel I am displaying')
 				AppDispatch(fetchDisplayedChannel("WelcomeChannel"));
-				// AppDispatch(fetchUserChannels());
 			}
 		} else { // if I am NOT the user being kicked out
 			AppDispatch(fetchDisplayedChannel(roomId));
@@ -249,13 +198,11 @@ function Chat () {
 	
 	useEffect(() => {
 		if (selectedChannel !== '' && selectedChannel !== "empty channel") {
-			// console.log('[ From Chat.tsx - useEffect is trigerred ', selectedChannel)
 			AppDispatch(fetchDisplayedChannel(selectedChannel));
 		}
 	}, [selectedChannel]);
 
 	function handleSelectChannel (channelName : string) {
-		// console.log('[From Chat.tsx : selectedItem ]: ', channelName)
 		setSelectedChannel(channelName);
 	}
 
