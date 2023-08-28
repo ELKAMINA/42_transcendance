@@ -49,7 +49,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error('[GATEWAY - handleConnection] USER NOT FOUND');
       return;
     }
-    console.log('[GATEWAY - handleConnection]', 'user: ', user);
+    // console.log('[GATEWAY - handleConnection]', 'user: ', user);
     const userSocket = this.socketsPool.get(user.nickname);
     if (userSocket && client.id !== userSocket.id) {
       console.error(
@@ -81,11 +81,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     room = this.userInRoom(user.nickname);
     if (!room) {
-      console.log(
-        '[GATEWAY - handleDisconnect]',
-        'The player is not linked to a room (leaving settings screen or else): ',
-        user.nickname,
-      );
+      // console.log(
+      //   '[GATEWAY - handleDisconnect]',
+      //   'The player is not linked to a room (leaving settings screen or else): ',
+      //   user.nickname,
+      // );
     } else {
       // DELETE THE ROOM OF THE USER IF HE IS THE OWNER AND ALONE IN THE ROOM (WAITING)
       // USE CASE:
@@ -96,11 +96,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         room.isFull === false &&
         room.roomStatus === ERoomStates.WaitingOpponent
       ) {
-        console.log(
-          '[GATEWAY - handleDisconnect]',
-          'The player has left the game during the waiting opponent: ',
-          user.nickname,
-        );
+        // console.log(
+        //   '[GATEWAY - handleDisconnect]',
+        //   'The player has left the game during the waiting opponent: ',
+        //   user.nickname,
+        // );
         this.removeRoom(room.id);
       }
       // USE CASES:
@@ -148,11 +148,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           room.roomStatus === ERoomStates.Ended ||
           room.roomStatus === ERoomStates.Closed
         ) {
-          console.log(
-            '[GATEWAY - handleDicsonnect]',
-            'End game disconnection of the player: ',
-            user.nickname,
-          );
+          // console.log(
+          //   '[GATEWAY - handleDicsonnect]',
+          //   'End game disconnection of the player: ',
+          //   user.nickname,
+          // );
           this.createMatchHistory(room);
         }
         this.removePlayerFromRoom(user.nickname, room);
@@ -171,7 +171,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // SAFETY PURGE AT EACH DISCONNECTION OF A PLAYER
     this.safetyRoomPurge();
 
-    console.log('[GATEWAY - handleDisconnect]', 'allRooms: ', this.allRooms);
+    // console.log('[GATEWAY - handleDisconnect]', 'allRooms: ', this.allRooms);
   }
 
   /***************************************************************************/
@@ -182,7 +182,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let roomAssigned: GameDto; // UNDEFINED
     let socketClientRoomId = client.id; // STORE THE SOCKET ID OR THE ROOM TO COMMUNICATE
 
-    console.log('[GATEWAY - initPlayground]', 'body: ', body);
+    // console.log('[GATEWAY - initPlayground]', 'body: ', body);
 
     // Récupération du user connecté à partir du cookie
     const user = await this.getUserInfoFromSocket(client);
@@ -195,7 +195,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
     const isPlaying = (await this.userService.searchUser(user.nickname)).status;
-    console.log('[GATEWAY - initPlayground]', 'isPlaying: ', isPlaying);
+    // console.log('[GATEWAY - initPlayground]', 'isPlaying: ', isPlaying);
     // Si user a le statut "isPlaying", renvoi vers HomePage
     // Cas de reconnexion ou ouverture d'un nouvel onglet
     if (isPlaying === 'Playing') {
@@ -207,13 +207,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // this.socketsPool.set(user.nickname, client);
       /*** CASE OF RANDOM MATCH FROM HOME OR NAVBAR ***/
       if (body.type === EServerPlayType.RANDOM) {
-        console.log('[GATEWAY - initPlayground]', 'Match type: ', body.type);
+        // console.log('[GATEWAY - initPlayground]', 'Match type: ', body.type);
         gameRenderStates = this.getGameStates(user.nickname);
-        console.log(
-          '[GATEWAY - initPlayground]',
-          'gameRenderStates: ',
-          gameRenderStates,
-        );
+        // console.log(
+        //   '[GATEWAY - initPlayground]',
+        //   'gameRenderStates: ',
+        //   gameRenderStates,
+        // );
         // CASE OF JOINING A ROOM
         if (gameRenderStates === EGameServerStates.MATCHMAKING) {
           // SAFETY OF PLAYING AGAINST THE SAME PLAYER
@@ -234,23 +234,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             roomAssigned.playerTwoId = client.id;
             client.join(roomAssigned.id);
             socketClientRoomId = roomAssigned.id;
-            console.log(
-              '[GATEWAY - initPlayground]',
-              'roomAssigned: ',
-              roomAssigned,
-            );
+            // console.log(
+            //   '[GATEWAY - initPlayground]',
+            //   'roomAssigned: ',
+            //   roomAssigned,
+            // );
             gameRenderStates = EGameServerStates.VERSUS;
           }
         }
-        console.log(
-          '[GATEWAY - initPlayground]',
-          'gameRenderStates: ',
-          gameRenderStates,
-        );
+        // console.log(
+        //   '[GATEWAY - initPlayground]',
+        //   'gameRenderStates: ',
+        //   gameRenderStates,
+        // );
       }
       // CASE OF ONE TO ONE MATCH FROM CHANNEL
       else if (body.type === EServerPlayType.ONETOONE) {
-        console.log('[GATEWAY - initPlayground]', 'Match type: ', body.type);
+        // console.log('[GATEWAY - initPlayground]', 'Match type: ', body.type);
         // CHECK IF BOTH PLAYERS ARE NOT ALREADY IN A ROOM
         // IF ONE ON BOTH === TRUE
         // RESULT ==> EGameServerStates.HOMEPAGE;
@@ -281,7 +281,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // CASE OF CREATION OF THE ROOM
     // EMIT TO THE PLAYER THE STATE TO DISPLAY THE SETTINGS COMPONENT
     // ROOM VARIABLE IS EMPTY GAMEDTO
-    console.log('[GATEWAY - initPlayground]', 'roomAssigned: ', roomAssigned);
+    // console.log('[GATEWAY - initPlayground]', 'roomAssigned: ', roomAssigned);
     this.server.to(socketClientRoomId).emit('updateComponent', {
       status: gameRenderStates,
       room: roomAssigned,
@@ -299,11 +299,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
       return;
     }
-    console.log(
-      '[GATEWAY - RequestGameSettings]',
-      'Request game settings by: ',
-      user.nickname,
-    );
+    // console.log(
+    //   '[GATEWAY - RequestGameSettings]',
+    //   'Request game settings by: ',
+    //   user.nickname,
+    // );
     let roomId = client.id;
     const playType = body.roomInfo.type;
     const now = new Date();
@@ -359,11 +359,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         });
         return;
       }
-      console.log(
-        '[GATEWAY - RequestGameSettings]',
-        'receiverSocket: ',
-        playerTwoSocket.id,
-      );
+      // console.log(
+      //   '[GATEWAY - RequestGameSettings]',
+      //   'receiverSocket: ',
+      //   playerTwoSocket.id,
+      // );
       playerTwoSocket.join(roomId);
       room.players.push(body.roomInfo.receiver);
       room.playerTwoId = playerTwoSocket.id;
@@ -381,7 +381,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         room: room,
       });
     }
-    console.log('[GATEWAY - RequestGameSettings]', 'room: ', room);
+    // console.log('[GATEWAY - RequestGameSettings]', 'room: ', room);
   }
 
   // CHANGE THE CLIENT GAME STATES TO GAMEON WHICH WILL DISPLAY
@@ -448,11 +448,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.socketsPool.forEach((element, key) => {
       if (element.id === client.id) {
         idAtRt.nickname = key;
-        console.log(
-          '[GATEWAY - getUserInfoFromSocket]',
-          'Client found in socketsPool: ',
-          idAtRt.nickname,
-        );
+        // console.log(
+        //   '[GATEWAY - getUserInfoFromSocket]',
+        //   'Client found in socketsPool: ',
+        //   idAtRt.nickname,
+        // );
       }
     });
     if (idAtRt.nickname) {
@@ -463,15 +463,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // RETURN A RENDER STATE ACCORDING TO AVAILABLE WAITING ROOM
   getGameStates(userName: string): EGameServerStates {
-    console.log('[GATEWAY - getGameStates]', 'userName: ', userName);
+    // console.log('[GATEWAY - getGameStates]', 'userName: ', userName);
     const possibleRooms = this.allRooms.filter(
       (el) => el.roomStatus === ERoomStates.WaitingOpponent,
     );
-    console.log(
-      '[GATEWAY - getGameStates]',
-      'All waiting room: ',
-      possibleRooms,
-    );
+    // console.log(
+    //   '[GATEWAY - getGameStates]',
+    //   'All waiting room: ',
+    //   possibleRooms,
+    // );
     if (possibleRooms.length === 0)
       return EGameServerStates.SETTINGS; // pas de room en attente => création
     else return EGameServerStates.MATCHMAKING; // room en attente d'opponent
@@ -487,33 +487,33 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.allRooms.forEach((element) => {
       if (element.players.includes(userName)) {
         const playerIdNumber = this.playerNumberInRoom(userName, element);
-        console.log(
-          '[GATEWAY - userInRoom]',
-          'playerIdNumber: ',
-          playerIdNumber,
-        );
+        // console.log(
+        //   '[GATEWAY - userInRoom]',
+        //   'playerIdNumber: ',
+        //   playerIdNumber,
+        // );
         if (
           (playerIdNumber === 0 && element.playerOneId !== '0') ||
           (playerIdNumber === 1 && element.playerTwoId !== '0')
         ) {
-          console.log('[GATEWAY - userInRoom] ', 'element: ', element);
+          // console.log('[GATEWAY - userInRoom] ', 'element: ', element);
           room = element;
         }
       }
     });
-    console.log('[GATEWAY - userInRoom]', 'room: ', room);
+    // console.log('[GATEWAY - userInRoom]', 'room: ', room);
     return room;
   }
 
   // RETURN THE NUMBER OF THE PLAYER IN THE ROOM
   playerNumberInRoom(userName: string, room: GameDto): number {
-    console.log(
-      '[GATEWAY - playerNumberInRoom]',
-      'userName: ',
-      userName,
-      '| room: ',
-      room,
-    );
+    // console.log(
+    //   '[GATEWAY - playerNumberInRoom]',
+    //   'userName: ',
+    //   userName,
+    //   '| room: ',
+    //   room,
+    // );
     return room.players[0] === userName ? 0 : 1;
   }
 
@@ -528,13 +528,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // REMOVE A PLAYER FROM A ROOM
   removePlayerFromRoom(userName: string, room: GameDto) {
-    console.log(
-      '[GATEWAY - removePlayerFromRoom]',
-      'userName: ',
-      userName,
-      '| room: ',
-      room,
-    );
+    // console.log(
+    //   '[GATEWAY - removePlayerFromRoom]',
+    //   'userName: ',
+    //   userName,
+    //   '| room: ',
+    //   room,
+    // );
     if (this.playerNumberInRoom(userName, room) === 0) {
       room.playerOneId = '0';
       // DO NOT USE IT BECAUSE SIDE EFFECT IN SOME DISCONNECION CASES
@@ -546,20 +546,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     // DO NOT USE IT BECAUSE SIDE EFFECT IN SOME DISCONNECION CASES
     // room.players = room.players.filter((element) => element !== userName);
-    console.log('[GATEWAY - removePlayerFromRoom]', 'room: ', room);
+    // console.log('[GATEWAY - removePlayerFromRoom]', 'room: ', room);
   }
 
   // UPDATE A PROPERTY OF A ROOM
   updateRoomData(roomId: string, data: string, newValue: any) {
-    console.log(
-      '[GATEWAY - updateRoomData]',
-      'roomId: ',
-      roomId,
-      '| data: ',
-      data,
-      '| newValue: ',
-      newValue,
-    );
+    // console.log(
+    //   '[GATEWAY - updateRoomData]',
+    //   'roomId: ',
+    //   roomId,
+    //   '| data: ',
+    //   data,
+    //   '| newValue: ',
+    //   newValue,
+    // );
     this.allRooms.forEach((element) => {
       if (element.id === roomId) {
         element[data] = newValue;
@@ -569,37 +569,37 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // CREATE THE MATCH TO THE MATCH HISTORY DATABASE
   createMatchHistory(room: GameDto) {
-    console.log('[GATEWAY - createMatchHistory]', 'room: ', room);
+    // console.log('[GATEWAY - createMatchHistory]', 'room: ', room);
     if (room.roomStatus !== ERoomStates.Closed) {
       this.gameService.matchCreation(room);
       room.roomStatus = ERoomStates.Closed;
     } else {
-      console.log(
-        '[GATEWAY - createMatchHistory]',
-        'The match has already been created',
-      );
+      // console.log(
+      //   '[GATEWAY - createMatchHistory]',
+      //   'The match has already been created',
+      // );
     }
   }
 
   // REMOVE A ROOM FROM THE SERVER
   removeRoom(roomId: string) {
-    console.log('[GATEWAY - removeRoom]', 'roomId: ', roomId);
+    // console.log('[GATEWAY - removeRoom]', 'roomId: ', roomId);
     this.allRooms = this.allRooms.filter((element) => element.id !== roomId);
   }
 
   // FUNCTION TO FILTER THE ROOMS DURING SAFETY PURGE FUNCTION
   purgeCallbackFilter = (element: GameDto): boolean => {
-    console.log('[GATEWAY - purgeCallbackFilter]', 'element: ', element);
+    // console.log('[GATEWAY - purgeCallbackFilter]', 'element: ', element);
     if (
       element.isFull === false &&
       element.playerOneId === '0' &&
       element.playerTwoId === '0' &&
       element.roomStatus === ERoomStates.Closed
     ) {
-      console.log('[GATEWAY - purgeCallbackFilter]', 'false');
+      // console.log('[GATEWAY - purgeCallbackFilter]', 'false');
       return false; // false === MUST BE DELETED
     }
-    console.log('[GATEWAY - purgeCallbackFilter]', 'true');
+    // console.log('[GATEWAY - purgeCallbackFilter]', 'true');
     return true; // true === MUST BE KEPT
   };
 
@@ -607,17 +607,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // DELETE EVERY ROOM WHEN EACH PLAYERS ARE NOT PRESENT ANYMORE IN
   // THE SOCKETS POOL
   safetyRoomPurge() {
-    console.log('[GATEWAY - safetyRoomPurge]');
+    // console.log('[GATEWAY - safetyRoomPurge]');
     this.allRooms.forEach((element) => {
       if (
         !this.socketsPool.get(element.players[0]) &&
         !this.socketsPool.get(element.players[1])
       ) {
-        console.log(
-          '[GATEWAY - safetyRoomPurge]',
-          'ERROR ABOUT PLAYERS IN THE ROOM: ',
-          element,
-        );
+        // console.log(
+        //   '[GATEWAY - safetyRoomPurge]',
+        //   'ERROR ABOUT PLAYERS IN THE ROOM: ',
+        //   element,
+        // );
         element.isFull = false;
         element.playerOneId = '0';
         element.playerTwoId = '0';
@@ -645,7 +645,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const player1 = room.player1;
     const player2 = room.player2;
 
-    console.log('[GATEWAY - initGame]', 'Start');
+    // console.log('[GATEWAY - initGame]', 'Start');
     /*** SAFTEY CASES ***/
     if (!player1Socket || !player2Socket) {
       console.error('[GATEWAY - initGame]', 'PLAYER SOCKET NOT FOUND');
@@ -662,20 +662,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const updateScore = (ballX: number) => {
       if (ballX <= 0 + ball.radius) {
         room.scorePlayers[1] += 1;
-        console.log(
-          '[GATEWAY - updateScore]',
-          'room: ',
-          room.id,
-          'Player TWO has scored',
-        );
+        // console.log(
+        //   '[GATEWAY - updateScore]',
+        //   'room: ',
+        //   room.id,
+        //   'Player TWO has scored',
+        // );
       } else if (ballX >= board.width - ball.radius) {
         room.scorePlayers[0] += 1;
-        console.log(
-          '[GATEWAY - updateScore]',
-          'room: ',
-          room.id,
-          'Player ONE has scored',
-        );
+        // console.log(
+        //   '[GATEWAY - updateScore]',
+        //   'room: ',
+        //   room.id,
+        //   'Player ONE has scored',
+        // );
       }
       this.server.to(room.id).emit('updatePlayerScore', room.scorePlayers);
     };
@@ -698,13 +698,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       ball.speed = room.ballSpeed;
       ball.velocity = [...tmpBallVelocity];
-      console.log(
-        '[Game GATEWAY - resetBallSpeed]',
-        'ball.speed: ',
-        ball.speed,
-        'ball.velocity: ',
-        ball.velocity,
-      );
+      // console.log(
+      //   '[Game GATEWAY - resetBallSpeed]',
+      //   'ball.speed: ',
+      //   ball.speed,
+      //   'ball.velocity: ',
+      //   ball.velocity,
+      // );
       this.server.to(room.id).emit('updateSpeedBall', {
         speed: ball.speed,
         velocity: ball.velocity,
@@ -866,10 +866,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     /*** THE GAME ***/
     const theGame = () => {
-      console.log('[GATEWAY - theGame] DEBUG: ', 'score: ', room.scorePlayers);
-      console.log('[GATEWAY - theGame] DEBUG: ', 'ball: ', ball);
-      console.log('[GATEWAY - theGame] DEBUG: ', 'player1: ', player1);
-      console.log('[GATEWAY - theGame] DEBUG: ', 'player2: ', player2);
+      // console.log('[GATEWAY - theGame] DEBUG: ', 'score: ', room.scorePlayers);
+      // console.log('[GATEWAY - theGame] DEBUG: ', 'ball: ', ball);
+      // console.log('[GATEWAY - theGame] DEBUG: ', 'player1: ', player1);
+      // console.log('[GATEWAY - theGame] DEBUG: ', 'player2: ', player2);
       console.warn(
         `Interval \'${room.id}\' executing at time (${room.frameTime})!`,
         'room: ',
@@ -884,7 +884,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         room.scorePlayers[0] >= room.totalPoint ||
         room.scorePlayers[1] >= room.totalPoint
       ) {
-        console.log('[GATEWAY - theGame]', 'room: ', room.id, 'End Game');
+        // console.log('[GATEWAY - theGame]', 'room: ', room.id, 'End Game');
         // BOTH SOLUTION WORKS
         // SOLUTION 1
         // this.schedulerRegistry.deleteInterval(room.id);

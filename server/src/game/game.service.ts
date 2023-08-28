@@ -11,11 +11,11 @@ export class GameService {
   ) {}
 
   async matchCreation(roomInfos: GameDto) {
-    console.log(
-      '[GATEWAY Service - matchCreation]',
-      'Room at the end of the game',
-      roomInfos,
-    );
+    // console.log(
+    //   '[GATEWAY Service - matchCreation]',
+    //   'Room at the end of the game',
+    //   roomInfos,
+    // );
     let winner: string;
     if (roomInfos.scorePlayers[0] > roomInfos.scorePlayers[1]) {
       this.updateUserGameStat(

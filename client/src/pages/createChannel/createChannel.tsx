@@ -55,10 +55,11 @@ function CreateChannel(props : CreateChannelProps) {
 	// SAFETY CHECK BETWEEN THE FRIENDS LIST WHICH IS UPDATED AUTOMATICALLY
 	// AND THE USER LIST WHICH IS FIXED
 	const isErrorBetweenFriendsUserList = (userList: UserByLogin[]): boolean => {
+		// console.log('user firends ', userFriends)
 		let result = false;
-		userFriends.forEach((friend, index) => {
-			// console.log("[createChannel - safetyCheckUserList]", "friend: ", friend.login, "index: ", index);
-			const findFriends = userList.find((user) => user.login === friend.login);
+		userList.forEach((selectedFriend, index) => {
+			// console.log("[createChannel - safetyCheckUserList]", "friend: ", selectedFriend.login, "index: ", index);
+			const findFriends = userFriends.find((user) => user.login === selectedFriend.login);
 			// console.log("[createChannel - safetyCheckUserList]", "findFriends", findFriends)
 			if (findFriends === undefined) {
 				result = true;
@@ -75,14 +76,15 @@ function CreateChannel(props : CreateChannelProps) {
 		};
 
 		const updatedChannelUsersList = [...channelUsersList, createdBy];
+		// console.log('channel User list  ', channelUsersList)
 
 		try {
 			/** ISSUE 113 ***/
 			// SAFETY CHECK BETWEEN THE FRIENDS LIST WHICH IS UPDATED AUTOMATICALLY
 			// AND THE USER LIST WHICH IS FIXED
-			// if (isErrorBetweenFriendsUserList(updatedChannelUsersList)) {
-			// 	throw "Comparison issue between Friends and UserList";
-			// }
+			if (isErrorBetweenFriendsUserList(channelUsersList)) {
+				throw new Error("Comparison issue between Friends and UserList");
+			}
 			await api
 			.post ('http://localhost:4001/channel/creation', {
 				name: newName,
@@ -95,7 +97,7 @@ function CreateChannel(props : CreateChannelProps) {
 				chatHistory: [],
 			})
 			.catch((e) => {
-				throw e;
+				console.error(e)
 			})
 
 			// if channel is successfully added to the database, execute this :

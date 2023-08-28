@@ -91,7 +91,7 @@ function Requests () {
   }, [])
 
     socket.off('friendAdded').on('friendAdded', (data: any) => {
-      console.log('oui 3')
+      // console.log('oui 3')
      dispatch(FetchAllFriendRequests());
       // else dispatch(setFriendshipError(2))
  

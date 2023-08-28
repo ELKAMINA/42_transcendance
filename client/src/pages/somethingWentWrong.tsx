@@ -10,7 +10,7 @@ interface Wronginess {
 
 function SomethingWentWrong(props: Wronginess) {
     const err = useAppSelector(selectError)
-    console.log('error ', err)
+    // console.log('error ', err)
   return (
     <Box sx={(theme) => ({
         display: 'flex',

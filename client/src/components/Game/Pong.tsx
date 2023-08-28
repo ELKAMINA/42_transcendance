@@ -231,7 +231,7 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
         player2.current.setPaddlePosition(data.player2Position);
     });
     socket.off("endGame").on("endGame", () => {
-        console.log("[Pong - on EndGame]", "endGame");
+        // console.log("[Pong - on EndGame]", "endGame");
         if (intervalId) {
             cancelAnimationFrame(intervalId);
         }

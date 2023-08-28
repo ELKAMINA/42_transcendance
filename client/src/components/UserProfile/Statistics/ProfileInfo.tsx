@@ -65,7 +65,12 @@ export default function ProfileInfo(props: Myprops) {
                 Date.parse(a.createdAt.toString())
         );
     return (
-        <Box sx={{ bgcolor: "background.paper", width: "90vw", overflowY: 'auto' }}>
+        <Box sx={{ 
+            bgcolor: "background.paper",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',        
+        }}>
             <AppBar position="static">
                 <Tabs
                     value={value}
@@ -126,11 +131,9 @@ export default function ProfileInfo(props: Myprops) {
                     sx={{
                         display: "flex",
                         flexDirection: 'column',
-                        justifyContent: "space-around",
-                        alignContent: "center",
-                        flexWrap: "wrap",
-                        overflow : 'auto',
-
+                        alignItems: 'center',
+                        verticalAlign: 'middle',
+                        width: "100%",
                     }}
                 >
                     {matches?.map((e: any, index) => (
