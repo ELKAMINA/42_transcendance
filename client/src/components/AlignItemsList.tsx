@@ -57,17 +57,9 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 		setchannelsForDisplay(modifiedChannels)
 	}, [channels, currentUser])
 
-	// React.useEffect(() => {
-	// console.log('channelsForDisplay = ', channelsForDisplay)
-	// }, [channelsForDisplay])
-
-	// React.useEffect(() => {
-	// 	console.log('User channels = ', channels);
-	// }, [channels])
 	const getSelectedChannelIndex = () => channels.findIndex(channel => channel.name === selectedChannel.name);
 
 	React.useEffect(() => {
-		// console.log('selectedChannel camembert = ', selectedChannel);
 		if (selectedChannel.name === 'WelcomeChannel') { // if selectedChannel is the welcome channel
 			setSelectedIndex(-1); // dont select any item
 			return;
@@ -81,7 +73,6 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 
 	React.useEffect(() => {
 		AppDispatch(fetchUserChannels());
-		// console.log('user channels = ', channels);
 		if (getSelectedChannelIndex() === -1) // when refreshing the page, if the selectedChannel is not in the list of channels anymore, sent index to 0 (aka first item in the list) 
 			setSelectedIndex(0);
 	}, []);
@@ -101,19 +92,10 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 	}
 
 	function handleClick(channelToDelete: string, index: number): void {
-		// only the creator/owner of the channel can delete it
-		// console.log("[alignItemsList] selectedChannel.name = ", selectedChannel.name);
-		// console.log("[alignItemsList] selectedChannel.ownedBy.login = ", selectedChannel.ownedBy.login);
-		// console.log("[alignItemsList] channels[index].name = ", channels[index].name);
-		// console.log("[alignItemsList] channels[index].ownedBy.login = ", channels[index].ownedBy.login);
-
-		// if (currentUser === channels[index].ownedBy.login)
-		// if (selectedChannel && selectedChannel.name !== 'WelcomeChannel') {
 			if (currentUser === channels[index].ownedBy.login)
 				deleteChannel(channelToDelete);
 			else
 				setAlertError(true);
-		// }
 	}
 
 	const [selectedIndex, setSelectedIndex] = React.useState(() => {
