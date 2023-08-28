@@ -24,33 +24,49 @@ const MatchHistory = (props: Myprops) => {
         <Card
         sx={(theme)=> ({
             width: {
-                xs: '80%',
-                sm: '80%',
-                md: '80%',
-                lg: '80%',
+                xs: '80vw',
+                sm: '80vw',
+                md: '80vw',
+                lg: '80vw',
             },
             height: {
-                xs: '10%',
-                sm: '10%',
-                md: '10%',
-                lg: '10%',
+                xs: '10vh',
+                sm: '10vh',
+                md: '10vh',
+                lg: '10vh',
             },
             // overflowY: 'auto',
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            // alignContent: 'space-evenly',
             margin: 2,
-            // alignItems: 'center',
+            borderRadius: "4%",
             })}
         >
             <CardContent
-                sx={{
+                   sx={(theme)=> ({
+                    width: {
+                        xs: '80vw',
+                        sm: '80vw',
+                        md: '80vw',
+                        lg: '80vw',
+                    },
+                    height: {
+                        xs: '10vh',
+                        sm: '10vh',
+                        md: '10vh',
+                        lg: '10vh',
+                    },
+                    flex: 1,
                     display: "flex",
                     flexDirection: "row",
-                    alignItems: "baseline",
-                    // alignContent: 'center',
-                    justifyContent: "space-evenly",
-                    // flex: "1",
-                }}
+                    // backgroundColor: 'yellow',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                    // justifyContent: 'center',
+
+                })}
             >
                 <Typography component="div"
                     sx={(theme)=> ({
@@ -60,7 +76,11 @@ const MatchHistory = (props: Myprops) => {
                             md: 20,
                             lg: 25,
                         },
-
+                        maxWidth: '100px',  // Choose an appropriate max width based on your design
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        m: 2,
                     })}
                     color="text.secondary"
                     gutterBottom
@@ -72,6 +92,8 @@ const MatchHistory = (props: Myprops) => {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
+                        justifyContent: 'center',
+                        width: "10vw",
                     }}
                 >
                     <Typography component="div"
@@ -82,7 +104,12 @@ const MatchHistory = (props: Myprops) => {
                                 md: 20,
                                 lg: 30,
                             },
-                            color: "#07457E"
+                            color: "#07457E",
+                            // m: 2,
+                            maxWidth: '100px',  // Choose an appropriate max width based on your design
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis'
                         })}
                         color="text.secondary"
                         gutterBottom
@@ -92,13 +119,18 @@ const MatchHistory = (props: Myprops) => {
                     <Typography component="div"
                         sx={(theme)=> ({
                             fontSize: {
-                                xs: 10,
-                                sm: 20,
-                                md: 30,
-                                lg: 10,
+                                xs: 6,
+                                sm: 8,
+                                md: 10,
+                                lg: 12,
                             },
+                            // m: 2,
                             color: "#07457E",
-                            font: "italic"
+                            font: "italic",
+                            maxWidth: '100px',  // Choose an appropriate max width based on your design
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis'
                         })}
                         color="text.secondary"
                         gutterBottom
@@ -115,7 +147,12 @@ const MatchHistory = (props: Myprops) => {
                             md: 20,
                             lg: 25,
                         },
-                        color: "00FFFF" 
+                        color: "00FFFF",
+                        m: 2,
+                        maxWidth: '100px',  // Choose an appropriate max width based on your design
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis'
                     })}
                     color="text.secondary"
                     gutterBottom

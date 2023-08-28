@@ -49,9 +49,9 @@ const UserProfile = () => {
     // console.log('isMyFriend ', isMyFriend)
     return (
         <Box className="userprofile-container">
-            <Box className="userprofile-header">
-                <Navbar currentRoute={currentRoute} />
-            </Box>
+            {/* <Box className="userprofile-header"> */}
+            <Navbar currentRoute={currentRoute} />
+            {/* </Box> */}
             <Box sx={{
                 marginTop: 3.5,
             }} className="userprofile-middle">
@@ -63,7 +63,7 @@ const UserProfile = () => {
                 />
                 <ProfileInfo interestProfile={finalUser} />
             </Box>
-            <Box className="userprofile-infos"></Box>
+            {/* <Box className="userprofile-infos"></Box> */}
         </Box>
     );
 };
