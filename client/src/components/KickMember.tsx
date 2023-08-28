@@ -17,7 +17,6 @@ import { ChannelModel } from "../types/chat/channelTypes";
 import { UserByLogin, UserModel } from "../types/users/userType";
 import { selectDisplayedChannel } from "../redux-features/chat/channelsSlice";
 
-/*** ISSUE 88 ***/
 import { RootState } from "../app/store";
 import { selectCurrentUser } from "../redux-features/auth/authSlice";
 
@@ -38,13 +37,9 @@ export default function KickMember({
         selectDisplayedChannel(state)
     );
     const [updatedKicked, setUpdatedKicked] = React.useState<UserModel[]>([]);
-    /*** ISSUE 88 ***/
-    // NEED THE currentUser TO CHECK IF THE USER WHO MUST BE KICKED IS THE currentUser
     const currentUser = useAppSelector((state: RootState) =>
         selectCurrentUser(state)
     );
-    // const AppDispatch = useAppDispatch();
-
 
     function filterKickedMembersFromChannel() {
         const filteredMembers = selectedChannel.members
@@ -57,17 +52,10 @@ export default function KickMember({
             )
             .map((member) => ({ login: member.login }));
 
-        // console.log("filteredMembers = ", filteredMembers);
         KickMemberOut(filteredMembers);
     }
 
-    // React.useEffect(() => {
-    //    console.log('updated Kick ', updatedKicked)
-    // }, [updatedKicked])
-
     async function KickMemberOut(updatedMember: UserByLogin[]) {
-        // console.log("[Chat - KickMemberOut]", "currentUser: ", currentUser);
-
         await api
             .post("http://localhost:4001/channel/replaceMembers", {
                 channelName: { name: selectedChannel.name },
@@ -76,6 +64,7 @@ export default function KickMember({
                 tokickOrLeave: updatedKicked,
             })
             .then((response) => {
+				// for each kicked member, send a message in the chat
                 updatedKicked.map((kickedMember) => {
                     let dto: any = {
                         sentBy: currentUser,

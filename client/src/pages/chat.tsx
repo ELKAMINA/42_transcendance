@@ -68,6 +68,7 @@ function Chat () {
 		})
 
 		if (newChannelCreated.current) {
+			// console.log("new channel created!")
 			socketRef.current?.emit('newChannelCreated', currentUser);
 			newChannelCreated.current = false;
 			// AppDispatch(setIsMember(false));
@@ -103,6 +104,7 @@ function Chat () {
 			if (deletedChannelName === selectedChannel) {
 				setSelectedChannel('WelcomeChannel');
 			}
+			AppDispatch(fetchPublicChannels());
 			AppDispatch(fetchUserChannels());
 		})
 
@@ -114,13 +116,24 @@ function Chat () {
 			AppDispatch(fetchUserChannels());
 		})
 
+		socketRef.current?.on('memberUpdate', () => {
+			// console.log('[chat] - member update!');
+			// console.log('[chat] - current user = ', currentUser);
+			// console.log("[chat] roomId = ", roomId);
+			AppDispatch(fetchDisplayedChannel(roomId));
+			AppDispatch(fetchUserChannels());
+		})
+
 		socketRef.current?.on('newChannelNotif', (userName : string) => {
 			// console.log('[chat] - member notif !');
 			// console.log('[chat] - current user = ', currentUser);
+			// console.log('[chat] - userName = ', userName);
+			// console.log('[chat] - roomId = ', roomId);
 			AppDispatch(fetchUserChannels());
 			AppDispatch(fetchPublicChannels());
-			if (currentUser != userName) 
+			if (currentUser != userName) {
 				AppDispatch(fetchDisplayedChannel(roomId));
+			}
 		})
 
 		socketRef.current?.on('bannedNotif', (userName : string) => {
@@ -175,8 +188,9 @@ function Chat () {
 
 		// I emit the event only if the 'isMemberNotif' has been switched on by a user
 		if (isNewMemberNotif) {
-			socketRef.current?.emit('newChannelCreated', currentUser);
-			newChannelCreated.current = false;
+			// console.log('new member switched on!')
+			socketRef.current?.emit('memberUpdate');
+			// newChannelCreated.current = false;
 			AppDispatch(setIsMember(false));
 		}
 
@@ -213,26 +227,23 @@ function Chat () {
 	socketRef.current?.off('leavingChannelNotif').on('leavingChannelNotif', (userName : string) => {
 		if (currentUser !== userName) {
 			AppDispatch(fetchUserChannels());
-			// console.log("received event member left the room = ", roomId);
 			AppDispatch(fetchDisplayedChannel(roomId))	
 		}
 	})
 
 	// REAL-TIME 'CHANNEL MEMBER HAS BEEN KICKED OUT' UPDATE -------------------------------------------------------------------------------------------------------------------------------
-	socketRef.current?.on('kickUpdate', (userName: string, kickedFromRoomId : string) => {
+	socketRef.current?.off('kickUpdate').on('kickUpdate', (userName: string, kickedFromRoomId : string) => {
 		if (currentUser === userName) { // if I am the user being kicked out
-			// console.log("selectedChannel.name = ", selectedChannel.name);console.log
-			// console.log("kickedFromRoomId = ", kickedFromRoomId);
+			AppDispatch(fetchPublicChannels());
+			AppDispatch(fetchUserChannels());
 			if (selectedChannel === kickedFromRoomId) {
 				// console.log('I am being kicked out of the channel I am displaying')
 				AppDispatch(fetchDisplayedChannel("WelcomeChannel"));
-				AppDispatch(fetchUserChannels());
+				// AppDispatch(fetchUserChannels());
 			}
-		} else {
-			// console.log('Someone was kicked out of the channel I am displaying')
-			// AppDispatch(fetchUserChannels());
-			// console.log("roomId = ", roomId);
+		} else { // if I am NOT the user being kicked out
 			AppDispatch(fetchDisplayedChannel(roomId));
+			AppDispatch(fetchUserChannels());
 		}
 	});
 	

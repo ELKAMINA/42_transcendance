@@ -107,6 +107,7 @@ export const channelsSlice = createSlice({
 })
 
 export function fetchUserChannels() {
+	// console.log("[fetchUserChannel] fetching user channels");
 	return async (dispatch: any, getState: any) => {
 		try {
 			const response = await api.post("http://localhost:4001/channel/userchannels");
@@ -134,9 +135,10 @@ export function fetchDisplayedChannel(name: string) {
 				// console.log("[fetchDisplayedChannel] response = ", response);
 				dispatch(updateDisplayedChannel(response.data));
 			}
-
 		} catch (error) {
 			console.log("oops channel not found!");
+			// console.log("trying to get this channel : ", requestBody.name);
+			// console.log(`error while getting public channels from database serving user with login ${getState().persistedReducer.auth.nickname}`, error);
 			dispatch(updateDisplayedChannel(emptyChannel));
 		}
 	};
@@ -144,6 +146,7 @@ export function fetchDisplayedChannel(name: string) {
 
 // // fetch all the public channels in db
 export function fetchPublicChannels() {
+	// console.log("[fetchPublicChannel] fetching public channels");
 	return async (dispatch: any, getState: any) => {
 		try {
 			const response = await api.post(
