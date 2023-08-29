@@ -340,9 +340,9 @@ export class UserService {
         FriendRequestSent: true,
       },
     });
-	if (!user) {
-		console.error("user not found!");
-	}
+    if (!user) {
+      console.error('user not found!');
+    }
     if (user) {
       delete user.hash;
       delete user.fA;

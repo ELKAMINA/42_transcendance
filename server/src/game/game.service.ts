@@ -18,31 +18,31 @@ export class GameService {
     // );
     let winner: string;
     if (roomInfos.scorePlayers[0] > roomInfos.scorePlayers[1]) {
-      this.updateUserGameStat(
+      await this.updateUserGameStat(
         roomInfos.players[0],
         true,
         roomInfos.scorePlayers[0],
       );
-      this.updateUserGameStat(
+      await this.updateUserGameStat(
         roomInfos.players[1],
         false,
         roomInfos.scorePlayers[1],
       );
       winner = roomInfos.players[0];
     } else {
-      this.updateUserGameStat(
+      await this.updateUserGameStat(
         roomInfos.players[0],
         false,
         roomInfos.scorePlayers[0],
       );
-      this.updateUserGameStat(
+      await this.updateUserGameStat(
         roomInfos.players[1],
         true,
         roomInfos.scorePlayers[1],
       );
       winner = roomInfos.players[1];
     }
-    this.updateMatchHistory(roomInfos, winner);
+    await this.updateMatchHistory(roomInfos, winner);
     await this.updateRankOfAllUsers();
   }
 
@@ -80,6 +80,7 @@ export class GameService {
           level: { increment: score },
         },
       });
+      console.log('user apres un game ', user);
     } catch (e) {
       console.error('[Game Service - updateUserGameStat]', 'Error: ', e);
     }
@@ -135,19 +136,20 @@ export class GameService {
       },
     });
     // console.log('[GATEWAY - getLeaderBoard]','leaderboard: ', leaderBoard);
-    query.forEach((element) => {
-      console.log(
-        '[GATEWAY Service - getUserGameStat]',
-        'query element: ',
-        element,
-      );
-    });
+    // query.forEach((element) => {
+    //   console.log(
+    //     '[GATEWAY Service - getUserGameStat]',
+    //     'query element: ',
+    //     element,
+    //   );
+    // });
     return query;
   }
 
   async updateRankOfAllUsers() {
     const sortedUsers = await this.getUserGameStat();
-    sortedUsers.map(async (element: any, index: number) => {
+    console.log('sorted Users ', sortedUsers);
+    sortedUsers.forEach(async (element: any, index: number) => {
       try {
         await this.prisma.user.update({
           where: { login: element.login },
