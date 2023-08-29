@@ -16,6 +16,5 @@ export class ChannelReqPwdDto {
 
 	@IsString()
 	@ApiProperty()
-	@IsNotEmpty()
 	pwd: string;
 }
