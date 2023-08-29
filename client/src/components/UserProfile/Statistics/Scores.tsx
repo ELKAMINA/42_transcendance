@@ -2,8 +2,8 @@ import * as React from "react";
 import Statistics from "./Skeleton";
 
 import { UserModel, UserModelProtected } from "../../../types/users/userType";
-import { useAppDispatch} from "../../../utils/redux-hooks";
-import {FetchTotalPlayers} from "../../../redux-features/game/gameSlice";
+import { useAppDispatch } from "../../../utils/redux-hooks";
+import { FetchTotalPlayers } from "../../../redux-features/game/gameSlice";
 // import { selectTotalPlayers, FetchTotalPlayers, FetchTotalMatchesWon, FetchTotalMatchesLost, FetchTotalPoints } from '../../../redux-features/game/gameSlice';
 
 interface Myprops {
@@ -20,11 +20,9 @@ const Rank = (props: Myprops) => {
     const dispatch = useAppDispatch();
     React.useEffect(() => {
         dispatch(FetchTotalPlayers());
-    }, [dispatch]);
+    }, [rank]);
 
-    return (
-        <Statistics name="Rank" data={rank} />
-    );
+    return <Statistics name="Rank" data={rank} />;
 };
 
 const Wins = (props: Myprops) => {
@@ -48,7 +46,7 @@ const Loss = (props: Myprops) => {
 };
 
 const TotalMatches = (props: Myprops) => {
-    let matches: string | undefined = "" ;
+    let matches: string | undefined = "";
     if (props.him?.totalMatches === null) {
         matches = "0";
     } else {
