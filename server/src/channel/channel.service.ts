@@ -538,14 +538,16 @@ export class ChannelService {
 		// console.log('requestBody', requestBody);
 		try {
 			const { channelName, admins } = requestBody;
-
+			// console.log("admins in args = ", admins);
 			// Find the channel by name
 			const channel = await this.prisma.channel.findUnique({
 				where: {
 					name: channelName.name,
 				},
 				include: {
+					ownedBy: true,
 					createdBy: true,
+					admins: true,
 				},
 			});
 
@@ -553,10 +555,12 @@ export class ChannelService {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
 
-			// Convert admins array into an array of UserWhereUniqueInput objects
+			// get admin logins
 			const adminIds = admins.map((admin) => ({ login: admin.login }));
-			adminIds.push({ login: channel.createdBy.login });
+			adminIds.push({ login: channel.ownedBy.login });
+			// console.log('adminIds = ', admins);
 
+			
 			// Update the channel's admins with the new array
 			const updatedChannel = await this.prisma.channel.update({
 				where: {
@@ -599,8 +603,10 @@ export class ChannelService {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
 
+			// STEP 1 : get banned user ids --------------------------------------------------------------------------------------------
 			const bannedIds = banned.map((banned) => ({ login: banned.login }));
 
+			// STEP 2 : get members that are not banned ids ----------------------------------------------------------------------------
 			const updatedMembers = channel.members.filter(
 				(member) => !bannedIds.some((banned) => banned.login === member.login),
 			);
@@ -608,7 +614,8 @@ export class ChannelService {
 				login: member.login,
 			}));
 			// console.log("updatedMembersId = ", updatedMembersId);
-
+			
+			// STEP 3 : get admins that are not banned ids -----------------------------------------------------------------------------
 			const updatedAdmins = channel.admins.filter(
 				(admin) => !bannedIds.some((banned) => banned.login === admin.login),
 			);
@@ -616,7 +623,7 @@ export class ChannelService {
 				login: admin.login,
 			}));
 
-			// Update the channel's banned with the new array
+			// STEP 4 : Update the channel's banned with the new array ------------------------------------------------------------------
 			const updatedChannel = await this.prisma.channel.update({
 				where: {
 					channelId: channel.channelId,
@@ -772,6 +779,7 @@ export class ChannelService {
 				},
 			});
 
+			// if channel is not found, throw error
 			if (!channel) {
 				throw new Error(`Channel with name '${channelName.name}' not found.`);
 			}
@@ -835,7 +843,7 @@ export class ChannelService {
 
 			// Extract the new member IDs from the request
 			const newMemberIds = members.map((member) => member.login);
-
+			// console.log("new members of the channel = ", newMemberIds);
 			// Fetch the current 'admins' of the channel
 			const currentAdmins = channel.admins || [];
 
@@ -844,6 +852,7 @@ export class ChannelService {
 				newMemberIds.some((newMemberId) => newMemberId === admin.login),
 			);
 			const newAdminIds = updatedAdmins.map((admin) => admin.login);
+			// console.log("new admins of the channel = ", newAdminIds);
 
 			// Update the channel's members with the combined array
 			const updatedChannel = await this.prisma.channel.update({
