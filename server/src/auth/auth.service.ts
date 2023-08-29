@@ -318,7 +318,11 @@ export class AuthService {
   }
 
   async checkingPwdBeforeTfa(body) {
-    const user = await this.userServ.searchUser(body.nickname);
+	// console.log('body ', body)
+	const user = await this.prisma.user.findUnique({
+		where: {login: body.nickname}
+	})
+	// console.log('user ', user)
     if (user) {
       if ((await argon.verify(user.hash, body.password)) === false)
         throw new HttpException('Invalid password', HttpStatus.FORBIDDEN);
