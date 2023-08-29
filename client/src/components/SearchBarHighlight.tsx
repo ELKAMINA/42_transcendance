@@ -64,17 +64,14 @@ export default function SearchBarHighlights({myOptions, handleOptionSelect, sele
 				return title || '';
 			}}
 			isOptionEqualToValue={(option, value) => {
+				if (!('name' in option) && 'name' in value)
+					return true;
 				if ('login' in option && 'login' in value){
-					// console.log('1 --option ', option)
-					// console.log('2 --value ', value)
 					return option.login === value.login;
 				}
 				else if ('name' in option && 'name' in value){
-					// console.log('3 --option ', option)
-					// console.log('4 --value ', value)
 						return option.name === value.name;
 				} else if ('name' in option && 'login' in value){
-					// console.log('je rentre ici')
 					return option.name === value.login;
 				}
 				else
