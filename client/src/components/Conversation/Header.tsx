@@ -83,8 +83,8 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 
 	const isPrivateConv : boolean = channel.members?.length === 2 && channel.type === 'privateConv' ? true : false;
 
-	const isAdmin : boolean = channel.admins.some(admin => admin.login === currentUser) || currentUser === channel.ownedById;
 	const isOwner : boolean = currentUser === channel.ownedById;
+	const isAdmin : boolean = channel.admins.some(admin => admin.login === currentUser) || currentUser === channel.ownedById;
 	const dispatch = useAppDispatch();
 
 	useEffect(()=> {
@@ -231,10 +231,6 @@ function Header({ socketRef, onSuggestGame }: HeaderProps) {
 			}
 		}
 	})
-	
-	// useEffect(() => {
-
-	// }, [displayBlockIcon]) // DEBUG 
 	
 	useEffect(() => {
 		dispatch(setIsPopupOpen(false));

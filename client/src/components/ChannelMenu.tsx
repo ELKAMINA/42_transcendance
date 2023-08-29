@@ -48,10 +48,12 @@ export default function ChannelMenu({socketRef} : ChannelMenuProps) {
 	// check if user is owner of the selected channel
 	const currentUser : string = useAppSelector(selectCurrentUser);
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel)
-	const isOwner : boolean = currentUser === selectedChannel.ownedById ? true : false;
 	if (!selectedChannel)
 		return ;
-	const isAdmin : boolean = selectedChannel.admins.some(admin => admin.login === currentUser)
+	const isOwner : boolean = currentUser === selectedChannel.ownedById ? true : false;
+	// console.log("isOwner = ", isOwner);
+	const isAdmin : boolean = selectedChannel.admins.some(admin => admin.login === currentUser) || currentUser === selectedChannel.ownedById
+	// console.log("isAdmin = ", isAdmin);
 
 
 	const handleToggle = () => {
