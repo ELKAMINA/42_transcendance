@@ -2,17 +2,15 @@ import { Body, Post, Req } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
-import { Public } from '../decorators';
 import { Request } from 'express';
 import { parse } from 'cookie';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChannelDto } from './dto/channelPayload.dto';
 
-import { Channel, User } from '@prisma/client';
+import { Channel } from '@prisma/client';
 import { RolesGuard } from 'src/guards/roles.guards';
 import { Roles } from 'src/decorators/roles.decorators';
 import { ChannelService } from '../channel/channel.service';
-import { UserModel } from 'src/user/types';
 import { ChannelReqNameDto } from './dto/requestBodyNamePayload.dto';
 import { ChannelReqPwdDto } from './dto/channelReqPwd.dto';
 import { ChannelReqAdminsDto } from './dto/channelReqAdminUpdate.dto';
@@ -119,6 +117,7 @@ export class channelController {
 	// IF USERS WHO ARE BEING KICKED ARE ADMINS : @ROLES('OWNER')
 	// IF USERS WHO ARE BEING KICKED ARE MEMBERS : @ROLES('ADMIN')
 	// IF USER WHO IS BEING KICKED IS THE OWNER : FORBIDDEN
+	// IF USER WHO IS LEAVING IS OWNER : FORBIDDEN
 	@Post('/replaceMembers')
 	replaceMembers(@Body() requestBody: ChannelReqUpdateMembersDto): Promise<Channel> {
 		return this.ChannelService.replaceMembers(requestBody);
