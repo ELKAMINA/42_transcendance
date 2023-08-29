@@ -107,7 +107,7 @@ const Settings: React.FC<SettingsProps> = ({ clickPlay }) => {
     };
 
     const sendCancel = () => {
-        console.warn("[Settings] Button 'cancel' clicked");
+        // console.warn("[Settings] Button 'cancel' clicked");
         navigate("/welcome");
     };
 

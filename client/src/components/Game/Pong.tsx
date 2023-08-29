@@ -262,7 +262,7 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
                 player1.current.getScore() >= room.totalPoint ||
                 player2.current.getScore() >= room.totalPoint
             ) {
-                console.warn("[Pong - theGame]", "End game");
+                // console.warn("[Pong - theGame]", "End game");
                 if (intervalId) {
                     cancelAnimationFrame(intervalId);
                     intervalId = 0;

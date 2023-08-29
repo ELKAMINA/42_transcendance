@@ -121,12 +121,12 @@ function Game() {
                 socket.emit("initPlayground", playButtonInfo.current);
             } else if (onGamePage === 1) {
                 // REFRESH OR RECONNECTION OF THE USER
-                console.warn(
-                    "[Game]",
-                    "on connect",
-                    "onGamePage: ",
-                    onGamePage
-                );
+                // console.warn(
+                //     "[Game]",
+                //     "on connect",
+                //     "onGamePage: ",
+                //     onGamePage
+                // );
                 dispatch(updateOnGamePage(0));
                 navigate("/welcome");
             } else {
