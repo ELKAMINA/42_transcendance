@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid"; // Grid version 1
-import { Typography } from "@mui/material";
+import { CssBaseline, Typography } from "@mui/material";
 import { IPongProps } from "../../interface/IClientGame";
 import Navbar from "../../components/NavBar";
 import { socket } from "../../pages/game";
@@ -30,74 +30,92 @@ const Versus: React.FC<IPongProps> = ({ room }) => {
     return (
         <>
             <Navbar currentRoute={currentRoute} />
-            <Grid container spacing={1} alignItems="center">
-                {
-                    <>
-                        <Grid
-                            container
-                            sx={{
-                                backgroundImage: `url(${
-                                    process.env.PUBLIC_URL + "/thisone.avif"
-                                })`,
-                                backgroundPosition: "center",
-                                backgroundSize: "cover",
-                                backgroundRepeat: "no-repeat",
-                                imageRendering: "auto",
-                                height: "95vh",
-                                width: "100wh",
-                                zIndex: 0,
-                            }}
-                        >
+            <CssBaseline>
+                <Grid container spacing={1} alignItems="center">
+                    {
+                        <>
                             <Grid
-                                item
-                                style={halfGridStyle}
-                                xs={6}
+                                container
                                 sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
+                                    backgroundImage: `url(${
+                                        process.env.PUBLIC_URL + "/thisone.avif"
+                                    })`,
+                                    backgroundPosition: "center",
+                                    backgroundSize: "cover",
+                                    backgroundRepeat: "no-repeat",
+                                    imageRendering: "auto",
+                                    height: "95vh",
+                                    width: "100wh",
+                                    zIndex: 0,
                                 }}
                             >
-                                <Typography
-                                    variant="h3"
+                                <Grid
+                                    item
+                                    style={halfGridStyle}
+                                    xs={6}
                                     sx={{
-                                        color: "white",
-                                        fontSize: "50px",
-                                        textTransform: "uppercase",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
                                     }}
                                 >
-                                    {room.players[0]}
-                                </Typography>
-                            </Grid>
-                            {/* <Typography variant="h3" noWrap>VS</Typography> */}
-                            <Grid
-                                item
-                                style={halfGridStyle}
-                                xs={6}
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                }}
-                            >
-                                <Typography
-                                    variant="h3"
-                                    noWrap
+                                    <Typography
+                                        sx={(theme) => ({
+                                            fontSize: {
+                                                xs: 20,
+                                                sm: 25,
+                                                md: 30,
+                                                lg: 60,
+                                            },
+                                            color: "white",
+                                            textTransform: "uppercase",
+                                            fontWeight: "bold",
+                                            overflow: "hidden",
+                                            whiteSpace: "nowrap",
+                                            textOverflow: "ellipsis",
+                                        })}
+                                    >
+                                        {room.players[0]}
+                                    </Typography>
+                                </Grid>
+                                {/* <Typography variant="h3" noWrap>VS</Typography> */}
+                                <Grid
+                                    item
+                                    style={halfGridStyle}
+                                    xs={6}
                                     sx={{
-                                        color: "white",
-                                        fontSize: "50px",
-                                        textTransform: "uppercase",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
                                     }}
                                 >
-                                    {room.players[1]}
-                                </Typography>
+                                    <Typography
+                                        noWrap
+                                        sx={(theme) => ({
+                                            fontSize: {
+                                                xs: 20,
+                                                sm: 25,
+                                                md: 30,
+                                                lg: 60,
+                                            },
+                                            color: "white",
+                                            textTransform: "uppercase",
+                                            fontWeight: "bold",
+                                            overflow: "hidden",
+                                            whiteSpace: "nowrap",
+                                            textOverflow: "ellipsis",
+                                        })}
+                                    >
+                                        {room.players[1]}
+                                    </Typography>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </>
-                }
-            </Grid>
+                        </>
+                    }
+                </Grid>
+            </CssBaseline>
         </>
     );
 };

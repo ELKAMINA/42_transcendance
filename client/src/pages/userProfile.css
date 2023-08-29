@@ -1,22 +1,20 @@
-.userprofile-container{
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  /* justify-content: space-around; */
-
+.userprofile-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    /* justify-content: space-around; */
 }
 
-.userprofile-header{
-  width: 100%;
-  height: 10vh;
+.userprofile-header {
+    /* width: 100%; */
+    height: 10vh;
 }
 
-.userprofile-middle{
-  display: flex;
-  flex-direction: column;
-  max-height: 100%;
-  overflow-y:auto;
+.userprofile-middle {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow-y: auto;
 }
-

@@ -54,10 +54,10 @@ export default function ProfileInfo(props: Myprops) {
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
-	if (!props.interestProfile?.p1 && !props.interestProfile?.p2) {
-		return ;
-	}
-    const matches  = props.interestProfile?.p1
+    if (!props.interestProfile?.p1 && !props.interestProfile?.p2) {
+        return;
+    }
+    const matches = props.interestProfile?.p1
         .concat(props.interestProfile?.p2)
         .filter(
             (v, i, a) => a.findIndex((t) => t.match_id === v.match_id) === i
@@ -68,12 +68,14 @@ export default function ProfileInfo(props: Myprops) {
                 Date.parse(a.createdAt.toString())
         );
     return (
-        <Box sx={{ 
-            bgcolor: "background.paper",
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',        
-        }}>
+        <Box
+            sx={{
+                bgcolor: "background.paper",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+            }}
+        >
             <AppBar position="static">
                 <Tabs
                     value={value}
@@ -86,27 +88,27 @@ export default function ProfileInfo(props: Myprops) {
                     <Tab
                         label="Statistics"
                         {...a11yProps(0)}
-                        sx={(theme)=> ({
+                        sx={(theme) => ({
                             fontSize: {
                                 xs: 8,
                                 sm: 10,
                                 md: 15,
                                 lg: 18,
                             },
-                            background: '#07457E',
+                            background: "#07457E",
                         })}
                     />
                     <Tab
                         label="Matches History"
                         {...a11yProps(1)}
-                        sx={(theme)=> ({
+                        sx={(theme) => ({
                             fontSize: {
                                 xs: 8,
                                 sm: 10,
                                 md: 15,
                                 lg: 18,
                             },
-                            background: '#07457E',
+                            background: "#07457E",
                         })}
                     />
                 </Tabs>
@@ -133,15 +135,15 @@ export default function ProfileInfo(props: Myprops) {
                 <Box
                     sx={{
                         display: "flex",
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        verticalAlign: 'middle',
-                        width: "100%",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        verticalAlign: "middle",
+                        // width: "100%",
                     }}
                 >
                     {matches?.map((e: any, index) => (
                         <MatchHistory key={index} us={e} />
-                ))}
+                    ))}
                 </Box>
             </TabPanel>
         </Box>

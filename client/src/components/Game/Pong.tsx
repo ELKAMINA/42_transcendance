@@ -298,7 +298,7 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
                     <div className="pongHelp">
                         How to play:
                         <br />
-                        <strong>Move up</strong> = X and{" "}
+                        <strong>Move up</strong> = W and{" "}
                         <strong>Move down</strong> = S
                     </div>
                 </div>

@@ -29,7 +29,20 @@ const Matchmaking: React.FC<IPongProps> = ({ room }) => {
                             justifyContent: "center",
                         }}
                     >
-                        <Typography variant="h2" noWrap>
+                        <Typography
+                            noWrap
+                            sx={(theme) => ({
+                                fontSize: {
+                                    xs: 20,
+                                    sm: 35,
+                                    md: 50,
+                                    lg: 90,
+                                },
+                                overflow: "hidden",
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                            })}
+                        >
                             Waiting for your opponent{" "}
                         </Typography>
                         <CircularProgress color="primary" />
