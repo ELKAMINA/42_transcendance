@@ -10,6 +10,7 @@ import * as argon from 'argon2';
 import { Channel, Prisma, User } from '@prisma/client';
 import { UserWithTime } from './channel.controller';
 import dayjs from 'dayjs';
+import { UserByLogin } from 'src/user/types';
 
 @Injectable()
 export class ChannelService {
@@ -517,6 +518,9 @@ export class ChannelService {
 			const channel = await this.prisma.channel.findUnique({
 				where: requestBody.obj,
 			});
+			if (!channel) {
+				throw new Error(`Channel with name '${channel.name}' not found.`);
+			}
 			const isPasswordCorrect = await argon.verify(
 				channel.key,
 				requestBody.pwd,
@@ -871,7 +875,7 @@ export class ChannelService {
 		try {
 			const { channelName, key } = requestBody;
 			const pwd = key !== '' ? await argon.hash(key) : '';
-
+			// console.log("key = ", key);
 			// Find the channel by name
 			const channel = await this.prisma.channel.findUnique({
 				where: {
@@ -892,6 +896,7 @@ export class ChannelService {
 					key: {
 						set: pwd,
 					},
+					pbp: true, // Set pbp to true
 				},
 			});
 			delete updatedChannel?.key;
@@ -901,11 +906,11 @@ export class ChannelService {
 		}
 	}
 
-	async checkChannel(requestBody : {channelName : string, channelMembers : User[]}): Promise<void> {
-		const {channelName, channelMembers} = requestBody;
+	async checkChannel(requestBody : {channelName : {name : string}; members : User[]}): Promise<void> {
+		const {channelName, members} = requestBody;
 		const channel = await this.prisma.channel.findUnique({
 			where: {
-				name: channelName
+				name : channelName.name,
 			},
 			include: {
 				members: true,
@@ -917,11 +922,11 @@ export class ChannelService {
 		}
 
 		// console.log("channel members = ", channel.members);
-		// console.log("channelMembers = ", channelMembers);
+		// console.log("members = ", members);
 
 		// Filter out the deleted members
 		const deletedMembers = channel.members.filter((member) => 
-			!channelMembers.find((m) => m.login === member.login)
+			!members.find((m) => m.login === member.login)
 		);
 		// console.log("deletedMembers = ", deletedMembers);
 
