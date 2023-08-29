@@ -323,7 +323,7 @@ export class AuthService {
 		where: {login: body.nickname}
 	})
 	// console.log('user ', user)
-    if (user) {
+    if (user && user.hash) {
       if ((await argon.verify(user.hash, body.password)) === false)
         throw new HttpException('Invalid password', HttpStatus.FORBIDDEN);
     }
