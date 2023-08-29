@@ -916,14 +916,14 @@ export class ChannelService {
 			return;
 		}
 
-		console.log("channel members = ", channel.members);
-		console.log("channelMembers = ", channelMembers);
+		// console.log("channel members = ", channel.members);
+		// console.log("channelMembers = ", channelMembers);
 
 		// Filter out the deleted members
 		const deletedMembers = channel.members.filter((member) => 
 			!channelMembers.find((m) => m.login === member.login)
 		);
-		console.log("deletedMembers = ", deletedMembers);
+		// console.log("deletedMembers = ", deletedMembers);
 
 		if (deletedMembers.length > 0) {
 			// Delete all channels of type 'privateConv' that have a deleted user as a member
@@ -939,7 +939,7 @@ export class ChannelService {
 					},
 				},
 			});
-			console.log("deleting channels = ", channelsToDelete)
+			// console.log("deleting channels = ", channelsToDelete)
 			for (const channelToDelete of channelsToDelete) {
 				await this.prisma.channel.delete({
 					where: {
@@ -948,8 +948,6 @@ export class ChannelService {
 				});
 			}
 		}
-
-		console.log("yo baby")
 
 	}
 }

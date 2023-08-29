@@ -156,7 +156,6 @@ export class channelController {
 	checkUser(
 		@Body() requestBody : {channelName : string, channelMembers : User[]},
 	): Promise<void> {
-		console.log("check channel")
 		return this.ChannelService.checkChannel(requestBody);
 	}
 
