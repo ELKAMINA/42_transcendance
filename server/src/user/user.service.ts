@@ -233,7 +233,6 @@ export class UserService {
           return new ForbiddenException('Credentials taken');
         }
       }
-      // console.log('errrrooor ', error);
       return error;
     } // PrismaClientKnownRequestEr
   }
@@ -341,6 +340,9 @@ export class UserService {
         FriendRequestSent: true,
       },
     });
+	if (!user) {
+		console.error("user not found!");
+	}
     if (user) {
       delete user.hash;
       delete user.fA;

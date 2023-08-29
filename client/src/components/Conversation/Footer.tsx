@@ -123,13 +123,6 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 		}
 	}, [value])
 
-	// useEffect(() => {
-	// 	return () => {
-	// 		console.log('jannule le state ')
-	// 		setIsMuted(false);
-	// 	}
-	// }, [])
-
 	async function userIsBlocked() : Promise<boolean> {
 		// console.log('selectedChannel.name = ', selectedChannel.name)
 		if (selectedChannel.type === 'privateConv') {
@@ -153,13 +146,15 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 					return false;
 				}
 			}	catch(error : any) {
-				console.error('oops, user not found! = ');
-				await api
-					.post('http://localhost:4001/channel/deleteChannelByName', { name: selectedChannel.name })
-					.then((response) => {
-						socketRef.current?.emit('channelDeleted', selectedChannel.name);
-					})
-					.catch((error) => console.log('error while deleting channel', error));
+				console.error('oops, user not found!');
+				socketRef.current?.emit('channelDeleted', selectedChannel.name);
+				// console.log("selectedChannel.members = ", selectedChannel.members);
+				// await api
+					// .post('http://localhost:4001/channel/checkChannel', { channelName: selectedChannel.name, channelMembers : selectedChannel.members })
+					// .then((response) => {
+						// socketRef.current?.emit('channelDeleted', selectedChannel.name);
+					// })
+					// .catch((error) => console.log('error while deleting channel', error));
 				return false; // default return statement
 			}
 		} else {

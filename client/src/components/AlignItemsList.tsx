@@ -92,11 +92,15 @@ export default function AlignItemsList({ getSelectedItem, channelDeleted }: alig
 	}
 
 	function handleClick(channelToDelete: string, index: number): void {
-		if (currentUser === channels[index].ownedBy.login)
-			deleteChannel(channelToDelete);
-		else
-			setAlertError(true);
-		setConfirmationDialogOpen(false);
+		if (currentUser && channels && channels[index] && channels[index].ownedBy) {
+			if (currentUser === channels[index].ownedBy.login) {
+				deleteChannel(channelToDelete);
+			}
+			else {
+				setAlertError(true);
+			}
+			setConfirmationDialogOpen(false);
+		}
 	}
 
 	const [selectedIndex, setSelectedIndex] = React.useState(() => {

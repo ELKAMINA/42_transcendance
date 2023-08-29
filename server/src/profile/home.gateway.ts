@@ -126,6 +126,10 @@ export class ProfileGateway
       /** ISSUE 118 ***/
       // GET THE USER PROFILE
       const currentUser = await this.userServ.searchUser(updates.oldNick);
+	  if (!currentUser) {
+		console.error('user not found!')
+		return ;
+	  }
       // console.log("[Home - GATEWAY]", "currentUser: ", currentUser, "currentUser.status: ", currentUser.status);
       // CHECK THE STATUS OF THE USER THEN THROW AN ERROR IF IS PLAYING
       if (currentUser.status === 'Playing') {

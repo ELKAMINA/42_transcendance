@@ -54,6 +54,9 @@ export default function ProfileInfo(props: Myprops) {
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
+	if (!props.interestProfile?.p1 && !props.interestProfile?.p2) {
+		return ;
+	}
     const matches  = props.interestProfile?.p1
         .concat(props.interestProfile?.p2)
         .filter(
