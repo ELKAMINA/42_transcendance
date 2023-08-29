@@ -19,20 +19,23 @@ export class BannedSchedulerService {
 		// (the present is already the past!) 
 		// and get the channels that needs to be updated
 		const usersWithbanneddChannels = await this.prismaService.user.findMany({
-		where: {
-				BannedExpiry: {
-					lte: currentTimestamp, // checks if the BannedExpiry field is less than or equal to the current timestamp -- lte : less than or equal to
-				},
-		},
-		include: {
-			bannedFromChannels: {
-				include : {
-					banned : true,
+			where: {
+					BannedExpiry: {
+						lte: currentTimestamp, // checks if the BannedExpiry field is less than or equal to the current timestamp -- lte : less than or equal to
+					},
+			},
+			include: {
+				bannedFromChannels: {
+					include : {
+						banned : true,
+					},
 				},
 			},
-		},
-    });
 
+   		});
+
+	console.log("usersWithbanneddChannels = ", usersWithbanneddChannels);
+	
 	// Loop through each user and remove them from the bannedd 
 	// list in the respective channels
 	for (const user of usersWithbanneddChannels) {
