@@ -14,6 +14,7 @@ import { Response } from 'express';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthDto, SignInDto } from './dto/auth.dto';
+// import { UserTfaDto } from './dto';
 import { Public } from '../decorators/public.decorator';
 import { AuthService } from './auth.service';
 import { RtGuard } from '../guards/rt-guard';
@@ -24,6 +25,12 @@ import { GetCurrentUserOAuth } from '../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId } from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
 import { User } from '@prisma/client';
+import {
+  authenticateDTO,
+  cancelTfaDto,
+  checkPwdDTO,
+  turnOnTfaDto,
+} from './dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -115,23 +122,30 @@ export default class AuthController {
 
   @Post('2fa/turn-on')
   async turnOnTwoFactorAuthentication(
-    @Body() body,
+    @Body() body: turnOnTfaDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // console.log('le body ', body)
-    this.authService.isTwoFactorAuthenticationCodeValid(
-      body.TfaCode,
-      body.actualUser.login,
-      res,
-    );
-    this.authService.turnOnTwoFactorAuthentication(body.actualUser.user_id);
+    // console.log('le body ', body);
+    try {
+      await this.authService.isTwoFactorAuthenticationCodeValid(
+        body.TfaCode,
+        body.actualUser.login,
+        res,
+      );
+      await this.authService.turnOnTwoFactorAuthentication(
+        body.actualUser.user_id,
+      );
+    } catch (e) {
+      console.error('Invalid TFA Code'); // Mettre un message d'erreur côté Froonts
+      throw e;
+    }
   }
 
   @Public()
   @Post('checkPwd')
   @HttpCode(HttpStatus.OK)
-  async checkPwdTfa(@Req() request, @Body() body) {
-    return this.authService.checkingPwdBeforeTfa(body);
+  async checkPwdTfa(@Req() request, @Body() body: checkPwdDTO) {
+    return await this.authService.checkingPwdBeforeTfa(body);
   }
 
   @Public()
@@ -139,32 +153,32 @@ export default class AuthController {
   @HttpCode(HttpStatus.OK)
   async authenticate(
     @Req() request,
-    @Body() body,
+    @Body() body: authenticateDTO,
     @Res({ passthrough: true }) res: Response,
   ) {
     let payload = null;
+    let validation;
     try {
-      const validation =
-        await this.authService.isTwoFactorAuthenticationCodeValid(
-          body.TfaCode,
-          body.nickname,
-          res,
-        );
-      if (validation) {
-        payload = await this.authService.loginWith2fa(body.nickname, res);
-        return payload;
-      }
+      validation = await this.authService.isTwoFactorAuthenticationCodeValid(
+        body.TfaCode,
+        body.nickname,
+        res,
+      );
     } catch (e) {
-      console.error('validation Ko'); // Mettre un message d'erreur côté Froonts
+      console.error('Invalid TFA code'); // Mettre un message d'erreur côté Froonts
       return e;
+    }
+    if (validation) {
+      payload = await this.authService.loginWith2fa(body.nickname, res);
+      return payload;
     }
   }
 
   @Public()
   @Post('2fa/cancel')
   @HttpCode(HttpStatus.OK)
-  async cancelTfa(@Body() body) {
-    this.authService.cancelTfa(body.nickname);
+  async cancelTfa(@Body() body: cancelTfaDto) {
+    await this.authService.cancelTfa(body.nickname);
   }
 
   @Public()

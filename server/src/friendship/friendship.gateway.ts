@@ -62,7 +62,7 @@ export class FriendshipGateway
   async handleConnection(@ConnectedSocket() client: Socket) {
     try {
       this.i += 1;
-    //   console.log(`Socket n° ${this.i}`);
+      //   console.log(`Socket n° ${this.i}`);
       // const sockets = this.io.sockets; // toutes les sockets connectées
       // const user = await this.verifyJwtSocketConnections(client);
       // if (user.accessToken){
@@ -73,7 +73,7 @@ export class FriendshipGateway
       // this.logger.debug(`Number of connected sockets ${sockets.size}`);
       // this.logger.log(`Client connected: ${client.id}`);
     } catch (e) {
-      console.log('A la connexion ça a merdé ', e);
+      console.log('Socket connection not established ');
     } // console.log('users connected ', this.users);
   }
 
@@ -181,9 +181,10 @@ export class FriendshipGateway
 
   async verifyJwtSocketConnections(client: Socket) {
     let newTokens = null;
-    const userInfo = this.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    let userInfo;
+    if (client.handshake.headers.cookie) {
+      userInfo = this.getUserInfoFromSocket(client.handshake.headers.cookie);
+    }
     try {
       await this.jwt.verifyAsync(userInfo.accessToken, {
         secret: this.config.get('ACCESS_TOKEN'),

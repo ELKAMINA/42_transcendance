@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import MatchHistory from "../Events/Skeleton";
 import { UserModel, UserModelProtected } from "../../../types/users/userType";
 import { Rank, Wins, Loss, TotalMatches, Level } from "./Scores";
+import { CssBaseline } from "@mui/material";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -68,84 +69,87 @@ export default function ProfileInfo(props: Myprops) {
                 Date.parse(a.createdAt.toString())
         );
     return (
-        <Box
-            sx={{
-                bgcolor: "background.paper",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-            }}
-        >
-            <AppBar position="static">
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    indicatorColor="secondary"
-                    textColor="inherit"
-                    variant="fullWidth"
-                    aria-label="full width tabs example"
-                >
-                    <Tab
-                        label="Statistics"
-                        {...a11yProps(0)}
-                        sx={(theme) => ({
-                            fontSize: {
-                                xs: 8,
-                                sm: 10,
-                                md: 15,
-                                lg: 18,
-                            },
-                            background: "#07457E",
-                        })}
-                    />
-                    <Tab
-                        label="Matches History"
-                        {...a11yProps(1)}
-                        sx={(theme) => ({
-                            fontSize: {
-                                xs: 8,
-                                sm: 10,
-                                md: 15,
-                                lg: 18,
-                            },
-                            background: "#07457E",
-                        })}
-                    />
-                </Tabs>
-            </AppBar>
+        <CssBaseline>
+            <Box
+                sx={{
+                    bgcolor: "background.paper",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    width: "90vw",
+                }}
+            >
+                <AppBar position="static">
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        indicatorColor="secondary"
+                        textColor="inherit"
+                        variant="fullWidth"
+                        aria-label="full width tabs example"
+                    >
+                        <Tab
+                            label="Statistics"
+                            {...a11yProps(0)}
+                            sx={(theme) => ({
+                                fontSize: {
+                                    xs: 8,
+                                    sm: 10,
+                                    md: 15,
+                                    lg: 18,
+                                },
+                                background: "#07457E",
+                            })}
+                        />
+                        <Tab
+                            label="Matches History"
+                            {...a11yProps(1)}
+                            sx={(theme) => ({
+                                fontSize: {
+                                    xs: 8,
+                                    sm: 10,
+                                    md: 15,
+                                    lg: 18,
+                                },
+                                background: "#07457E",
+                            })}
+                        />
+                    </Tabs>
+                </AppBar>
 
-            <TabPanel value={value} index={0} dir={theme.direction}>
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "space-around",
-                        alignContent: "center",
-                        flexWrap: "wrap",
-                    }}
-                >
-                    <Rank him={props.interestProfile} />
-                    <Wins him={props.interestProfile} />
-                    <Loss him={props.interestProfile} />
-                    <TotalMatches him={props.interestProfile} />
-                    <Level him={props.interestProfile} />
-                </Box>
-            </TabPanel>
-            <TabPanel value={value} index={1} dir={theme.direction}>
-                {/* remplacer par le tableau de match joués et recuperer les infos */}
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        verticalAlign: "middle",
-                        // width: "100%",
-                    }}
-                >
-                    {matches?.map((e: any, index) => (
-                        <MatchHistory key={index} us={e} />
-                    ))}
-                </Box>
-            </TabPanel>
-        </Box>
+                <TabPanel value={value} index={0} dir={theme.direction}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-around",
+                            alignContent: "center",
+                            flexWrap: "wrap",
+                        }}
+                    >
+                        <Rank him={props.interestProfile} />
+                        <Wins him={props.interestProfile} />
+                        <Loss him={props.interestProfile} />
+                        <TotalMatches him={props.interestProfile} />
+                        <Level him={props.interestProfile} />
+                    </Box>
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={theme.direction}>
+                    {/* remplacer par le tableau de match joués et recuperer les infos */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            verticalAlign: "middle",
+                            // width: "100%",
+                        }}
+                    >
+                        {matches?.map((e: any, index) => (
+                            <MatchHistory key={index} us={e} />
+                        ))}
+                    </Box>
+                </TabPanel>
+            </Box>
+        </CssBaseline>
     );
 }

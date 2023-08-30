@@ -1,11 +1,11 @@
 import Cookies from "js-cookie";
 import Menu from "@mui/material/Menu";
-import {Container} from "@mui/material";
+import { Container } from "@mui/material";
 import React, { useEffect } from "react";
-import AppBar from '@mui/material/AppBar';
+import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import Toolbar from '@mui/material/Toolbar';
+import Toolbar from "@mui/material/Toolbar";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
@@ -14,27 +14,33 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-
-import api from '../utils/Axios-config/Axios';
+import api from "../utils/Axios-config/Axios";
 import { EClientPlayType } from "../enum/EClientGame";
-import { useLogOutMutation } from '../app/api/authApiSlice';
-import { useAppSelector, useAppDispatch } from '../utils/redux-hooks';
-import {FetchActualUser} from '../redux-features/friendship/friendshipSlice';
-import { selectCurrentUser, selectCurrentAvatar, selectCurrentAccessToken, selectCurrentRefreshToken, logOut} from '../redux-features/auth/authSlice';
+import { useLogOutMutation } from "../app/api/authApiSlice";
+import { useAppSelector, useAppDispatch } from "../utils/redux-hooks";
+import { FetchActualUser } from "../redux-features/friendship/friendshipSlice";
+import {
+    selectCurrentUser,
+    selectCurrentAvatar,
+    selectCurrentAccessToken,
+    selectCurrentRefreshToken,
+    logOut,
+} from "../redux-features/auth/authSlice";
+import path from "path";
 
 interface NavbarProps {
-    currentRoute: string; 
+    currentRoute: string;
 }
 
 const theme = createTheme({
     palette: {
-      primary: {
-        main: '#07457E',
-      }
+        primary: {
+            main: "#07457E",
+        },
     },
-  });
+});
 
 const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     const dispatch = useAppDispatch();
@@ -68,14 +74,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
             });
     };
 
-
     const loggingOut = async (
         event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
     ) => {
         event.preventDefault();
         await logout({ nickname, access_token, refresh_token });
         if (Cookies.get("Authcookie") !== undefined)
-            Cookies.remove("Authcookie");
+            Cookies.remove("Authcookie", { path: "/", domain: "localhost" });
         dispatch(logOut(nickname));
         navigate("/sign");
     };
@@ -119,121 +124,151 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     const srcAvatar = useAppSelector(selectCurrentAvatar);
 
     return (
-        <ThemeProvider  theme={theme}>
-            <AppBar position="static" color='primary'>
-                <Toolbar variant="dense" sx={{
-                    height: '8vh',
-                }}>
-                    <Container sx={{
-                        display: 'flex',
-                        flexGrow: '0.2',
-                        justifyContent: 'space-around',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                    }}>
-                        <HomeIcon sx={(theme) => ({
-                            fontSize: {
-                                xs: '1rem',
-                                sm: '1.1rem',
-                                md: '1.3rem',
-                                lg: '1.7rem',
-                            },
-                        })} onClick={home}/>
-                        <PersonAddIcon sx={(theme) => ({
-                            fontSize: {
-                            xs: '1rem',
-                            sm: '1.1rem',
-                            md: '1.3rem',
-                            lg: '1.7rem',
-                            },
-                        })} onClick={friendship} />
-                        <TelegramIcon sx={(theme) => ({
-                         fontSize: {
-                            xs: '1rem',
-                            sm: '1.1rem',
-                            md: '1.3rem',
-                            lg: '1.7rem',
-                        },
-                        })}onClick={chat} />
-                        <SportsEsportsIcon sx={(theme) => ({
-                           fontSize: {
-                            xs: '1rem',
-                            sm: '1.1rem',
-                            md: '1.3rem',
-                            lg: '1.7rem',
-                        },
-                        })}onClick={play} />
+        <ThemeProvider theme={theme}>
+            <AppBar position="static" color="primary">
+                <Toolbar
+                    variant="dense"
+                    sx={{
+                        height: "8vh",
+                    }}
+                >
+                    <Container
+                        sx={{
+                            display: "flex",
+                            flexGrow: "0.2",
+                            justifyContent: "space-around",
+                            alignItems: "center",
+                            cursor: "pointer",
+                        }}
+                    >
+                        <HomeIcon
+                            sx={(theme) => ({
+                                fontSize: {
+                                    xs: "1rem",
+                                    sm: "1.1rem",
+                                    md: "1.3rem",
+                                    lg: "1.7rem",
+                                },
+                            })}
+                            onClick={home}
+                        />
+                        <PersonAddIcon
+                            sx={(theme) => ({
+                                fontSize: {
+                                    xs: "1rem",
+                                    sm: "1.1rem",
+                                    md: "1.3rem",
+                                    lg: "1.7rem",
+                                },
+                            })}
+                            onClick={friendship}
+                        />
+                        <TelegramIcon
+                            sx={(theme) => ({
+                                fontSize: {
+                                    xs: "1rem",
+                                    sm: "1.1rem",
+                                    md: "1.3rem",
+                                    lg: "1.7rem",
+                                },
+                            })}
+                            onClick={chat}
+                        />
+                        <SportsEsportsIcon
+                            sx={(theme) => ({
+                                fontSize: {
+                                    xs: "1rem",
+                                    sm: "1.1rem",
+                                    md: "1.3rem",
+                                    lg: "1.7rem",
+                                },
+                            })}
+                            onClick={play}
+                        />
                     </Container>
-                    <Container sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        flexGrow: '1',
-                        justifyContent: 'flex-end'
-                    }}>
-                    <Avatar
-                    src={srcAvatar}
-                    sx={{
-                        margin: "5px",
-                        width: 40,
-                        height: 40,
-                    }}
-                />
-                <Button
-                    id="demo-positioned-button"
-                    aria-controls={open ? "demo-positioned-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
-                    onClick={handleClick}
-                    sx={(theme) => ({
-                        fontSize: {
-                            xs: '0.5rem',
-                            sm: '0.7rem',
-                            md: '0.8rem',
-                            lg: '1rem',
-                        },
-                        color: "white",
-                    })}
-                >
-                    {nickname}
-                </Button>
-                <Menu
-                    id="demo-positioned-menu"
-                    aria-labelledby="demo-positioned-button"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                    }}
-                    transformOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                    }}
-                    sx={{
-                        zIndex: 0,
-                    }}
-                >
-                    <MenuItem onClick={getMyProfile}>Profile</MenuItem>
-                    <MenuItem component="a" href="/" onClick={handleSubmit}>
-                        Settings
-                    </MenuItem>
-                    <MenuItem component="a" href="/" onClick={loggingOut}>
-                        Logout
-                    </MenuItem>
-                </Menu>
-                <IconButton component="a" href="/" onClick={loggingOut} >
-                    <LogoutIcon sx={(theme) => ({
-                        fontSize: {
-                            xs: '1rem',
-                            sm: '1.1rem',
-                            md: '1.3rem',
-                            lg: '1.7rem',
-                        },
-                        color: "white",
-                    })}
-                    />
-                </IconButton>
+                    <Container
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            flexGrow: "1",
+                            justifyContent: "flex-end",
+                        }}
+                    >
+                        <Avatar
+                            src={srcAvatar}
+                            sx={{
+                                margin: "5px",
+                                width: 40,
+                                height: 40,
+                            }}
+                        />
+                        <Button
+                            id="demo-positioned-button"
+                            aria-controls={
+                                open ? "demo-positioned-menu" : undefined
+                            }
+                            aria-haspopup="true"
+                            aria-expanded={open ? "true" : undefined}
+                            onClick={handleClick}
+                            sx={(theme) => ({
+                                fontSize: {
+                                    xs: "0.5rem",
+                                    sm: "0.7rem",
+                                    md: "0.8rem",
+                                    lg: "1rem",
+                                },
+                                color: "white",
+                            })}
+                        >
+                            {nickname}
+                        </Button>
+                        <Menu
+                            id="demo-positioned-menu"
+                            aria-labelledby="demo-positioned-button"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                            }}
+                            transformOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                            }}
+                            sx={{
+                                zIndex: 0,
+                            }}
+                        >
+                            <MenuItem onClick={getMyProfile}>Profile</MenuItem>
+                            <MenuItem
+                                component="a"
+                                href="/"
+                                onClick={handleSubmit}
+                            >
+                                Settings
+                            </MenuItem>
+                            <MenuItem
+                                component="a"
+                                href="/"
+                                onClick={loggingOut}
+                            >
+                                Logout
+                            </MenuItem>
+                        </Menu>
+                        <IconButton component="a" href="/" onClick={loggingOut}>
+                            <LogoutIcon
+                                sx={(theme) => ({
+                                    fontSize: {
+                                        xs: "1rem",
+                                        sm: "1.1rem",
+                                        md: "1.3rem",
+                                        lg: "1.7rem",
+                                    },
+                                    color: "white",
+                                })}
+                            />
+                        </IconButton>
                     </Container>
                 </Toolbar>
             </AppBar>
