@@ -48,19 +48,19 @@ export class BannedSchedulerService {
 		// to remove the user from the `bannedd` list in each 
 		// `channelsToUnbannedUser`.
 
-		await Promise.all(
-			channelsToUnbannedUser.map(async (channel) => {
-				await this.prismaService.channel.update({
-					where: { channelId: channel.channelId },
-					data: {
-						banned: {
-							disconnect: {
-								login: user.login,
+			await Promise.all(
+				channelsToUnbannedUser.map(async (channel) => {
+					await this.prismaService.channel.update({
+						where: { channelId: channel.channelId },
+						data: {
+							banned: {
+								disconnect: {
+									login: user.login,
+								},
 							},
 						},
-					},
-            	});
-          	}),
+					});
+				}),
         );
 
         this.logger.debug(
