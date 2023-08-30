@@ -434,7 +434,10 @@ export function Security() {
             >
                 <FormControlLabel
                     control={
-                        <Switch checked={checked} onChange={handleChange} />
+                        <Switch
+                            checked={checked ?? false}
+                            onChange={handleChange}
+                        />
                     }
                     label={twofa}
                     sx={{}}
