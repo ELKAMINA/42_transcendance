@@ -651,8 +651,8 @@ export class ChannelService {
 						BannedExpiry: bannedUser.ExpiryTime ? bannedUser.ExpiryTime : null,
 					},
 				});
-				console.log(`Updated BannedExpiry for user with ID '${user.login}'`);
-				console.log('user updated = ', user.BannedExpiry);
+				// console.log(`Updated BannedExpiry for user with ID '${user.login}'`);
+				// console.log('banned expiry = = ', user.BannedExpiry);
 			}
 
 			// console.log('updatedChannel = ', updatedChannel);
