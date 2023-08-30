@@ -333,9 +333,9 @@ export function Security() {
             dispatch(setAfterSub(true));
             // console.log("je rentre ici ");
             dispatch(setQrCode(""));
-            qrcode = "";
+            // qrcode = "";
         };
-    }, []);
+    }, [dispatch]);
 
     const actualUser = useAppSelector(selectActualUser);
 

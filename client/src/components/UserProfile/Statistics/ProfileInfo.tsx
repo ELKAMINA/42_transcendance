@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 
 import MatchHistory from "../Events/Skeleton";
-import { UserModel, UserModelProtected } from "../../../types/users/userType";
+import { UserModelProtected } from "../../../types/users/userType";
 import { Rank, Wins, Loss, TotalMatches, Level } from "./Scores";
 import { CssBaseline } from "@mui/material";
 

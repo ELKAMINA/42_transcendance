@@ -8,8 +8,6 @@ import Typography from "@mui/material/Typography";
 
 import { useAppSelector } from "../../utils/redux-hooks";
 import { selectCurrentUser } from "../../redux-features/auth/authSlice";
-import { FetchUserByName } from "../../utils/global/global";
-import { Status } from "../../types/users/userType";
 import { CssBaseline } from "@mui/material";
 
 interface myProps {

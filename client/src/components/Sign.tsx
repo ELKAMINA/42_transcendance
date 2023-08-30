@@ -31,7 +31,6 @@ import {
     resetAuthStore,
 } from "../redux-features/auth/authSlice";
 import { resetFriendshipStore } from "../redux-features/friendship/friendshipSlice";
-import api from "../utils/Axios-config/Axios";
 
 interface Signing {
     intro: string;
@@ -72,7 +71,7 @@ export default function Sign(props: Signing) {
             // console.log('je rentre ici 2', error)
             setErrMsg("Credentials taken");
         }
-    }, []);
+    }, [error]);
 
     // console.log('ereuuur state ', errMsg)
     React.useEffect(() => {
@@ -146,7 +145,7 @@ export default function Sign(props: Signing) {
                                 navigate("/tfa");
                             });
                     } else {
-                        if (IsFt != "42") {
+                        if (IsFt !== "42") {
                             userData = await signin({
                                 nickname,
                                 password,

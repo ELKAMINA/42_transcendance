@@ -72,7 +72,7 @@ export default function MultipleSelectChip({userList, setUpdatedMembers} : Multi
 		} else {
 			dispatch(setUserListErrorState(false));
 		}
-	}, [personName])
+	}, [personName, dispatch])
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		// extracting value using destructuring assignment

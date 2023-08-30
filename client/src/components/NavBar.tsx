@@ -28,7 +28,6 @@ import {
     selectCurrentRefreshToken,
     logOut,
 } from "../redux-features/auth/authSlice";
-import path from "path";
 
 interface NavbarProps {
     currentRoute: string;
@@ -119,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     useEffect(() => {
         dispatch(FetchActualUser());
         return () => {};
-    }, []);
+    }, [dispatch]);
 
     const srcAvatar = useAppSelector(selectCurrentAvatar);
 

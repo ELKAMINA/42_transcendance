@@ -1,13 +1,10 @@
 import { Socket } from "socket.io-client";
-import socketIOClient from "socket.io-client";
 import { Box, Stack, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 
 import Header from "./Header";
 import Footer from "./Footer";
 import Message from "./Message";
-import { RootState } from "../../app/store";
-import { emptyChannel } from "../../data/emptyChannel";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-hooks";
 import { ChatMessage } from "../../types/chat/messageType";
 import { ChannelModel } from "../../types/chat/channelTypes";
@@ -20,7 +17,6 @@ import {
 
 import GameSuggestion from "../Game/GameSuggestion";
 import { EClientPlayType } from "../../enum/EClientGame";
-import { TableBody } from "material-ui/Table";
 import { useNavigate } from "react-router-dom";
 
 // import { wait } from "../../utils/global/global";
@@ -69,7 +65,7 @@ function Conversation({ socketRef, messages, setMessages }: ConvProps) {
         return () => {
             dispatch(setGameDialog(false));
         };
-    }, [roomId]);
+    }, [roomId, dispatch]);
 
     const send = (value: ChatMessage) => {
         if (socketRef.current) {
