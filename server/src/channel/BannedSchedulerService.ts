@@ -34,7 +34,7 @@ export class BannedSchedulerService {
 
    		});
 
-	console.log("usersWithbanneddChannels = ", usersWithbanneddChannels);
+	// console.log("usersWithbanneddChannels = ", usersWithbanneddChannels);
 	
 	// Loop through each user and remove them from the bannedd 
 	// list in the respective channels
