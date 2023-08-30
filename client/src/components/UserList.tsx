@@ -100,7 +100,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 		const existingUserIndex = usersTime.findIndex(
 			userTime => userTime.login === user.login
 		);
-
+		console.log("existingUserIndex = ", existingUserIndex)
 		// If the user is present in usersTime, update the associated time
 		if (existingUserIndex !== -1) {
 			setUsersTime(prevUsersTime => {
@@ -129,7 +129,7 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 	}, [usersTimeChecked.current]);
 
 	React.useEffect(() => {
-		// console.log('usersTime = ', usersTime);
+		console.log('usersTime = ', usersTime);
 		if (setUpdatedUsersWithTime)
 			setUpdatedUsersWithTime(usersTime);
 	}, [usersTime])

@@ -51,7 +51,7 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 
 	async function updateBanned(readyToBeSendBanned : UserWithTime[]) : Promise<void> {
 
-		console.log("readyToBeSendBanned = ", readyToBeSendBanned)
+		// console.log("readyToBeSendBanned = ", readyToBeSendBanned)
 
 		await api
 			.post('http://localhost:4001/channel/updateBanned', {
