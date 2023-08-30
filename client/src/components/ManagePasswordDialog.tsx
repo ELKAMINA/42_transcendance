@@ -15,7 +15,7 @@ import PasswordField from './PasswordField';
 import api from '../utils/Axios-config/Axios';
 import { ChannelModel } from '../types/chat/channelTypes';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
-import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel } from '../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchUserChannels, selectDisplayedChannel, setIsMember } from '../redux-features/chat/channelsSlice';
 
 
 export default function ManagePasswordDialog({openDialog, setOpenDialog} : {openDialog : boolean, setOpenDialog : (arg0 : boolean) => void}) {
@@ -36,6 +36,7 @@ export default function ManagePasswordDialog({openDialog, setOpenDialog} : {open
 			.then((response) => {
 				AppDispatch(fetchUserChannels());
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
+				AppDispatch(setIsMember(true));
 			})
 			.catch((error) => console.log('error while updating password : ', error))
 	}
