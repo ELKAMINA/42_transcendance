@@ -125,20 +125,27 @@ export default class AuthController {
     @Body() body: turnOnTfaDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log('le body ', body);
-    this.authService.isTwoFactorAuthenticationCodeValid(
-      body.TfaCode,
-      body.actualUser.login,
-      res,
-    );
-    this.authService.turnOnTwoFactorAuthentication(body.actualUser.user_id);
+    // console.log('le body ', body);
+    try {
+      await this.authService.isTwoFactorAuthenticationCodeValid(
+        body.TfaCode,
+        body.actualUser.login,
+        res,
+      );
+      await this.authService.turnOnTwoFactorAuthentication(
+        body.actualUser.user_id,
+      );
+    } catch (e) {
+      console.error('Invalid TFA Code'); // Mettre un message d'erreur côté Froonts
+      throw e;
+    }
   }
 
   @Public()
   @Post('checkPwd')
   @HttpCode(HttpStatus.OK)
   async checkPwdTfa(@Req() request, @Body() body: checkPwdDTO) {
-    return this.authService.checkingPwdBeforeTfa(body);
+    return await this.authService.checkingPwdBeforeTfa(body);
   }
 
   @Public()
@@ -150,20 +157,20 @@ export default class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     let payload = null;
+    let validation;
     try {
-      const validation =
-        await this.authService.isTwoFactorAuthenticationCodeValid(
-          body.TfaCode,
-          body.nickname,
-          res,
-        );
-      if (validation) {
-        payload = await this.authService.loginWith2fa(body.nickname, res);
-        return payload;
-      }
+      validation = await this.authService.isTwoFactorAuthenticationCodeValid(
+        body.TfaCode,
+        body.nickname,
+        res,
+      );
     } catch (e) {
-      console.error('validation TFA Ko'); // Mettre un message d'erreur côté Froonts
+      console.error('Invalid TFA code'); // Mettre un message d'erreur côté Froonts
       return e;
+    }
+    if (validation) {
+      payload = await this.authService.loginWith2fa(body.nickname, res);
+      return payload;
     }
   }
 
@@ -171,7 +178,7 @@ export default class AuthController {
   @Post('2fa/cancel')
   @HttpCode(HttpStatus.OK)
   async cancelTfa(@Body() body: cancelTfaDto) {
-    this.authService.cancelTfa(body.nickname);
+    await this.authService.cancelTfa(body.nickname);
   }
 
   @Public()

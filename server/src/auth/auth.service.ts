@@ -340,7 +340,7 @@ export class AuthService {
     });
     const verif = await authenticator.check(TfaCode, us.fA);
     if (!verif) {
-      throw new UnauthorizedException('Wrong authentication code');
+      throw new ForbiddenException('Wrong authentication code');
     }
     return verif;
   }
