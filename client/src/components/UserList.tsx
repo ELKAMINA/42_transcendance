@@ -46,15 +46,14 @@ export default function UserList({
         selectDisplayedChannel
     );
     const [isAdmin, setisAdmin] = React.useState<boolean>(false);
-    // const [isOwner, setisOwner] = React.useState<boolean>(false);
+    const [isOwner, setisOwner] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        if (currentUser) {
-            if (
-                selectedChannel.admins.some(
-                    (admin) => admin.login === currentUser.login
-                )
-            ) {
+        if (currentUser) { // if current user is admin
+			if (selectedChannel.ownedBy.login === currentUser.login) {
+				setisOwner(true);
+			}
+            if (selectedChannel.admins.some((admin) => admin.login === currentUser.login)) {
                 setisAdmin(true);
             }
         }
@@ -68,10 +67,7 @@ export default function UserList({
     // get the checked users
     const handleToggle = (value: number) => () => {
         const currentIndex = checked.indexOf(value);
-        // console.log("currentIndex = ", currentIndex);
-        // console.log("checked = ", checked);
         const newChecked = [...checked];
-        // console.log("newChecked = ", newChecked);
 
         if (currentIndex === -1) {
             newChecked.push(value);
@@ -83,7 +79,6 @@ export default function UserList({
         const updatedUsers: UserModel[] = [
             ...newChecked.map((index) => usersSet[index]),
         ];
-        // console.log('updatedUsers = ', updatedUsers);
         setUpdatedUsers(updatedUsers);
     };
 
@@ -115,7 +110,6 @@ export default function UserList({
         const existingUserIndex = usersTime.findIndex(
             (userTime) => userTime.login === user.login
         );
-        // console.log("existingUserIndex = ", existingUserIndex)
         // If the user is present in usersTime, update the associated time
         if (existingUserIndex !== -1) {
             setUsersTime((prevUsersTime) => {
@@ -155,8 +149,11 @@ export default function UserList({
                 const labelId = `checkbox-list-secondary-label-${value}`;
                 const isChecked = checked.indexOf(value) !== -1; // Check if the item is checked
                 const isTimeChecked = timeChecked.indexOf(value) !== -1; // Check if the item is checked
-                let isDisabled = false;
-                if (isAdmin) isDisabled = userIndexes.indexOf(value) !== -1; // Check if the index is in userIndexes
+                // if I am admin but not owner, I cannot ban, mute or kick other admins
+				let isDisabled = false;
+                if (isAdmin && !isOwner){
+					isDisabled = userIndexes.indexOf(value) !== -1; // Check if the index is in userIndexes
+				}
 
                 return (
                     <ListItem
