@@ -282,19 +282,32 @@ export class AuthService {
   }
 
   async findUser(userInfo: OauthPayload, res: Response) {
+    // console.log('user info ', userInfo);
     const user = await this.userServ.searchUser(userInfo.login);
     if (!user.faEnabled) {
       const tokens = await this.signTokens(user.user_id, user.login);
       this.updateRtHash(user.user_id, tokens.refresh_token);
-      this.setCookie(
-        {
-          nickname: user.login,
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token,
-          avatar: user.avatar,
-        },
-        res,
-      );
+      if (user.provider === '42') {
+        this.setCookie(
+          {
+            nickname: user.login,
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token,
+            avatar: user.avatar,
+          },
+          res,
+        );
+      } else if (user.provider === '42-updated') {
+        this.setCookie(
+          {
+            nickname: user.login,
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token,
+            //   avatar: user.avatar,
+          },
+          res,
+        );
+      }
       return res.redirect('http://localhost:3000/welcome');
     } else {
       const url = `http://localhost:3000/tfa?param1=${user.login}`;

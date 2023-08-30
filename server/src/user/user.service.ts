@@ -164,17 +164,16 @@ export class UserService {
   }
 
   async updateUserInfo(userInfo: UserUpdatesDto) {
+    let boolean = false;
+    let provider;
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: {
           login: userInfo.oldNick,
         },
       });
-      // console.log('user ', user);
-      if (
-        userInfo.pwd !== '' &&
-        (await argon.verify(user.hash, userInfo.pwd)) === false
-      ) {
+      provider = user.provider;
+      if (user.provider === '42' && !user.hash && userInfo.pwd !== '') {
         const newHashedPwd = await argon.hash(userInfo.pwd);
         const up1 = await this.prisma.user.update({
           where: {
@@ -184,6 +183,24 @@ export class UserService {
             hash: newHashedPwd,
           },
         });
+        // console.log('jup1', up1);
+        boolean = true;
+      } else if (
+        user.provider === 'not42' &&
+        userInfo.pwd !== '' &&
+        (await argon.verify(user.hash, userInfo.pwd)) === false
+      ) {
+        // console.log('je definis le pwd 222222');
+        const newHashedPwd = await argon.hash(userInfo.pwd);
+        const up1 = await this.prisma.user.update({
+          where: {
+            login: userInfo.oldNick,
+          },
+          data: {
+            hash: newHashedPwd,
+          },
+        });
+        boolean = true;
       }
       if (userInfo.atr !== '' && user.avatar !== userInfo.atr) {
         const up2 = await this.prisma.user.update({
@@ -194,6 +211,9 @@ export class UserService {
             avatar: userInfo.atr,
           },
         });
+        // console.log('jup2', up2);
+
+        boolean = true;
       }
       if (userInfo.login !== '' && user.login !== userInfo.login) {
         // console.log('userInfo ', userInfo);
@@ -212,12 +232,27 @@ export class UserService {
             login: userInfo.login,
           },
         });
+        // console.log('jup4', up4);
+
+        boolean = true;
+      }
+      if (boolean && provider === '42') {
+        const up5 = await this.prisma.user.update({
+          where: {
+            login: userInfo.login !== '' ? userInfo.login : userInfo.oldNick,
+          },
+          data: {
+            provider: '42-updated',
+          },
+        });
+        // console.log('up5', up5);
       }
       const finalUser = await this.prisma.user.findUnique({
         where: {
           login: userInfo.login !== '' ? userInfo.login : userInfo.oldNick,
         },
       });
+      //   console.log('final User ', finalUser);
       if (finalUser) {
         delete finalUser.hash;
         delete finalUser.fA;
@@ -238,123 +273,122 @@ export class UserService {
   }
 
   async updateData(nickName: string, dataToUpdate: any) {
-	try {
-		const user = await this.prisma.user.update({
-			where: {
-			  login: nickName,
-			},
-			data: dataToUpdate,
-			include: {
-			  blocked: {
-				select: {
-				  login: true,
-				  user_id: true,
-				  faEnabled: true,
-				  avatar: true,
-				  provider: true,
-				  status: true,
-				  blockedBy: true,
-				  friendOf: true,
-				  friends: true,
-				  FriendRequestReceived: true,
-				  FriendRequestSent: true,
-				  p1: true,
-				  p2: true,
-				  adminChannels: true,
-				  channels: true,
-				  createdChannels: true,
-				  ownedChannels: true,
-				  bannedFromChannels: true,
-				  MutedInChannels: true,
-				},
-			  },
-			  blockedBy: {
-				select: {
-				  login: true,
-				  user_id: true,
-				  faEnabled: true,
-				  avatar: true,
-				  provider: true,
-				  status: true,
-				  blockedBy: true,
-				  friendOf: true,
-				  friends: true,
-				  FriendRequestReceived: true,
-				  FriendRequestSent: true,
-				  p1: true,
-				  p2: true,
-				  adminChannels: true,
-				  channels: true,
-				  createdChannels: true,
-				  ownedChannels: true,
-				  bannedFromChannels: true,
-				  MutedInChannels: true,
-				},
-			  },
-			  friendOf: {
-				select: {
-				  login: true,
-				  user_id: true,
-				  faEnabled: true,
-				  avatar: true,
-				  provider: true,
-				  status: true,
-				  blockedBy: true,
-				  friendOf: true,
-				  friends: true,
-				  FriendRequestReceived: true,
-				  FriendRequestSent: true,
-				  p1: true,
-				  p2: true,
-				  adminChannels: true,
-				  channels: true,
-				  createdChannels: true,
-				  ownedChannels: true,
-				  bannedFromChannels: true,
-				  MutedInChannels: true,
-				},
-			  },
-			  friends: {
-				select: {
-				  login: true,
-				  user_id: true,
-				  faEnabled: true,
-				  avatar: true,
-				  provider: true,
-				  status: true,
-				  blockedBy: true,
-				  friendOf: true,
-				  friends: true,
-				  FriendRequestReceived: true,
-				  FriendRequestSent: true,
-				  p1: true,
-				  p2: true,
-				  adminChannels: true,
-				  channels: true,
-				  createdChannels: true,
-				  ownedChannels: true,
-				  bannedFromChannels: true,
-				  MutedInChannels: true,
-				},
-			  },
-			  FriendRequestReceived: true,
-			  FriendRequestSent: true,
-			},
-		  });
+    try {
+      const user = await this.prisma.user.update({
+        where: {
+          login: nickName,
+        },
+        data: dataToUpdate,
+        include: {
+          blocked: {
+            select: {
+              login: true,
+              user_id: true,
+              faEnabled: true,
+              avatar: true,
+              provider: true,
+              status: true,
+              blockedBy: true,
+              friendOf: true,
+              friends: true,
+              FriendRequestReceived: true,
+              FriendRequestSent: true,
+              p1: true,
+              p2: true,
+              adminChannels: true,
+              channels: true,
+              createdChannels: true,
+              ownedChannels: true,
+              bannedFromChannels: true,
+              MutedInChannels: true,
+            },
+          },
+          blockedBy: {
+            select: {
+              login: true,
+              user_id: true,
+              faEnabled: true,
+              avatar: true,
+              provider: true,
+              status: true,
+              blockedBy: true,
+              friendOf: true,
+              friends: true,
+              FriendRequestReceived: true,
+              FriendRequestSent: true,
+              p1: true,
+              p2: true,
+              adminChannels: true,
+              channels: true,
+              createdChannels: true,
+              ownedChannels: true,
+              bannedFromChannels: true,
+              MutedInChannels: true,
+            },
+          },
+          friendOf: {
+            select: {
+              login: true,
+              user_id: true,
+              faEnabled: true,
+              avatar: true,
+              provider: true,
+              status: true,
+              blockedBy: true,
+              friendOf: true,
+              friends: true,
+              FriendRequestReceived: true,
+              FriendRequestSent: true,
+              p1: true,
+              p2: true,
+              adminChannels: true,
+              channels: true,
+              createdChannels: true,
+              ownedChannels: true,
+              bannedFromChannels: true,
+              MutedInChannels: true,
+            },
+          },
+          friends: {
+            select: {
+              login: true,
+              user_id: true,
+              faEnabled: true,
+              avatar: true,
+              provider: true,
+              status: true,
+              blockedBy: true,
+              friendOf: true,
+              friends: true,
+              FriendRequestReceived: true,
+              FriendRequestSent: true,
+              p1: true,
+              p2: true,
+              adminChannels: true,
+              channels: true,
+              createdChannels: true,
+              ownedChannels: true,
+              bannedFromChannels: true,
+              MutedInChannels: true,
+            },
+          },
+          FriendRequestReceived: true,
+          FriendRequestSent: true,
+        },
+      });
 
-		  delete user.hash;
-		  delete user.fA;
-		  delete user.email;
-		  delete user.rtHash;
-		  return user;
-	} catch (error : any) {
-		// console.log("user = ", user)
-		console.error('user not found!');
-	}
-
+      delete user.hash;
+      delete user.fA;
+      delete user.email;
+      delete user.rtHash;
+      return user;
+    } catch (error: any) {
+      // console.log("user = ", user)
+      console.error('user not found!');
+    }
 
     // if (!user) {
-		// console.error('user not found!');
+    // console.error('user not found!');
     // }
     // if (user) {
     //   delete user.hash;
