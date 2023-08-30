@@ -129,7 +129,6 @@ export default function UserList({usersSet, initialUsers, setUpdatedUsers, setTi
 	}, [usersTimeChecked.current]);
 
 	React.useEffect(() => {
-		console.log('usersTime = ', usersTime);
 		if (setUpdatedUsersWithTime)
 			setUpdatedUsersWithTime(usersTime);
 	}, [usersTime])
