@@ -19,3 +19,39 @@ export class turnOnTfaDto {
   @IsOptional()
   actualUser: User;
 }
+
+export class checkPwdDTO {
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(24, { message: 'Invalid nickname length' })
+  nickname;
+
+  @IsNotEmpty()
+  @IsString()
+  password;
+}
+
+export class authenticateDTO {
+  @IsNotEmpty()
+  @MaxLength(6, { message: 'Invalid code size' })
+  @IsString()
+  TfaCode;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(24, { message: 'Invalid nickname length' })
+  nickname;
+}
+
+export class cancelTfaDto {
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(24, { message: 'Invalid nickname length' })
+  nickname;
+
+  @IsOptional()
+  user: User;
+}

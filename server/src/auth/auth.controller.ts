@@ -25,7 +25,12 @@ import { GetCurrentUserOAuth } from '../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId } from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
 import { User } from '@prisma/client';
-import { turnOnTfaDto } from './dto';
+import {
+  authenticateDTO,
+  cancelTfaDto,
+  checkPwdDTO,
+  turnOnTfaDto,
+} from './dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -132,7 +137,7 @@ export default class AuthController {
   @Public()
   @Post('checkPwd')
   @HttpCode(HttpStatus.OK)
-  async checkPwdTfa(@Req() request, @Body() body) {
+  async checkPwdTfa(@Req() request, @Body() body: checkPwdDTO) {
     return this.authService.checkingPwdBeforeTfa(body);
   }
 
@@ -141,7 +146,7 @@ export default class AuthController {
   @HttpCode(HttpStatus.OK)
   async authenticate(
     @Req() request,
-    @Body() body,
+    @Body() body: authenticateDTO,
     @Res({ passthrough: true }) res: Response,
   ) {
     let payload = null;
@@ -157,7 +162,7 @@ export default class AuthController {
         return payload;
       }
     } catch (e) {
-      console.error('validation Ko'); // Mettre un message d'erreur côté Froonts
+      console.error('validation TFA Ko'); // Mettre un message d'erreur côté Froonts
       return e;
     }
   }
@@ -165,7 +170,7 @@ export default class AuthController {
   @Public()
   @Post('2fa/cancel')
   @HttpCode(HttpStatus.OK)
-  async cancelTfa(@Body() body) {
+  async cancelTfa(@Body() body: cancelTfaDto) {
     this.authService.cancelTfa(body.nickname);
   }
 
