@@ -238,117 +238,130 @@ export class UserService {
   }
 
   async updateData(nickName: string, dataToUpdate: any) {
-    const user = await this.prisma.user.update({
-      where: {
-        login: nickName,
-      },
-      data: dataToUpdate,
-      include: {
-        blocked: {
-          select: {
-            login: true,
-            user_id: true,
-            faEnabled: true,
-            avatar: true,
-            provider: true,
-            status: true,
-            blockedBy: true,
-            friendOf: true,
-            friends: true,
-            FriendRequestReceived: true,
-            FriendRequestSent: true,
-            p1: true,
-            p2: true,
-            adminChannels: true,
-            channels: true,
-            createdChannels: true,
-            ownedChannels: true,
-            bannedFromChannels: true,
-            MutedInChannels: true,
-          },
-        },
-        blockedBy: {
-          select: {
-            login: true,
-            user_id: true,
-            faEnabled: true,
-            avatar: true,
-            provider: true,
-            status: true,
-            blockedBy: true,
-            friendOf: true,
-            friends: true,
-            FriendRequestReceived: true,
-            FriendRequestSent: true,
-            p1: true,
-            p2: true,
-            adminChannels: true,
-            channels: true,
-            createdChannels: true,
-            ownedChannels: true,
-            bannedFromChannels: true,
-            MutedInChannels: true,
-          },
-        },
-        friendOf: {
-          select: {
-            login: true,
-            user_id: true,
-            faEnabled: true,
-            avatar: true,
-            provider: true,
-            status: true,
-            blockedBy: true,
-            friendOf: true,
-            friends: true,
-            FriendRequestReceived: true,
-            FriendRequestSent: true,
-            p1: true,
-            p2: true,
-            adminChannels: true,
-            channels: true,
-            createdChannels: true,
-            ownedChannels: true,
-            bannedFromChannels: true,
-            MutedInChannels: true,
-          },
-        },
-        friends: {
-          select: {
-            login: true,
-            user_id: true,
-            faEnabled: true,
-            avatar: true,
-            provider: true,
-            status: true,
-            blockedBy: true,
-            friendOf: true,
-            friends: true,
-            FriendRequestReceived: true,
-            FriendRequestSent: true,
-            p1: true,
-            p2: true,
-            adminChannels: true,
-            channels: true,
-            createdChannels: true,
-            ownedChannels: true,
-            bannedFromChannels: true,
-            MutedInChannels: true,
-          },
-        },
-        FriendRequestReceived: true,
-        FriendRequestSent: true,
-      },
-    });
-    if (!user) {
-      console.error('user not found!');
-    }
-    if (user) {
-      delete user.hash;
-      delete user.fA;
-      delete user.email;
-      delete user.rtHash;
-      return user;
-    }
+	try {
+		const user = await this.prisma.user.update({
+			where: {
+			  login: nickName,
+			},
+			data: dataToUpdate,
+			include: {
+			  blocked: {
+				select: {
+				  login: true,
+				  user_id: true,
+				  faEnabled: true,
+				  avatar: true,
+				  provider: true,
+				  status: true,
+				  blockedBy: true,
+				  friendOf: true,
+				  friends: true,
+				  FriendRequestReceived: true,
+				  FriendRequestSent: true,
+				  p1: true,
+				  p2: true,
+				  adminChannels: true,
+				  channels: true,
+				  createdChannels: true,
+				  ownedChannels: true,
+				  bannedFromChannels: true,
+				  MutedInChannels: true,
+				},
+			  },
+			  blockedBy: {
+				select: {
+				  login: true,
+				  user_id: true,
+				  faEnabled: true,
+				  avatar: true,
+				  provider: true,
+				  status: true,
+				  blockedBy: true,
+				  friendOf: true,
+				  friends: true,
+				  FriendRequestReceived: true,
+				  FriendRequestSent: true,
+				  p1: true,
+				  p2: true,
+				  adminChannels: true,
+				  channels: true,
+				  createdChannels: true,
+				  ownedChannels: true,
+				  bannedFromChannels: true,
+				  MutedInChannels: true,
+				},
+			  },
+			  friendOf: {
+				select: {
+				  login: true,
+				  user_id: true,
+				  faEnabled: true,
+				  avatar: true,
+				  provider: true,
+				  status: true,
+				  blockedBy: true,
+				  friendOf: true,
+				  friends: true,
+				  FriendRequestReceived: true,
+				  FriendRequestSent: true,
+				  p1: true,
+				  p2: true,
+				  adminChannels: true,
+				  channels: true,
+				  createdChannels: true,
+				  ownedChannels: true,
+				  bannedFromChannels: true,
+				  MutedInChannels: true,
+				},
+			  },
+			  friends: {
+				select: {
+				  login: true,
+				  user_id: true,
+				  faEnabled: true,
+				  avatar: true,
+				  provider: true,
+				  status: true,
+				  blockedBy: true,
+				  friendOf: true,
+				  friends: true,
+				  FriendRequestReceived: true,
+				  FriendRequestSent: true,
+				  p1: true,
+				  p2: true,
+				  adminChannels: true,
+				  channels: true,
+				  createdChannels: true,
+				  ownedChannels: true,
+				  bannedFromChannels: true,
+				  MutedInChannels: true,
+				},
+			  },
+			  FriendRequestReceived: true,
+			  FriendRequestSent: true,
+			},
+		  });
+
+		  delete user.hash;
+		  delete user.fA;
+		  delete user.email;
+		  delete user.rtHash;
+		  return user;
+	} catch (error : any) {
+		// console.log("user = ", user)
+		console.error('user not found!');
+	}
+
+
+    // if (!user) {
+		// console.error('user not found!');
+    // }
+    // if (user) {
+    //   delete user.hash;
+    //   delete user.fA;
+    //   delete user.email;
+    //   delete user.rtHash;
+    //   return user;
+    // }
   }
 }
