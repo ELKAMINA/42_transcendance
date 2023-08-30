@@ -331,7 +331,7 @@ export function Security() {
                 // cleanUp function when component unmount
                 sock.disconnect();
             dispatch(setAfterSub(true));
-            console.log("je rentre ici ");
+            // console.log("je rentre ici ");
             dispatch(setQrCode(""));
             qrcode = "";
         };
