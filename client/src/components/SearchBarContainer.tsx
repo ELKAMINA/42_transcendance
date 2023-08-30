@@ -183,7 +183,6 @@ export default function SearchBarContainer({ getSelectedItem, newChannelCreated 
 			}
 		}
 		isConfirmed.current = false; 
-		// setSelectedOption(null);
 	}, [isConfirmed.current, selectedOption])
 
 	return (

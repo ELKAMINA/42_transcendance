@@ -11,7 +11,7 @@ import { Channel } from '../types/chat/channelTypes';
 import { UserByLogin } from '../types/users/userType';
 import { selectCurrentUser } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector, } from '../utils/redux-hooks';
-import { setIsMember } from '../redux-features/chat/channelsSlice';
+import { selectDisplayedChannel, setIsMember } from '../redux-features/chat/channelsSlice';
 import { MutableRefObject } from 'react';
 
 export type EnterChannelConfirmationDialogProps = {
@@ -37,8 +37,8 @@ export default function EnterChannelConfirmationDialog({isConfirmed, selectedCha
 				members : [newMember], // list of new members to add 
 			})
 			.then((response) => {
-				AppDispatch(setIsMember(true))
-				// AppDispatch(fetchUserChannels());
+				if (selectedChannel  && selectedChannel.current?.pbp === false)
+					AppDispatch(setIsMember(true))
 			})
 			.catch((error) => console.log('error while adding members from EnterChannelConfirmationDialog : ', error))
 	}
