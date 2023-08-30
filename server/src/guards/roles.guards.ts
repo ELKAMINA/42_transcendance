@@ -83,7 +83,10 @@ export class RolesGuard implements CanActivate {
       }
 
       /* Getting user from cookie */
-      const userFromCookie = this.getUserInfoFromSocket(request.headers.cookie);
+      let userFromCookie;
+      if (request.headers.cookie) {
+        userFromCookie = this.getUserInfoFromSocket(request.headers.cookie);
+      }
       const userFromDB = await this.userServ.searchUser(
         userFromCookie.nickname,
       );

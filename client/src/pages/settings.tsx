@@ -470,9 +470,17 @@ export function Security() {
                             <MuiOtpInput
                                 value={TfaCode}
                                 onChange={handleCode}
-                                gap={0.5}
+                                gap={1}
                                 length={6}
-                                margin="6%"
+                                margin={6}
+                                sx={{
+                                    fontSize: {
+                                        xs: 5,
+                                        sm: 8,
+                                        md: 10,
+                                        lg: 12,
+                                    },
+                                }}
                             />
                             <Button
                                 className="tfa-btn"

@@ -72,14 +72,17 @@ export class ProfileGateway
     @Res() response: Response,
     ...args: Socket[]
   ) {
+    let user;
     try {
       // const sockets = this.io.sockets; // toutes les sockets connectées
       // console.log('test ', this.server)
       // console.log('client ', client);
       // console.log('al reponse ', response);
-      const user = await this.userServ.searchUser(
-        this.getUserInfoFromSocket(client.handshake.headers.cookie).nickname,
-      );
+      if (client.handshake.headers.cookie) {
+        user = await this.userServ.searchUser(
+          this.getUserInfoFromSocket(client.handshake.headers.cookie).nickname,
+        );
+      }
       if (user) {
         this.io.emit('newUserConnected', user.faEnabled);
       }
@@ -88,7 +91,7 @@ export class ProfileGateway
       this.logger.log(`Client connected: ${client.id}`);
       // this.verifyJwtSocketConnections(client, response);
     } catch (e) {
-      console.log('A la connexion ça a merdé ', e);
+      console.log('Socket connection not established');
     } // console.log('users connected ', this.users);
   }
 
@@ -126,10 +129,10 @@ export class ProfileGateway
       /** ISSUE 118 ***/
       // GET THE USER PROFILE
       const currentUser = await this.userServ.searchUser(updates.oldNick);
-	  if (!currentUser) {
-		console.error('user not found!')
-		return ;
-	  }
+      if (!currentUser) {
+        console.error('user not found!');
+        return;
+      }
       // console.log("[Home - GATEWAY]", "currentUser: ", currentUser, "currentUser.status: ", currentUser.status);
       // CHECK THE STATUS OF THE USER THEN THROW AN ERROR IF IS PLAYING
       if (currentUser.status === 'Playing') {
@@ -154,10 +157,11 @@ export class ProfileGateway
 
   async verifyJwtSocketConnections(client: Socket) {
     let newTokens;
+    let userInfo;
     // console.log('Coookie ', client.handshake.headers.cookie);
-    const userInfo = this.getUserInfoFromSocket(
-      client.handshake.headers.cookie,
-    );
+    if (client.handshake.headers.cookie) {
+      userInfo = this.getUserInfoFromSocket(client.handshake.headers.cookie);
+    }
     try {
       await this.jwt.verifyAsync(userInfo.accessToken, {
         secret: this.config.get('ACCESS_TOKEN'),
