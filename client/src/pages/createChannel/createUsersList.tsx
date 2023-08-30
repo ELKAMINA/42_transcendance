@@ -46,7 +46,7 @@ export type MultipleSelectChipProps = {
 	setUpdatedMembers? : (members : UserByLogin[]) => void,
 }
 
-export default function MultipleSelectChip({setUpdatedMembers} : MultipleSelectChipProps) {
+export default function MultipleSelectChip({userList, setUpdatedMembers} : MultipleSelectChipProps) {
 	const theme = useTheme();
 	const [personName, setPersonName] = React.useState<string[]>([]);
 	const userFriends = useAppSelector(selectFriends) as UserByLogin[];
@@ -56,6 +56,12 @@ export default function MultipleSelectChip({setUpdatedMembers} : MultipleSelectC
 		const simplified = userFriends.map(({ login }) => ({ login }));
 		setSimplifiedFriends(simplified);
 	}, [userFriends])
+
+	useEffect(() => {
+		if (userList) {
+			setSimplifiedFriends(userList);
+		}
+	}, [userList])
 
 	const dispatch = useAppDispatch();
 
