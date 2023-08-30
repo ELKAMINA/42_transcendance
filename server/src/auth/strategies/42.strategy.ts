@@ -6,6 +6,7 @@ import { Strategy, Profile, VerifyCallback } from 'passport-42';
 import { UserService } from '../../user/user.service';
 import { AuthService } from '../auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { user } from '../test/stubs';
 
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, '42') {
@@ -30,45 +31,52 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     profile: Profile, // Profile is an object with all the user informations
     cb: VerifyCallback, // a callback function where we will pass the user object and use it later to register it in the database and sign the JWT
   ): Promise<any> {
-    // console.log('profile', profile);
-    const userDet = {
-      provider: profile.provider,
-      providerId: profile.id,
-      name: profile.displayName,
-      email: profile.emails[0].value,
-      picture: profile._json.image.link,
-      login: profile._json.login,
-    };
-    // console.log("je rentre ici 5,5 ??")
-    let lolo = await this.prisma.user.findUnique({
-      where: {
-        login: userDet.login,
-      },
-    });
-    if (lolo) {
-      // console.log('Lolo ', lolo);
-      if (lolo.provider === 'not42') {
-        return cb(null, lolo); // or use any other suitable exception class
-      }
-      lolo = await this.prisma.user.update({
+    try {
+      console.log('profile', profile);
+      const userDet = {
+        provider: profile.provider,
+        providerId: profile.id,
+        name: profile.displayName,
+        email: profile.emails[0].value,
+        picture: profile._json.image.link,
+        login: profile._json.login,
+        userId: profile.id,
+      };
+      // console.log("je rentre ici 5,5 ??")
+      let lolo = await this.prisma.user.findUnique({
         where: {
-          login: userDet.login,
+          user_id: userDet.userId,
         },
-        data: { status: 'Online' },
       });
-      //   console.log('Looool is already registered ???', lolo);
-      return cb(null, lolo);
+      if (lolo) {
+        console.log('Lolo ', lolo);
+        if (lolo.provider === 'not42') {
+          return cb(null, lolo); // or use any other suitable exception class
+        }
+        lolo = await this.prisma.user.update({
+          where: {
+            user_id: userDet.userId,
+          },
+          data: { status: 'Online' },
+        });
+        //   console.log('Looool is already registered ???', lolo);
+        return cb(null, lolo);
+      }
+      const newUser = await this.prisma.user.create({
+        data: {
+          user_id: userDet.userId,
+          login: userDet.login,
+          email: userDet.email,
+          avatar: userDet.picture,
+          faEnabled: false,
+          status: 'Online',
+          provider: userDet.provider,
+        },
+      });
+      console.log('new User ', newUser);
+      return cb(null, newUser);
+    } catch (e) {
+      console.log('An error occured when logging with OAuth');
     }
-    const newUser = await this.prisma.user.create({
-      data: {
-        login: userDet.login,
-        email: userDet.email,
-        avatar: userDet.picture,
-        faEnabled: false,
-        status: 'Online',
-        provider: userDet.provider,
-      },
-    });
-    return cb(null, newUser);
   }
 }

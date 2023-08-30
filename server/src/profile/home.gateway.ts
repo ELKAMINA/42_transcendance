@@ -128,6 +128,7 @@ export class ProfileGateway
     try {
       /** ISSUE 118 ***/
       // GET THE USER PROFILE
+      console.log('userUpdates ', updates);
       const currentUser = await this.userServ.searchUser(updates.oldNick);
       if (!currentUser) {
         console.error('user not found!');
