@@ -85,16 +85,16 @@ function UserProfileHeader(props: myProps) {
                         alt="User Avatar"
                         sx={(theme) => ({
                             width: {
-                                xs: 70,
-                                sm: 90,
-                                md: 100,
-                                lg: 120,
+                                xs: 60,
+                                sm: 80,
+                                md: 90,
+                                lg: 100,
                             },
                             height: {
-                                xs: 70,
-                                sm: 90,
-                                md: 100,
-                                lg: 120,
+                                xs: 60,
+                                sm: 80,
+                                md: 90,
+                                lg: 100,
                             },
                             margin: 3,
                         })}
@@ -102,10 +102,10 @@ function UserProfileHeader(props: myProps) {
                     <Typography
                         sx={(theme) => ({
                             fontSize: {
-                                xs: 30,
-                                sm: 40,
-                                md: 80,
-                                lg: 88,
+                                xs: 20,
+                                sm: 30,
+                                md: 40,
+                                lg: 50,
                             },
                             letterSpacing: 2,
                             fontFamily: "Press Start 2P",
