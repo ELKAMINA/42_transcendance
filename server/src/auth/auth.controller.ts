@@ -14,6 +14,7 @@ import { Response } from 'express';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthDto, SignInDto } from './dto/auth.dto';
+// import { UserTfaDto } from './dto';
 import { Public } from '../decorators/public.decorator';
 import { AuthService } from './auth.service';
 import { RtGuard } from '../guards/rt-guard';
@@ -24,6 +25,7 @@ import { GetCurrentUserOAuth } from '../decorators/get-user-Oauth.decorator';
 import { GetCurrentUserId } from '../decorators/get-current-userId.decorator';
 import { GetCurrentUser } from '../decorators/get-current-user.decorator';
 import { User } from '@prisma/client';
+import { turnOnTfaDto } from './dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -115,10 +117,10 @@ export default class AuthController {
 
   @Post('2fa/turn-on')
   async turnOnTwoFactorAuthentication(
-    @Body() body,
+    @Body() body: turnOnTfaDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // console.log('le body ', body)
+    console.log('le body ', body);
     this.authService.isTwoFactorAuthenticationCodeValid(
       body.TfaCode,
       body.actualUser.login,
