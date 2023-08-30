@@ -97,10 +97,9 @@ images:
 # CLEAN UP
 # -------------------------------------------------
 clean:	| stop
+	make -s -i clean_volumes
 	make -s -i clean_containers
 	make -s -i clean_images
-	make -s -i clean_volumes
-	make -s -i clean_networks
 	make -s -i clean_prune
 
 clean_containers:
