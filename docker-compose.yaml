@@ -1,84 +1,104 @@
 version: "3.9"
 services:
-  # server:
-  #   container_name: trans_BackE
-  #   restart: always
-  #   ports:
-  #     - 4001:4001
-  #   env_file:
-  #     - ./server/.env
-  #   build:
-  #     context: ./server
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./server:/server
-  #     - /server/node_modules
-  #     - /server/prisma
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #   depends_on:
-  #     - dev-db
-  #   networks:
-  #     - transcendance
-  dev-db:
-    image: postgres:14
-    container_name: trans_pgres
-    restart: always
-    volumes:
-      - data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-    env_file:
-      - ./server/.env
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: trans
-    networks:
-      - transcendance
-  # client:
-  #   container_name: trans_FrontE
-  #   restart: always
-  #   ports:
-  #     - '3000:3000'
-  #   build:
-  #     context: client
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./client:/app
-  #     - /app/node_modules
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #   links:
-  #     - server
-  #   depends_on:
-  #     - server
-  #   networks:
-  #     - transcendance
-  # test-db:
-  #   image: postgres:14
-  #   ports:
-  #     - 5435:5435
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: 123
-  #     POSTGRES_DB: trans
-  #   networks:
-  #     - transcendance
-  # prisma:
-  #   links:
-  #     - dev-db
-  #   depends_on:
-  #     - dev-db
-  #   container_name: prisma
-  #   ports:
-  #     - '5555:5555'
-  #   build:
-  #     context: server/prisma
-  #     dockerfile: Dockerfile
+    #======= Server =========#
+    server:
+        container_name: backend
+        restart: always
+        ports:
+            - "4001:4001"
+            - "4002:4002"
+            - "4003:4003"
+            - "4006:4006"
+            - "4010:4010"
+            - "5555:5555"
+        env_file:
+            - ./server/.env
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        volumes:
+            - ./server:/server
+            - /server/node_modules
+            - /server/prisma
+        depends_on:
+            database:
+                condition: service_healthy
+        networks:
+            - transcendance
 
-volumes:
-  data:
+    #======= Database =========#
+    database:
+        image: postgres:14
+        container_name: db
+        restart: always
+        volumes:
+            - data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        env_file:
+            - ./server/.env
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 123
+            POSTGRES_DB: trans
+        networks:
+            - transcendance
+        #As the server and the client depends on the database. We need to launch the
+        #server/client being sure that database is up. Healthchek : If the command succeeds,
+        #the container is considered healthy. If it fails, Docker will retry
+        #the healthcheck every 0.5s until a maximum of 100 retries.
+        healthcheck:
+            test:
+                ["CMD-SHELL", "psql trans -U postgres -c 'SELECT 1' || exit 1"]
+            interval: 0.5s
+            retries: 100
 
+    #======= Client =========#
+    client:
+        container_name: frontend
+        restart: always
+        ports:
+            - "3000:3000"
+        build:
+            context: client
+            dockerfile: Dockerfile
+        volumes: # specifies how directories in the host machine should be mounted in the container
+            - ./client:/app/client
+            - /app/node_modules #telling docker to use the app/nodes_modules that was installed in the Dockerfile when we npm i and not the one from host machine. No bind mount from the host machine!! This is an isolated bind mount
+        # links:
+        #   - server
+        depends_on:
+            database:
+                condition: service_healthy
+            server:
+                condition: service_started
+        networks:
+            - transcendance
+    # nginx:
+    #   # image: nginx
+    #   container_name: nginx
+    #   build:
+    #     context: ./nginx
+    #     dockerfile: Dockerfile
+    #   restart: always
+    #   ports:
+    #     - "80:80"
+    #     - "443:443"
+    #   networks:
+    #     - transcendance
+    #   volumes:
+    #     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    #   depends_on:
+    #     - server
+    #     - client
+    #     - database
+#======= Networks =========#
 networks:
-  transcendance:
+    transcendance:
+
+#======= Volumes =========#
+volumes:
+    data: #internal label to identify volumes in docker compose
+        driver: local
+        name: dbase #this is the name of the volume persisted for the app on the host machine (docker host system)
+
