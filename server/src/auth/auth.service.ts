@@ -112,7 +112,7 @@ export class AuthService {
   async setCookie(data: object, res: Response) {
     const serializeData = JSON.stringify(data);
     // console.log("serialized data for cookie ", serializeData)
-    res.cookie('Authcookie', '', { expires: new Date(0) });
+    // res.cookie('Authcookie', '', { expires: new Date(0) });
     res.cookie('Authcookie', serializeData, {
       httpOnly: false,
       sameSite: 'lax',
@@ -401,7 +401,7 @@ export class AuthService {
         res,
       );
     } catch (e) {
-      console.log('TFA EROOOOR ', e);
+      console.log('Logging with 2FA has failed');
     }
   }
 

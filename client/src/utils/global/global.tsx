@@ -12,16 +12,16 @@ export async function FetchUserByName(name: string): Promise<UserModel> {
             return res.data;
         })
         .catch((e) => {
-            console.log("ERROR from request with params ", e);
+            console.log("ERROR from request with params ");
             return e;
         });
     return result;
 }
 
 export function wait(milliseconds: number): Promise<void> {
-	return new Promise(resolve => {
-	  setTimeout(() => {
-		resolve();
-	  }, milliseconds);
-	});
-  }
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, milliseconds);
+    });
+}

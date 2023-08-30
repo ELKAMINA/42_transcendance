@@ -92,22 +92,24 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
     };
 
     // SCORE
-    const drawText = (
-        ctx: CanvasRenderingContext2D,
-        text: string,
-        x: number,
-        y: number,
-        color: string
-    ) => {
-        ctx.fillStyle = color;
-        ctx.font = "75px fantasy";
-        ctx.fillText(text, x, y);
-    };
+    // const drawText = (
+    //     ctx: CanvasRenderingContext2D,
+    //     text: string,
+    //     x: number,
+    //     y: number,
+    //     color: string
+    // ) => {
+    //     ctx.fillStyle = color;
+    //     ctx.font = "75px fantasy";
+    //     ctx.fillText(text, x, y);
+    // };
 
     /***************************************************************************/
     /*** PLAYER EVENTS  ***/
     // TODO: CHANGE ARROW FUNCTION BY A CLASSICAL ONE TO MAKE SURE
     // ABOUT THE CANVAS DIMENSION
+    // const keyPressed = useRef<any>()
+
     const keyPressed = (e: any) => {
         const player = getPlayerId(socket.id);
 
@@ -128,19 +130,20 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
     };
 
     const mousedown = (e: MouseEvent) => {
-        console.log(
-            "[Pong - mousedown]",
-            `JOUEUR : Top =  ${player2.current.getPaddleTop()} \n Right = ${player2.current.getPaddleRight()} \n Left = ${player2.current.getPaddleLeft()} \n Bottom = ${player2.current.getPaddleBottom()}`
-        );
-        console.log(
-            "[Pong - mousedown]",
-            `BALLE  : Top =  ${ball.current.getBallTop()} \n Right = ${ball.current.getBallRight()} \n Left = ${ball.current.getBallLeft()} \n Bottom = ${ball.current.getBallBottom()}`
-        );
-        console.log("Ball collision status:", ball.current.getCanBeCollided());
+        // console.log(
+        //     "[Pong - mousedown]",
+        //     `JOUEUR : Top =  ${player2.current.getPaddleTop()} \n Right = ${player2.current.getPaddleRight()} \n Left = ${player2.current.getPaddleLeft()} \n Bottom = ${player2.current.getPaddleBottom()}`
+        // );
+        // console.log(
+        //     "[Pong - mousedown]",
+        //     `BALLE  : Top =  ${ball.current.getBallTop()} \n Right = ${ball.current.getBallRight()} \n Left = ${ball.current.getBallLeft()} \n Bottom = ${ball.current.getBallBottom()}`
+        // );
+        // console.log("Ball collision status:", ball.current.getCanBeCollided());
     };
 
     /***************************************************************************/
     /*** RENDER FUNCTIONS ***/
+    // eslint-disable-next-line
     const render = async (
         cs: HTMLCanvasElement,
         ctx: CanvasRenderingContext2D
@@ -288,6 +291,7 @@ export const Pong: React.FC<IPongProps> = ({ room }) => {
                 intervalId = 0;
             }
         };
+        // eslint-disable-next-line
     }, []);
 
     return (

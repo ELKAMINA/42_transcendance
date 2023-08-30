@@ -80,7 +80,7 @@ export class GameService {
           level: { increment: score },
         },
       });
-      console.log('user apres un game ', user);
+      //   console.log('user apres un game ', user);
     } catch (e) {
       console.error('[Game Service - updateUserGameStat]', 'Error: ', e);
     }
@@ -148,7 +148,7 @@ export class GameService {
 
   async updateRankOfAllUsers() {
     const sortedUsers = await this.getUserGameStat();
-    console.log('sorted Users ', sortedUsers);
+    // console.log('sorted Users ', sortedUsers);
     sortedUsers.forEach(async (element: any, index: number) => {
       try {
         await this.prisma.user.update({

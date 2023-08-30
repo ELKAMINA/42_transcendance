@@ -40,7 +40,7 @@ function Tfa() {
                     navigate("/sign");
                 });
         } catch {
-            console.log("this is shit");
+            console.log("2FA has failed");
         }
     };
     const handleCode = (newValue: string) => {

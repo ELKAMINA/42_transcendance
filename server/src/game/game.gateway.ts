@@ -69,7 +69,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error('[GATEWAY - handleDisconnect] USER NOT FOUND');
       return;
     }
-    console.log('[GATEWAY - handleDisconnect]', 'user: ', user);
+    // console.log('[GATEWAY - handleDisconnect]', 'user: ', user);
     const userSocket = this.socketsPool.get(user.nickname);
     if (userSocket && client.id !== userSocket.id) {
       console.error(
@@ -110,11 +110,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       else if (room.isFull === true) {
         // DISCONNECTION OF ONE OF BOTH PLAYERS IN VERSUS SCREEN
         if (room.roomStatus === ERoomStates.Busy) {
-        //   console.warn(
-        //     '[GATEWAY - handleDisconnect]',
-        //     'The player has left the game during versus screen: ',
-        //     user.nickname,
-        //   );
+          //   console.warn(
+          //     '[GATEWAY - handleDisconnect]',
+          //     'The player has left the game during versus screen: ',
+          //     user.nickname,
+          //   );
           this.server.to(room.id).emit('updateComponent', {
             status: EGameServerStates.HOMEPAGE,
             room: room,
@@ -123,11 +123,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           // RAGE QUIT / DISCONNECTION OF ONE OF BOTH PLAYERS DURING A GAME
           // FORCE THE SCORE OF THE ROOM ACCORDING TO THE PLAYER WHO
           // HAS LEFT THE ROOM
-        //   console.warn(
-        //     '[GATEWAY - handleDisconnect]',
-        //     'The player has left the game (disconnection or rage quit): ',
-        //     user.nickname,
-        //   );
+          //   console.warn(
+          //     '[GATEWAY - handleDisconnect]',
+          //     'The player has left the game (disconnection or rage quit): ',
+          //     user.nickname,
+          //   );
           // STOP THE UPDATE INTERVAL DURING THE GAME
           if (room.interval) {
             clearInterval(room.interval);
@@ -736,14 +736,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (ballX > 0 + ball.radius && ballX < board.width - ball.radius) {
         return;
       }
-    //   console.warn(
-    //     '[GATEWAY - resetBall]',
-    //     'room: ',
-    //     room.id,
-    //     'Someone has scored',
-    //     'BallX: ',
-    //     ballX,
-    //   );
+      //   console.warn(
+      //     '[GATEWAY - resetBall]',
+      //     'room: ',
+      //     room.id,
+      //     'Someone has scored',
+      //     'BallX: ',
+      //     ballX,
+      //   );
       // ball.velocity[0] = -ball.velocity[0];
       resetBallSpeed();
       resetBallPosition();
@@ -870,13 +870,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // console.log('[GATEWAY - theGame] DEBUG: ', 'ball: ', ball);
       // console.log('[GATEWAY - theGame] DEBUG: ', 'player1: ', player1);
       // console.log('[GATEWAY - theGame] DEBUG: ', 'player2: ', player2);
-    //   console.warn(
-    //     `Interval \'${room.id}\' executing at time (${room.frameTime})!`,
-    //     'room: ',
-    //     room.id,
-    //     'board: ',
-    //     board,
-    //   );
+      //   console.warn(
+      //     `Interval \'${room.id}\' executing at time (${room.frameTime})!`,
+      //     'room: ',
+      //     room.id,
+      //     'board: ',
+      //     board,
+      //   );
       borderCollision();
       updateBall();
       checkBall();

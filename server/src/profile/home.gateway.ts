@@ -144,7 +144,7 @@ export class ProfileGateway
       const newInfos = await this.userServ.updateUserInfo(updates);
       this.io.emit('UpdateInfoUser', newInfos);
     } catch (e) {
-      console.log('error ', e);
+      console.log('error ');
       return e;
     }
   }
@@ -182,7 +182,7 @@ export class ProfileGateway
           axios
             .post('http://127.0.0.1:4001/auth/update-cookie', data)
             .then((res) => {
-              console.log('response ', res);
+              //   console.log('response ', res);
             })
             .catch((e) => console.error('erooor ', e));
           return newTokens;

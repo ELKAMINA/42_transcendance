@@ -67,7 +67,7 @@ export default class AuthController {
     return this.authService.logout(userInfo);
   }
 
-  // @Public()
+  @Public()
   @HttpCode(HttpStatus.OK)
   @UseGuards(RtGuard)
   @Post('refresh')
@@ -77,6 +77,7 @@ export default class AuthController {
     @GetCurrentUser('refreshToken') refreshToken: string,
   ) {
     // console.log('userNick ', userNick);
+    // console.log('refresh token ', refreshToken);
     return this.authService.refresh(userNick, refreshToken);
   }
   /* ******************** */

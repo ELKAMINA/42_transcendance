@@ -117,7 +117,7 @@ export function PersonalInformation() {
                 path: "/",
             });
         } else {
-            console.log("la data est null");
+            console.log("Data is null");
         }
     });
 
@@ -346,7 +346,7 @@ export function Security() {
                 dispatch(setQrCode(res.data));
             })
             .catch((e) => {
-                console.log("error ", e);
+                console.log("error ");
             });
     };
 
@@ -355,7 +355,7 @@ export function Security() {
             .post("http://localhost:4001/auth/2fa/cancel", { nickname: user })
             .then((res) => {})
             .catch((e) => {
-                console.log("error ", e);
+                console.log("error ");
             });
     };
 

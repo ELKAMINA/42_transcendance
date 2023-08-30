@@ -63,7 +63,7 @@ export class FriendshipService {
       });
       return users;
     } catch (e) {
-      console.log(e);
+      console.log('error');
       return e;
     }
   }
@@ -80,7 +80,7 @@ export class FriendshipService {
       });
       return users;
     } catch (e) {
-      console.log(e);
+      console.log('error');
     }
   }
 
@@ -354,7 +354,7 @@ export class FriendshipService {
         }
       }
     } catch (e) {
-      console.log(e);
+      console.log('error');
     }
   }
 }

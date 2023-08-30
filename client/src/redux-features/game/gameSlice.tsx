@@ -16,7 +16,7 @@ export interface GameState {
     MatchesWon: [];
     opponent: string;
     leaderboard: UserLeaderBoard[];
-	onGamePage: number;
+    onGamePage: number;
     // Rank: number;
 }
 
@@ -32,7 +32,7 @@ const initialState: GameState = {
     MatchesWon: [],
     opponent: "",
     leaderboard: [],
-	onGamePage: 0,
+    onGamePage: 0,
     // rank: 0,
 };
 // // Create slice makes us create action objects/types and creators (see actions as event handler and reducer as event listener)
@@ -99,7 +99,7 @@ export const {
     updateMatchesWon,
     updateOpponent,
     updateLeaderBoard,
-	updateOnGamePage,
+    updateOnGamePage,
 } = gameSlice.actions;
 export const selectTotalMatchesPlayed: any = (state: RootState) =>
     state.persistedReducer.game.totalMatchesPlayed;
@@ -127,7 +127,6 @@ export const selectLeaderBoard = (state: RootState) =>
 export const selectonGamePage = (state: RootState) =>
     state.persistedReducer.game.onGamePage;
 
-
 export function FetchTotalPlayers() {
     return async (dispatch: any, getState: any) => {
         await api
@@ -137,7 +136,7 @@ export function FetchTotalPlayers() {
                 dispatch(updateTotalPlayers(res.data));
             })
             .catch((e) => {
-                console.log("error ", e);
+                console.log("error ");
             });
     };
 }
@@ -151,7 +150,7 @@ export function FetchLeaderBoard() {
                 // console.log(" response pur le leaderboard ", res.data);
             })
             .catch((e) => {
-                console.error("erreur dans la requete Leaderboard ", e);
+                console.error("Error in Leaderboard request");
             });
     };
 }

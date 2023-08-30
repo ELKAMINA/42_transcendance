@@ -198,7 +198,7 @@ export class FriendshipGateway
             userInfo.nickname,
             userInfo.refreshToken,
           );
-          console.log('new tokens ', newTokens);
+          //   console.log('new tokens ', newTokens);
           const data: object = {
             nickname: userInfo.nickname,
             access_token: newTokens.access_token,

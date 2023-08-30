@@ -13,10 +13,10 @@ function Leaderboard() {
 
     React.useEffect(() => {
         dispatch(FetchLeaderBoard());
-    }, []);
+    }, [dispatch]);
 
     const leaderboard = useAppSelector(selectLeaderBoard);
-    console.log("le leaderboard ", leaderboard);
+    // console.log("le leaderboard ", leaderboard);
     return (
         <Box>
             <CssBaseline>
