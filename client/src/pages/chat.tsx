@@ -114,8 +114,7 @@ function Chat () {
 		})
 
 		socketRef.current?.on('bannedNotif', (userName : string) => {
-			if (currentUser != userName)
-				AppDispatch(fetchDisplayedChannel(roomId));
+			AppDispatch(fetchDisplayedChannel(roomId));
 			AppDispatch(fetchUserChannels())
 		})
 
