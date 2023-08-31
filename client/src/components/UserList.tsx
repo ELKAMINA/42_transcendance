@@ -41,23 +41,23 @@ export default function UserList({
         usersSet.findIndex((user) => user.login === admin.login)
     );
 
-    const currentUser = useAppSelector(selectActualUser);
-    const selectedChannel: ChannelModel = useAppSelector(
-        selectDisplayedChannel
-    );
-    const [isAdmin, setisAdmin] = React.useState<boolean>(false);
-    const [isOwner, setisOwner] = React.useState<boolean>(false);
-
-    React.useEffect(() => {
-        if (currentUser) { // if current user is admin
-			if (selectedChannel.ownedBy.login === currentUser.login) {
-				setisOwner(true);
-			}
-            if (selectedChannel.admins.some((admin) => admin.login === currentUser.login)) {
-                setisAdmin(true);
-            }
-        }
-    }, [currentUser, selectedChannel.admins]);
+    // const currentUser = useAppSelector(selectActualUser);
+    // const selectedChannel: ChannelModel = useAppSelector(
+        // selectDisplayedChannel
+    // );
+    // const [isAdmin, setisAdmin] = React.useState<boolean>(false);
+    // const [isOwner, setisOwner] = React.useState<boolean>(false);
+// 
+    // React.useEffect(() => {
+        // if (currentUser) { // if current user is admin
+			// if (selectedChannel.ownedBy.login === currentUser.login) {
+				// setisOwner(true);
+			// }
+            // if (selectedChannel.admins.some((admin) => admin.login === currentUser.login)) {
+                // setisAdmin(true);
+            // }
+        // }
+    // }, [currentUser, selectedChannel.admins]);
 
     const [checked, setChecked] = React.useState<number[]>(
         userIndexes.filter((index) => index !== -1)
@@ -150,10 +150,10 @@ export default function UserList({
                 const isChecked = checked.indexOf(value) !== -1; // Check if the item is checked
                 const isTimeChecked = timeChecked.indexOf(value) !== -1; // Check if the item is checked
                 // if I am admin but not owner, I cannot ban, mute or kick other admins
-				let isDisabled = false;
-                if (isAdmin && !isOwner){
-					isDisabled = userIndexes.indexOf(value) !== -1; // Check if the index is in userIndexes
-				}
+				// let isDisabled = false;
+                // if (isAdmin && !isOwner){
+					// isDisabled = userIndexes.indexOf(value) !== -1; // Check if the index is in userIndexes
+				// }
 
                 return (
                     <ListItem
@@ -172,7 +172,7 @@ export default function UserList({
                                         )}
                                         <Tooltip title="set timer">
                                             <Checkbox
-                                                disabled={isDisabled} // Disable the Checkbox if the index is in userIndexes
+                                                // disabled={isDisabled} // Disable the Checkbox if the index is in userIndexes
                                                 icon={<AccessTimeIcon />}
                                                 checkedIcon={<WatchLaterIcon />}
                                                 onChange={handleTimeToggle(
@@ -195,7 +195,7 @@ export default function UserList({
                                 )}
                                 <Checkbox
                                     // edge="start"
-                                    disabled={isDisabled} // Disable the Checkbox if the index is in userIndexes
+                                    // disabled={isDisabled} // Disable the Checkbox if the index is in userIndexes
                                     onChange={handleToggle(value)}
                                     checked={isChecked}
                                     inputProps={{ "aria-labelledby": labelId }}
