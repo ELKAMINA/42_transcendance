@@ -124,8 +124,8 @@ export class RolesGuard implements CanActivate {
         );
         /* Checking if one of the user that we want to mute 
         is the user that has done the request? if so, we delete it from the array */
-        tomute = request.body.banned?.filter(
-          (e) => e.login === userFromDB.login,
+        tomute = request.body.muted?.filter(
+          (e) => e.login !== userFromDB.login,
         );
         /* if the user accesing the request is the owner, he has all rights */
         if (amItheOwner) return true;
@@ -158,8 +158,9 @@ export class RolesGuard implements CanActivate {
           request.body.banned,
         );
         toban = request.body.banned?.filter(
-          (e) => e.login === userFromDB.login,
+          (e) => e.login !== userFromDB.login,
         );
+		console.log("toban = ", toban);
         if (amItheOwner) return true;
         else {
           if (amIAnAdmin) {
@@ -289,6 +290,7 @@ export class RolesGuard implements CanActivate {
     amItheOwner,
     amIAnAdmin,
   ): Promise<Array<{ login: string; ExpiryTime: string }>> {
+	console.log('bannedOrMuted = ', bannedOrMuted);
     const completeObjects = bannedOrMuted.map(async (element: any) => {
       const user = await this.prismaServ.user.findUnique({
         where: { login: element.login },
