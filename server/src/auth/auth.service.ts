@@ -190,7 +190,12 @@ export class AuthService {
         });
       }
       if (dto.type === 'notTfa') {
-        if (us && (await argon.verify(us.hash, dto.password)) === false) {
+        if (
+          us &&
+          us.hash &&
+          dto.password &&
+          (await argon.verify(us.hash, dto.password)) === false
+        ) {
           throw new HttpException('Invalid Password', HttpStatus.FORBIDDEN);
         }
       }

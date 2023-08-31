@@ -6,6 +6,7 @@ import { Strategy, Profile, VerifyCallback } from 'passport-42';
 import { UserService } from '../../user/user.service';
 import { AuthService } from '../auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import * as argon from 'argon2';
 import { user } from '../test/stubs';
 
 @Injectable()
@@ -32,7 +33,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     cb: VerifyCallback, // a callback function where we will pass the user object and use it later to register it in the database and sign the JWT
   ): Promise<any> {
     try {
-      console.log('profile', profile);
+      //   console.log('profile', profile);
       const userDet = {
         provider: profile.provider,
         providerId: profile.id,
@@ -61,7 +62,25 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         });
         //   console.log('Looool is already registered ???', lolo);
         return cb(null, lolo);
+      } else if (!lolo) {
+        let lala = await this.prisma.user.findUnique({
+          where: {
+            login: userDet.login,
+          },
+        });
+        if (lala) {
+          await this.prisma.user.update({
+            where: {
+              login: userDet.login,
+            },
+            data: {
+              provider: 'double',
+            },
+          });
+          return cb(null, lala);
+        }
       }
+      const currentDate = new Date().toISOString();
       const newUser = await this.prisma.user.create({
         data: {
           user_id: userDet.userId,
@@ -71,6 +90,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
           faEnabled: false,
           status: 'Online',
           provider: userDet.provider,
+          hash: await argon.hash(currentDate),
         },
       });
       console.log('new User ', newUser);

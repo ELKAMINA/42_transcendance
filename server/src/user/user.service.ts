@@ -173,7 +173,7 @@ export class UserService {
         },
       });
       provider = user.provider;
-      if (user.provider === '42' && !user.hash && userInfo.pwd !== '') {
+      if (user.provider === '42' && user.hash && userInfo.pwd !== '') {
         const newHashedPwd = await argon.hash(userInfo.pwd);
         const up1 = await this.prisma.user.update({
           where: {
@@ -187,6 +187,7 @@ export class UserService {
         boolean = true;
       } else if (
         user.provider === 'not42' &&
+        user.hash &&
         userInfo.pwd !== '' &&
         (await argon.verify(user.hash, userInfo.pwd)) === false
       ) {

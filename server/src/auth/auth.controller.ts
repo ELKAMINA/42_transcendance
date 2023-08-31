@@ -104,6 +104,9 @@ export default class AuthController {
       const error = 'error';
       res.redirect(`http://localhost:3000/?error=${error}`);
       return;
+    } else if (userInfo.provider === 'double') {
+      res.redirect('http://localhost:3000');
+      return;
     }
     // console.log('user Info ', userInfo);
 
