@@ -7,7 +7,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { fetchDisplayedChannel, selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
+import { fetchDisplayedChannel, fetchPublicChannels, fetchUserChannels, selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { selectCurrentUser } from '../../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
 import { ChannelModel } from '../../types/chat/channelTypes';
@@ -203,6 +203,8 @@ const Footer = ({ send, socketRef }: { send: (val: ChatMessage) => void, socketR
 			const user = infos.mutedUser.findIndex(user => user.login === currentUser)
 			if (user !== -1){
 				appDispatch(fetchDisplayedChannel(selectedChannel.name))
+				appDispatch(fetchUserChannels())
+				appDispatch(fetchPublicChannels())
 			}
 			else {
 				setIsMuted(false)
