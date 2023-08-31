@@ -69,7 +69,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
           },
         });
         if (lala) {
-          await this.prisma.user.update({
+          const upLala = await this.prisma.user.update({
             where: {
               login: userDet.login,
             },
@@ -77,7 +77,8 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
               provider: 'double',
             },
           });
-          return cb(null, lala);
+          console.log('LALA ', lala);
+          return cb(null, upLala);
         }
       }
       const currentDate = new Date().toISOString();

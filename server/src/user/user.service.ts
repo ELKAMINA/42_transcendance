@@ -173,20 +173,21 @@ export class UserService {
         },
       });
       provider = user.provider;
-      if (user.provider === '42' && user.hash && userInfo.pwd !== '') {
-        const newHashedPwd = await argon.hash(userInfo.pwd);
-        const up1 = await this.prisma.user.update({
-          where: {
-            login: userInfo.oldNick,
-          },
-          data: {
-            hash: newHashedPwd,
-          },
-        });
-        // console.log('jup1', up1);
-        boolean = true;
-      } else if (
-        user.provider === 'not42' &&
+      //   if (user.hash && userInfo.pwd !== '') {
+      //     const newHashedPwd = await argon.hash(userInfo.pwd);
+      //     const up1 = await this.prisma.user.update({
+      //       where: {
+      //         login: userInfo.oldNick,
+      //       },
+      //       data: {
+      //         hash: newHashedPwd,
+      //       },
+      //     });
+      //     // console.log('jup1', up1);
+      //     boolean = true;
+      //   }
+      if (
+        // user.provider === 'not42' &&
         user.hash &&
         userInfo.pwd !== '' &&
         (await argon.verify(user.hash, userInfo.pwd)) === false
