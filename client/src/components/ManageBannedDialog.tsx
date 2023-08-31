@@ -65,7 +65,7 @@ export default function ManageBannedDialog({openDialog, setOpenDialog} : {openDi
 				AppDispatch(fetchDisplayedChannel(selectedChannel.name));
 				AppDispatch(setIsBanned(true));
 			})
-			.catch((error) => console.log('error while updating admins : ', error))
+			.catch((error) => console.log('error while updating banned : ', error))
 	}
 
 	const handleClose = () => {
