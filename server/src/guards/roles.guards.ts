@@ -105,7 +105,7 @@ export class RolesGuard implements CanActivate {
       /* Managing the addMembers path : No metadata bc 2 differents situtations 
       depending on the type of the channel */
       if (request.route.path.includes('/addMembers')) {
-        const fullChannl: any = await this.channelServ.getDisplayedChannel(
+        const fullChannl : any = await this.channelServ.getDisplayedChannel(
           concernedchannel,
         );
         if (fullChannl.name) {
@@ -122,9 +122,37 @@ export class RolesGuard implements CanActivate {
         let tomute = new Array<{ login: string; ExpiryTime: string }>(
           request.body.muted,
         );
+		
+		const checkingChannel : any = await this.channelServ.getDisplayedChannel(
+			concernedchannel,
+		);
+		const currentlyMuted = checkingChannel.muted;
+
+		let res = [];
+		if (Array.isArray(res[0]) && res[0].length === 0) {
+			tomute.forEach((user) => {
+				console.log('user = ', user);
+				if (!currentlyMuted.some((m) => m.login === user.login)) {
+					res.push(user);
+				}
+			})
+			console.log("res = ", res);
+		}
+
+		if (currentlyMuted.length > 0) {
+			currentlyMuted.forEach((user) => {
+				if (!tomute.some((m) => m.login === user.login)) {
+					res.push(user);
+				}
+			})
+		}
+		
+		const tmpSet = new Set(res);
+		let totalUpdatedMuted = [...tmpSet];
+				
         /* Checking if one of the user that we want to mute 
         is the user that has done the request? if so, we delete it from the array */
-        tomute = request.body.muted?.filter(
+        totalUpdatedMuted = request.body.muted?.filter(
           (e) => e.login !== userFromDB.login,
         );
         /* if the user accesing the request is the owner, he has all rights */
@@ -138,14 +166,20 @@ export class RolesGuard implements CanActivate {
               if admin : the users has to be members but not owners or admins
               lastArray = is the final array that contains only the one's that we can mute
             */
+		//    console.log("lastArray = ", lastArray)
             lastArray = await this.getNewRequestBody(
-              tomute,
+				totalUpdatedMuted,
               concernedchannel,
               amItheOwner,
               amIAnAdmin,
             );
             /* Here we're changing the request with the newly array */
+			if (lastArray.length === 0 && request.body.muted.length === 0) {
+				return true;
+			}
+
             request.body.muted = lastArray;
+
             if (lastArray.length > 0) return true;
             /* if last Array is empty, that means that we 
             don't have the required rights to mute the list 
@@ -157,21 +191,55 @@ export class RolesGuard implements CanActivate {
         let toban = new Array<{ login: string; ExpiryTime: string }>(
           request.body.banned,
         );
-        toban = request.body.banned?.filter(
-          (e) => e.login !== userFromDB.login,
-        );
-		console.log("toban = ", toban);
+
+
+		const checkingChannel : any = await this.channelServ.getDisplayedChannel(
+			concernedchannel,
+		);
+		const currentlyBanned = checkingChannel.banned;
+
+		let res = [];
+		if (Array.isArray(res[0]) && res[0].length === 0) {
+			toban.forEach((user) => {
+				console.log('user = ', user);
+				if (!currentlyBanned.some((m) => m.login === user.login)) {
+					res.push(user);
+				}
+			})
+			console.log("res = ", res);
+		}
+
+		if (currentlyBanned.length > 0) {
+			currentlyBanned.forEach((user) => {
+				if (!toban.some((m) => m.login === user.login)) {
+					res.push(user);
+				}
+			})
+		}
+		
+		const tmpSet = new Set(res);
+		let totalUpdatedBanned = [...tmpSet];
+
+		totalUpdatedBanned = request.body.banned?.filter(
+			(e) => e.login !== userFromDB.login,
+		  );
+
         if (amItheOwner) return true;
         else {
           if (amIAnAdmin) {
             let lastArray = new Array<{ login: string; ExpiryTime: string }>();
             lastArray = await this.getNewRequestBody(
-              toban,
+				totalUpdatedBanned,
               concernedchannel,
               amItheOwner,
               amIAnAdmin,
             );
+
+			if (lastArray.length === 0 && request.body.banned.length === 0) {
+				return true;
+			}
             request.body.banned = lastArray;
+
             if (lastArray.length > 0) return true;
             else return false;
           }
@@ -290,7 +358,6 @@ export class RolesGuard implements CanActivate {
     amItheOwner,
     amIAnAdmin,
   ): Promise<Array<{ login: string; ExpiryTime: string }>> {
-	console.log('bannedOrMuted = ', bannedOrMuted);
     const completeObjects = bannedOrMuted.map(async (element: any) => {
       const user = await this.prismaServ.user.findUnique({
         where: { login: element.login },
