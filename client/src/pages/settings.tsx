@@ -94,7 +94,6 @@ export function PersonalInformation() {
     }, []);
 
     sock.off("UpdateInfoUser").on("UpdateInfoUser", async (data: any) => {
-         console.log('la data ', data)
         if (data.status === 403) {
             setErrMsg(data.message);
         } else if (data !== null) {
@@ -183,7 +182,6 @@ export function PersonalInformation() {
             return;
         }
         try {
-            console.log('je rentre ici ??', currUser)
             sock.emit("changeProfile", {
                 oldNick: currUser,
                 login: nickname,
