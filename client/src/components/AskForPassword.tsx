@@ -42,20 +42,16 @@ function AskForPassword({
                             pwd: pwd,
                             obj: { name: element.name },
                         })
-                        .then((response) => {
+                        .then((response : any) => {
                             setIsPasswordCorrect(response.data);
                         })
-                        .catch((error) =>
+                        .catch((error : any) =>
                             console.log(
-                                "caught error while checking password : ",
-                                error
-                            )
+                                "caught error while checking password")
                         );
                 } catch (error) {
                     console.error(
-                        "Error occurred while verifying password:",
-                        error
-                    );
+                        "Error occurred while verifying password");
                 }
             }
         }
@@ -74,7 +70,7 @@ function AskForPassword({
             setAlertSuccess(true);
 
 			// if the user is a new member of the channel he just unlocked
-			if (!element.members.some((member) => member.login === currentUser.login)) {
+			if (element && element.members && !element.members.some((member) => member.login === currentUser.login)) {
 				appDispatch(setIsMember(true));
 			}
 			else {

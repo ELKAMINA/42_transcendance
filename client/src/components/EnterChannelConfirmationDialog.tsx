@@ -36,27 +36,24 @@ export default function EnterChannelConfirmationDialog({isConfirmed, selectedCha
 				channelName : {name : selectedChannel.current?.name},
 				members : [newMember], // list of new members to add 
 			})
-			.then((response) => {
-				if (selectedChannel  && selectedChannel.current?.pbp === false)
+			.then((response : any) => {
+				if (selectedChannel  && selectedChannel.current?.pbp === false) {
 					AppDispatch(setIsMember(true))
+				}
 			})
-			.catch((error) => console.log('error while adding members from EnterChannelConfirmationDialog : ', error))
+			.catch((error : any) => console.log('error while adding members from EnterChannelConfirmationDialog : ', error))
 	}
 	
 	const handleConfirm = () => {
 		// add current user to the the selected channel's list of members
 		addMembers();
-		// setIsConfirmed(true);
 		isConfirmed.current = true;
-		// isConfirmed = true;
 		setOpenDialog(false);
 	};
 
 	const handleCancel = () => {
 		// don't do anything
-		// setIsConfirmed(false);
 		isConfirmed.current = false;
-		// isConfirmed = false;
 		setOpenDialog(false);
 	};
 
