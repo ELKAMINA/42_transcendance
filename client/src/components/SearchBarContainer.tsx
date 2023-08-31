@@ -147,7 +147,7 @@ export default function SearchBarContainer({ getSelectedItem, newChannelCreated 
 						|| (memberLogin0 === selectedOption.name && memberLogin1 === currentUserName))
 				})
 				if (conv) {
-					AppDispatch(fetchDisplayedChannel(conv.name))
+					getSelectedItem(conv.name);
 				}
 			}
 			else if ('name' in selectedOption && selectedOption.type !== 'privateConv') {
