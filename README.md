@@ -29,7 +29,7 @@ It is a N(est)R(eact)N(odejs)P(ostges) stack application
 ### :ping_pong: Game interface
 
 - Implementation of a live pong 
-- Implementation of a matchmaking system - the user can join a queue until they get automatically matched with someone.
+- Implementation of a matchmaking system - the users can join a queue until they get automatically matched with someone else.
 - Implementation of the customisation Options (eg. Power-ups, Different Maps), however, the user should be able to select a default version of the game.
 - Implementation of the responsivity for the game
 
