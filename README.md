@@ -58,5 +58,7 @@ It is a N(est)R(eact)N(odejs)P(ostges) stack application
 
 ### :runner: To run th project 
 ```
+For the Authentication with 42 and the connection with the database, a ".env" is needeed with the secret variables
+Contact us to get it and run the project with : 
 docker-compose up --build
 ```
