@@ -84,7 +84,7 @@ export class ProfileGateway
         );
       }
       if (user) {
-        this.io.emit('newUserConnected', user.faEnabled);
+        this.io.to(client.id).emit('newUserConnected', user.faEnabled);
       }
       this.logger.log(`WS Client with id: ${client.id}  connected!`);
       // this.logger.debug(`Number of connected sockets ${sockets.size}`);
@@ -128,7 +128,7 @@ export class ProfileGateway
     try {
       /** ISSUE 118 ***/
       // GET THE USER PROFILE
-      console.log('userUpdates ', updates);
+      // console.log('userUpdates ', updates);
       const currentUser = await this.userServ.searchUser(updates.oldNick);
       if (!currentUser) {
         console.error('user not found!');
@@ -137,13 +137,13 @@ export class ProfileGateway
       // console.log("[Home - GATEWAY]", "currentUser: ", currentUser, "currentUser.status: ", currentUser.status);
       // CHECK THE STATUS OF THE USER THEN THROW AN ERROR IF IS PLAYING
       if (currentUser.status === 'Playing') {
-        this.io.emit('ErrorChangeProfileOnPlaying');
+        this.io.to(socket.id).emit('ErrorChangeProfileOnPlaying');
         throw new ForbiddenException(
           'Impossible to change settings when an user is playing',
         );
       }
       const newInfos = await this.userServ.updateUserInfo(updates);
-      this.io.emit('UpdateInfoUser', newInfos);
+      this.io.to(socket.id).emit('UpdateInfoUser', newInfos);
     } catch (e) {
       console.log('error ');
       return e;

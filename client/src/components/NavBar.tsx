@@ -78,8 +78,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute }) => {
     ) => {
         event.preventDefault();
         await logout({ nickname, access_token, refresh_token });
-        // if (Cookies.get("Authcookie") !== undefined)
-        //     Cookies.remove("Authcookie", { path: "/", domain: "localhost" });
+        if (Cookies.get("Authcookie") !== undefined)
+            Cookies.remove("Authcookie", { path: "/", domain: "localhost" });
         dispatch(logOut(nickname));
         navigate("/sign");
     };

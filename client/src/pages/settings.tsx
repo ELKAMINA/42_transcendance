@@ -94,6 +94,7 @@ export function PersonalInformation() {
     }, []);
 
     sock.off("UpdateInfoUser").on("UpdateInfoUser", async (data: any) => {
+        // console.log(' Qui suis-je ', currUser)
         if (data.status === 403) {
             setErrMsg(data.message);
         } else if (data !== null) {
@@ -102,7 +103,6 @@ export function PersonalInformation() {
             sockChat.emit("autoRefreshWhenUsernameChanging", {});
             if (data.login) dispatch(setNick(data.login));
             if (data.avatar) dispatch(setAvatar(data.avatar));
-            //   console.log('[SETTINGS ] je rentre ici au rafraichissement ?', access_token)
             setConfMsg("Changes saved");
             const serializedData = JSON.stringify({
                 nickname: data.login,

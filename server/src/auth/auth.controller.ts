@@ -100,7 +100,7 @@ export default class AuthController {
     @Res({ passthrough: true }) res: Response,
     /* The passthrough: true make possible to use tha library-specific &&& the built-in concepts to manipulate the responses we define : Ref = https://docs.nestjs.com/controllers */
   ) {
-    console.log('userINFO ', userInfo);
+    // console.log('userINFO ', userInfo);
     if (userInfo.provider === 'not42') {
       const error = 'error';
       res.redirect(`http://localhost:3000/?error=${error}`);

@@ -131,12 +131,12 @@ export class RolesGuard implements CanActivate {
 		let res = [];
 		if (Array.isArray(res[0]) && res[0].length === 0) {
 			tomute.forEach((user) => {
-				console.log('user = ', user);
+				// console.log('user = ', user);
 				if (!currentlyMuted.some((m) => m.login === user.login)) {
 					res.push(user);
 				}
 			})
-			console.log("res = ", res);
+			// console.log("res = ", res);
 		}
 
 		if (currentlyMuted.length > 0) {
@@ -201,12 +201,12 @@ export class RolesGuard implements CanActivate {
 		let res = [];
 		if (Array.isArray(res[0]) && res[0].length === 0) {
 			toban.forEach((user) => {
-				console.log('user = ', user);
+				// console.log('user = ', user);
 				if (!currentlyBanned.some((m) => m.login === user.login)) {
 					res.push(user);
 				}
 			})
-			console.log("res = ", res);
+			// console.log("res = ", res);
 		}
 
 		if (currentlyBanned.length > 0) {

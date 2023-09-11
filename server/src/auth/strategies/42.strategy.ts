@@ -50,7 +50,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         },
       });
       if (lolo) {
-        console.log('Lolo ', lolo);
+        // console.log('Lolo ', lolo);
         if (lolo.provider === 'not42') {
           return cb(null, lolo); // or use any other suitable exception class
         }
@@ -77,7 +77,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
               provider: 'double',
             },
           });
-          console.log('LALA ', lala);
+          // console.log('LALA ', lala);
           return cb(null, upLala);
         }
       }
@@ -94,7 +94,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
           hash: await argon.hash(currentDate),
         },
       });
-      console.log('new User ', newUser);
+      // console.log('new User ', newUser);
       return cb(null, newUser);
     } catch (e) {
       console.log('An error occured when logging with OAuth');

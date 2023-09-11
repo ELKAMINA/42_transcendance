@@ -25,12 +25,6 @@ export class FriendshipService {
         return;
       }
       try {
-        const USER_SAFE_SELECT = {
-          hash: false,
-          rtHash: false,
-          email: false,
-          fa: false,
-        };
         const newReq = await this.prisma.friendRequest.create({
           data: {
             sender: {
@@ -90,9 +84,75 @@ export class FriendshipService {
         login: userLogin,
       },
       include: {
-        friends: true,
-        friendOf: true,
-        blocked: true,
+        friends: {
+			select : {
+				login: true,
+				user_id: true,
+				faEnabled: true,
+				avatar: true,
+				provider: true,
+				status: true,
+				blockedBy: true,
+				friendOf: true,
+				friends: true,
+				FriendRequestReceived: true,
+				FriendRequestSent: true,
+				p1: true,
+				p2: true,
+				adminChannels: true,
+				channels: true,
+				createdChannels: true,
+				ownedChannels: true,
+				bannedFromChannels: true,
+				MutedInChannels: true,
+			}
+		},
+        friendOf: {
+			select : {
+				login: true,
+				user_id: true,
+				faEnabled: true,
+				avatar: true,
+				provider: true,
+				status: true,
+				blockedBy: true,
+				friendOf: true,
+				friends: true,
+				FriendRequestReceived: true,
+				FriendRequestSent: true,
+				p1: true,
+				p2: true,
+				adminChannels: true,
+				channels: true,
+				createdChannels: true,
+				ownedChannels: true,
+				bannedFromChannels: true,
+				MutedInChannels: true,
+			}
+		},
+        blocked: {
+			select : {
+				login: true,
+				user_id: true,
+				faEnabled: true,
+				avatar: true,
+				provider: true,
+				status: true,
+				blockedBy: true,
+				friendOf: true,
+				friends: true,
+				FriendRequestReceived: true,
+				FriendRequestSent: true,
+				p1: true,
+				p2: true,
+				adminChannels: true,
+				channels: true,
+				createdChannels: true,
+				ownedChannels: true,
+				bannedFromChannels: true,
+				MutedInChannels: true,
+			}
+		},
       },
     });
     if (user) {
@@ -117,8 +177,52 @@ export class FriendshipService {
         login: userLogin,
       },
       include: {
-        blocked: true,
-        blockedBy: true,
+        blocked: {
+			select : {
+				login: true,
+				user_id: true,
+				faEnabled: true,
+				avatar: true,
+				provider: true,
+				status: true,
+				blockedBy: true,
+				friendOf: true,
+				friends: true,
+				FriendRequestReceived: true,
+				FriendRequestSent: true,
+				p1: true,
+				p2: true,
+				adminChannels: true,
+				channels: true,
+				createdChannels: true,
+				ownedChannels: true,
+				bannedFromChannels: true,
+				MutedInChannels: true,
+			}
+		},
+        blockedBy: {
+			select : {
+				login: true,
+				user_id: true,
+				faEnabled: true,
+				avatar: true,
+				provider: true,
+				status: true,
+				blockedBy: true,
+				friendOf: true,
+				friends: true,
+				FriendRequestReceived: true,
+				FriendRequestSent: true,
+				p1: true,
+				p2: true,
+				adminChannels: true,
+				channels: true,
+				createdChannels: true,
+				ownedChannels: true,
+				bannedFromChannels: true,
+				MutedInChannels: true,
+			}
+		},
       },
     });
     if (user) {

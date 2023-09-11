@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Cookies from 'js-cookie';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import { io } from 'socket.io-client';
@@ -7,11 +6,10 @@ import ListItem from '@mui/material/ListItem';
 import CssBaseline from '@mui/material/CssBaseline';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
-import { Stack, Typography, Container } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 
 import { Suggestions, Requests, Friends } from '../pages/friendship';
 import { selectItems, setSelectedItem, selectError, FetchAllFriendRequests, setFriendshipError, FetchSuggestions, FetchAllFriends, FetchAllBlockedFriends, FetchUsersDb } from '../redux-features/friendship/friendshipSlice';
-import { setOnlyTokens } from '../redux-features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../utils/redux-hooks';
 import { useState } from 'react';
 import SomethingWentWrong from '../pages/somethingWentWrong';
@@ -102,7 +100,7 @@ export default function FriendshipComponent(props: Myprops) {
 
     /** ISSUE 113 - TEST AUTO REFRESH WHEN USER NAME CHANGING ***/
     socket.off("autoRefreshWhenUsernameChanging").on("autoRefreshWhenUsernameChanging", async () => {
-      console.log("[AllFriendship - on autoRefreshWhenUsernameChanging", "Messagge received from the Settings");
+      // console.log("[AllFriendship - on autoRefreshWhenUsernameChanging", "Messagge received from the Settings");
         dispatch(FetchSuggestions());
         dispatch(FetchAllFriendRequests());
         dispatch(FetchAllFriends());

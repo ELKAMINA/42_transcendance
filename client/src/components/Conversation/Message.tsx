@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material'
 
-import { useAppDispatch, useAppSelector } from '../../utils/redux-hooks';
+import { useAppSelector } from '../../utils/redux-hooks';
 import { ChatMessage } from '../../types/chat/messageType'
 import areDifferentDays from '../../utils/areDifferentDays';
 import { ChannelModel } from '../../types/chat/channelTypes';
-import { fetchDisplayedChannel, selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
+import { selectDisplayedChannel } from '../../redux-features/chat/channelsSlice';
 import { DocMsg, InfoMsg, LinkMsg, MediaMsg, ReplyMsg, TextMsg, Timeline } from './MsgTypes'
-import { FetchActualUser, selectActualUser } from '../../redux-features/friendship/friendshipSlice';
+import { selectActualUser } from '../../redux-features/friendship/friendshipSlice';
 import { UserModel } from '../../types/users/userType';
 
 function renderSwitchComponent(el : ChatMessage, index: number) {
@@ -31,7 +31,7 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 	const currentUser = useAppSelector(selectActualUser) as UserModel;
 	const selectedChannel : ChannelModel = useAppSelector(selectDisplayedChannel);
 	const [chat, setChat] = useState<ChatMessage[]>([]);
-	const AppDispatch = useAppDispatch();
+	// const AppDispatch = useAppDispatch();
 
 	// React.useEffect(() => {
 		// AppDispatch(FetchActualUser());
@@ -41,6 +41,7 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 		return () => {
 			setMessages([]); // reset messages state every time we change channel
 		}
+	// eslint-disable-next-line
 	}, [selectedChannel])
 
 	// Use a useEffect to update chat messages whenever selectedChannel and messages changes
@@ -58,6 +59,7 @@ const Message = ({ messages, setMessages }: { messages : ChatMessage[], setMessa
 			// console.log('filteredBlockedUsersChat = ', filteredBlockedUsersChat);
             setChat(filteredBlockedUsersChat);
         }
+	// eslint-disable-next-line
     }, [selectedChannel, messages]);
 
 	if (!selectedChannel || !selectedChannel.chatHistory) {
